@@ -1,0 +1,11 @@
+CACH LAY FILE APK (khong can cai Android Studio)
+
+1. Tao tai khoan GitHub (mien phi) va tao 1 repository moi (de Private cung duoc).
+2. Giai nen file zip nay, upload TOAN BO noi dung len repository
+   (nho giu thu muc .github - neu an thi bat "hien thi file an").
+3. Vao tab "Actions" -> chon "Build APK" -> "Run workflow".
+4. Doi khoang 5-8 phut -> bam vao lan chay xong -> muc "Artifacts" -> tai "TuTienHocDao-apk".
+5. Giai nen, cai app-debug.apk len dien thoai Android (cho phep cai tu nguon khong ro).
+
+Muon doi ten app / icon: sua "appName" trong capacitor.config.json.
+Muon cap nhat game: thay file www/index.html roi push lai.

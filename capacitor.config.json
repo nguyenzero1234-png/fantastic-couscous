@@ -1,0 +1,6 @@
+{
+  "appId": "com.tutien.thienphu",
+  "appName": "Tu Tiên Học Đạo",
+  "webDir": "www",
+  "android": { "allowMixedContent": true }
+}
