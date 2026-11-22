@@ -489,7 +489,7 @@ function applyUi(){
 }
 applyUi();
 if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let KSALT=(S.rb||0)*7919;
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}try{window.NTsave&&window.NTsave()}catch(e){}};
 const $=id=>document.getElementById(id);
 const today=()=>new Date(Date.now()+(S.dOff||0)*864e5).toLocaleDateString("sv");
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -2966,6 +2966,126 @@ render();
     document.documentElement.style.setProperty("--sat",h+"px");
   };
   apply();addEventListener("resize",apply);addEventListener("orientationchange",apply);
+})();
+</script>
+<script>
+/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2: khung =====
+   - Chỉ hoạt động trong app Capacitor (APK); trên trình duyệt thường sẽ tự bỏ qua.
+   - Mỗi nhóm thông báo có dải id riêng: study 1000-1999, reward 2000-2999, ex 3000-3999, user 4000-4999.
+   - Các hàm trong BLD trả về danh sách {id (0-999), title, body, at: Date}. Phần 3, 4, 5 sẽ điền vào đây. */
+(function(){
+  const CAP=window.Capacitor;
+  const native=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
+  const LN=native&&CAP.Plugins?CAP.Plugins.LocalNotifications:null;
+  const CH="nhacnho",TEST_ID=9001,MAXN=60;           // iOS chỉ cho tối đa 64 thông báo đang chờ
+  const RANGE={study:1000,reward:2000,ex:3000,user:4000};
+  const cfg=()=>{const n=S.nt||(S.nt={});if(n.on==null)n.on=false;if(!n.t)n.t="20:00";if(!n.g)n.g={study:1,reward:1,ex:1,user:1};return n};
+  const nextAt=(h,m)=>{const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()+60000)d.setDate(d.getDate()+1);return d};
+
+  // Các nhóm thông báo (hiện để trống, sẽ làm ở Phần 3, 4, 5)
+  const BLD={
+    study:()=>[],
+    reward:()=>[],
+    ex:()=>[],
+    user:()=>[]
+  };
+  function build(){
+    const c=cfg(),out=[];
+    Object.keys(BLD).forEach(g=>{
+      if(!c.g[g])return;
+      let arr=[];try{arr=BLD[g]()||[]}catch(e){console.warn("NT build "+g,e)}
+      arr.forEach(n=>{if(n.at&&+n.at>Date.now()+5000)out.push({id:RANGE[g]+(n.id|0),title:n.title,body:n.body,at:n.at})});
+    });
+    out.sort((a,b)=>a.at-b.at);
+    return out.slice(0,MAXN);
+  }
+
+  async function perm(ask){
+    if(!LN)return "web";
+    try{let p=await LN.checkPermissions();if(p.display!=="granted"&&ask)p=await LN.requestPermissions();return p.display}
+    catch(e){return "error"}
+  }
+  async function channel(){
+    if(!LN)return;
+    try{await LN.createChannel({id:CH,name:"Nhắc nhở học tập",description:"Nhắc học, nhận thưởng, thiên kiếp",importance:4,visibility:1,vibration:true})}catch(e){}
+  }
+  async function cancelOurs(){
+    try{
+      const p=await LN.getPending();
+      const ids=(p.notifications||[]).map(n=>n.id).filter(id=>id>=1000&&id<5000);
+      if(ids.length)await LN.cancel({notifications:ids.map(id=>({id}))});
+    }catch(e){}
+  }
+
+  // Hủy thông báo cũ rồi hẹn lại; bỏ qua nếu danh sách không đổi
+  let busy=false,again=false,sig=null,tm=0;
+  async function run(force){
+    if(!LN)return;
+    if(busy){again=true;return}
+    busy=true;
+    try{
+      const c=cfg();
+      if(!c.on){if(sig!=="off"){await cancelOurs();sig="off"}return}
+      if((await perm(false))!=="granted"){sig=null;return}
+      const list=build(),s=JSON.stringify(list.map(n=>[n.id,n.title,n.body,+n.at]));
+      if(!force&&s===sig)return;
+      await cancelOurs();
+      if(list.length)await LN.schedule({notifications:list.map(n=>({id:n.id,title:n.title,body:n.body,channelId:CH,schedule:{at:n.at,allowWhileIdle:true}}))});
+      sig=s;
+    }catch(e){console.warn("NT run",e);sig=null}
+    finally{busy=false;if(again){again=false;run(false)}}
+  }
+  // save() gọi hàm này; chờ 5 giây cho đỡ gọi dồn
+  window.NTsave=()=>{if(!LN)return;clearTimeout(tm);tm=setTimeout(()=>run(false),5000)};
+
+  // ----- Giao diện trong Thiên Thư > Thống kê -----
+  const box=document.createElement("div");box.className="box";box.style.marginTop="14px";box.id="ntbox";
+  async function paint(){
+    const c=cfg();let st;
+    if(!native)st="Chỉ hoạt động trong app cài trên điện thoại (bản APK), không chạy trên trình duyệt.";
+    else{
+      const p=await perm(false);
+      st=p==="granted"?"Đã được cấp quyền thông báo.":p==="denied"?"Quyền thông báo đang bị tắt. Vào Cài đặt điện thoại, mở mục Ứng dụng, chọn game rồi bật Thông báo.":"Chưa cấp quyền thông báo.";
+    }
+    box.innerHTML=`<h2>Thông báo nhắc nhở</h2><small>${st}</small>
+<div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
+<div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div>`;
+  }
+  box.onclick=async e=>{
+    const b=e.target.closest("button[data-nt]");if(!b)return;
+    const a=b.dataset.nt,c=cfg();
+    if(!native){say("Chỉ dùng được trong app cài trên điện thoại.");return}
+    if(a==="tg"){
+      if(!c.on){
+        const p=await perm(true);
+        if(p!=="granted"){say("Chưa được cấp quyền thông báo. Hãy bật quyền trong cài đặt điện thoại.");paint();return}
+        await channel();c.on=true;save();say("Đã bật thông báo.");run(true);
+      }else{c.on=false;save();run(true);say("Đã tắt thông báo.")}
+      paint();
+    }else if(a==="test"){
+      const p=await perm(true);
+      if(p!=="granted"){say("Chưa được cấp quyền thông báo. Hãy bật quyền trong cài đặt điện thoại.");paint();return}
+      await channel();
+      try{
+        await LN.schedule({notifications:[{id:TEST_ID,title:"Tu Tiên Học Đạo",body:"Thông báo thử: hệ thống nhắc nhở đã hoạt động!",channelId:CH,schedule:{at:new Date(Date.now()+5000),allowWhileIdle:true}}]});
+        say("Đã hẹn thông báo thử sau 5 giây. Có thể thoát ra màn hình chính để xem.");
+      }catch(x){say("Không hẹn được thông báo thử.")}
+      paint();
+    }
+  };
+  box.onchange=e=>{
+    if(e.target.id==="ntt"&&/^\d\d:\d\d$/.test(e.target.value)){cfg().t=e.target.value;save();run(true);say("Đã đổi giờ nhắc học.")}
+  };
+  paint();
+  $("s").appendChild(box);
+
+  if(native){
+    channel();
+    setTimeout(()=>run(true),3000);                       // lúc mở app
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)run(false);else paint()}); // lúc thoát app
+    setInterval(()=>run(false),600000);                   // mỗi 10 phút khi đang mở
+  }
+  window.NT={BLD,build,nextAt,run,RANGE,cfg};
 })();
 </script>
 </body>
