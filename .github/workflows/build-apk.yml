@@ -16,6 +16,11 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npx cap add android
+      - name: Thêm quyền thông báo Android
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          grep -q "POST_NOTIFICATIONS" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n</manifest>#' "$MF"
+          grep "POST_NOTIFICATIONS" "$MF"
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
