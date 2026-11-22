@@ -1517,8 +1517,12 @@ function balMult(){return playerBalanced()?BAL_MULT:1}
 function modGain(n){const m=(S.tm?.8:1)*(S.tma?.65:1)*(S.cbUntil>Date.now()?1.1:1);return Math.max(0,Math.floor(Math.round(n)*tdMult()*balMult()*m))}
 function eventGain(n){let v=n;if(S.tcCharges>0){v=Math.round(v*1.5);S.tcCharges--;if(S.tcCharges===0)extra+=" Thiên Cơ Lệnh đã dùng hết 4 lần."}return modGain(v)}
 function addPts(n,mins,day){
+  const before=ri(S.points||0);
   const g=modGain(n);if(!g&&!mins)return 0;
-  S.points+=g;hAdd(day||today(),g,mins||0);return g;
+  S.points+=g;hAdd(day||today(),g,mins||0);
+  const after=ri(S.points||0);
+  if(after>before){try{onRealmUp(before,after);}catch(e){}}
+  return g;
 }
 function showTdLenh(){
   const name=S.name||"đạo hữu",st=Math.max(1,S.tdStacks||1),pct=Math.min(30,5*st);
@@ -1931,19 +1935,24 @@ const RC=["#7fb8a4","#4fc48a","#e0b341","#6aa3ff","#b07cff","#ff6fae","#ff8a4c",
 const QT=[
   "「Người tôn kính không phải kẻ mạnh, mà là kẻ dám làm mọi thứ vì mục tiêu.」— Phương Nguyên · Cổ Chân Nhân",
   "「Ta vì thành tiên, không vì cứu thế.」— Phương Nguyên · Cổ Chân Nhân",
-  "「Thiên địa bất nhân, vạn vật vi sô cẩu.」— Phương Nguyên · Cổ Chân Nhân",
-  "「Đạo của ta, chính là cầu ma.」— phong vị Cầu Ma",
-  "「Không thành ma, không thành tiên.」— phong vị Cầu Ma",
-  "「Trong mắt ta chỉ có lợi ích — tình nghĩa chỉ là công cụ.」— phong vị Cổ Chân Nhân",
-  "「Muốn sống, hãy mạnh hơn quy tắc.」— phong vị tiểu thuyết mạng",
-  "「Một bước sai, vạn kiếp không quay đầu.」— phong vị tu tiên hắc ám",
+  "「Thiên địa bất nhân, vạn vật vi sô cẩu.」— Đạo Đức Kinh (phong vị)",
   "「Đạo tâm không vững, tu vi chỉ là cát bụi.」— phong vị cầu đạo",
-  "「Kẻ cười cuối cùng, mới là kẻ thắng.」— phong vị Cổ Chân Nhân",
-  "「Thiên đạo vô tình — ta cũng vô tình.」— phong vị hắc đạo",
-  "「Cơ duyên không đến tìm ta; ta đi cướp cơ duyên.」— phong vị tiểu thuyết mạng",
+  "「Một bước sai, vạn kiếp không quay đầu.」— phong vị tu tiên",
+  "「Kiếp này không xong, còn có kiếp sau — miễn là còn thở.」— phong vị luân hồi",
+  "「Ngồi xuống một canh giờ cũng là đạo. Không cần ai chứng kiến.」— phong vị khổ tu",
+  "「Linh lực không nhớ tên ngươi. Chỉ nhớ ngươi có ngồi hay không.」— Thiên Đạo ký lục",
+  "「Tông môn cho chỗ đứng. Đạo tâm thì phải tự dựng.」— lời sư phụ vô danh",
+  "「Chuỗi ngày không phải huy chương. Chỉ là bằng chứng ngươi chưa bỏ.」— Nhật ký đạo hữu",
+  "「Thiên kiếp không hỏi ngươi mệt chưa. Nó chỉ hỏi ngươi còn đứng không.」— Lôi kiếp cổ thư",
+  "「Linh thú không nói. Nhưng nó nhớ từng lần ngươi quay lại.」— Sổ Càn Khôn",
+  "「Danh hiệu là cái bóng. Người đi trước mới là xương sống.」— Thiên Kiêu Bảng chú",
   "「Sợ chết thì đừng cầu trường sinh.」— phong vị Cầu Ma",
-  "「Ngươi gọi ta là ma; ta gọi đó là tỉnh táo.」— phong vị phản phái",
-  "「Kiếp này không xong, còn có kiếp sau — miễn là ta còn thở.」— phong vị luân hồi · Cổ Chân Nhân"
+  "「Cơ duyên không đến tìm ta; ta đi gặp cơ duyên.」— phong vị hành giả",
+  "「Trang nhật ký trắng không phải thất bại. Chỉ là chưa viết.」— Thiên Thư",
+  "「Hôm nay ít. Ngày mai có thể nhiều. Đạo không tính theo một trang.」— Lão giả bên án thư",
+  "「Mệnh mỏng thì đi chậm. Đi chậm vẫn là đi.」— lời độ kiếp",
+  "「Khi kiếp khép, Thiên Đạo gập trang. Phần còn lại là của ngươi.」— Luân hồi chí",
+  "「Không thành ma, không thành tiên — thành người biết ngồi xuống.」— biến tấu Cầu Ma"
 ];
 function renderHero(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(1,(x-lo)/(hi-lo)),C=2*Math.PI*52;
@@ -2735,32 +2744,189 @@ function showTut(){
 }
 
 /* ===== Nhật ký đạo hữu ===== */
+
+/* ===== Đạo Văn · Ký lục đột phá cảnh giới (Story) ===== */
+const REALM_STORY=[
+  null, // Luyện Khí — khởi đầu, không có đột phá vào
+  {t:"Trúc Cơ",lines:[
+    "Linh khí lần đầu ngưng thành trụ trong đan điền. Ngực nóng một nhịp, rồi dịu.",
+    "Bên ngoài, trời không đổi. Bên trong, có một cái nền vừa được đặt xuống.",
+    "Từ đây, tu vi không còn là đống cát rời."
+  ]},
+  {t:"Kim Đan",lines:[
+    "Một viên đan phác hiện trong biển khí. Tròn, nặng, im lặng.",
+    "Ngươi nhìn nó như nhìn một lời hứa chưa nói thành lời.",
+    "Kim Đan không sáng. Nó chỉ không tan."
+  ]},
+  {t:"Nguyên Anh",lines:[
+    "Trong đan, có thứ gì đó mở mắt. Không phải người, cũng không phải hồn phách thuần.",
+    "Nguyên Anh ngồi đó, nhỏ, nhưng biết nhìn ra ngoài.",
+    "Lần đầu tiên, tu vi có chỗ để về."
+  ]},
+  {t:"Hóa Thần",lines:[
+    "Thần thức kéo dài hơn thân xác. Nghe được gió ngoài cửa, dù cửa vẫn đóng.",
+    "Hóa Thần không phải bay lên. Là đứng giữa hai tầng trời và đất mà không vỡ.",
+    "Thiên Đạo ghi thêm một nét. Không khen, không chê."
+  ]},
+  {t:"Luyện Hư",lines:[
+    "Hư không không còn trống. Ngươi chạm vào nó như chạm vào nước lạnh.",
+    "Luyện Hư: lấy cái không làm chỗ đứng. Ai không quen sẽ chóng mặt.",
+    "Ngươi quen dần. Hoặc giả vờ quen."
+  ]},
+  {t:"Hợp Thể",lines:[
+    "Thân và đạo không còn là hai sổ riêng. Một trang viết đủ cả hai.",
+    "Hợp Thể nghe lớn. Thực ra chỉ là hết chỗ trốn trong chính mình.",
+    "Bước này, nhiều người dừng. Ngươi không dừng."
+  ]},
+  {t:"Đại Thừa",lines:[
+    "Tu vi đầy đến mức linh khí quanh thân tự xếp thành lớp.",
+    "Đại Thừa: gần cuối núi, gió lớn hơn, đường hẹp hơn.",
+    "Phía trước còn một bậc. Bậc ấy tên Chân Tiên."
+  ]},
+  {t:"Chân Tiên",lines:[
+    "Không có sấm. Không có hoa rơi. Chỉ có một khoảng lặng đủ dài để nghe nhịp thở.",
+    "Chân Tiên không phải hết đường. Là hết cái tên cũ của đường.",
+    "Thiên Đạo mở trang luân hồi, rồi khép lại — vì lần này, có thể không cần."
+  ]}
+];
+function storyLog(){return S.storyLog||(S.storyLog=[])}
+function storyFlags(){return S.storyFlags||(S.storyFlags={})}
+function pushStory(id,title,lines,meta){
+  const log=storyLog();
+  if(log.some(x=>x.id===id))return false;
+  log.push({id,title,lines:lines.slice(),at:Date.now(),day:today(),...(meta||{})});
+  if(log.length>40)log.splice(0,log.length-40);
+  return true;
+}
+function onRealmUp(from,to){
+  for(let k=from+1;k<=to&&k<REALM_STORY.length;k++){
+    const st=REALM_STORY[k];if(!st)continue;
+    if(pushStory("realm:"+k,"Đột phá · "+st.t,st.lines,{realm:k})){
+      try{say("Đạo Văn ghi lại: đột phá "+st.t+".");}catch(e){}
+    }
+  }
+}
+function chkStoryFlags(){
+  const f=storyFlags();
+  // Backfill đột phá đã qua (save cũ) — chỉ ghi một lần
+  if(!f.realmBF){f.realmBF=1;const k=ri(S.points||0);if(k>0)onRealmUp(0,k);}
+  if(S.sect!=null&&!f.sect){f.sect=1;const n=SECTS[S.sect]?SECTS[S.sect].n:"tông môn";
+    pushStory("sect:"+S.sect,"Bái nhập · "+n,[
+      "Dưới cờ "+n+", tên ngươi được viết vào sổ tông.",
+      "Tông môn không hứa thành tiên. Chỉ hứa có chỗ đứng khi trời đổ mưa.",
+      "Ngươi cúi đầu một cái. Đủ."
+    ]);}
+  if(S.act&&!f.pet){f.pet=1;const pt=PS.find(p=>p.id===S.act);const pn=pt?pt.n:"linh thú";
+    pushStory("pet:"+S.act,"Khế ước · "+pn,[
+      pn+" nhận linh lực từ ngươi, rồi trả lại bằng sự hiện diện.",
+      "Không lời thề. Chỉ có một sợi dây mỏng không đứt khi ngươi quên nhìn.",
+      "Càn Khôn túi nhẹ hơn một chút — vì có chỗ cho nó."
+    ]);}
+  if(S.title&&!f.title){f.title=1;const ti=TITLES.find(t=>t.id===S.title);const tn=ti?ti.n:S.title;
+    pushStory("title:"+S.title,"Danh hiệu · 「"+tn+"」",[
+      "Người đời bắt đầu gọi ngươi bằng hai chữ không phải tên.",
+      "「"+tn+"」. Danh hiệu không nâng tu vi. Nó chỉ nhắc ngươi đã đi qua gì.",
+      "Thiên Kiêu Bảng không cần biết. Nhật ký thì ghi."
+    ]);}
+  if((S.rb||0)>=1&&!f.rb){f.rb=1;
+    pushStory("rb:"+S.rb,"Luân hồi · Kiếp "+((S.rb||0)+1),[
+      "Bát canh có thể đã nguội. Ký ức thì chưa.",
+      "Kiếp trước gập lại. Kiếp này mở trang trắng — trừ vài vết mờ ở góc.",
+      prevMemory()||"Thiên Đạo không nhắc. Ngươi tự nhớ."
+    ]);}
+  S.storyFlags=f;
+}
+
 function genDiary(day){
   const h=S.hist[day]||{p:0,m:0},n=(S.cnt&&S.cnt[day])||0,m=h.m||0,p=h.p||0;
-  const lines=[];
-  if(n===0&&m===0)lines.push("Hôm nay không có gì để ghi. Trang để trắng. Không hỏi vì sao.");
-  else{
+  const lines=[],isT=day===today();
+  const seed=[...day].reduce((a,c)=>a+c.charCodeAt(0),0);
+  const pick=(arr)=>arr[Math.abs(seed+arr.length*7)%arr.length];
+  const dow=new Date(day+"T12:00:00").getDay(); // 0 CN
+  if(n===0&&m===0){
+    lines.push(pick([
+      "Hôm nay không có gì để ghi. Trang để trắng. Không hỏi vì sao.",
+      "Án thư trống. Bút không mở. Thiên Đạo cũng không giục.",
+      "Một ngày không ngồi xuống. Sổ vẫn mở, chờ."
+    ]));
+    if(isT&&(S.streak.n||0)>=3)lines.push("Chuỗi đang giữ từ hôm trước. Hôm nay còn chưa viết tiếp.");
+  }else{
     lines.push(`Ghi nhận: ${n} nhiệm vụ, tu luyện ${Math.floor(m/60)} giờ ${m%60} phút, thu ${Math.round(p)} linh lực.`);
-    if(m>=120)lines.push("Hơn hai canh giờ. Linh khí trong phòng đặc đến mức bụi cũng đứng yên.");
-    else if(m>=45)lines.push("Vừa đủ. Không thừa để khen, không thiếu để chê.");
-    else lines.push("Ít. Sổ không phân biệt ít nhiều, chỉ phân biệt có hay không.");
-    if((S.streak.n||0)>=7)lines.push(`Chuỗi ${S.streak.n} ngày. Thói quen là đạo của kẻ không cần nghĩ.`);
-    else if((S.streak.n||0)>=3)lines.push("Chuỗi đang dựng. Đứt thì dựng lại. Không ai giúp.");
-    if(S.tm)lines.push("Tâm ma vẫn còn đó. Nó kiên nhẫn hơn.");
-    if(S.sect!=null)lines.push(`Dưới cờ ${SECTS[S.sect].n}. Tông môn nhận phần này, rồi quên, như mọi tông môn.`);
-    if((S.menh==null?100:S.menh)<50)lines.push("Mệnh mỏng như giấy ướt. Thiên kiếp tới sẽ không dừng lại chờ.");
+    if(m>=180)lines.push(pick([
+      "Ba canh giờ. Linh khí trong phòng đặc đến mức tiếng động cũng chậm lại.",
+      "Ngồi lâu đến mức quên trời đã tối. Tu vi không quên."
+    ]));
+    else if(m>=120)lines.push(pick([
+      "Hơn hai canh giờ. Bụi trên án thư không dám rơi.",
+      "Lâu. Đủ để đạo tâm hết cãi nhau với thân xác."
+    ]));
+    else if(m>=60)lines.push(pick([
+      "Một canh giờ đủ đầy. Không dư để khoe, không thiếu để đổ lỗi.",
+      "Vừa đủ. Sổ ghi sạch một dòng."
+    ]));
+    else if(m>=25)lines.push(pick([
+      "Ngắn nhưng có. Đạo không chê phiên ngắn nếu phiên ấy thật.",
+      "Hai mươi lăm phút cũng là một viên gạch."
+    ]));
+    else lines.push(pick([
+      "Ít. Sổ không phân biệt ít nhiều, chỉ phân biệt có hay không.",
+      "Mỏng. Vẫn là một trang có chữ."
+    ]));
+    if((S.streak.n||0)>=14&&isT)lines.push(`Chuỗi ${S.streak.n} ngày. Thói quen đã thành xương.`);
+    else if((S.streak.n||0)>=7&&isT)lines.push(`Chuỗi ${S.streak.n} ngày. Thói quen là đạo của kẻ không cần nghĩ.`);
+    else if((S.streak.n||0)>=3&&isT)lines.push("Chuỗi đang dựng. Đứt thì dựng lại. Không ai giúp.");
+    if(S.tm&&isT)lines.push(pick([
+      "Tâm ma vẫn còn đó. Nó kiên nhẫn hơn.",
+      "Tâm ma ngồi cạnh án thư, không nói. Cũng không cần nói."
+    ]));
+    if(S.sect!=null&&isT)lines.push(`Dưới cờ ${SECTS[S.sect].n}. Tông môn nhận phần này, rồi quên, như mọi tông môn.`);
+    if((S.menh==null?100:S.menh)<40&&isT)lines.push("Mệnh mỏng như giấy ướt. Thiên kiếp tới sẽ không dừng lại chờ.");
+    else if((S.menh==null?100:S.menh)<70&&isT&&(seed%3===0))lines.push("Mệnh không đầy. Đi chậm vẫn hơn đứng im.");
+    if(S.act&&isT&&(seed%2===0)){
+      const pt=PS.find(p=>p.id===S.act);
+      if(pt)lines.push(pick([
+        pt.n+" nằm trong tầm mắt. Không đòi hỏi. Chỉ hiện diện.",
+        "Linh thú "+pt.n+" thở cùng nhịp linh khí trong phòng."
+      ]));
+    }
+    // weekday flavor
+    if(dow===1)lines.push(pick(["Đầu tuần. Án thư sạch. Chữ đầu tiên thường nặng hơn chữ sau.","Ngày một. Núi không cao hơn — chỉ mới bắt đầu leo."]));
+    if(dow===5)lines.push(pick(["Cuối tuần gần kề. Có người nghỉ. Có người ngồi thêm một phiên.","Ngày năm. Linh lực trong tuần đã có hình."]));
+    if(dow===0)lines.push(pick(["Ngày nghỉ của thế gian. Tu tiên không có ngày nghỉ — chỉ có ngày có và ngày không.","Chủ nhật. Trang sổ không biết lịch."]));
   }
-  const q=QT[Math.abs([...day].reduce((a,c)=>a+c.charCodeAt(0),0))%QT.length];
+  // story echo: recent breakthrough
+  const log=S.storyLog||[];
+  const recent=log.filter(x=>x.day===day);
+  if(recent.length)lines.push("Đạo Văn: "+recent.map(x=>x.title).join(" · ")+".");
+  // prev life whisper rarely
+  if(isT&&(S.rb||0)>0&&seed%11===0){
+    const mem=prevMemory();if(mem)lines.push(mem);
+  }
+  const q=QT[Math.abs(seed)%QT.length];
   lines.push("Trích: "+q.replace(/—.*$/,"").trim());
-  return lines.slice(0,5);
+  return lines.slice(0,7);
 }
 function renderDiary(){
   const el=$("diary");if(!el)return;
+  try{chkStoryFlags();}catch(e){}
   const days=[];for(let i=0;i<14;i++)days.push(dayStr(i));
-  el.innerHTML=`<div class="box"><h2>Nhật ký đạo hữu</h2><small>Thiên Đạo ghi vài dòng mỗi ngày dựa trên tu luyện thật của đạo hữu. Không ảnh hưởng số liệu, chỉ là ký lục.</small></div>`+
+  const log=(S.storyLog||[]).slice().reverse();
+  let storyHtml="";
+  if(log.length){
+    storyHtml=`<div class="box" style="border-color:var(--gold)"><h2>Đạo Văn · Ký lục</h2>
+      <small>Những trang đột phá, bái tông, khế ước linh thú và luân hồi. Không buff số liệu — chỉ còn chữ.</small></div>`+
+      log.slice(0,12).map(s=>{
+        const when=s.day||(s.at?new Date(s.at).toLocaleDateString("vi-VN"):"");
+        return `<div class="box"><b>${s.title}</b><small style="display:block;margin:4px 0;opacity:.75">${when}</small>${(s.lines||[]).map(x=>`<p style="margin:6px 0;line-height:1.65;font-size:14px">${x}</p>`).join("")}</div>`;
+      }).join("");
+  }else{
+    storyHtml=`<div class="box"><h2>Đạo Văn · Ký lục</h2><small>Chưa có trang nào. Đột phá cảnh giới, bái tông, nhận linh thú hoặc luân hồi sẽ được Thiên Đạo ghi lại đây.</small></div>`;
+  }
+  el.innerHTML=`<div class="box"><h2>Nhật ký đạo hữu</h2><small>Thiên Đạo ghi vài dòng mỗi ngày dựa trên tu luyện thật. Không ảnh hưởng số liệu, chỉ là ký lục. Kéo xuống xem Đạo Văn (đột phá & dấu mốc).</small></div>`+
     days.map(d=>{const L=genDiary(d),isT=d===today();
       return `<div class="box"${isT?` style="border-color:var(--gold)"`:""}><b>${isT?"Hôm nay":d}</b>${L.map(x=>`<p style="margin:6px 0;line-height:1.6;font-size:14px">${x}</p>`).join("")}</div>`;
-    }).join("");
+    }).join("")+
+    `<div style="margin-top:18px"></div>`+storyHtml;
 }
 
 /* ===== Nhiệm vụ tông môn tuần ===== */
@@ -2863,7 +3029,7 @@ function doRebirth(){
   if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}
   // legacy + life + ui + name + god + tut + diary prefs keep
   S.rb=(S.rb||0)+1;
-  S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
+  S.storyLog=[];S.storyFlags={};S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
   S.menh=100;S.failStreak=0;
   KSALT=S.rb*7919;S.thdAsk=0;S.sem=null;S.exLock=null;S.fx=[];S.buff={n:0,m:1};S.xb=null;S.tb=null;S.sh=null;S.sl=0;S.lt=0;S.ln=null;S.kd=null;S.eb=0;S.pw=0;S.master=null;
   S.inv={};S.pets={};S.act=null;S.tt={};S.title=null;S.nw=null;S.sect=null;S.gameSec=0;S.streak={n:0,last:""};
