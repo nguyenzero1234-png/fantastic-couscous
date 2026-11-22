@@ -2969,7 +2969,7 @@ render();
 })();
 </script>
 <script>
-/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2: khung =====
+/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2 (khung) + Phần 3 (nhắc học) =====
    - Chỉ hoạt động trong app Capacitor (APK); trên trình duyệt thường sẽ tự bỏ qua.
    - Mỗi nhóm thông báo có dải id riêng: study 1000-1999, reward 2000-2999, ex 3000-3999, user 4000-4999.
    - Các hàm trong BLD trả về danh sách {id (0-999), title, body, at: Date}. Phần 3, 4, 5 sẽ điền vào đây. */
@@ -2982,9 +2982,63 @@ render();
   const cfg=()=>{const n=S.nt||(S.nt={});if(n.on==null)n.on=false;if(!n.t)n.t="20:00";if(!n.g)n.g={study:1,reward:1,ex:1,user:1};return n};
   const nextAt=(h,m)=>{const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()+60000)d.setDate(d.getDate()+1);return d};
 
-  // Các nhóm thông báo (hiện để trống, sẽ làm ở Phần 3, 4, 5)
+  const APP="Tu Tiên Học Đạo";
+  const GEN=["Đến giờ tu luyện rồi! Làm một nhiệm vụ nhỏ để tích linh lực.","Linh lực đang chờ bạn. Chỉ cần 25 phút thôi!","Đạo tâm cần được rèn mỗi ngày. Vào học một chút nhé.","Đừng để lâu quá, Thiên Kiêu Bảng đang chạy đua đó!"];
+  const hm=()=>{const x=/^(\d\d):(\d\d)$/.exec(cfg().t||"20:00");return x?[+x[1],+x[2]]:[20,0]};
+  const dayAt=(d,h,mi)=>{const x=new Date();x.setDate(x.getDate()+d);x.setHours(h,mi,0,0);return x};
+  const fut=t=>t.getTime()>Date.now()+60000;
+  // Các nhóm thông báo. study = Phần 3 (xong); reward, ex = Phần 4; user = Phần 5
   const BLD={
-    study:()=>[],
+    study:()=>{
+      const out=[],now=Date.now(),[h,mi]=hm(),st=S.streak||{last:"",n:0},n=st.n||0,done=st.last===today();
+      const atRisk=n>=2&&st.last===dayStr(1);                 // hôm qua có học, hôm nay chưa: chuỗi sẽ đứt lúc nửa đêm
+      // 0-3: nhắc học hằng ngày (hôm nay nếu chưa học, cộng 3 ngày tới)
+      for(let d=0;d<=3;d++){
+        if(d===0&&done)continue;
+        const at=dayAt(d,h,mi);if(!fut(at))continue;
+        let body;
+        if(d===0&&atRisk)body="Chuỗi "+n+" ngày đang chờ bạn. Làm một nhiệm vụ để giữ chuỗi!";
+        else if(d===1&&done&&n>=2)body="Chuỗi "+n+" ngày đang chờ. Hôm nay làm thêm một nhiệm vụ nhé!";
+        else body=GEN[d%GEN.length];
+        out.push({id:d,title:APP,body,at});
+      }
+      // 10-11: chuỗi sắp đứt (21:30, hoặc 23:00 nếu đã quá 21:30)
+      if(n>=2){
+        let k=-1,at=null;
+        if(st.last===dayStr(1)){k=0;at=dayAt(0,21,30);if(!fut(at))at=dayAt(0,23,0)}
+        else if(done){k=1;at=dayAt(1,21,30)}
+        if(at&&fut(at)){
+          const dd=dayAt(k,h,mi);
+          if(!(fut(dd)&&Math.abs(dd-at)<45*60000))           // trùng giờ nhắc hằng ngày thì bỏ
+            out.push({id:10+k,title:"Chuỗi sắp đứt!",body:"Chuỗi "+n+" ngày sắp đứt. Học trước nửa đêm để tránh tâm ma.",at});
+        }
+      }
+      // 100-129: nhiệm vụ nhanh sắp hết hạn
+      (S.quests||[]).filter(q=>q.due&&q.due>now+60000&&!isDone(q)).sort((a,b)=>a.due-b.due).slice(0,30).forEach((q,i)=>{
+        const dd=new Date(q.due),eod=dd.getHours()===23&&dd.getMinutes()===59;
+        let at,lead;
+        if(eod){at=new Date(q.due);at.setHours(21,0,0,0);lead="sẽ hết hạn lúc nửa đêm";if(!fut(at)){at=new Date(q.due-30*60000);lead="chỉ còn 30 phút"}}
+        else{at=new Date(q.due-15*60000);lead="chỉ còn 15 phút"}
+        if(!fut(at))return;
+        out.push({id:100+i,title:"Nhiệm vụ nhanh sắp hết hạn",body:"«"+String(q.name).slice(0,40)+"» "+lead+". Học ngay để nhận thưởng nhanh!",at});
+      });
+      // 400-429: khung giờ trong Nhật trình (hôm nay và ngày mai)
+      if(!S.dOff){
+        let k=0;
+        [today(),dayStr(-1)].forEach(key=>{
+          ((S.sched&&S.sched[key])||[]).forEach(sl=>{
+            if(k>=30||!/^\d\d:\d\d$/.test(sl.s||""))return;
+            const q=(S.quests||[]).find(x=>x.id===sl.qid);
+            if(q&&isDone(q))return;
+            const at=new Date(key+"T"+sl.s+":00");if(!fut(at))return;
+            out.push({id:400+k++,title:"Đến giờ học theo lịch",body:sl.s+"-"+(sl.e||"")+": "+String(sl.label||(q&&q.name)||"Việc đã hẹn").slice(0,50),at});
+          });
+        });
+      }
+      // 700: hết phiên học tập trung
+      try{if(fq&&fEnd>now+3000)out.push({id:700,title:"Học xong rồi!",body:"«"+String(fq.name).slice(0,40)+"» đã đủ "+fq.mins+" phút. Vào nhận linh lực nhé!",at:new Date(fEnd)})}catch(e){}
+      return out;
+    },
     reward:()=>[],
     ex:()=>[],
     user:()=>[]
@@ -3084,6 +3138,8 @@ render();
     setTimeout(()=>run(true),3000);                       // lúc mở app
     document.addEventListener("visibilitychange",()=>{if(document.hidden)run(false);else paint()}); // lúc thoát app
     setInterval(()=>run(false),600000);                   // mỗi 10 phút khi đang mở
+    let lf="";                                            // phiên học bắt đầu/hủy không gọi save(), nên theo dõi riêng
+    setInterval(()=>{let k="";try{k=fq?fq.id+":"+fEnd:""}catch(e){}if(k!==lf){lf=k;window.NTsave()}},2000);
   }
   window.NT={BLD,build,nextAt,run,RANGE,cfg};
 })();
