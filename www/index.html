@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tu Tiên Học Đạo — Cân bằng Linh Thú</title>
-<link rel="icon" type="image/jpeg" href="assets/icons/favicon.jpg">>
-<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.jpg">>
+<link rel="icon" type="image/jpeg" href="assets/icons/favicon.jpg">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eaf0ec;--card:#fff;--ink:#17282a;--mute:#5f726e;--line:#d3ded8;--jade:#1d7762;--on:#fff;--gold:#a8680a;--goldbg:#fbefd2;--red:#b3402f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -339,6 +339,19 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
   .box{padding:10px}
   #prof .prof-head{grid-template-columns:42px minmax(0,1fr) 42px;padding-inline:24px!important}
 }
+summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:none}summary h2{margin:0}summary::after{content:" ▾";opacity:.5}details[open]>summary{margin-bottom:8px}#und{margin:8px 0 0}
+.fold{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.fold>summary{display:flex;justify-content:space-between;align-items:center;font:700 15px var(--serif,inherit);color:var(--ink)}
+.fold>summary::after{content:"";width:7px;height:7px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .2s;margin:0 4px 3px 0;opacity:1}
+.fold[open]>summary::after{transform:rotate(-135deg);margin-bottom:0;margin-top:5px}
+.fold[open]>summary{margin-bottom:10px}
+.srow{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px}.srow h2{margin:0}
+.gear{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}.gear.on{border-color:var(--gold);color:var(--gold)}
+#sbody,#setpanel{display:grid;gap:10px}#sbody[hidden],#setpanel[hidden]{display:none}
+#setpanel [data-k=nt]{order:1}#setpanel [data-k=bk]{order:2}
+#setpanel .ui-opt{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}#setpanel .ui-opt button{width:auto;padding:6px 12px;font-size:13px;margin:0}
+.srt{margin-top:14px}.srt:first-of-type{margin-top:10px}.srt b{font-size:13px}
+#stats{gap:10px!important}
 </style>
 </head>
 <body>
@@ -367,8 +380,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
         <button class="btn" id="add">Lập nhiệm vụ</button>
       </div>
     </div>
-    <div class="box" style="margin-top:10px">
-      <h2>Dán bộ nhiệm vụ</h2>
+    <div class="box" style="margin-top:10px"><h2>Nhập hàng loạt bằng AI</h2>
       <small style="display:block;line-height:1.55">Mỗi dòng một nhiệm vụ. Chép <b>mẫu + gợi ý AI</b> → nhờ AI sinh bộ nhiệm vụ → dán vào đây → <b>Nhập</b>.</small>
       <small style="display:block;margin-top:4px;font-family:monospace;opacity:.9">Tên nhiệm vụ | phút | độ khó | lặp | hạn</small>
       <small style="display:block;margin-top:2px;line-height:1.5">• Độ khó: <code>1</code> / <code>1.25</code> / <code>1.5</code> (hoặc de / vua / kho)<br>
@@ -378,12 +390,13 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
       <textarea id="qbulk" rows="6" placeholder="Ôn lý thuyết chương 3 | 45 | 1.25 | 0&#10;Làm 20 bài code | 60 | 1.5 | 0 | 3&#10;Từ vựng 30 từ | 25 | 1 | 1" style="margin-top:8px;min-height:110px"></textarea>
       <div class="chips" style="margin-top:8px">
         <button class="btn" id="qbulkin">Nhập bộ nhiệm vụ</button>
-        <button class="btn alt" id="qbulkcp">Chép mẫu + gợi ý AI</button>
+        <button class="btn alt" id="qdef">Nhiệm vụ mặc định</button><button class="btn alt" id="qbulkcp">Chép prompt AI</button>
         <button class="btn alt" id="qbulkex">Xuất nhiệm vụ hiện có</button>
         <button class="btn alt" id="qbulkmix">Nạp bộ VSTEP + Code + NCKH</button>
       </div>
       <small id="qbulkhint" style="display:block;margin-top:6px"></small>
     </div>
+    <button class="btn alt" id="und" hidden>Hoàn tác xóa</button>
     <ul id="list"></ul>
   </section>
 
@@ -409,7 +422,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
     <div class="box">
       <input type="text" id="cn" placeholder="Tên chuỗi, ví dụ: Ôn thi Cấu trúc dữ liệu" maxlength="60" aria-label="Tên chuỗi">
       <textarea id="cs" placeholder="Mỗi dòng một bước, thêm số phút sau dấu |&#10;Đọc chương 1 | 45&#10;Làm bài tập chương 1 | 60&#10;Ôn lại ghi chú" aria-label="Các bước"></textarea>
-      <div class="row"><small>Làm lần lượt từng bước, không ghi phút thì mặc định 30. Xong cả chuỗi được thưởng thêm 25%.</small><button class="btn" id="cadd">Tạo chuỗi</button></div>
+      <div class="row"><small>Làm lần lượt từng bước, không ghi phút thì mặc định 30. Xong cả chuỗi được thưởng thêm 25%. Dòng đầu "TÊN CHUỖI: ..." từ AI sẽ tự điền tên.</small><button class="btn alt" id="cdef">Chuỗi mẫu</button><button class="btn alt" id="ccp">Chép prompt AI</button><button class="btn" id="cadd">Tạo chuỗi</button></div>
     </div>
     <div class="box" style="margin-top:14px"><h2>Kế hoạch học kì (15 tuần)</h2><small>Mỗi kế hoạch là một chuỗi 15 bước, mỗi bước là một tuần. Thêm riêng từng mảng hoặc cả ba.</small><div class="chips"><button class="btn alt" data-plan="en">Tiếng Anh</button><button class="btn alt" data-plan="code">Lập trình</button><button class="btn alt" data-plan="nckh">NCKH</button></div></div>
     <div class="stack" id="chains" style="margin-top:14px"></div>
@@ -422,6 +435,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
       <div class="row"><input type="text" id="ll" placeholder="Hoặc ghi việc khác, ví dụ: Đi học" maxlength="50"><button class="btn" id="ladd">Thêm vào lịch</button></div>
       <div class="row"><button class="btn alt" id="lauto" style="margin-left:0">Tự xếp lịch hôm nay</button><small>Xếp nhiệm vụ chưa xong vào các khung giờ trống</small></div>
     </div>
+    <div class="box" style="margin-top:10px"><h2>Nhập lịch bằng AI</h2><textarea id="lbulk" rows="5" placeholder="19:00-19:45 | Học từ vựng"></textarea><div class="chips"><button class="btn" id="lin">Nhập lịch</button><button class="btn alt" id="lcp">Chép prompt AI</button><button class="btn alt" id="ldef">Lịch mặc định</button></div></div>
     <ul id="slots"></ul>
   </section>
   <section id="e" hidden><div class="stack" id="events"></div></section>
@@ -444,13 +458,17 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
     <div class="box" id="pet" style="margin-top:14px"></div>
   </section>
   <section id="s" hidden>
-    <div id="stats" style="display:grid;gap:12px"></div>
-    <div class="stack">
-      <div class="grid2">
-        <div class="box"><span class="lbl">Chuỗi ngày học</span><div class="num" id="st">0</div><small>Thưởng +5% mỗi ngày liên tiếp, tối đa +50%</small></div>
-        <div class="box"><span class="lbl">Đã học hôm nay</span><div class="num" id="sm">0</div><small id="sa"></small></div>
-      </div>
-      <div class="box"><h2>Linh lực 7 ngày qua</h2><div class="bars" id="bars"></div></div>
+    <div class="srow"><h2>Thống kê</h2><button class="gear" id="gear" aria-label="Cài đặt" aria-expanded="false" title="Cài đặt">⚙</button></div>
+    <div id="setpanel" hidden></div>
+    <div id="sbody">
+      <div id="stats" style="display:grid;gap:12px"></div>
+      <details class="fold" data-k="t5" open><summary>Hôm nay & chuỗi học</summary>
+        <div class="grid2">
+          <div class="box"><span class="lbl">Chuỗi ngày học</span><div class="num" id="st">0</div><small>Thưởng +5% mỗi ngày liên tiếp, tối đa +50%</small></div>
+          <div class="box"><span class="lbl">Đã học hôm nay</span><div class="num" id="sm">0</div><small id="sa"></small></div>
+        </div>
+      </details>
+      <details class="fold" data-k="t6"><summary>Linh lực 7 ngày qua</summary><div class="bars" id="bars"></div></details>
     </div>
   </section>
   <section id="j" hidden><div class="stack" id="kiep"></div></section>
@@ -1466,9 +1484,12 @@ const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lo
 function renderChains(){
   $("chains").innerHTML=S.chains.length?S.chains.map(c=>{
     const st=S.quests.filter(x=>x.chain===c.id),d=st.filter(isDone).length;
-    return `<div class="box"><div class="row" style="margin:0"><h2 style="flex:1">${esc(c.name)}</h2><span class="pb">${c.paid?"Xong +"+c.bonus:d+"/"+st.length}</span><button class="del" data-a="cd" data-id="${c.id}" aria-label="Xóa chuỗi">×</button></div><div class="bar"><i style="width:${st.length?Math.round(d/st.length*100):0}%"></i></div><ul style="margin-top:8px">${st.map((q,i)=>stepRow(q,!st.slice(0,i).every(isDone))).join("")}</ul></div>`}).join("")
+    return `<div class="box"><div class="row" style="margin:0"><h2 style="flex:1">${esc(c.name)}</h2><span class="pb">${c.paid?"Xong +"+c.bonus:d+"/"+st.length+" · còn "+st.filter(x=>!isDone(x)).reduce((t,x)=>t+(x.mins||0),0)+"p"}</span><button class="del" data-a="cd" data-id="${c.id}" aria-label="Xóa chuỗi">×</button></div><div class="bar"><i style="width:${st.length?Math.round(d/st.length*100):0}%"></i></div><ul style="margin-top:8px">${st.map((q,i)=>stepRow(q,!st.slice(0,i).every(isDone))).join("")}</ul></div>`}).join("")
   :`<div class="empty">Chưa có chuỗi. Tạo chuỗi đầu tiên ở phía trên.</div>`;
 }
+var FO={};
+function fold(k,t,b,o){return `<details class="fold" data-k="${k}"${(FO[k]===undefined?o:FO[k])?" open":""}><summary>${t}</summary>${b}</details>`}
+var KSD={};
 function renderEvents(){
   // Sự kiện cố định tuần/tháng + các kỳ sự cổ phong
   const E=[
@@ -1481,8 +1502,8 @@ function renderEvents(){
       <small style="display:block;line-height:1.5;margin-top:2px">${desc}</small>
       <small>Học đủ ${ev.h} giờ trong ${sub}: ${Math.floor(cur/60)} giờ ${cur%60} phút</small>
       <div class="bar"><i style="width:${Math.min(100,Math.round(cur/goal*100))}%"></i></div>
-      <div class="row"><label>Mục tiêu <input type="number" min="1" max="999" value="${ev.h}" data-p="${p}" data-f="h"> giờ</label>
-      <label>Thưởng <input type="number" min="1" max="9999" value="${ev.r}" data-p="${p}" data-f="r"> linh lực</label>
+      <div class="row">${S.god?`<label>Mục tiêu <input type="number" min="1" max="999" value="${ev.h}" data-p="${p}" data-f="h"> giờ</label>
+      <label>Thưởng <input type="number" min="1" max="9999" value="${ev.r}" data-p="${p}" data-f="r"> linh lực</label>`:`<small style="flex:1">Mục tiêu ${ev.h} giờ · Thưởng ${ev.r} linh lực</small>`}
       <button class="btn" data-a="ec" data-k="${ck}" data-p="${p}" ${got||!ok?"disabled":""}>${got?"Đã nhận":"Nhận thưởng"}</button></div></div>`;
   }).join("");
   const T=today(),ws=weekStart(),mo=T.slice(0,7);
@@ -1493,21 +1514,42 @@ function renderEvents(){
     return n;
   };
   const weekDawn=()=>{const st=S.stl||[];let n=0;st.forEach(x=>{const d=new Date(x[0]).toLocaleDateString("sv");if(d>=ws&&d<=T){const h=new Date(x[0]).getHours();if(h<7)n++}});return n};
+  const wDs=()=>Object.keys(S.hist||{}).filter(k=>k>=ws&&k<=T),wDays=()=>wDs().filter(k=>S.hist[k].m>0).length,wBest=()=>Math.max(0,...wDs().map(k=>S.hist[k].m||0)),cs=(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0;
   const EXTRA=[
     {id:"xs1",n:"Canh Khuya Tụng Kinh",desc:"Hoàn thành ≥3 nhiệm vụ trong khung 22h–5h tuần này.",ok:()=>weekNight()>=3,r:70,ck:"xs1:"+ws},
     {id:"xs2",n:"Bình Minh Công Pháp",desc:"Hoàn thành ≥3 nhiệm vụ trước 7h tuần này.",ok:()=>weekDawn()>=3,r:70,ck:"xs2:"+ws},
     {id:"xs3",n:"Bách Luyện Thành Cương",desc:"Hoàn thành ≥10 nhiệm vụ trong tuần này.",ok:()=>weekQuests()>=10,r:90,ck:"xs3:"+ws},
     {id:"xs4",n:"Đạo Tâm Bất Chuyển",desc:"Chuỗi ngày học hiện tại ≥5.",ok:()=>(S.streak.n||0)>=5,r:80,ck:"xs4:"+ws},
     {id:"xs5",n:"Linh Thú Hữu Duyên",desc:"Đang có linh thú theo cùng (tháng này nhận 1 lần).",ok:()=>!!(S.pets&&S.act&&S.pets[S.act]),r:50,ck:"xs5:"+mo},
-    {id:"xs6",n:"Tông Môn Đồng Tâm",desc:"Gia nhập tông và đóng góp ≥80 linh lực tuần này.",ok:()=>S.sect!=null&&ugain(ws,"9999")>=80,r:100,ck:"xs6:"+ws}
+    {id:"xs6",n:"Tông Môn Đồng Tâm",desc:"Gia nhập tông và đóng góp ≥80 linh lực tuần này.",ok:()=>S.sect!=null&&ugain(ws,"9999")>=80,r:100,ck:"xs6:"+ws},
+    {id:"xs7",n:"Cần Cù Bù Thông Minh",desc:"Học đủ 5 giờ trong tuần này.",tg:300,cur:evCur("w"),unit:"phút học",per:"w",ok:()=>evCur("w")>=300,r:80,ck:"xs7:"+ws},
+    {id:"xs8",n:"Nhật Nhật Tinh Tiến",desc:"Có học ở ít nhất 5 ngày khác nhau trong tuần này.",tg:5,cur:wDays(),unit:"ngày có học",per:"w",ok:()=>wDays()>=5,r:90,ck:"xs8:"+ws},
+    {id:"xs9",n:"Một Ngày Bốn Canh",desc:"Có một ngày học đủ 4 giờ trong tuần này.",tg:240,cur:wBest(),unit:"phút (ngày tốt nhất)",per:"w",ok:()=>wBest()>=240,r:80,ck:"xs9:"+ws},
+    {id:"xs10",n:"Thạch Phá Thiên Kinh",desc:"Học đủ 20 giờ trong tháng này.",tg:1200,cur:evCur("m"),unit:"phút học",per:"m",ok:()=>evCur("m")>=1200,r:200,ck:"xs10:"+mo},
+    {id:"xs11",n:"Trì Chi Dĩ Hằng",desc:"Chuỗi ngày học hiện tại đạt 14 ngày (nhận một lần trong tháng).",tg:14,cur:cs,unit:"ngày chuỗi",per:"m",ok:()=>cs>=14,r:150,ck:"xs11:"+mo}
   ];
-  h+=`<div class="box"><h2>Kỳ Sự Cửu Châu</h2><small>Các kỳ sự mở theo điều kiện. Mỗi kỳ sự chỉ nhận một lần trong tuần hoặc tháng tương ứng.</small></div>`;
-  h+=EXTRA.map(x=>{
-    const got=S.claimed[x.ck],ok=x.ok();
-    return `<div class="box"><div class="row" style="margin:0"><b style="flex:1">${x.n}</b><span class="pb">+${x.r}</span></div>
-      <small style="display:block;margin-top:4px;line-height:1.5">${x.desc}</small>
-      <div class="row" style="margin-top:8px"><button class="btn" data-a="xs" data-ck="${x.ck}" data-r="${x.r}" ${got||!ok?"disabled":""}>${got?"Đã nhận":ok?"Nhận thưởng":"Chưa đủ điều kiện"}</button></div></div>`;
-  }).join("");
+  const ea=x=>esc(String(x)).replace(/"/g,"&quot;"),God=!!S.god,so=S.kso||{};
+  const rng=p=>p==="m"?mo+"-01":ws;
+  const stN=(p,f)=>{let n=0;(S.stl||[]).forEach(x=>{const dt=new Date(x[0]),d=dt.toLocaleDateString("sv");if(d>=rng(p)&&d<=T&&f(dt.getHours()))n++});return n};
+  const KM={c:["nhiệm vụ hoàn thành",p=>{let n=0;for(const k in S.cnt||{})if(k>=rng(p)&&k<=T)n+=S.cnt[k];return n}],m:["phút học",p=>evCur(p)],s:["ngày chuỗi học",()=>(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0],n:["nhiệm vụ đêm (22h-5h)",p=>stN(p,h=>h>=22||h<5)],d:["nhiệm vụ trước 7h",p=>stN(p,h=>h<7)]};
+  h+=`<div class="box"><h2>Kỳ Sự Cửu Châu</h2><small>Các kỳ sự mở theo điều kiện. Mỗi kỳ sự chỉ nhận một lần trong tuần hoặc tháng tương ứng.${God?" Thiên Đạo: có thể thêm, sửa và xóa kỳ sự.":""}</small></div>`;
+  if(God){const k=KSD;
+    h+=`<div class="box"><h2>[God] Thêm kỳ sự</h2>
+      <input type="text" data-kd="n" value="${ea(k.n||"")}" placeholder="Tên kỳ sự" maxlength="40">
+      <input type="text" data-kd="d" value="${ea(k.d||"")}" placeholder="Mô tả ngắn" maxlength="120" style="margin-top:6px">
+      <div class="row"><label>Điều kiện <select data-kd="m">${Object.keys(KM).map(m=>`<option value="${m}"${(k.m||"c")===m?" selected":""}>${KM[m][0]}</option>`).join("")}</select></label>
+      <label>Đạt ≥ <input type="number" min="1" max="9999" data-kd="t" value="${ea(k.t||5)}"></label></div>
+      <div class="row"><label>Thưởng <input type="number" min="1" max="9999" data-kd="r" value="${ea(k.r||60)}"> linh lực</label>
+      <label>Chu kỳ <select data-kd="p"><option value="w"${(k.p||"w")==="w"?" selected":""}>Tuần</option><option value="m"${k.p==="m"?" selected":""}>Tháng</option></select></label>
+      <button class="btn" data-a="kadd">Thêm</button></div></div>`}
+  const card=(x,custom)=>{const got=S.claimed[x.ck],ok=x.ok();
+    return `<div class="box"><div class="row" style="margin:0"><b style="flex:1">${esc(x.n)}</b><span class="pb">+${x.r}</span></div>
+      <small style="display:block;margin-top:4px;line-height:1.5">${esc(x.desc)}</small>
+      ${x.tg?`<small>${Math.min(x.cur,99999)}/${x.tg} ${x.unit} · ${x.per==="m"?"tháng này":"tuần này"}</small><div class="bar"><i style="width:${Math.min(100,Math.round(x.cur/x.tg*100))}%"></i></div>`:""}
+      <div class="row" style="margin-top:8px"><button class="btn" data-a="xs" data-ck="${x.ck}" data-r="${x.r}" ${got||!ok?"disabled":""}>${got?"Đã nhận":ok?"Nhận thưởng":"Chưa đủ điều kiện"}</button>
+      ${God?`<button class="btn alt" data-a="ked" data-id="${x.id}" data-n="${ea(x.n)}" data-r="${x.r}" data-d="${ea(x.desc)}" data-tg="${x.tg||""}" data-c="${custom?1:0}">Sửa</button>${custom?`<button class="btn alt" data-a="kdel" data-id="${x.id}">Xóa</button>`:(so[x.id]?`<button class="btn alt" data-a="kreset" data-id="${x.id}">Gốc</button>`:"")}`:""}</div></div>`};
+  h+=EXTRA.map(x=>card(Object.assign({},x,so[x.id]||{}),false)).join("");
+  h+=(S.ks||[]).map(c=>{const km=KM[c.met]||KM.c,cur=km[1](c.per);return card({id:c.id,n:c.n,desc:c.desc||"",r:c.r,tg:c.tg,cur,unit:km[0],per:c.per,ok:()=>cur>=c.tg,ck:c.id+":"+(c.per==="m"?mo:ws)},true)}).join("");
   $("events").innerHTML=h;
 }
 function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p+p);h.m=Math.max(0,h.m+m)}
@@ -1735,7 +1777,7 @@ function render(){
   $("cost").textContent="Cần "+LC(m)+" linh lực, tu vi giảm tương ứng";
   const qs=S.quests.filter(x=>!x.chain).sort((a,b)=>(isDone(a)||expired(a))-(isDone(b)||expired(b)));
   $("list").innerHTML=qs.length?qs.map(q=>{const d=isDone(q);
-    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
+    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}${expired(q)?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
     :`<li class="empty" style="display:block">Chưa có nhiệm vụ. Thêm việc học đầu tiên ở phía trên.</li>`;
   renderMore();
 }
@@ -1751,24 +1793,87 @@ function addQuest(){
 
 $("add").onclick=addQuest;
 $("nm").onkeydown=e=>{if(e.key==="Enter")addQuest()};
-const AI_PROMPT=`Hãy tạo một bộ nhiệm vụ học tập theo đúng định dạng sau (mỗi dòng một nhiệm vụ, không giải thích thêm):
+const AI_PROMPT=`Bạn là gia sư lập kế hoạch học. Tạo bộ nhiệm vụ học cho tôi.
 
+THÔNG TIN CỦA TÔI
+- Mục tiêu và hạn chót: [điền]
+- Trình độ hiện tại / điểm yếu: [điền]
+- Tài liệu đang có: [điền]
+- Phạm vi: [1 ngày / 1 tuần]
+- Thời gian học mỗi ngày: [vd. 3 giờ]
+- Phiên tập trung tối đa: [vd. 45 phút]
+- Số nhiệm vụ: [vd. 8]
+
+ĐỊNH DẠNG (mỗi dòng một nhiệm vụ):
 Tên nhiệm vụ | phút | độ khó | lặp | hạn
 
-Quy tắc:
-- phút: số nguyên 5–480
-- độ khó: 1 (dễ) hoặc 1.25 (vừa) hoặc 1.5 (khó)
-- lặp: 0 = một lần, 1 = lặp mỗi ngày
-- hạn: để trống = không hạn; 1 = hết trong 1 giờ; 3 = hết trong 3 giờ; homnay = hết cuối ngày
-- Có thể chỉ viết: Tên | phút
+QUY TẮC
+1. Chỉ in các dòng trong MỘT khối code, không đánh số, không gạch đầu dòng, không giải thích.
+2. Tên tối đa 80 ký tự, bắt đầu bằng động từ, có kết quả đo được (vd. "Nghe Part 2 đề 3, chép 10 câu sai", không viết "Ôn nghe"). Nhiều môn thì thêm tiền tố [Nghe], [Code].
+3. phút: số nguyên 5-480, chia hết cho 5, phần lớn 25-50, tối đa 90.
+4. độ khó: chỉ 1, 1.25 hoặc 1.5 (khoảng 50% / 35% / tối đa 15%), đánh giá trung thực theo trình độ tôi.
+5. lặp: 1 chỉ cho thói quen ngắn hằng ngày (từ vựng, flashcard), còn lại 0.
+6. hạn: để trống (không dùng 1, 3, homnay).
+7. Thứ tự dòng = thứ tự nên làm: khởi động dễ, việc khó ở giữa, ôn lại/kiểm tra cuối. Xen một nhiệm vụ ôn nội dung cũ, không dồn cùng một kỹ năng liền nhau.
+8. Tổng phút không vượt thời gian học mỗi ngày của tôi.
 
 Ví dụ:
-Ôn lý thuyết chương 3 | 45 | 1.25 | 0
-Làm 20 bài code | 60 | 1.5 | 0 | 3
-Từ vựng 30 từ | 25 | 1 | 1
+[Từ vựng] Học 30 từ Unit 4 bằng flashcard | 25 | 1 | 1
+[Nghe] Nghe Part 2 đề 3, chép 10 câu sai | 40 | 1.25 | 0
+`;
+const CHAIN_PROMPT=`Bạn là gia sư thiết kế lộ trình học theo chuỗi bước tuần tự. Tạo một chuỗi cho tôi.
 
-Chủ đề / mục tiêu của tôi: [điền vào đây]
-Số lượng nhiệm vụ mong muốn: [vd. 7]
+THÔNG TIN CỦA TÔI
+- Mục tiêu cuối: [điền]
+- Hạn chót: [điền]
+- Trình độ hiện tại: [điền]
+- Tài liệu / công cụ: [điền]
+- Thời gian mỗi tuần: [vd. 6 giờ]
+- Số bước: [vd. 12]
+
+ĐỊNH DẠNG
+Dòng 1: TÊN CHUỖI: <tên ngắn, tối đa 60 ký tự>
+Các dòng sau, mỗi dòng một bước: Tên bước | phút
+
+QUY TẮC
+1. Chỉ in đúng định dạng trong MỘT khối code, không giải thích, không đánh số.
+2. 2 đến 15 bước, làm LẦN LƯỢT: bước sau dùng kết quả bước trước (nền tảng, vận dụng, kiểm tra).
+3. Mỗi bước có đầu ra kiểm tra được (vd. "Đọc 3 bài báo, ghi 5 ý mỗi bài", không viết "Tìm hiểu tài liệu").
+4. phút mỗi bước 20-90 (tối đa 480). Nếu mỗi bước là một tuần thì phút là tổng cả tuần, không vượt 480.
+5. Có bước kiểm tra nhỏ (đề thử, tự trình bày) ở khoảng 1/3 và 2/3 chuỗi, bước tổng kết ở cuối.
+6. Không thêm bước cho đủ số lượng. Bước đầu dưới 30 phút để dễ bắt đầu.
+
+Ví dụ:
+TÊN CHUỖI: Viết báo cáo NCKH
+Đọc 3 bài báo đầu, ghi 5 ý chính mỗi bài | 60
+Lập dàn ý chi tiết 3 cấp | 45
+`;
+const SCHED_PROMPT=`Bạn là gia sư lập thời khóa biểu học trong ngày. Xếp lịch cho tôi.
+
+THÔNG TIN CỦA TÔI
+- Ngày: [hôm nay / thứ ...]
+- Việc cố định: [vd. 07:30-11:30 đi học, 12:00-13:00 ăn trưa]
+- Khoảng rảnh có thể học: [vd. 14:00-17:30 và 19:00-22:00]
+- Giờ tập trung tốt nhất: [vd. 19:00-21:00]
+- Phiên tập trung tối đa: [vd. 45 phút]
+- Việc cần học (tên | phút):
+[dán danh sách nhiệm vụ, lấy bằng nút "Xuất nhiệm vụ hiện có"]
+
+ĐỊNH DẠNG (mỗi dòng một khung): HH:MM-HH:MM | Tên việc
+
+QUY TẮC
+1. Chỉ in các dòng lịch trong MỘT khối code, sắp theo giờ tăng dần, không giải thích.
+2. Giờ 24h, phút chia hết cho 5, các khung không trùng nhau.
+3. Mỗi khung học tối đa 120 phút (nên 25-50). Chừa 10 phút nghỉ giữa hai khung học, không cần ghi dòng riêng.
+4. Việc khó nhất vào giờ tập trung tốt nhất, việc nhẹ/ôn lại vào lúc mệt.
+5. Không xếp học sau 22:00 và không đè lên việc cố định.
+6. Giữ nguyên tên việc đúng như danh sách tôi đưa.
+7. Không đủ thời gian thì bỏ việc ưu tiên thấp nhất, không nén thời gian. Ghi lý do ở một dòng cuối bắt đầu bằng "# ".
+8. Cuối ngày có khung 10-15 phút "Tổng kết và chuẩn bị ngày mai".
+
+Ví dụ:
+19:00-19:45 | Học 30 từ Unit 4 bằng flashcard
+19:55-20:40 | Nghe Part 2 đề 3, chép 10 câu sai
 `;
 function parseDiff(s){
   s=(s||"1").trim().toLowerCase();
@@ -1842,12 +1947,55 @@ Môn chuyên ngành · làm 5–10 bài tập | 45 | 1.5 | 0
 Ôn nhanh lịch sử / lý thuyết (flashcard) | 20 | 1 | 1
 Tổng kết ngày: ghi 5 dòng học được | 15 | 1 | 1`;
 $("qbulkin").onclick=importBulkQuests;
-$("qbulkcp").onclick=()=>{
-  $("qbulk").value=AI_PROMPT;
-  try{navigator.clipboard.writeText(AI_PROMPT)}catch(e){}
-  if($("qbulkhint"))$("qbulkhint").textContent="Đã chép gợi ý AI. Dán vào ChatGPT/Claude/Grok, điền chủ đề, rồi dán kết quả vào ô này.";
-  say("Đã chép mẫu + gợi ý AI vào clipboard (nếu được phép).");
-};
+const cpy=(t,m)=>{const ok=()=>say(m||"Đã chép prompt AI. Dán vào ChatGPT/Claude, điền các mục [ ], rồi dán kết quả vào app.");
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
+  function fb(){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let r=false;try{r=document.execCommand("copy")}catch(e){}a.remove();say(r?(m||"Đã chép prompt AI."):"Trình duyệt chặn chép. Hãy thử lại hoặc dùng HTTPS.")}};
+$("qbulkcp").onclick=()=>cpy(AI_PROMPT);
+$("ccp").onclick=()=>cpy(CHAIN_PROMPT);
+$("lcp").onclick=()=>cpy(SCHED_PROMPT);
+function importSched(){
+  const day=S.sched[today()]||(S.sched[today()]=[]);let n=0,bad=0;
+  ($("lbulk").value||"").split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#")).forEach(l=>{
+    const m=l.match(/^(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})\s*\|\s*(.+)$/);if(!m){bad++;return}
+    const a=+m[1]*60+ +m[2],b=+m[3]*60+ +m[4];
+    if(a>=b||b>1440||day.some(x=>a<tm(x.e)&&b>tm(x.s))){bad++;return}
+    const lb=m[5].trim().slice(0,50),q=S.quests.find(x=>x.name===lb&&!isDone(x)&&!expired(x)&&(!x.chain||unlocked(x)));
+    day.push({id:"s"+Date.now().toString(36)+n,s:hm(a),e:hm(b),qid:q?q.id:"",label:lb});n++});
+  if(n){$("lbulk").value="";save();render()}
+  say(n?("Đã nhập "+n+" khung"+(bad?", bỏ "+bad+" dòng lỗi/trùng giờ":"")+"."):"Không đọc được dòng nào. Mẫu: 19:00-19:45 | Tên việc");
+}
+$("lin").onclick=importSched;
+const DEF_Q=`Khởi động: ôn lại ghi chú hôm qua | 15 | 1 | 1
+Học từ vựng 20 từ bằng flashcard | 20 | 1 | 1
+Đọc 1 mục tài liệu, ghi 5 ý chính | 40 | 1.25 | 0
+Làm 5-10 bài tập, đánh dấu câu sai | 45 | 1.25 | 0
+Giải 1 bài khó (code/đề) | 60 | 1.5 | 0
+Sửa lại các câu sai và ghi nguyên nhân | 30 | 1.25 | 0
+Tổng kết ngày: ghi 5 dòng học được | 15 | 1 | 1`;
+function addDefQ(){let n=0;DEF_Q.split("\n").forEach(l=>{const q=parseBulkLine(l);if(!q||S.quests.some(x=>x.name===q.name&&!isDone(x)))return;S.quests.push(q);n++});return n}
+$("qdef").onclick=()=>{const n=addDefQ();if(n){save();render()}say(n?"Đã thêm "+n+" nhiệm vụ mặc định.":"Nhiệm vụ mặc định đã có sẵn trong danh sách.")};
+const DEF_C=[["Ôn thi một chương",["Đọc lướt chương, ghi mục lục ý chính | 30","Lập sơ đồ tư duy các khái niệm chính | 40","Học thuộc công thức/định nghĩa bằng flashcard | 35","Làm 10 bài tập cơ bản | 45","Làm 5 bài khó, ghi lại chỗ sai | 60","Tự làm đề thử có bấm giờ | 60"]],
+["Viết một bài báo cáo",["Chọn đề tài, liệt kê 3 câu hỏi cần trả lời | 30","Đọc 3 tài liệu, ghi 5 ý chính mỗi tài liệu | 60","Lập dàn ý 3 cấp | 40","Viết phần mở đầu | 40","Viết phần nội dung chính | 90","Viết kết luận và danh mục tài liệu | 40","Đọc lại, sửa lỗi và định dạng | 45"]],
+["Học một chủ đề mới",["Xem tổng quan chủ đề, ghi 5 từ khóa | 25","Đọc/xem tài liệu nền tảng, ghi chú | 45","Làm ví dụ mẫu theo hướng dẫn | 45","Tự làm một bài không nhìn đáp án | 45","Tóm tắt lại bằng lời của mình | 25"]]];
+$("cdef").onclick=()=>{let n=0;DEF_C.forEach(([nm,st],k)=>{if(S.chains.some(c=>c.name===nm))return;const id="c"+Date.now().toString(36)+"d"+k;S.chains.push({id,name:nm,paid:false,bonus:0});st.forEach((l,i)=>{const [a,m]=l.split("|"),mins=+m;S.quests.push({id:id+i,name:a.trim(),pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});n++});if(n){save();render()}say(n?"Đã thêm "+n+" chuỗi mẫu.":"Các chuỗi mẫu đã có rồi.")};
+const DEF_S=`07:40-07:55 | Khởi động: ôn lại ghi chú hôm qua
+08:00-08:20 | Học từ vựng 20 từ bằng flashcard
+08:30-09:10 | Đọc 1 mục tài liệu, ghi 5 ý chính
+14:00-14:45 | Làm 5-10 bài tập, đánh dấu câu sai
+15:00-16:00 | Giải 1 bài khó (code/đề)
+19:30-20:00 | Sửa lại các câu sai và ghi nguyên nhân
+20:10-20:25 | Tổng kết ngày: ghi 5 dòng học được`;
+$("ldef").onclick=()=>{addDefQ();save();render();$("lbulk").value=DEF_S;importSched()};
+{const cut=new Date(Date.now()-30*864e5).toLocaleDateString("sv");Object.keys(S.sched||{}).forEach(k=>{if(k<cut)delete S.sched[k]})}
+let _ud=null,_ut=0;
+$("und").onclick=()=>{if(_ud){S.quests.push(_ud);_ud=null;$("und").hidden=true;save();render();say("Đã khôi phục nhiệm vụ.")}};
+$("list").addEventListener("click",e=>{const n=e.target.closest(".nm");if(!n||e.target.closest("button"))return;
+  const li=n.closest("li"),id=li&&li.querySelector("[data-id]")&&li.querySelector("[data-id]").dataset.id,q=S.quests.find(x=>x.id===id);
+  if(!q||isDone(q)||q.chain)return;
+  const v=prompt("Sửa nhiệm vụ: Tên | phút",q.name+" | "+(q.mins||30));if(v==null)return;
+  const p=v.split("|"),nm=(p[0]||"").trim().slice(0,80);if(!nm)return;
+  const mi=Math.min(480,Math.max(5,parseInt(p[1])||q.mins||30));
+  q.name=nm;q.mins=mi;q.pts=Math.max(1,Math.round(mi/60*S.perHour*(q.diff||1)));save();render();say("Đã sửa nhiệm vụ.")});
 $("qbulkex").onclick=exportQuestsText;
 $("qbulkmix").onclick=()=>{
   $("qbulk").value=PRESET_MIX;
@@ -1859,12 +2007,13 @@ $("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
   if(b.dataset.a==="ld"){S.sched[today()]=(S.sched[today()]||[]).filter(x=>x.id!==b.dataset.id);save();render();return}
   if(b.dataset.a==="cd"){S.chains=S.chains.filter(c=>c.id!==b.dataset.id);S.quests=S.quests.filter(x=>x.chain!==b.dataset.id);save();render();say("Đã xóa chuỗi.");return}
   const q=S.quests.find(x=>x.id===b.dataset.id);if(!q)return;
-  if(b.dataset.a!=="d"){
+  if(b.dataset.a!=="d"&&b.dataset.a!=="rn"){
     if(q.chain&&!isDone(q)&&!unlocked(q)){say("Hãy hoàn thành bước trước.");return}
     if(q.chain&&isDone(q)){say("Bước của chuỗi không thể hoàn tác.");return}
     if(expired(q)){say("Nhiệm vụ nhanh đã hết hạn. Hãy xóa hoặc tạo lại.");return}
   }
-  if(b.dataset.a==="d"){if(fq===q)fq=null;S.quests=S.quests.filter(x=>x!==q);say("Đã xóa nhiệm vụ.")}
+  if(b.dataset.a==="rn"){q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();render();say("Đã tạo lại, không còn hạn.");return}
+  if(b.dataset.a==="d"){if(fq===q)fq=null;S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
   else if(b.dataset.a==="p"){startFocus(q);return}
   else if(isDone(q)){const g=q.got||q.pts;S.points=Math.max(0,S.points-g);hAdd(q.doneOn,-g,-(q.mins||0));if(S.cnt&&S.cnt[q.doneOn]>0)S.cnt[q.doneOn]--;q.doneOn=null;q.got=0;say("Đã bỏ hoàn thành, trừ "+g+" linh lực.")}
   else{finish(q);say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
@@ -1904,7 +2053,9 @@ $("nd").oninput=$("nl").onchange=$("nq").onchange=renderMore;
 $("ladd").onclick=()=>{
   const s=$("ls").value,e=$("le").value,qid=$("lq").value,q=S.quests.find(x=>x.id===qid),label=q?q.name:$("ll").value.trim();
   if(!s||!e||s>=e||!label){say("Chọn giờ bắt đầu trước giờ kết thúc, và một nhiệm vụ hoặc tên việc.");return}
-  (S.sched[today()]||(S.sched[today()]=[])).push({id:"s"+Date.now().toString(36),s,e,qid,label});
+  const dd=S.sched[today()]||(S.sched[today()]=[]),ov=dd.find(x=>s<x.e&&e>x.s);
+  if(ov){say("Trùng khung "+ov.s+" - "+ov.e+" ("+rn(ov)+"). Hãy chọn giờ khác.");return}
+  dd.push({id:"s"+Date.now().toString(36),s,e,qid,label});
   $("ll").value="";save();render();say("Đã thêm vào lịch.");
 };
 $("lauto").onclick=()=>{
@@ -2049,10 +2200,10 @@ function renderStats(){
   const nk=S.sem?EX.filter(e=>!S.sem.res[e.id]).sort((a,b)=>exD(a)-exD(b))[0]:null;
   const nt=nk?`Kiếp kế tiếp: ${nk.n}, còn ${Math.max(0,Math.ceil((exD(nk)-Date.now())/864e5))} ngày, cần tu vi ${RL[nk.need][0]}${k>=nk.need?" (bạn đã đủ)":", còn thiếu "+(RL[nk.need][1]-x)+" linh lực"}.`:"";
   const bt=(a,l,on,at)=>`<button class="btn ${on?"":"alt"}" ${at}>${l}</button>`;
-  $("stats").innerHTML=`<div class="grid2">${cards.map(c=>`<div class="box"><span class="lbl">${c[0]}</span><div class="num" style="font-size:22px">${c[1]}</div><small>${c[2]}</small></div>`).join("")}</div>`
-   +`<div class="box"><h2>Biểu đồ</h2><div class="chips">${bt(0,"7 ngày",SPD===7,'data-sp="7"')}${bt(0,"30 ngày",SPD===30,'data-sp="30"')}${bt(0,"Linh lực",SMT==="p",'data-sm="p"')}${bt(0,"Giờ học",SMT==="m",'data-sm="m"')}</div><div class="bars" style="gap:${SPD===7?8:2}px">${bars}</div></div>`
-   +`<div class="box"><h2>Bản đồ chuyên cần 5 tuần</h2><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px">${hm}</div><small>Đậm hơn là học nhiều hơn, đầy màu khi đạt 4 giờ.</small></div>`
-   +`<div class="box"><h2>Dự báo tu vi</h2><small>${rname(x)}. ${fc}</small>${nt?`<small style="display:block;margin-top:6px">${nt}</small>`:""}</div>`;
+  $("stats").innerHTML=fold("t1","Tổng quan",`<div class="grid2">${cards.map(c=>`<div class="box"><span class="lbl">${c[0]}</span><div class="num" style="font-size:22px">${c[1]}</div><small>${c[2]}</small></div>`).join("")}</div>`,1)
+   +fold("t2","Biểu đồ",`<div class="chips">${bt(0,"7 ngày",SPD===7,'data-sp="7"')}${bt(0,"30 ngày",SPD===30,'data-sp="30"')}${bt(0,"Linh lực",SMT==="p",'data-sm="p"')}${bt(0,"Giờ học",SMT==="m",'data-sm="m"')}</div><div class="bars" style="gap:${SPD===7?8:2}px">${bars}</div>`,1)
+   +fold("t3","Bản đồ chuyên cần 5 tuần",`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px">${hm}</div><small>Đậm hơn là học nhiều hơn, đầy màu khi đạt 4 giờ.</small>`,0)
+   +fold("t4","Dự báo tu vi",`<small>${rname(x)}. ${fc}</small>${nt?`<small style="display:block;margin-top:6px">${nt}</small>`:""}`,1);
 }
 $("stats").onclick=e=>{const b=e.target.closest("[data-sp],[data-sm]");if(!b)return;if(b.dataset.sp)SPD=+b.dataset.sp;if(b.dataset.sm)SMT=b.dataset.sm;renderStats()};
 const LQ=[
@@ -2129,17 +2280,32 @@ $("k").onclick=$("i").onclick=e=>{
   save();render();
 };
 $("cadd").onclick=()=>{
+  let raw=$("cs").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  const mt=raw.length&&raw[0].match(/^t[êe]n chu[ỗo]i\s*:\s*(.+)/i);
+  if(mt){if(!$("cn").value.trim())$("cn").value=mt[1].slice(0,60);raw=raw.slice(1)}
   const name=$("cn").value.trim();
-  const lines=$("cs").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,15);
+  const lines=raw.filter(l=>!l.startsWith("#")).slice(0,15);
   if(!name||lines.length<2){say("Cần tên chuỗi và ít nhất 2 bước, mỗi bước một dòng.");return}
   const id="c"+Date.now().toString(36);
   S.chains.push({id,name,paid:false,bonus:0});
   lines.forEach((l,i)=>{const [n,m]=l.split("|");if(!n.trim())return;const mins=Math.min(480,Math.max(5,parseInt(m)||30));S.quests.push({id:id+i,name:n.trim().slice(0,80),pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});
   $("cn").value=$("cs").value="";save();render();say("Đã tạo chuỗi "+lines.length+" bước.");
 };
-$("events").oninput=e=>{const t=e.target,v=parseInt(t.value);if(t.dataset.f&&v>=1){S.ev[t.dataset.p][t.dataset.f]=Math.min(9999,v);save()}};
+$("events").oninput=e=>{if(e.target.dataset.kd)KSD[e.target.dataset.kd]=e.target.value;const t=e.target,v=parseInt(t.value);if(S.god&&t.dataset.f&&v>=1){S.ev[t.dataset.p][t.dataset.f]=Math.min(9999,v);save()}};
 $("events").onchange=render;
 $("events").onclick=e=>{
+  const ga=e.target.closest("[data-a=kadd],[data-a=kdel],[data-a=ked],[data-a=kreset]");
+  if(ga&&S.god){const a=ga.dataset.a,id=ga.dataset.id;S.ks=S.ks||[];S.kso=S.kso||{};
+    if(a==="kadd"){const n=(KSD.n||"").trim().slice(0,40);if(!n){say("Hãy nhập tên kỳ sự.");return}
+      S.ks.push({id:"k"+Date.now().toString(36),n,desc:(KSD.d||"").trim().slice(0,120),met:KSD.m||"c",tg:Math.min(9999,Math.max(1,parseInt(KSD.t)||5)),r:Math.min(9999,Math.max(1,parseInt(KSD.r)||60)),per:KSD.p||"w"});
+      KSD={};vlog("Thiên Đạo: thêm kỳ sự "+n);say("Đã thêm kỳ sự.")}
+    else if(a==="kdel"){S.ks=S.ks.filter(x=>x.id!==id);say("Đã xóa kỳ sự.")}
+    else if(a==="kreset"){delete S.kso[id];say("Đã khôi phục bản gốc.")}
+    else{const d=ga.dataset,cu=d.c==="1",v=prompt("Sửa kỳ sự: Tên | thưởng | mô tả"+(cu?" | mục tiêu":""),d.n+" | "+d.r+" | "+d.d+(cu?" | "+d.tg:""));if(v==null)return;
+      const p=v.split("|").map(x=>x.trim()),n=(p[0]||"").slice(0,40),r=Math.min(9999,Math.max(1,parseInt(p[1])||+d.r)),ds=(p[2]||"").slice(0,120);if(!n)return;
+      if(cu){const c=S.ks.find(x=>x.id===id);if(c){c.n=n;c.r=r;c.desc=ds;c.tg=Math.min(9999,Math.max(1,parseInt(p[3])||c.tg))}}else S.kso[id]={n,r,desc:ds};
+      say("Đã sửa kỳ sự.")}
+    save();render();return}
   const xs=e.target.closest("[data-a=xs]");
   if(xs&&!xs.disabled){
     const ck=xs.dataset.ck,r=+xs.dataset.r;
@@ -2164,6 +2330,8 @@ $("ph").oninput=()=>{const v=parseInt($("ph").value);if(v>=1){S.perHour=Math.min
 /* ===== Bản 2: gộp tab, kiếp nạn, linh sủng, Thiên Đạo, sao lưu, âm thanh ===== */
 let AC;
 function sfx(f){if(S.snd===0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.14,t);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g);g.connect(AC.destination);o.start();o.stop(t+.6)}catch(e){}}
+function clk(){if(S.snd===0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();const n=Math.floor(AC.sampleRate*0.035),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(let k=0;k<n;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/n,5);const o=AC.createBufferSource();o.buffer=b;const f=AC.createBiquadFilter();f.type="bandpass";f.frequency.value=2400;f.Q.value=0.8;const g=AC.createGain();g.gain.value=.45;o.connect(f);f.connect(g);g.connect(AC.destination);o.start()}catch(e){}}
+document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest("button,summary,select,.tick");if(t&&!t.disabled)clk()},true);
 const GR=[
  {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"]]},
  {id:"t",n:"Thiên Kiêu",s:[["b","Bảng"],["f","Thiên diễn"],["v","Vạn Sự Điện"],["z","Tông môn",1],["p","Bản đồ",1]]},
@@ -2501,47 +2669,43 @@ $("g").onclick=e=>{
 };
 
 /* Sao lưu và cài đặt + tùy chỉnh giao diện */
-const bx=document.createElement("div");bx.className="box";bx.style.marginTop="14px";bx.id="setbox";
+const bx=document.createElement("div");bx.style.display="contents";bx.id="setbox";
 function renderSettings(){
   const u=S.ui||{skin:"classic",density:"normal",fs:"md",theme:"auto"};
   const on=(k,v)=>u[k]===v?" on":"";
-  bx.innerHTML=`<h2>Giao diện</h2>
-<small>Tùy chỉnh phong cách — vẫn giữ tông cổ thư. Thay đổi áp dụng ngay.</small>
-<div style="margin-top:10px"><b style="font-size:13px">Chủ đề màu</b>
+  bx.innerHTML=fold("ui","Giao diện",`<small>Tùy chỉnh phong cách — vẫn giữ tông cổ thư. Thay đổi áp dụng ngay.</small>
+<div class="srt"><b>Chủ đề màu</b>
   <div class="ui-opt">
     <button class="btn alt${on("skin","classic")}" data-ui="skin" data-v="classic">Cổ thư (đỏ son)</button>
     <button class="btn alt${on("skin","jade")}" data-ui="skin" data-v="jade">Thanh ngọc</button>
     <button class="btn alt${on("skin","ink")}" data-ui="skin" data-v="ink">Mặc thư</button>
     <button class="btn alt${on("skin","night")}" data-ui="skin" data-v="night">U huyền</button>
   </div></div>
-<div style="margin-top:10px"><b style="font-size:13px">Sáng / tối</b>
+<div class="srt"><b>Sáng / tối</b>
   <div class="ui-opt">
     <button class="btn alt${on("theme","auto")}" data-ui="theme" data-v="auto">Theo hệ thống</button>
     <button class="btn alt${on("theme","light")}" data-ui="theme" data-v="light">Sáng</button>
     <button class="btn alt${on("theme","dark")}" data-ui="theme" data-v="dark">Tối</button>
   </div></div>
-<div style="margin-top:10px"><b style="font-size:13px">Mật độ giao diện</b>
+<div class="srt"><b>Mật độ giao diện</b>
   <div class="ui-opt">
     <button class="btn alt${on("density","compact")}" data-ui="density" data-v="compact">Gọn</button>
     <button class="btn alt${on("density","normal")}" data-ui="density" data-v="normal">Vừa</button>
     <button class="btn alt${on("density","roomy")}" data-ui="density" data-v="roomy">Rộng</button>
   </div></div>
-<div style="margin-top:10px"><b style="font-size:13px">Cỡ chữ</b>
+<div class="srt"><b>Cỡ chữ</b>
   <div class="ui-opt">
     <button class="btn alt${on("fs","sm")}" data-ui="fs" data-v="sm">Nhỏ</button>
     <button class="btn alt${on("fs","md")}" data-ui="fs" data-v="md">Vừa</button>
     <button class="btn alt${on("fs","lg")}" data-ui="fs" data-v="lg">Lớn</button>
   </div></div>
-<div style="margin-top:10px"><b style="font-size:13px">Chế độ chơi</b>
+<div class="srt"><b>Chế độ chơi</b>
   <div class="ui-opt">
     <button class="btn alt${u.studyOnly?"":" on"}" data-ui="studyOnly" data-v="0">Đầy đủ</button>
     <button class="btn alt${u.studyOnly?" on":""}" data-ui="studyOnly" data-v="1">Chỉ học</button>
   </div>
   <small style="display:block;margin-top:4px">Chỉ học: ẩn bảng, tông, bảo khố phức tạp — giữ nhiệm vụ, nhật trình, thiên kiếp, nhật ký.</small>
-</div>
-<hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
-<h2>Sao lưu & hệ thống</h2>
-<small>Dữ liệu chỉ nằm trong trình duyệt này. Xuất ra để không mất khi đổi máy.</small>
+</div>`,1)+fold("bk","Sao lưu & hệ thống",`<small>Dữ liệu chỉ nằm trong trình duyệt này. Xuất ra để không mất khi đổi máy.</small>
 <textarea id="bk" placeholder="Dữ liệu xuất ra hiện ở đây…"></textarea>
 <div class="chips" style="margin-top:8px">
   <button class="btn alt" data-bk="ex">Xuất</button>
@@ -2550,10 +2714,12 @@ function renderSettings(){
   <button class="btn alt" data-bk="nm">Đổi tên</button>
   <button class="btn alt" data-bk="tut">Hướng dẫn lại</button>
   <button class="btn alt" data-bk="god">${S.god?"Tắt Thiên Đạo":"Thiên Đạo"}</button>
-</div>`;
+</div>`,0);
 }
 renderSettings();
-$("s").appendChild(bx);
+$("setpanel").appendChild(bx);
+$("gear").onclick=()=>{const p=$("setpanel"),on=p.hidden;p.hidden=!on;$("sbody").hidden=on;$("gear").classList.toggle("on",on);$("gear").setAttribute("aria-expanded",on)};
+$("s").addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k)FO[k]=e.target.open},true);
 bx.onclick=e=>{
   const ui=e.target.closest("[data-ui]");
   if(ui){
@@ -3042,11 +3208,11 @@ function doRebirth(){
   chkLegacy();
   save();render();showThd(rec);sfx(392);setTimeout(()=>sfx(659),150);
 }
-const rbx=document.createElement("div");rbx.className="box";rbx.id="rbs";rbx.style.marginTop="14px";$("s").insertBefore(rbx,bx);
+const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){
   const h=S.rbh||[],cur=KS().pk,best=h.reduce((a,r)=>(!a||r.pk>a.pk)?r:a,null);
   const bb=bk(),top=bb.pk>0?"Kiếp "+bb.n+(bb.cur?" (đang tu)":"")+": "+bb.pk+" linh lực":"chưa có";
-  $("rbs").innerHTML=`<h2>Các Kiếp Trước</h2><div class="grid2" style="margin-top:8px"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kiếp đỉnh nhất</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${r.pk>=END?"Chân Tiên":rname(r.pk)}. ${r.days} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`;
+  $("rbs").innerHTML=fold("t7","Các Kiếp Trước",`<div class="grid2"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kiếp đỉnh nhất</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${r.pk>=END?"Chân Tiên":rname(r.pk)}. ${r.days} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`,0);
 }
 $("rbs").onclick=e=>{const b=e.target.closest("[data-vi]");if(b&&S.rbh&&S.rbh[+b.dataset.vi])showThd(S.rbh[+b.dataset.vi])};
 function askName(){
@@ -3322,7 +3488,7 @@ render();
   window.NTsave=()=>{if(!LN)return;clearTimeout(tm);tm=setTimeout(()=>run(false),5000)};
 
   // ----- Giao diện trong Thiên Thư > Thống kê -----
-  const box=document.createElement("div");box.className="box";box.style.marginTop="14px";box.id="ntbox";
+  const box=document.createElement("div");box.style.display="contents";box.id="ntbox";
   async function paint(){
     const c=cfg();let st;
     if(!native)st="Chỉ hoạt động trong app cài trên điện thoại (bản APK), không chạy trên trình duyệt.";
@@ -3330,9 +3496,9 @@ render();
       const p=await perm(false);
       st=p==="granted"?"Đã được cấp quyền thông báo.":p==="denied"?"Quyền thông báo đang bị tắt. Vào Cài đặt điện thoại, mở mục Ứng dụng, chọn game rồi bật Thông báo.":"Chưa cấp quyền thông báo.";
     }
-    box.innerHTML=`<h2>Thông báo nhắc nhở</h2><small>${st}</small>
+    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small>
 <div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
-<div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div>`;
+<div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div></details>`;
   }
   box.onclick=async e=>{
     const b=e.target.closest("button[data-nt]");if(!b)return;
@@ -3360,7 +3526,7 @@ render();
     if(e.target.id==="ntt"&&/^\d\d:\d\d$/.test(e.target.value)){cfg().t=e.target.value;save();run(true);say("Đã đổi giờ nhắc học.")}
   };
   paint();
-  $("s").appendChild(box);
+  $("setpanel").appendChild(box);
 
   if(native){
     channel();
