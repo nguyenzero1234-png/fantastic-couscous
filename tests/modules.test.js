@@ -630,7 +630,7 @@ test("nhật ký tu tiên sinh nội dung xác định từ dữ liệu được
   const empty = D.generate("2026-11-23", { n: 0, m: 0, p: 0 }, {
     isToday: true, streak: 4
   }, quotes);
-  assert.deepEqual(empty, [
+  assert.deepEqual(JSON.parse(JSON.stringify(empty)), [
     "Một ngày không ngồi xuống. Sổ vẫn mở, chờ.",
     "Chuỗi đang giữ từ hôm trước. Hôm nay còn chưa viết tiếp.",
     "Trích: Một bước cũng là đường."

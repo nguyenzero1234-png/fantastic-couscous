@@ -213,3 +213,9 @@ www/js/
 - CI #159 xác nhận 45/46 test đạt; test còn lại có expected text viết sai so với quy tắc chọn câu xác định theo seed.
 - Đã sửa expected value để phản ánh đúng kết quả của helper; không thay đổi thuật toán sinh nội dung.
 - Chờ CI xác nhận lại toàn bộ test và APK.
+
+
+## Sửa harness so sánh dữ liệu VM
+- CI #160 xác nhận nội dung nhật ký đúng; lỗi là khác realm giữa mảng do VM tạo và mảng test của Node.
+- Chuẩn hóa mảng kết quả qua JSON trong assertion để chỉ so sánh dữ liệu, không so sánh prototype của realm.
+- Chờ CI chạy lại toàn bộ.

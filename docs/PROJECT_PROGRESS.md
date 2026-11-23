@@ -299,4 +299,5 @@
 - [x] Bổ sung test cho nhật ký ngày trống, ngày có hoạt động, dữ liệu đầu vào bất biến và giới hạn bảy dòng.
 - [x] CI #158 xác nhận kiểm thử, audit, Capacitor sync, build APK và upload artifact thành công.
 - [x] CI #159 chạy 46 test, phát hiện một expected value trong test chưa khớp lựa chọn câu xác định theo seed; đã sửa kỳ vọng theo đúng thuật toán, không đổi code sinh nhật ký.
-- [ ] Chờ CI chạy lại sau khi sửa test; chưa có kiểm thử trên thiết bị thật.
+- [x] CI #160 cho thấy nội dung thực tế đã khớp expected; lỗi còn lại do so sánh mảng từ VM context khác realm bằng `deepStrictEqual`. Đã chuẩn hóa kết quả qua JSON trước khi so sánh.
+- [ ] Chờ CI chạy lại; chưa có kiểm thử trên thiết bị thật.
