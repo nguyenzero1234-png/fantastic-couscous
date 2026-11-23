@@ -34,6 +34,7 @@
 - [x] Sau khi tách `streak.js`: parse cú pháp, kiểm tra thứ tự nạp script và 33.200 tình huống hồi quy đối chiếu logic cũ/mới cho streak, vật phẩm bảo hộ, xác suất tâm ma và tiến độ trấn áp đều đạt.
 - [x] Sau khi tách `analytics.js`: parse cú pháp, kiểm tra thứ tự nạp script và 1.000 bộ dữ liệu hồi quy đối chiếu thống kê tổng quan, chuỗi ngày tốt nhất, biểu đồ và chỉ số kiếp nạn đều đạt.
 - [x] Sau khi tách `quest-data.js`: parse cú pháp, thứ tự nạp script và 109 ca hồi quy cho parser độ khó, thời lượng, lặp lại, hạn chót và dữ liệu sai đều đạt.
+- [x] Sau khi tách `schedule-data.js`: parse cú pháp, thứ tự nạp script và 1.039 ca hồi quy cho định dạng giờ, khoảng thời gian, trùng lịch và dữ liệu biên đều đạt.
 - [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
@@ -43,6 +44,8 @@
 - [x] Kiểm thử 1.000 bộ dữ liệu ngẫu nhiên, so sánh thống kê cũ/mới; không có sai khác.
 - [x] Tách parser nhiệm vụ dạng văn bản hàng loạt sang `www/js/quest-data.js`.
 - [x] Kiểm thử 109 ca parser với thời gian/ngẫu nhiên giả lập; không có sai khác.
+- [x] Tách parser lịch học và kiểm tra trùng khung giờ sang `www/js/schedule-data.js`.
+- [x] Kiểm thử 1.039 ca lịch, gồm dữ liệu ngẫu nhiên và biên; không có sai khác.
 - [x] Kiểm tra cú pháp và thứ tự nạp các module mới trước `game.js`.
 
 ## Việc cần làm tiếp
@@ -51,6 +54,7 @@
 - [x] Tách quy tắc thuần của chuỗi ngày học và tiến độ Tâm Ma/Thiên Ma sang `www/js/streak.js`; `game.js` tiếp tục quản lý vật phẩm, log, save và hiệu ứng UI.
 - [x] Tách phép tổng hợp thống kê học tập và chỉ số kiếp nạn sang `www/js/analytics.js`.
 - [x] Tách parser nhập nhiệm vụ hàng loạt sang `www/js/quest-data.js`.
+- [x] Tách parser lịch học dạng văn bản và kiểm tra xung đột giờ sang `www/js/schedule-data.js`.
 - [ ] Tiếp tục tách các quy tắc gameplay độc lập khỏi `game.js`; không di chuyển các luồng có nhiều tác động phụ khi chưa có kiểm thử hồi quy đầy đủ.
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
