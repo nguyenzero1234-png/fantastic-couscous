@@ -1055,8 +1055,9 @@ function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p
 // Trừng Phạt xếp chồng: mỗi lần hết Mệnh +1 stack, −5% mỗi stack (tối đa −30%)
 function tdMult(){return S.tdPenalty?Math.max(0.7,1-0.05*Math.max(1,S.tdStacks||1)):1}
 function balMult(){return playerBalanced()?BAL_MULT:1}
-function modGain(n){const m=(S.tm?.8:1)*(S.tma?.65:1)*(S.cbUntil>Date.now()?1.1:1);return Math.max(0,Math.floor(Math.round(n)*tdMult()*balMult()*m))}
-function eventGain(n){let v=n;if(S.tcCharges>0){v=Math.round(v*1.5);S.tcCharges--;if(S.tcCharges===0)extra+=" Thiên Cơ Lệnh đã dùng hết 4 lần."}return modGain(v)}
+function rewardFactors(){return{td:tdMult(),balance:balMult(),status:(S.tm?.8:1)*(S.tma?.65:1)*(S.cbUntil>Date.now()?1.1:1)}}
+function modGain(n){return GameRewards.modGain(n,rewardFactors())}
+function eventGain(n){const r=GameRewards.eventGain(n,S.tcCharges,rewardFactors());S.tcCharges=r.charges;if(r.exhausted)extra+=" Thiên Cơ Lệnh đã dùng hết 4 lần.";return r.gain}
 function addPts(n,mins,day){
   const before=ri(S.points||0);
   const g=modGain(n);if(!g&&!mins)return 0;
