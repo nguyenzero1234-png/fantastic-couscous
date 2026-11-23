@@ -742,3 +742,12 @@ Sau mỗi đợt thay đổi:
 - [x] CI run #45231987984 phát hiện assertion test mới dùng `assert.match` với `DEF_C` là mảng; sửa sang kiểm tra tên preset theo cấu trúc mảng. CI run #45232075244 trên commit `3afae07e563a06b927ccf0a29579b91d54032c79` đạt 81/81 test, 0 thất bại.
 - [ ] Tiếp theo: audit và sắp xếp thứ tự nạp script theo core → data → systems → ui → game.js; chỉ loại bỏ file cũ sau khi rà toàn bộ tham chiếu.
 
+
+
+## Chuẩn hóa điểm khởi tạo core (2026-11-24)
+
+- [x] Audit luồng khởi tạo: `core/state.js` phụ thuộc `GameStorage` khi gọi `GameState.create()`; đặt file gần cuối danh sách script khiến nền tảng state bị khởi tạo muộn không cần thiết.
+- [x] Chuyển `core/state.js` lên ngay sau `core/storage.js`, trước các compatibility entry point và gameplay modules. API chỉ được gọi khi `game.js` bootstrap nên `ui/preferences.js` vẫn được nạp trước `game.js`.
+- [x] Bổ sung assertion thứ tự nạp để ngăn hồi quy.
+- [ ] Chưa sắp xếp lại toàn bộ data/systems/ui theo nhóm: các file cũ và compatibility entry point còn dependency cần audit riêng; không đổi thứ tự hàng loạt khi chưa xác minh.
+- [ ] Chưa chạy test/CI trên commit thay đổi này; cần xác nhận CI thực tế trước khi đánh dấu ổn định.

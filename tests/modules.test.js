@@ -59,6 +59,7 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
     assert.ok(names.indexOf(file) < gameIndex, file + " phải nạp trước game.js");
   }
   assert.ok(names.indexOf("core/storage.js") < names.indexOf("core/state.js"));
+  assert.equal(names.indexOf("core/state.js"), names.indexOf("core/storage.js") + 1, "core/state.js phải nạp ngay sau core/storage.js");
   assert.ok(names.indexOf("ui/preferences.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/game-loop.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/state.js") < gameIndex);
