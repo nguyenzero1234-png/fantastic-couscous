@@ -7,7 +7,7 @@
     if(!continued&&x.last===x.twoDaysAgo&&(Number(x.lifeCharm)||0)>0){continued=true;consumeLifeCharm=true;extra=" Đã dùng Tục Mệnh Phù — chuỗi được giữ."}
     if(!continued&&prevN>=2){
       if(x.heartCharm){consumeHeartCharm=true;extra+=" Hộ Tâm Phù đã chặn tâm ma."}
-      else if((Number(x.random)||0)<0.5)triggerDemon=true;
+      else if((typeof x.random==="function"?x.random():Number(x.random)||0)<0.5)triggerDemon=true;
       extra=(extra?extra+" ":"")+"Chuỗi "+prevN+" ngày đứt — "+(x.heartCharm?"Hộ Tâm Phù đã chặn tâm ma.":triggerDemon?"tâm ma xâm nhập đạo tâm!":"may mắn không phát sinh tâm ma.");
       log="Mất chuỗi học ("+prevN+" ngày)"+(triggerDemon?" → tâm ma":" → không phát sinh tâm ma");
     }
@@ -17,7 +17,7 @@
     const x=input||{},last=x.last,n=Number(x.streak)||0;
     if(!last||n<2||last===x.today||last===x.yesterday)return null;
     if(last===x.twoDaysAgo&&(Number(x.lifeCharm)||0)>0)return null;
-    const blocked=!!x.heartCharm,triggerDemon=!blocked&&(Number(x.random)||0)<0.5;
+    const blocked=!!x.heartCharm,triggerDemon=!blocked&&(typeof x.random==="function"?x.random():Number(x.random)||0)<0.5;
     return {
       consumeHeartCharm:blocked,triggerDemon,
       log:"Mất chuỗi học ("+n+" ngày, bỏ phiên)"+(blocked?" — Hộ Tâm Phù chặn tâm ma":triggerDemon?" → tâm ma":" — không phát sinh tâm ma"),
