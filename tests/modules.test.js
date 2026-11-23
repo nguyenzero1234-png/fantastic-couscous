@@ -871,3 +871,9 @@ test("quest completion module cập nhật streak, curse, điểm, lịch sử v
   assert.equal(daily.m, 30);
   assert.equal(logs.length, 1);
 });
+
+test("GamePetUI tách renderer và xử lý tương tác linh thú", () => {
+  assert.equal(typeof window.GamePetUI.render, "function");
+  assert.equal(typeof window.GamePetUI.handleClick, "function");
+  assert.doesNotThrow(() => window.GamePetUI.handleClick({ target: { closest() { return null; } } }, {}));
+});

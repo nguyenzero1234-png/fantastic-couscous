@@ -322,3 +322,10 @@ www/js/
 - [x] `game.js` chỉ còn wrapper kết nối trạng thái hiện hành với module; giữ nguyên key lưu `quest-study-v1` và schema.
 - [x] Bổ sung kiểm thử tích hợp cho streak, điểm, lịch sử học, thống kê ngày và log hoàn thành.
 - [ ] Chờ CI xác nhận kiểm thử và APK; chưa kiểm thử trên thiết bị Android thật.
+
+ 
+## Pet UI extraction
+- [x] Extracted pet rendering, reveal/evolution overlay, and click handling into `www/js/pet-ui.js`.
+- [x] Kept gameplay state and services injected from `game.js`; save key/schema and pet balance rules unchanged.
+- [x] Added module contract and safe no-button interaction tests.
+- [ ] Await CI; no real Android-device test performed.

@@ -400,3 +400,10 @@
 - [x] `game.js` chỉ còn wrapper kết nối trạng thái hiện hành với module; giữ nguyên key lưu `quest-study-v1` và schema.
 - [x] Bổ sung kiểm thử tích hợp cho streak, điểm, lịch sử học, thống kê ngày và log hoàn thành.
 - [ ] Chờ CI xác nhận kiểm thử và APK; chưa kiểm thử trên thiết bị Android thật.
+
+ 
+## Tách giao diện và tương tác linh thú (2026-11-23)
+- [x] Chuyển renderer danh sách linh thú, overlay thu nhận/tiến hóa và xử lý click sang `www/js/pet-ui.js`.
+- [x] `game.js` chỉ còn wrapper truyền state, dữ liệu linh thú và dịch vụ UI; module không tự đọc biến toàn cục gameplay.
+- [x] Thêm kiểm thử hợp đồng module và nhánh click không có nút; giữ nguyên cách tính buff, chi phí tiến hóa và thu hoạch.
+- [ ] Chờ CI xác nhận; chưa kiểm thử trên thiết bị Android thật.
