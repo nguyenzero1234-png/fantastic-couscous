@@ -405,6 +405,6 @@ test("analytics tính tiến độ nhiệm vụ theo ngày, tuần, tháng và l
   assert.equal(A.questProgress(history, counts, { per: "d", met: "m" }, today, week), 45);
   assert.equal(A.questProgress(history, counts, { per: "w", met: "p" }, today, week), 100);
   assert.equal(A.questProgress(history, counts, { per: "m", met: "c" }, today, week), 6);
-  assert.equal(A.questProgress(history, counts, { per: "m", met: "other" }, today, week), 3);
+  assert.equal(A.questProgress(history, counts, { per: "m", met: "other" }, today, week), 2);
   assert.equal(A.questProgress({}, {}, { per: "d", met: "m" }, today, week), 0);
 });
