@@ -282,3 +282,10 @@ www/js/
 ## Ghi chú kiểm thử CI #172
 - CI phát hiện fixture của nhánh Xuất Sắc đặt `hrs=40, days=10`, tương đương 4.0 giờ/ngày; kết quả Giỏi là đúng theo quy tắc cũ.
 - Sửa fixture thành `hrs=50, days=10` để kiểm tra đúng ngưỡng 5.0 giờ/ngày. Không thay đổi logic sản phẩm.
+
+
+## Helper định dạng ký ức kiếp trước
+- `GameRebirthData.previousMemory(records)` tạo câu ký ức từ bản ghi kiếp gần nhất theo thứ tự grade, pk, rank, sect.
+- Wrapper `prevMemory` trong `game.js` tiếp tục cung cấp `S.rbh`; giữ nguyên điều kiện bỏ qua giá trị falsy và chuỗi tiếng Việt.
+- Có kiểm thử cho dữ liệu rỗng, thiếu trường, giá trị falsy và bản ghi đủ thông tin.
+- Không thay đổi save schema, dữ liệu lịch sử hoặc điều kiện luân hồi.

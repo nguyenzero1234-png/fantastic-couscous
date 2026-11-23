@@ -2524,16 +2524,7 @@ function renderAch(){
 }
 
 /* ===== Ký ức kiếp trước ===== */
-function prevMemory(){
-  const h=S.rbh||[];if(!h.length)return "";
-  const last=h[h.length-1];
-  const bits=[];
-  if(last.grade)bits.push("kiếp trước đánh giá "+last.grade);
-  if(last.pk)bits.push("đỉnh "+last.pk+" linh lực");
-  if(last.rank)bits.push("hạng "+last.rank);
-  if(last.sect)bits.push("từng thuộc "+last.sect);
-  return bits.length?"Ký ức kiếp trước: "+bits.join(", ")+".":"";
-}
+function prevMemory(){return GameRebirthData.previousMemory(S.rbh||[]);}
 
 function showThd(r,ask){
   $("thd").innerHTML=`<div class="box"><h2>Kiếp Trước</h2><small>Kiếp thứ ${r.n} · ${r.name}${r.grade?" · Đánh giá: "+r.grade:""}</small>${r.txt.map(x=>`<p style="margin:10px 0">${x}</p>`).join("")}

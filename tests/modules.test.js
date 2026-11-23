@@ -772,3 +772,16 @@ test("rebirth gradeSummary giữ nguyên các ngưỡng xếp loại kiếp", ()
     grade: "Yếu", text: "Một kiếp lơi tay. Kiếp sau còn trang trắng."
   });
 });
+
+test("rebirth previousMemory định dạng ký ức kiếp trước và xử lý dữ liệu trống", () => {
+  const R = window.GameRebirthData;
+  assert.equal(R.previousMemory([]), "");
+  assert.equal(R.previousMemory(null), "");
+  assert.equal(R.previousMemory([{}]), "");
+  assert.equal(R.previousMemory([{ grade: "Xuất Sắc", pk: 1200, rank: 3, sect: "Thanh Vân" }]),
+    "Ký ức kiếp trước: kiếp trước đánh giá Xuất Sắc, đỉnh 1200 linh lực, hạng 3, từng thuộc Thanh Vân.");
+  assert.equal(R.previousMemory([{ grade: "Giỏi", pk: 0, rank: 0, sect: "" }]),
+    "Ký ức kiếp trước: kiếp trước đánh giá Giỏi.");
+  assert.equal(R.previousMemory([{ grade: "" }, { pk: 500 }]),
+    "Ký ức kiếp trước: đỉnh 500 linh lực.");
+});

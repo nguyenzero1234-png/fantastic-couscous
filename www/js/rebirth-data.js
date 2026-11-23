@@ -10,5 +10,15 @@
     else{grade="Yếu";text="Một kiếp lơi tay. Kiếp sau còn trang trắng.";}
     return {grade,text};
   }
-  root.GameRebirthData={gradeSummary};
+  function previousMemory(records){
+    const h=records||[];if(!h.length)return "";
+    const last=h[h.length-1];
+    const bits=[];
+    if(last.grade)bits.push("kiếp trước đánh giá "+last.grade);
+    if(last.pk)bits.push("đỉnh "+last.pk+" linh lực");
+    if(last.rank)bits.push("hạng "+last.rank);
+    if(last.sect)bits.push("từng thuộc "+last.sect);
+    return bits.length?"Ký ức kiếp trước: "+bits.join(", ")+".":"";
+  }
+  root.GameRebirthData={gradeSummary,previousMemory};
 })(typeof window!=="undefined"?window:globalThis);

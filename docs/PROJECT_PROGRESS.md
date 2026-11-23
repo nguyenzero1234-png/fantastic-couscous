@@ -357,3 +357,11 @@
 - [x] CI #171 xác nhận commit `55690d84` thành công, bao gồm test, dependency audit, Gradle APK debug và artifact APK.
 - [ ] CI #172 phát hiện fixture kiểm thử sai dữ liệu (40/10 giờ tương đương 4.0, không đủ điều kiện Xuất Sắc); đã sửa fixture thành 50/10 và chờ CI chạy lại.
 - [ ] Chưa kiểm thử trên thiết bị Android thật.
+
+
+## Helper ký ức kiếp trước (2026-11-23)
+- [x] Tách định dạng dòng “Ký ức kiếp trước” thành `GameRebirthData.previousMemory(records)`; module chỉ nhận danh sách bản ghi, không đọc state hay DOM.
+- [x] `game.js` giữ wrapper `prevMemory` và tiếp tục cấp `S.rbh`; giữ nguyên thứ tự trường, điều kiện hiển thị và câu chữ tiếng Việt.
+- [x] Bổ sung test cho danh sách rỗng, bản ghi thiếu trường, giá trị falsy và bản ghi đầy đủ.
+- [x] CI #173 xác nhận commit `982edd25` thành công, có artifact `TuTienHocDao-apk` (5,799,890 bytes).
+- [ ] Chờ CI xác nhận thay đổi helper ký ức mới; chưa kiểm thử trên thiết bị Android thật.
