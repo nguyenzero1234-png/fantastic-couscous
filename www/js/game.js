@@ -4,20 +4,7 @@ if(!S.ph200){S.perHour=200;S.ph200=1}
 if(S.menh==null)S.menh=100;if(S.tdPenalty==null)S.tdPenalty=false;if(S.failStreak==null)S.failStreak=0;if(S.tdStacks==null)S.tdStacks=0;if(!S.dailyBought)S.dailyBought={};if(S.tmTasks==null)S.tmTasks=0;if(S.tmaTasks==null)S.tmaTasks=0;if(S.tcCharges==null)S.tcCharges=0;
 if(S._balCleared==null){if(S.lb&&S.lb.bal)S.lb.bal=Array(50).fill(0);S.bal=0;S._balCleared=1;}
 if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
-function applyUi(){
-  const u=S.ui||{};
-  const skin=u.skin||"classic",den=u.density||"normal",fs=u.fs||"md",th=u.theme||"auto";
-  document.documentElement.removeAttribute("data-skin");
-  if(skin&&skin!=="classic")document.documentElement.setAttribute("data-skin",skin);
-  document.documentElement.setAttribute("data-density",den==="normal"?"":den);
-  if(den==="normal")document.documentElement.removeAttribute("data-density");
-  else document.documentElement.setAttribute("data-density",den);
-  if(fs==="md")document.documentElement.removeAttribute("data-fs");
-  else document.documentElement.setAttribute("data-fs",fs);
-  if(th==="auto")document.documentElement.removeAttribute("data-theme");
-  else document.documentElement.setAttribute("data-theme",th);
-}
-applyUi();
+GameUI.apply(S);
 if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let KSALT=(S.rb||0)*7919;
 const save=()=>GameStorage.save(KEY,S);
 const $=id=>document.getElementById(id);
