@@ -1088,19 +1088,21 @@ function finish(q){
   const t=today();
   if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();
   if(S.streak.last!==t){
-    let c=S.streak.last===dayStr(1);
-    if(!c&&S.streak.last===dayStr(2)&&S.inv.the>0){S.inv.the--;c=true;extra=" Đã dùng Tục Mệnh Phù — chuỗi được giữ."}
-    const prevN=S.streak.n||0;
-    if(!c&&prevN>=2){
-      if(S.sh){S.sh=0;extra+=" Hộ Tâm Phù đã chặn tâm ma."}else if(Math.random()<0.5){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
-      extra=(extra?extra+" ":"")+"Chuỗi "+prevN+" ngày đứt — "+(S.sh?"Hộ Tâm Phù đã chặn tâm ma.":S.tm?"tâm ma xâm nhập đạo tâm!":"may mắn không phát sinh tâm ma.");
-      vlog("Mất chuỗi học ("+prevN+" ngày)"+(S.tm?" → tâm ma":" → không phát sinh tâm ma"));
-    }
-    S.streak.n=c?prevN+1:1;S.streak.last=t;
+    const decision=GameStreak.completeDay({last:S.streak.last,today:t,yesterday:dayStr(1),twoDaysAgo:dayStr(2),streak:S.streak.n,lifeCharm:S.inv.the,heartCharm:!!S.sh,random:Math.random()});
+    if(decision.consumeLifeCharm)S.inv.the--;
+    if(decision.consumeHeartCharm)S.sh=0;
+    if(decision.triggerDemon){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
+    if(decision.extra)extra=decision.extra;
+    if(decision.log)vlog(decision.log);
+    S.streak=decision.streak;
   }
   const tf=TB(q),ls=LS(),pb=petBuff();if(S.pw>0)S.pw--;
-  let tmb=0,m=GameRewards.streakMultiplier(S.streak.n,tf.cap);
-  if((q.mins||0)>=25){if(S.tm){S.tmTasks=(S.tmTasks||0)+1;if(S.tmTasks>=2){S.tm=0;S.tmTasks=0;ls.tmc=(ls.tmc||0)+1;extra+=" Tâm Ma Tự Thân đã tan.";tmb=eqT("n12")?40:0}}if(S.tma&&(q.mins||0)>=45){S.tmaTasks=(S.tmaTasks||0)+1;if(S.tmaTasks>=3){S.tma=0;S.tmaTasks=0;extra+=" Thiên Ma Nhập Tâm đã bị trấn áp."}}}
+  let m=GameRewards.streakMultiplier(S.streak.n,tf.cap);
+  const curse=GameStreak.progressCurses({minutes:q.mins||0,tm:!!S.tm,tmTasks:S.tmTasks,tma:!!S.tma,tmaTasks:S.tmaTasks,calmTitle:eqT("n12")});
+  S.tm=curse.tm;S.tmTasks=curse.tmTasks;S.tma=curse.tma;S.tmaTasks=curse.tmaTasks;
+  if(curse.clearedSelf){ls.tmc=(ls.tmc||0)+1;extra+=" Tâm Ma Tự Thân đã tan."}
+  if(curse.clearedHeavenly)extra+=" Thiên Ma Nhập Tâm đã bị trấn áp.";
+  const tmb=curse.taskBonus;
   if(S.buff.n>0){m*=S.buff.m;S.buff.n--}
   if(S.tb&&Date.now()<S.tb)m*=1.2;
   m*=tf.mult;
@@ -2238,15 +2240,13 @@ bx.onclick=e=>{
 
 function checkStreakBreak(){
   // Mất chuỗi vì bỏ ngày (chưa học hôm qua / trước đó) → tâm ma, không cần đợi nhiệm vụ mới
-  const t=today(),last=S.streak.last,n=S.streak.n||0;
-  if(!last||n<2)return;
-  if(last===t||last===dayStr(1))return;
-  // Còn Tục Mệnh Phù và chỉ lỡ đúng 1 ngày (last === dayStr(2)) → không xử lý ở đây (để finish dùng phù)
-  if(last===dayStr(2)&&S.inv&&S.inv.the>0)return;
-  const blocked=!!S.sh;if(blocked)S.sh=0;else if(Math.random()<0.5){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
-  vlog("Mất chuỗi học ("+n+" ngày, bỏ phiên)"+(blocked?" — Hộ Tâm Phù chặn tâm ma":S.tm?" → tâm ma":" — không phát sinh tâm ma"));
+  const decision=GameStreak.checkBreak({last:S.streak.last,streak:S.streak.n,today:today(),yesterday:dayStr(1),twoDaysAgo:dayStr(2),lifeCharm:S.inv&&S.inv.the,heartCharm:!!S.sh,random:Math.random()});
+  if(!decision)return;
+  if(decision.consumeHeartCharm)S.sh=0;
+  if(decision.triggerDemon){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
+  vlog(decision.log);
   S.streak.n=0;save();
-  say("Chuỗi "+n+" ngày đã đứt."+(blocked?" Hộ Tâm Phù đã chặn tâm ma.":S.tm?" Tâm ma xuất hiện, cần 2 nhiệm vụ ≥25 phút để trấn áp.":" May mắn không phát sinh tâm ma lần này."));
+  say(decision.message);
 }
 function renderX(){
   checkStreakBreak();
