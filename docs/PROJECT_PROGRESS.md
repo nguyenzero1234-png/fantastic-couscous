@@ -252,3 +252,10 @@
 - [x] Thay wrapper `ugain`, `uxp`, `weekNight`, `weekDawn` trong `game.js`; giữ nguyên điều kiện lọc.
 - [x] `GameAnalytics.sumCountsBetween(counts, startKey, endKey)`: cộng số nhiệm vụ trong khoảng ngày bao gồm cả hai đầu; wrapper `weekQuests` gọi helper.
 - [x] CI #145: 37/37 kiểm thử; CI #146: 38/38 kiểm thử. Cả hai đều build APK và tải artifact thành công.
+
+
+## Tách thống kê lịch sử học theo tuần (2026-11-23)
+- [x] Thêm `GameAnalytics.studyWindowStats(history, startKey, endKey)` trả về danh sách ngày trong khoảng, số ngày có học và số phút học cao nhất.
+- [x] Thay `wDs`, `wDays`, `wBest` bằng wrapper lấy dữ liệu từ helper; giữ nguyên khoảng ngày bao gồm hai đầu và quy tắc phút tối đa.
+- [x] Bổ sung kiểm thử cho khoảng nhiều ngày, ngày đơn, ngày không học và lịch sử rỗng.
+- [x] CI #148: 39/39 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.

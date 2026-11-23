@@ -167,3 +167,10 @@ www/js/
 - `sumCountsBetween` giữ khoảng ngày dạng [start, end] để khớp thống kê nhiệm vụ tuần.
 - Các wrapper trong `game.js` giữ nguồn state và các mốc thời gian.
 - CI #145 và #146 lần lượt xác nhận 37/37 và 38/38 test JavaScript; build APK và tải artifact đều thành công.
+
+
+## Helper thống kê lịch sử học trong cửa sổ ngày
+- `GameAnalytics.studyWindowStats(history, startKey, endKey)` trả về `days`, `daysWithStudy`, `bestMinutes`.
+- Giữ nguyên thứ tự khóa của `Object.keys(history)`, khoảng ngày bao gồm cả đầu/cuối, điều kiện `m > 0` và giá trị tối thiểu 0 cho số phút tốt nhất.
+- Wrapper `wDs`, `wDays`, `wBest` trong `game.js` vẫn là giao diện dùng bởi nhiệm vụ tuần.
+- CI #148 xác nhận 39/39 kiểm thử JavaScript, build APK và tải artifact thành công.
