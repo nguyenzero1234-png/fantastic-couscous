@@ -44,7 +44,7 @@ const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
   function renderForecast(){
   const X=Math.min(90,Math.max(1,parseInt($("fd").value)||7)),now=Date.now(),T=now+X*864e5;$("fd").value=X;
   const rows=B.map((b,i)=>({n:b.n,x0:bxp(i,now),x1:bxp(i,T),s1:sc(i,T)})),srt=rows.slice().sort((a,b)=>b.s1-a.s1);
-  const r=myRk(),edge=r<=srt.length?srt[r-1].s1:0,need=Math.max(0,Math.ceil(edge-S.points));
+  const r=myRank(),edge=r<=srt.length?srt[r-1].s1:0,need=Math.max(0,Math.ceil(edge-S.points));
   const sn=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
   const em=(1+Math.min(.5,.05*Math.max(0,sn-1)))*(S.tm?.8:1);
   const hr=need/X/(S.perHour*em),rk=h=>1+rows.filter(z=>z.s1>S.points+h*S.perHour*em*X).length;

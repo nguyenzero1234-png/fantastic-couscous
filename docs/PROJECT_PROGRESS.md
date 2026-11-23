@@ -1018,3 +1018,4 @@ Sau mỗi đợt thay đổi:
 - [x] Bổ sung test nhập đạo, lọc tên và dự báo thứ hạng.
 - [x] Sửa dấu đóng callback scheduler trong onboarding module trước khi nghiệm thu CI.
 - [x] Loại bỏ khai báo trùng `+"`today`"+` trong leaderboard UI factory; dùng giá trị đã destructure từ dependency.
+- [x] Dùng dependency `+"`myRank`"+` nhất quán trong renderer Thiên Diễn, tránh phụ thuộc biến cache của màn hình leaderboard.
