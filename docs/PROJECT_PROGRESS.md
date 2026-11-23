@@ -21,6 +21,13 @@
 - [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
 - [x] Đã xử lý cảnh báo dependency cũ: sau nâng đồng bộ Capacitor 7.6.10, `npm audit` ở run #86 báo 0 lỗ hổng (không còn 3 moderate, 1 high, 1 critical đã ghi ở giai đoạn trước).
 
+## Tái cấu trúc core storage (2026-11-24)
+- [x] Chuyển toàn bộ triển khai lưu/đọc, validate, backup/restore và import/export sang `www/js/core/storage.js`.
+- [x] `www/js/storage.js` chỉ còn là compatibility guard, không còn chứa nghiệp vụ lưu trữ.
+- [x] Nạp `core/storage.js` trước compatibility entry và `core/state.js`; state tiếp tục nhận storage qua dependency injection.
+- [x] Cập nhật test harness để nạp rõ các module core trong môi trường VM.
+- [ ] Chạy `npm test`/CI để xác nhận hồi quy sau thay đổi.
+
 ## Đã hoàn thành
 
 ### Nền tảng và độ an toàn dữ liệu
