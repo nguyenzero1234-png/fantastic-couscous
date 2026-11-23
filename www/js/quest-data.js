@@ -8,7 +8,7 @@
   return 1;
  }
  function parseBulkLine(line,options){
-  const o=options||{},now=o.now==null?Date.now():o.now,random=o.random||Math.random;
+  const o=options||{},clock=typeof o.now==="function"?o.now:()=>o.now==null?Date.now():o.now,random=o.random||Math.random;
   const parts=String(line||"").split("|").map(x=>x.trim());
   if(!parts[0])return null;
   const name=parts[0].slice(0,80),mins=Math.min(480,Math.max(5,parseInt(parts[1])||30)),diff=parseDiff(parts[2]);
@@ -18,7 +18,7 @@
   else if(h==="3"||h==="3h")due=now+3*3600000;
   else if(h==="0"||h==="homnay"||h==="hôm nay"||h==="today"){const d=new Date(now);due=d.setHours(23,59,59,999)}
   const pts=Math.max(1,Math.round(mins/60*(o.perHour||200)*diff));
-  return {id:"b"+now.toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
+  return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
  }
  global.GameQuestData=Object.freeze({parseDiff,parseBulkLine});
 })(window);
