@@ -1378,7 +1378,7 @@ Ví dụ:
 19:55-20:40 | Nghe Part 2 đề 3, chép 10 câu sai
 `;
 const parseDiff=s=>GameQuestData.parseDiff(s);
-function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||200,now:Date.now(),random:Math.random})}
+function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||200,now:Date.now,random:Math.random})}
 function importBulkQuests(){
   const raw=$("qbulk").value||"";
   const lines=raw.split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith("#")&&!s.startsWith("//"));
