@@ -1041,3 +1041,31 @@ test("GameStoryData ghi Đạo Văn duy nhất, giới hạn 40 bản ghi và kh
   assert.equal(M.realmStory.length, 9);
   assert.equal(M.realmStory[2].t, "Kim Đan");
 });
+
+
+test("GameAudio tắt âm thanh theo state và gắn click âm thanh đúng phần tử", () => {
+  const listeners = [];
+  const doc = { addEventListener(type, fn, capture) { listeners.push({ type, fn, capture }); } };
+  let muted = true, created = 0, tones = 0, clicks = 0;
+  const audio = {
+    currentTime: 1, sampleRate: 1000, destination: {},
+    createOscillator() { tones++; return { frequency: {}, connect() {}, start() {}, stop() {} }; },
+    createGain() { return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {}, value: 0 }, connect() {} }; },
+    createBuffer() { return { getChannelData() { return new Float32Array(35); } }; },
+    createBufferSource() { return { connect() {}, start() {} }; },
+    createBiquadFilter() { return { frequency: {}, connect() {} }; }
+  };
+  class AudioContext { constructor() { created++; Object.assign(this, audio); } }
+  const controller = window.GameAudio.create(() => muted, { AudioContext, Math });
+  controller.bind(doc);
+  controller.sfx(440);
+  assert.equal(created, 0);
+  muted = false;
+  controller.sfx(440);
+  assert.equal(created, 1);
+  assert.equal(tones, 1);
+  assert.equal(listeners.length, 1);
+  assert.equal(listeners[0].type, "pointerdown");
+  listeners[0].fn({ target: { closest(selector) { clicks++; return selector.includes("button") ? { disabled: false } : null; } } });
+  assert.equal(clicks, 1);
+});
