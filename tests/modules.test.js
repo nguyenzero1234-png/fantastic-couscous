@@ -60,6 +60,25 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
   }
   assert.ok(names.indexOf("core/storage.js") < names.indexOf("core/state.js"));
   assert.equal(names.indexOf("core/state.js"), names.indexOf("core/storage.js") + 1, "core/state.js phải nạp ngay sau core/storage.js");
+  const compatibilityPairs = [
+    ["data/progression-data.js", "progression-data.js"],
+    ["data/npc-data.js", "npc-data.js"],
+    ["data/npc-roster.js", "npc-roster.js"],
+    ["data/kiep-nan-data.js", "kiep-nan-data.js"],
+    ["data/diary-data.js", "diary-data.js"],
+    ["data/leaderboard-data.js", "leaderboard-data.js"],
+    ["data/item-data.js", "item-data.js"],
+    ["data/rebirth-data.js", "rebirth-data.js"],
+    ["data/cultivation-display-data.js", "cultivation-display-data.js"],
+    ["data/story-data.js", "story-data.js"]
+  ];
+  for (const [implementation, compatibility] of compatibilityPairs) {
+    assert.ok(names.indexOf(implementation) !== -1, implementation + " phải được khai báo");
+    assert.ok(names.indexOf(compatibility) > names.indexOf(implementation), compatibility + " phải nạp sau implementation");
+  }
+  for (const helper of ["core/time-format.js", "core/date.js", "core/noise.js", "core/text.js"]) {
+    assert.ok(names.includes(helper), helper + " phải được nạp từ core");
+  }
   assert.ok(names.indexOf("ui/preferences.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/game-loop.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/state.js") < gameIndex);

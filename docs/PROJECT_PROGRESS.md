@@ -762,3 +762,11 @@ Sau mỗi đợt thay đổi:
 - [x] Cập nhật duy nhất các thẻ script tương ứng trong `www/index.html`; giữ thứ tự tương đối để không đổi hành vi bootstrap.
 - [x] Giữ nguyên nội dung và tên API của các helper; không đổi call-site trong gameplay.
 - [ ] Cần xác nhận CI sau commit và tiếp tục rà dependency nhóm data/systems/ui; chưa coi toàn bộ thứ tự script đã chuẩn hóa.
+
+
+## Audit tương thích data modules (2026-11-24)
+
+- [x] Đối chiếu các cặp triển khai trong `data/*` với compatibility entry point cùng tên ở thư mục gốc.
+- [x] Xác nhận wrapper hiện chỉ kiểm tra global API đã tồn tại; chưa xóa wrapper để giữ tương thích với cách nạp script cũ.
+- [x] Bổ sung test thứ tự nạp: mọi implementation phải đứng trước wrapper tương ứng; xác nhận 4 helper thuần được nạp từ `core/`.
+- [ ] Chưa gom lại toàn bộ thứ tự script theo nhóm lớn; các file gameplay cũ vẫn cần dependency audit trước khi di chuyển.
