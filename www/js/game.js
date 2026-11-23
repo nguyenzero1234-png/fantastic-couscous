@@ -1439,11 +1439,9 @@ $("lcp").onclick=()=>cpy(SCHED_PROMPT);
 function importSched(){
   const day=S.sched[today()]||(S.sched[today()]=[]);let n=0,bad=0;
   ($("lbulk").value||"").split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#")).forEach(l=>{
-    const m=l.match(/^(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})\s*\|\s*(.+)$/);if(!m){bad++;return}
-    const a=+m[1]*60+ +m[2],b=+m[3]*60+ +m[4];
-    if(a>=b||b>1440||day.some(x=>a<tm(x.e)&&b>tm(x.s))){bad++;return}
-    const lb=m[5].trim().slice(0,50),q=S.quests.find(x=>x.name===lb&&!isDone(x)&&!expired(x)&&(!x.chain||unlocked(x)));
-    day.push({id:"s"+Date.now().toString(36)+n,s:hm(a),e:hm(b),qid:q?q.id:"",label:lb});n++});
+    const slot=GameScheduleData.parseLine(l,day);if(!slot){bad++;return}
+    const q=S.quests.find(x=>x.name===slot.label&&!isDone(x)&&!expired(x)&&(!x.chain||unlocked(x)));
+    day.push({id:"s"+Date.now().toString(36)+n,s:hm(slot.start),e:hm(slot.end),qid:q?q.id:"",label:slot.label});n++});
   if(n){$("lbulk").value="";save();render()}
   say(n?("Đã nhập "+n+" khung"+(bad?", bỏ "+bad+" dòng lỗi/trùng giờ":"")+"."):"Không đọc được dòng nào. Mẫu: 19:00-19:45 | Tên việc");
 }
