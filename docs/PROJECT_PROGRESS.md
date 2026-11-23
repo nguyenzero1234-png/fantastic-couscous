@@ -470,12 +470,16 @@
 
 - [x] CI #190 cho commit `defa3a1c5063ed5fccc55ac436fc82ca5382f87a` hoàn tất thành công: `npm ci`, `npm test`, Capacitor add/sync Android, Gradle `assembleDebug` và upload artifact đều đạt.
 - [x] CI #190 đã tạo artifact APK debug `TuTienHocDao-apk` (5,802,578 bytes): [Tải artifact từ GitHub Actions #190](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45221217845).
-- [x] Bộ test hiện có 64 test case trong `tests/modules.test.js`, bao gồm kiểm tra storage load/save, validate, backup/recovery, lỗi ghi save, các module gameplay đã tách và hợp đồng tích hợp.
-- [x] Danh sách script trong `www/index.html` đã nạp các module trước `game.js`; `notify.js` và `schedule.js` vẫn được nạp sau bootstrap game theo cấu trúc classic script hiện tại.
-- [ ] `game.js` vẫn còn 243,888 bytes; việc tách module đã tiến xa nhưng chưa hoàn tất. Cần tiếp tục chia các subsystem gameplay còn lại, xác định API/dependency tường minh và tránh global ngầm.
-- [ ] Backup tự động hiện là bản backup nội bộ cùng localStorage trên thiết bị; chưa có giao diện xuất file/nhập file backup toàn bộ dữ liệu.
-- [ ] Chưa kiểm thử trên thiết bị Android thật: cài APK, tạo và hoàn thành nhiệm vụ, timer/thông báo, đóng/mở lại app, xác nhận dữ liệu còn nguyên và kiểm tra quyền thông báo.
-- [ ] Chưa có quy trình ký APK release; CI hiện tạo APK debug, không phải bản phát hành đã ký.
-- [ ] Cần rà soát kết quả chi tiết `npm audit` độc lập trước khi chốt tiêu chí bảo mật dependency; workflow hiện ghi báo cáo audit nhưng không làm job thất bại khi có advisory.
+- [x] CI #192 cho commit `bdd6ec123646f33ba14cb2e40afe416ed604c2e7` thành công: 67/67 test pass, 0 fail; `npm audit` báo 0 vulnerability; Capacitor sync và Gradle `assembleDebug` thành công.
+- [x] Bổ sung API backup versioned trong `storage.js`: export JSON có metadata, import cả format mới và save JSON legacy, validate trước khi ghi và giữ bản lưu hiện tại vào backup trước khi thay thế.
+- [x] Bổ sung 4 test cho export/import versioned, legacy import, dữ liệu hỏng và lỗi quota khi bảo toàn backup.
+- [x] Giao diện Cài đặt có tạo backup/copy, tải file JSON, chọn file backup và nhập sau bước xác nhận; file sai hoặc lỗi ghi sẽ không thay thế state đang chạy.
+- [x] Thêm `docs/ANDROID_QA_CHECKLIST.md` ghi các bước nghiệm thu thiết bị thật, phục hồi backup, timer/thông báo và yêu cầu ký APK release.
+- [x] Workflow audit đã được siết: job thất bại nếu có advisory mức high/critical; commit thay đổi workflow đang được CI kiểm tra.
+- [x] Danh sách script trong `www/index.html` nạp các module trước `game.js`; `notify.js` và `schedule.js` vẫn nạp sau bootstrap.
+- [ ] `game.js` vẫn còn hơn 200 KB và còn nhiều logic gameplay; việc tách module chưa hoàn tất. Tiếp tục tách từng subsystem với test hồi quy, không chuyển nguyên khối mù quáng.
+- [ ] Cài APK và thực hiện checklist trên thiết bị Android thật; việc này không thể được xác nhận bằng CI cloud.
+- [ ] Chưa cấu hình ký APK release vì cần keystore do chủ dự án tự tạo và lưu an toàn trong GitHub Secrets; không được commit khóa riêng tư.
+- [ ] CI #193 (các thay đổi backup/UI/audit mới nhất) đang được GitHub Actions kiểm tra; chỉ cập nhật trạng thái sau khi run kết thúc.
 
-**Kết luận:** CI/build APK debug đã xanh tại run #190, nhưng Giai đoạn 1 chưa nghiệm thu hoàn tất do còn thiếu xuất/nhập backup, tách hết gameplay khỏi `game.js`, kiểm thử thiết bị Android thật và ký bản release. Không đánh dấu các hạng mục này hoàn thành chỉ dựa trên build CI.
+**Kết luận:** Đã hoàn thiện phần backup file và mở rộng kiểm thử trên nhánh nền tảng; build Android debug và audit sạch đã được chứng minh ở CI #192. Giai đoạn 1 vẫn chưa nghiệm thu cuối cùng cho đến khi CI #193 xanh, kiểm thử thiết bị thật đạt, phần tách gameplay đủ tiêu chí và có quyết định về ký APK release.
