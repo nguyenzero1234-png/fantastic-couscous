@@ -786,3 +786,12 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển implementation `GameSectWar` sang `www/js/systems/sect-war.js`; giữ nguyên tính điểm, ghép cặp và xử lý thưởng.
 - [x] Giữ compatibility guard ở đường dẫn cũ; nạp module mới ngay trước guard và không đảo thứ tự các dependency hiện hữu.
 - [ ] Chưa xác nhận test/CI; tiếp tục gom các subsystem còn lại và bổ sung kiểm thử đường dẫn.
+
+
+## Gom nhiệm vụ tông môn, xuyên kiếp và hoàn thành nhiệm vụ vào systems (2026-11-24)
+
+- [x] Chuyển `GameLegacyMissions` vào `systems/legacy-missions.js` và giữ factory/dependency injection.
+- [x] Chuyển `GameQuestCompletion` vào `systems/quest-completion.js`; không thay đổi luồng thưởng, streak, lịch sử hoặc hoàn thành chuỗi.
+- [x] Chuyển `GameSectMissions` vào `systems/sect-missions.js`; giữ nguyên chọn nhiệm vụ tuần và cơ chế nhận thưởng.
+- [x] Giữ đường dẫn cũ làm compatibility guard; script implementation đứng ngay trước wrapper tại vị trí cũ.
+- [ ] Cần bổ sung assertion thứ tự nạp cho các system modules và xác nhận CI xanh trước khi coi đợt này ổn định.
