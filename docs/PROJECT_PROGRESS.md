@@ -228,3 +228,10 @@
 - [x] `game.js` giữ wrapper `sumMins` và truyền `S.hist` cùng predicate như trước; không đổi điều kiện lọc hay thứ tự duyệt lịch sử.
 - [x] Bổ sung kiểm thử cho toàn bộ lịch sử, khoảng ngày, ngày 0 phút, dữ liệu rỗng và predicate không khớp.
 - [x] CI #138: 32/32 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
+
+
+## Tách phép tính chuỗi hiện tại (2026-11-23)
+- [x] Chuyển quy tắc xác định chuỗi còn hiệu lực sang `GameStreak.current(streak, today, yesterday)`.
+- [x] `game.js` giữ wrapper `curStreak`; nguồn ngày hiện tại/ngày hôm qua vẫn lấy từ lịch game.
+- [x] Bổ sung test cho học hôm nay, hôm qua, chuỗi đã cũ, streak 0 và dữ liệu rỗng.
+- [x] CI #140: 33/33 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.

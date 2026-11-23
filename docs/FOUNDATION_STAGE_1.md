@@ -146,3 +146,9 @@ www/js/
 - `game.js` giữ wrapper `sumMins`; lọc tuần và tháng vẫn nằm ở caller, giữ nguyên ngày bắt đầu/kết thúc và quy tắc khóa ngày.
 - Kiểm thử bao gồm lịch sử đầy đủ, khoảng ngày, ngày không học, dữ liệu rỗng và predicate không khớp.
 - CI #138 xác nhận 32/32 test JavaScript, build APK và tải artifact thành công.
+
+
+## Helper chuỗi hiện tại
+- `GameStreak.current(streak, today, yesterday)` xác định chuỗi còn hiệu lực khi lần học gần nhất là hôm nay hoặc hôm qua; các trường hợp cũ hơn trả về 0.
+- Wrapper `curStreak` trong `game.js` tiếp tục cung cấp state và ngày lịch game.
+- CI #140 xác nhận 33/33 kiểm thử JavaScript, build APK và tải artifact thành công.
