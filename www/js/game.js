@@ -1,12 +1,7 @@
-const KEY="quest-study-v1";
-let S=GameStorage.load(KEY,{quests:[],points:0,gameSec:0,rate:2,perHour:200,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null,menh:100,tdPenalty:false,failStreak:0,tdStacks:0,dailyBought:{},tmTasks:0,tmaTasks:0,tcCharges:0,petReveal:null,petEvolution:null});
-if(!S.ph200){S.perHour=200;S.ph200=1}
-if(S.menh==null)S.menh=100;if(S.tdPenalty==null)S.tdPenalty=false;if(S.failStreak==null)S.failStreak=0;if(S.tdStacks==null)S.tdStacks=0;if(!S.dailyBought)S.dailyBought={};if(S.tmTasks==null)S.tmTasks=0;if(S.tmaTasks==null)S.tmaTasks=0;if(S.tcCharges==null)S.tcCharges=0;
-if(S._balCleared==null){if(S.lb&&S.lb.bal)S.lb.bal=Array(50).fill(0);S.bal=0;S._balCleared=1;}
-if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
-GameUI.apply(S);
-if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let KSALT=(S.rb||0)*7919;
-const save=()=>GameStorage.save(KEY,S);
+const GameStateHandle=GameState.create();
+let S=GameStateHandle.state;
+let KSALT=(S.rb||0)*7919;
+const save=GameStateHandle.save;
 const $=id=>document.getElementById(id);
 const today=()=>GameDateData.today(S.dOff||0);
 const esc=GameText.escapeHtml;
