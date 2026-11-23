@@ -19,5 +19,19 @@
   const l=L.filter(x=>D.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);
   return {m,n,d,l};
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics});
+ function questProgress(history,counts,task,todayKey,weekStartKey){
+  const H=history||{},C=counts||{},T=todayKey;
+  const matches=task.per==="d"?k=>k===T:task.per==="w"?k=>k>=weekStartKey&&k<=T:k=>k.slice(0,7)===T.slice(0,7);
+  let value=0;
+  new Set([...Object.keys(H),...Object.keys(C)]).forEach(k=>{
+   if(!matches(k))return;
+   const h=H[k]||{p:0,m:0};
+   if(task.met==="m")value+=h.m;
+   else if(task.met==="p")value+=h.p;
+   else if(task.met==="c")value+=C[k]||0;
+   else if(h.m>=30)value++;
+  });
+  return value;
+ }
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress});
 })(window);

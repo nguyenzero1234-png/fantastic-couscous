@@ -205,4 +205,12 @@
 - [x] Chuyển định dạng tổng số phút thành nhãn giờ một chữ số thập phân sang `GameTimeFormat.hoursLabel()`.
 - [x] Giữ nguyên quy tắc mặc định cho chu kỳ không phải ngày/tuần (khóa tháng) và định dạng số giờ.
 - [x] Bổ sung test cho ngày, tuần, tháng, giá trị chu kỳ lạ, số phút âm/0 và làm tròn thập phân.
+- [x] CI #132 xác nhận kiểm thử JavaScript, Capacitor sync, Gradle assembleDebug và tải APK artifact thành công.
+
+
+## Tách phép tính tiến độ nhiệm vụ định kỳ (2026-11-23)
+- [x] Chuyển phép tổng hợp tiến độ nhiệm vụ ngày/tuần/tháng sang `GameAnalytics.questProgress()`.
+- [x] Truyền lịch sử học, bộ đếm nhiệm vụ, loại chu kỳ, loại chỉ số, ngày hiện tại và đầu tuần từ caller; module không đọc state toàn cục.
+- [x] Giữ nguyên cách cộng phút học, linh lực, số nhiệm vụ và quy tắc mặc định đếm ngày học từ 30 phút.
+- [x] Bổ sung test cho từng chu kỳ, từng loại chỉ số và dữ liệu rỗng.
 - [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.

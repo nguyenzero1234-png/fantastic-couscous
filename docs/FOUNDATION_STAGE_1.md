@@ -129,3 +129,8 @@ www/js/
 - `GameDateData.periodKey(period, todayKey, weekStartKey)` trả về khóa ngày, tuần hoặc tháng theo quy tắc nhiệm vụ định kỳ hiện có.
 - `GameTimeFormat.hoursLabel(minutes)` định dạng số phút thành giờ với một chữ số thập phân và hậu tố tiếng Việt.
 - Hai helper nhận dữ liệu từ caller, không đọc state toàn cục.
+
+
+## Helper tiến độ nhiệm vụ định kỳ
+- `GameAnalytics.questProgress(history, counts, task, todayKey, weekStartKey)` tổng hợp tiến độ theo ngày/tuần/tháng và theo phút học, linh lực, số nhiệm vụ hoặc ngày học đủ 30 phút.
+- Caller cung cấp toàn bộ dữ liệu cần thiết; helper thuần không đọc `S`, ngày hệ thống hay DOM.
