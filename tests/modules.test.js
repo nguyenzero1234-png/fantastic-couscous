@@ -420,3 +420,19 @@ test("npc data nhận diện đúng Cố Thái Hư được miễn hiệu ứng"
   assert.equal(N.isImmuneTaiHu(8, npcs), false);
   assert.equal(N.isImmuneTaiHu(0, []), false);
 });
+
+
+test("analytics sumMinutes giữ nguyên phép cộng lịch sử theo predicate", () => {
+  const A = window.GameAnalytics;
+  const H = {
+    "2026-11-20": { m: 45 },
+    "2026-11-21": { m: 0 },
+    "2026-11-22": { m: 90 },
+    "2026-11-23": { m: 30 }
+  };
+  assert.equal(A.sumMinutes(H, () => true), 165);
+  assert.equal(A.sumMinutes(H, key => key >= "2026-11-22"), 120);
+  assert.equal(A.sumMinutes(H, key => key === "2026-11-21"), 0);
+  assert.equal(A.sumMinutes({}, () => true), 0);
+  assert.equal(A.sumMinutes(H, () => false), 0);
+});

@@ -19,6 +19,11 @@
   const l=L.filter(x=>D.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);
   return {m,n,d,l};
  }
+ function sumMinutes(history,predicate){
+  let total=0;
+  for(const key in history)if(predicate(key))total+=history[key].m;
+  return total;
+ }
  function questProgress(history,counts,task,todayKey,weekStartKey){
   const H=history||{},C=counts||{},T=todayKey;
   const matches=task.per==="d"?k=>k===T:task.per==="w"?k=>k>=weekStartKey&&k<=T:k=>k.slice(0,7)===T.slice(0,7);
@@ -33,5 +38,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes});
 })(window);
