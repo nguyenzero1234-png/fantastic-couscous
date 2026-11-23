@@ -1162,3 +1162,34 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
     d: "Dùng: 2 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +60 linh lực cố định (tổng +120, gấp 1,2 lần giá)"
   });
 });
+
+
+test("GameSectSystem đóng gói tông môn, điều kiện bái sư và buff theo state", () => {
+  const state = { sect: 0, master: 0, streak: { n: 3 }, tm: false };
+  let realm = 1, life = { q: 8, it: 3, ni: 5 }, exams = [];
+  const M = window.GameSectSystem.create({ state, realmIndex: () => realm, lifeStats: () => life, examResults: () => exams });
+  assert.equal(M.sects.length, 6);
+  assert.equal(M.masters.length, 6);
+  assert.equal(M.sects[0].n, "Thiên Kiếm Tông");
+  assert.equal(M.masters[0].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { fl: 8 });
+  state.master = null;
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), {});
+  state.master = 1; state.sect = 1;
+  assert.equal(M.masters[1].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { itemBonus: 10 });
+  state.sect = 2; state.master = 2; life.q = 15;
+  assert.equal(M.masters[2].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { mult: 1.05 });
+  state.sect = 3; state.master = 3; state.streak.n = 7;
+  assert.equal(M.masters[3].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { dc: 15 });
+  state.sect = 4; state.master = 4;
+  assert.equal(M.masters[4].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { fn: 12 });
+  state.sect = 5; state.master = 5; exams = [{ rows: [{ u: true, g: "Khá" }] }];
+  assert.equal(M.masters[5].ok(), true);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { ft: 8 });
+  exams = [];
+  assert.equal(M.masters[5].ok(), false);
+});
