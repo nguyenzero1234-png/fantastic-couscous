@@ -17,6 +17,8 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm install
+      - name: Rebase generated lockfile onto latest branch
+        run: git pull --rebase origin "${GITHUB_REF_NAME}"
       - name: Commit regenerated package lock
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
