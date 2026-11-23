@@ -348,3 +348,27 @@ test("progression data tính ngày hoạt động và chuỗi theo nhật ký/st
   assert.equal(P.streakAt(history, streak, date, true, today, yesterday), 3);
   assert.equal(P.streakAt(history, { last: yesterday, n: 5 }, date, true, today, yesterday), 5);
 });
+
+
+test("date data tạo ngày thi tại 12 giờ local và cộng ngày lịch", () => {
+  const D = window.GameDateData;
+  const start = new Date(2026, 10, 23, 2, 45, 0, 0);
+  const result = D.examDate(start, 3);
+  assert.equal(result.getFullYear(), 2026);
+  assert.equal(result.getMonth(), 10);
+  assert.equal(result.getDate(), 26);
+  assert.equal(result.getHours(), 12);
+  assert.equal(result.getMinutes(), 0);
+  assert.equal(start.getDate(), 23);
+  assert.equal(start.getHours(), 2);
+  assert.equal(D.examDate(start, -2).getDate(), 21);
+});
+
+test("time format giữ nguyên định dạng ngày giờ sự kiện tiếng Việt", () => {
+  const T = window.GameTimeFormat;
+  for (const timestamp of [0, 1799999999000, 1799999999000 + 86400000]) {
+    assert.equal(T.eventTimestamp(timestamp), new Date(timestamp).toLocaleString("vi-VN", {
+      day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+    }));
+  }
+});

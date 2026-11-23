@@ -190,3 +190,11 @@
 - [x] Chuyển tính chuỗi tại mốc thiên kiếp sang `GameProgressData.streakAt()`; giữ nguyên quy tắc hôm nay chưa học vẫn tính chuỗi từ hôm qua và quy tắc gộp streak hiện hành khi tua kiếp.
 - [x] Bổ sung kiểm thử cho lịch sử rời rạc, streak hiện hành, mốc tương lai và ngày hôm nay chưa học.
 - [x] CI #129 xác nhận 25/25 kiểm thử JavaScript đạt; Gradle `assembleDebug` và tải APK artifact thành công.
+
+
+## Tách helper ngày thi và thời điểm sự kiện (2026-11-23)
+- [x] Chuyển tạo ngày thi từ ngày bắt đầu kỳ thi và độ lệch ngày sang `GameDateData.examDate()`; giữ mốc 12 giờ local để tránh lệch ngày do múi giờ.
+- [x] Chuyển định dạng ngày/giờ sự kiện tiếng Việt sang `GameTimeFormat.eventTimestamp()`.
+- [x] `game.js` giữ wrapper, dữ liệu kỳ thi và nguồn timestamp vẫn do luồng hiện tại cung cấp.
+- [x] Bổ sung test kiểm tra không mutate ngày bắt đầu, cộng/lùi ngày và định dạng locale.
+- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.

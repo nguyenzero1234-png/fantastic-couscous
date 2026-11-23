@@ -117,3 +117,9 @@ www/js/
 - `GameProgressData.activeDays(history, streak, date, cur, todayKey)` tính số ngày hoạt động trong cửa sổ 14 ngày, kết hợp nhật ký và chuỗi được giữ.
 - `GameProgressData.streakAt(history, streak, date, cur, todayKey, yesterdayKey)` tính chuỗi liên tiếp tại mốc thiên kiếp. Mọi nguồn trạng thái/ngày đều được truyền vào; module không đọc `S` hay gọi DOM.
 - `game.js` giữ wrapper để cung cấp đúng ngày local và dữ liệu save hiện tại.
+
+
+## Helper ngày thi và thời điểm sự kiện
+- `GameDateData.examDate(start, dayOffset)` clone ngày bắt đầu, đặt về 12 giờ local rồi cộng độ lệch ngày lịch; không làm thay đổi đối tượng đầu vào.
+- `GameTimeFormat.eventTimestamp(timestamp)` định dạng ngày/giờ sự kiện theo locale `vi-VN`.
+- Các wrapper trong `game.js` tiếp tục lấy dữ liệu kỳ thi và timestamp từ state runtime.

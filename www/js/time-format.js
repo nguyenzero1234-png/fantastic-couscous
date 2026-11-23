@@ -14,10 +14,11 @@
     const minutes = Math.max(0, Math.ceil((timestamp - now) / 60000));
     return minutes >= 60 ? Math.floor(minutes / 60) + " giờ " + minutes % 60 + " phút" : minutes + " phút";
   };
+  const eventTimestamp = timestamp => new Date(timestamp).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
   const currentClock = () => {
     const date = new Date();
     return pad(date.getHours()) + ":" + pad(date.getMinutes());
   };
 
-  root.GameTimeFormat = Object.freeze({ pad, formatDuration, toMinutes, toClock, currentClock, remaining });
+  root.GameTimeFormat = Object.freeze({ pad, formatDuration, toMinutes, toClock, currentClock, remaining, eventTimestamp });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -19,5 +19,11 @@
     date.setDate(date.getDate()-(date.getDay()+6)%7);
     return date.toLocaleDateString("sv");
   }
-  global.GameDateData=Object.freeze({today,dayOffset,weekStart});
+  function examDate(start, dayOffset){
+    const date=new Date(start);
+    date.setHours(12,0,0,0);
+    date.setDate(date.getDate()+Number(dayOffset||0));
+    return date;
+  }
+  global.GameDateData=Object.freeze({today,dayOffset,weekStart,examDate});
 })(window);

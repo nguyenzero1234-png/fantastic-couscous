@@ -484,7 +484,7 @@ const rkNow=i=>{const t=Date.now(),s=sc(i,t);let r=1;for(let j=0;j<B.length;j++)
 const myRk=()=>{const t=Date.now();let r=1;for(let i=0;i<B.length;i++)if(sc(i,t)>=S.points)r++;return r};
 function vlog(t){(S.vlog||(S.vlog=[])).unshift({t,ts:Date.now()});S.vlog.length=Math.min(S.vlog.length,40)}
 function brk(){const rr=ri(uxp());S.pk=Math.max(S.pk||0,rr);if(S.rm!=null&&rr<S.rm)S.rm=rr;if(S.rm==null)S.rm=rr;else if(rr>S.rm){S.rm=rr;vlog("Đột phá tu vi: "+rname(uxp()));burst();sfx(660);setTimeout(()=>sfx(880),120);setTimeout(()=>say("Đột phá tu vi: "+rname(uxp())+"!"),300)}}
-const fmtT=ms=>new Date(ms).toLocaleString("vi-VN",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+const fmtT=ms=>GameTimeFormat.eventTimestamp(ms);
 function recentEv(){
   const n0=Math.floor((Date.now()-S.lb.t0)/3600000),L=[];
   for(let i=0;i<B.length;i++)for(let m=n0-72;m<=n0;m++){const e=evAt(i,m);if(e)L.push(e)}
@@ -768,7 +768,7 @@ const EX=[
 ];
 const RW={"Xuất sắc":200,"Giỏi":140,"Khá":90,"Trung bình":40,"Yếu":0};
 const gr=s=>GameProgressData.grade(s);
-const exD=e=>{const d=new Date(KS().start);d.setHours(12,0,0,0);d.setDate(d.getDate()+e.day);return d};
+const exD=e=>GameDateData.examDate(KS().start,e.day);
 const uxp=ds=>{if(!ds)return S.points;let t=0;for(const k in S.hist)if(!ds||k<=ds)t+=S.hist[k].p;return t};
 const bxX=(i,x)=>{const k=Math.floor(x);if(k<0)return B[i].p;cum(i,k+1);const f=x-k,d=CD[i];return B[i].p+d[k]*(1-f)+d[k+1]*f};
 /* Tu vi của NPC = đúng điểm hiện trên bảng xếp hạng (sc), để cảnh giới và linh lực luôn khớp nhau */
