@@ -40,7 +40,7 @@ const done=()=>{
   S.name=v;S.gender=pick||"nam";
   save();o.hidden=true;render();
   say("Chào mừng "+(S.gender==="nu"?"nữ tu":"đạo hữu")+" "+v+".");
-  if(!S.tutDone)schedule(showTutorial,300;
+  if(!S.tutDone)schedule(showTutorial,300);
 };
 $("nmk").onclick=done;$("nmi").onkeydown=e=>{if(e.key==="Enter")done()};
   }

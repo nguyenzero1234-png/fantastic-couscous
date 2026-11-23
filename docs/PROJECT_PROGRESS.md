@@ -1016,3 +1016,4 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển màn hình Thiên Diễn dự báo giữ thứ hạng sang `ui/leaderboard.js` cùng các màn hình leaderboard.
 - [x] Giữ wrapper `askName` và `thienDien` để không đổi luồng khởi tạo và nút diễn toán.
 - [x] Bổ sung test nhập đạo, lọc tên và dự báo thứ hạng.
+- [x] Sửa dấu đóng callback scheduler trong onboarding module trước khi nghiệm thu CI.
