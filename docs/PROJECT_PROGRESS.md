@@ -843,3 +843,12 @@ Sau mỗi đợt thay đổi:
 - [x] Bổ sung test cho trạng thái và tương tác bộ lọc.
 - [x] Sửa assertion kiểm thử để chuẩn hóa object qua JSON khi so sánh dữ liệu được tạo trong VM realm.
 - [ ] Tiếp tục tách các màn hình và subsystem lớn hơn; chưa coi `game.js` đã thu gọn xong.
+
+
+## Tách mô phỏng tu vi NPC khỏi game.js (2026-11-24)
+
+- [x] Chuyển bộ máy mô phỏng tích lũy tu vi theo phút, cơ duyên, hệ số hiệu suất và cache xếp hạng sang `systems/leaderboard.js`.
+- [x] Đóng gói cache mô phỏng trong `GameLeaderboardSimulation.create()`; `game.js` nhận API qua dependency injection và giữ các alias cũ cho các hệ thống đang dùng.
+- [x] Chuyển cả tính phân bổ NPC vào sáu tông môn, vô hiệu cache từ mốc thời gian và reset cache khi luân hồi vào module; không đổi công thức hoặc save schema.
+- [x] Bổ sung test mô phỏng linh lực, phân bổ tông môn và reset cache.
+- [ ] Tiếp tục tách phần settlement/đặc ân/xếp hạng tuần và các subsystem gameplay còn lại.
