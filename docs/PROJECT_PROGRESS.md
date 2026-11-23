@@ -794,4 +794,5 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển `GameQuestCompletion` vào `systems/quest-completion.js`; không thay đổi luồng thưởng, streak, lịch sử hoặc hoàn thành chuỗi.
 - [x] Chuyển `GameSectMissions` vào `systems/sect-missions.js`; giữ nguyên chọn nhiệm vụ tuần và cơ chế nhận thưởng.
 - [x] Giữ đường dẫn cũ làm compatibility guard; script implementation đứng ngay trước wrapper tại vị trí cũ.
-- [ ] Cần bổ sung assertion thứ tự nạp cho các system modules và xác nhận CI xanh trước khi coi đợt này ổn định.
+- [x] Bổ sung assertion cho cả 7 cặp implementation/compatibility trong `tests/modules.test.js`; test kiểm tra implementation được nạp trước đường dẫn tương thích.
+- [ ] Cần xác nhận CI xanh sau đợt di chuyển; chưa coi giai đoạn systems hoàn tất.
