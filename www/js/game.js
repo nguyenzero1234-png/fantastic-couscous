@@ -1088,7 +1088,7 @@ function finish(q){
   const t=today();
   if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();
   if(S.streak.last!==t){
-    const decision=GameStreak.completeDay({last:S.streak.last,today:t,yesterday:dayStr(1),twoDaysAgo:dayStr(2),streak:S.streak.n,lifeCharm:S.inv.the,heartCharm:!!S.sh,random:Math.random()});
+    const decision=GameStreak.completeDay({last:S.streak.last,today:t,yesterday:dayStr(1),twoDaysAgo:dayStr(2),streak:S.streak.n,lifeCharm:S.inv.the,heartCharm:!!S.sh,random:Math.random});
     if(decision.consumeLifeCharm)S.inv.the--;
     if(decision.consumeHeartCharm)S.sh=0;
     if(decision.triggerDemon){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
@@ -2240,7 +2240,7 @@ bx.onclick=e=>{
 
 function checkStreakBreak(){
   // Mất chuỗi vì bỏ ngày (chưa học hôm qua / trước đó) → tâm ma, không cần đợi nhiệm vụ mới
-  const decision=GameStreak.checkBreak({last:S.streak.last,streak:S.streak.n,today:today(),yesterday:dayStr(1),twoDaysAgo:dayStr(2),lifeCharm:S.inv&&S.inv.the,heartCharm:!!S.sh,random:Math.random()});
+  const decision=GameStreak.checkBreak({last:S.streak.last,streak:S.streak.n,today:today(),yesterday:dayStr(1),twoDaysAgo:dayStr(2),lifeCharm:S.inv&&S.inv.the,heartCharm:!!S.sh,random:Math.random});
   if(!decision)return;
   if(decision.consumeHeartCharm)S.sh=0;
   if(decision.triggerDemon){S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;}
