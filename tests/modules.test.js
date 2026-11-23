@@ -1430,3 +1430,15 @@ test("GameStorySystem ghi mốc truyện và tạo nhật ký qua dependency",()
  assert.ok(S.storyLog.some(x=>x.id==="rb:1"));
  assert.match(M.generateDiary("2026-11-24").join(" "),/2026-11-24/);
 });
+
+
+test("GameTribulationSystem chấm kiếp, cập nhật Mệnh và khóa xem kết quả",()=>{
+ const S={name:"Đạo hữu",points:100,menh:100,failStreak:0,sem:{res:{}},sp:null,life:{},exLock:null};let saved=0,shown=0;
+ const M=window.GameTribulationSystem.create({S,EX:[{id:"e1",n:"Kiếp thử",day:0,need:0,w:1}],exD:()=>new Date(0),KD:1,KS:()=>({skx:0,skd:0}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>100,immuneTaiHu:()=>false,vlog:()=>{},bxp:()=>0,spKn:()=>-1,kh:()=>80,khNpc:()=>50,spE:e=>e,streakAt:()=>3,SPQ:[{f:1},{f:1},{f:1}],ri:()=>1,gr:()=>"Giỏi",daoTam:()=>1,spRetire:()=>{},save:()=>saved++,hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>shown++,schedule:fn=>fn()});
+ M.resolveEx();
+ assert.ok(S.sem.res.e1);
+ assert.equal(S.life.exOk,1);
+ assert.equal(S.exLock,"e1");
+ assert.equal(saved,1);
+ assert.equal(shown,1);
+});

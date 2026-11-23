@@ -953,3 +953,11 @@ Sau mỗi đợt thay đổi:
 - [x] Chỉ đưa ba renderer lịch học, cửa hàng và chuỗi nhiệm vụ vào module UI; giữ helper `expired`, `weekStart`, `evCur` và `stepRow` ở bootstrap/systems.
 - [x] Tránh khai báo trùng tên helper trong factory và giữ dependency injection rõ ràng.
 - [ ] Chờ CI xác nhận lại toàn bộ test sau sửa.
+
+
+## Tách xử lý kết quả thiên kiếp sang systems/tribulation.js (2026-11-24)
+
+- [x] Chuyển chấm điểm NPC/người chơi, điều kiện vượt kiếp, chuỗi thất bại, trừ Mệnh, hiệu ứng Bất Diệt Kim Thân và khóa xem kết quả sang `systems/tribulation.js`.
+- [x] Truyền dữ liệu, mô phỏng bảng, streak, buff, công thức điểm, save và callback UI qua dependency injection; giữ wrapper `resolveEx`.
+- [x] Giữ modal và nội dung trình bày ở `ui/heavenly-tribulation.js`/`ui/exam-modal.js`.
+- [x] Bổ sung test thành công, cập nhật life flag và khóa xem kết quả.
