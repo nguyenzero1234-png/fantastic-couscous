@@ -1023,3 +1023,21 @@ test("exam modal xác nhận thiên kiếp, mở khóa nền và điều hướn
  window.GameExamModal.show(deps,event);assert.equal(elements.thd.hidden,false);assert.match(elements.thd.innerHTML,/Thiên Kiếp Giáng Lâm/);assert.equal(body.style.pointerEvents,"none");elements.exok.onclick();
  assert.equal(state.sem.res.e1.seen,true);assert.equal(state.exLock,null);assert.equal(elements.thd.hidden,true);assert.deepEqual(calls,["save",["go","w","x"],"render"]);
 });
+
+
+test("GameStoryData ghi Đạo Văn duy nhất, giới hạn 40 bản ghi và không sửa dòng gốc", () => {
+  const M = window.GameStoryData;
+  const state = {};
+  const lines = ["Dòng một", "Dòng hai"];
+  assert.equal(M.append(state, "realm:1", "Trúc Cơ", lines, { realm: 1 }, 123, "2026-11-23"), true);
+  assert.equal(M.append(state, "realm:1", "Trúc Cơ", ["Trùng"], null, 456, "2026-11-24"), false);
+  assert.deepEqual(JSON.parse(JSON.stringify(state.storyLog[0])), {
+    id: "realm:1", title: "Trúc Cơ", lines, at: 123, day: "2026-11-23", realm: 1
+  });
+  assert.deepEqual(lines, ["Dòng một", "Dòng hai"]);
+  for (let i = 0; i < 45; i++) M.append(state, "entry:" + i, "Entry " + i, ["Nội dung"], null, i, "2026-11-23");
+  assert.equal(state.storyLog.length, 40);
+  assert.equal(state.storyLog[0].id, "entry:5");
+  assert.equal(M.realmStory.length, 9);
+  assert.equal(M.realmStory[2].t, "Kim Đan");
+});
