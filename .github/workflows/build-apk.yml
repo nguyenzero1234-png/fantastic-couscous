@@ -17,6 +17,11 @@ jobs:
       - run: npm install
       - name: Kiểm thử JavaScript modules
         run: npm test
+      - name: Báo cáo lỗ hổng dependency
+        run: |
+          npm audit --json > audit-report.json || true
+          node -e 'const a=require("./audit-report.json"); console.log("Dependency vulnerabilities:", JSON.stringify(a.metadata?.vulnerabilities || {})); for (const [name, v] of Object.entries(a.vulnerabilities || {})) console.log(`${name}: ${v.severity}; fix=${JSON.stringify(v.fixAvailable)}`)'
+          rm audit-report.json
       - run: npx cap add android
 
       - name: Thêm quyền thông báo + Exact Alarm
