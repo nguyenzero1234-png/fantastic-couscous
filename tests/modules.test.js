@@ -672,7 +672,7 @@ test("cơ duyên bảng xếp hạng chọn kết quả xác định và giữ n
   const calls = [];
   const hash = (...args) => {
     calls.push(args);
-    return ({ 3: 0.1, 900: 0.35, 5: 0.8 })[args[0] - 100] ?? 0.1;
+    return ({ 103: 0.1, 1000: 0.35, 105: 0.8 })[args[0]] ?? 0.1;
   };
   const result = L.rollSpecial(rows, 77, 100, hash);
   assert.deepEqual(JSON.parse(JSON.stringify(result)), [

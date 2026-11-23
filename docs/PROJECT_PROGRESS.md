@@ -312,3 +312,4 @@
 - [x] Bổ sung kiểm thử kết quả, thứ tự gọi hash và đầu vào rỗng.
 - [x] CI #163 xác nhận 46/46 test, build APK và tải artifact `TuTienHocDao-apk` thành công.
 - [ ] Chờ CI cho module cơ duyên; chưa kiểm thử cài đặt trên thiết bị Android thật.
+- Lưu ý: ca test dùng hash giả lập theo đúng identity truyền vào (NPC: index + 1; người chơi: 900), kiểm tra cả ba nhánh loại cơ duyên.

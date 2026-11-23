@@ -238,3 +238,5 @@ www/js/
 - Caller truyền danh sách nhân vật đủ điều kiện, seed, salt và hàm hash; module trả kết quả theo đúng thứ tự đầu vào, không sửa trạng thái.
 - `game.js` tiếp tục xử lý điều kiện hạng, cơ duyên đang giữ, thời hạn hiệu lực và lịch sử nhận thưởng.
 - CI #163 đã build APK thành công cho phiên bản trước; CI của commit mới sẽ xác nhận module này.
+
+- Test dùng hash giả lập cho hai identity NPC và identity người chơi để kiểm tra ngưỡng và nhánh kết quả; cần CI xác nhận.
