@@ -753,3 +753,22 @@ test("leaderboard rankRows sắp xếp giảm dần, giữ thứ tự hòa đi�
   assert.equal(JSON.stringify(rows), before);
   assert.deepEqual(JSON.parse(JSON.stringify(L.rankRows([]))), []);
 });
+
+test("rebirth gradeSummary giữ nguyên các ngưỡng xếp loại kiếp", () => {
+  const R = window.GameRebirthData;
+  const end = 1000;
+  const cases = [
+    [{ pk: 1000, hrs: 5 * 10, days: 10, rank: 5 }, ["Viên Mãn Xuất Chúng", "Một kiếp trọn vẹn. Hiếm có người đi hết như vậy."]],
+    [{ pk: 1000, hrs: 5 * 10, days: 10, rank: 6 }, ["Xuất Sắc", "Một kiếp vững vàng. Không có gì phải hổ thẹn."]],
+    [{ pk: 700, hrs: 4 * 10, days: 10, rank: 10 }, ["Xuất Sắc", "Một kiếp vững vàng. Không có gì phải hổ thẹn."]],
+    [{ pk: 500, hrs: 3.5 * 10, days: 10, rank: 20 }, ["Giỏi", "Một kiếp đáng nhớ. Thiếu một chút nữa là xong."]],
+    [{ pk: 300, hrs: 1 * 10, days: 10, rank: 100 }, ["Trung Bình", "Một kiếp bình thường. Bình thường cũng là đã sống."]],
+    [{ pk: 100, hrs: 1 * 10, days: 10, rank: 100 }, ["Yếu", "Một kiếp lơi tay. Kiếp sau còn trang trắng."]]
+  ];
+  for (const [input, expected] of cases) {
+    assert.deepEqual(JSON.parse(JSON.stringify(R.gradeSummary(input, end))), { grade: expected[0], text: expected[1] });
+  }
+  assert.deepEqual(JSON.parse(JSON.stringify(R.gradeSummary({ pk: 0, hrs: 0, days: 0, rank: 99 }, end))), {
+    grade: "Yếu", text: "Một kiếp lơi tay. Kiếp sau còn trang trắng."
+  });
+});

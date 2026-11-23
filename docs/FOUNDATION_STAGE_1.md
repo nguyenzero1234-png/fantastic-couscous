@@ -270,3 +270,10 @@ www/js/
 - `game.js` vẫn chịu trách nhiệm tính điểm từ trạng thái người chơi/NPC; helper chỉ thực hiện phép xếp hạng.
 - Có test cho điểm giảm dần, hòa điểm, mảng rỗng và tính bất biến đầu vào.
 - CI #170 xác nhận commit sparkline trước đó build APK thành công; CI của commit này sẽ xác nhận thay đổi mới.
+
+
+## Module phân loại tổng kết kiếp
+- `GameRebirthData.gradeSummary(record, end)` phân loại kết quả thành Viên Mãn Xuất Chúng, Xuất Sắc, Giỏi, Trung Bình hoặc Yếu và trả câu tổng kết tương ứng.
+- Helper chỉ nhận record và mốc linh lực, không đọc state/DOM; `game.js` vẫn đảm nhiệm dựng lời kể, dữ liệu lịch sử và các điều kiện ân xá.
+- Giữ nguyên các ngưỡng và thứ tự ưu tiên cũ; test bao phủ các nhánh xếp loại và trường hợp số ngày bằng 0.
+- CI #171 xác nhận commit `55690d84` build APK thành công; CI của module mới cần xác nhận lại.

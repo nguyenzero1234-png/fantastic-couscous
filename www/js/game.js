@@ -2278,12 +2278,7 @@ function buildRec(){
 function narrate(r){
   const P=[],f=ts=>new Date(ts).toLocaleDateString("vi-VN"),avg=r.hrs/r.days,full=r.pk>=END;
   // Đánh giá tổng thể dựa trên giờ học, hạng, linh lực đỉnh và chuỗi ngày
-  let grade="Trung Bình",gTxt="Chưa thành hình.";
-  if(full&&avg>=5&&r.rank<=5){grade="Viên Mãn Xuất Chúng";gTxt="Một kiếp trọn vẹn. Hiếm có người đi hết như vậy.";}
-  else if(full||(avg>=5&&r.rank<=10&&r.pk>=END*0.7)){grade="Xuất Sắc";gTxt="Một kiếp vững vàng. Không có gì phải hổ thẹn.";}
-  else if(avg>=3.5&&r.rank<=20){grade="Giỏi";gTxt="Một kiếp đáng nhớ. Thiếu một chút nữa là xong.";}
-  else if(avg>=2||r.pk>=END*0.3){grade="Trung Bình";gTxt="Một kiếp bình thường. Bình thường cũng là đã sống.";}
-  else{grade="Yếu";gTxt="Một kiếp lơi tay. Kiếp sau còn trang trắng.";}
+  const summary=GameRebirthData.gradeSummary(r,END),grade=summary.grade,gTxt=summary.text;
   r.grade=grade;
   P.push(`Kiếp thứ ${r.n}, có một người tên ${r.name}${r.sect?`, đệ tử ${r.sect}`:""}. Tu hành ${r.days} ngày, tổng cộng ${Math.round(r.hrs)} canh giờ, bình quân ${avg.toFixed(1)} giờ mỗi ngày. ${avg>=6?"Người ngoài gọi là liều mạng. Người ấy chỉ gọi là học.":avg>=3?"Không nhanh, không chậm. Ngày nào cũng ngồi xuống.":"Có ngày ngồi trước án thư, có ngày không."}`);
   const L=[];

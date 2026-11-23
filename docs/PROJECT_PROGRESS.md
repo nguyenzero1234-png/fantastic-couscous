@@ -348,3 +348,11 @@
 - [x] `game.js` tiếp tục tính điểm từ state; module chỉ nhận danh sách dòng đã có điểm và trả danh sách đã xếp hạng.
 - [x] Bổ sung test cho thứ tự giảm dần, hòa điểm, mảng rỗng và tính bất biến của đầu vào.
 - [ ] Chờ CI xác nhận commit tách rankRows; chưa kiểm thử giao diện trên Android thật.
+
+
+## Tách phân loại tổng kết kiếp (2026-11-23)
+- [x] Thêm `www/js/rebirth-data.js` với helper thuần `GameRebirthData.gradeSummary(record, end)` để phân loại kết quả một kiếp.
+- [x] Chuyển phần phân loại cấp bậc và câu tổng kết khỏi `game.js`; giữ nguyên ngưỡng giờ học, hạng, linh lực đỉnh và nội dung tiếng Việt.
+- [x] Thêm kiểm thử cho đủ sáu nhánh xếp loại và dữ liệu ngày bằng 0; helper không đọc state hoặc DOM.
+- [x] CI #171 xác nhận commit `55690d84` thành công, bao gồm test, dependency audit, Gradle APK debug và artifact APK.
+- [ ] Chờ CI kiểm tra module phân loại kiếp mới; chưa kiểm thử trên thiết bị Android thật.
