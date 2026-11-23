@@ -83,3 +83,8 @@ www/js/
 - `www/js/noise.js` cung cấp `GameNoise.hash(a,b,c)` và `GameNoise.value(seed,channel,x)`.
 - Đây là các hàm thuần, xác định, không đọc trạng thái hay thời gian; NPC simulation dùng chúng để tạo biến động lặp lại theo seed.
 - `game.js` giữ alias `hs`/`vn` nhằm tránh sửa các call-site và giữ nguyên thuật toán cũ.
+
+
+## Module tiện ích văn bản
+- `www/js/text.js` cung cấp `GameText.escapeHtml(value)` để escape các ký tự `&`, `<`, `>` và dấu nháy kép trước khi chèn chuỗi vào HTML.
+- `game.js` giữ alias `esc` trỏ tới hàm module; không đổi các call-site và không thêm phụ thuộc DOM.

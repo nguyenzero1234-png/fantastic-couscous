@@ -9,7 +9,7 @@ if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let
 const save=()=>GameStorage.save(KEY,S);
 const $=id=>document.getElementById(id);
 const today=()=>GameDateData.today(S.dOff||0);
-const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=GameText.escapeHtml;
 const isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===today());
 const pad=GameTimeFormat.pad;
 const fmt=GameTimeFormat.formatDuration;

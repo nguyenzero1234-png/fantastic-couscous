@@ -145,4 +145,11 @@
 - [x] `game.js` dùng hai hàm qua alias `hs` và `vn`; giữ nguyên thuật toán, hệ số và thứ tự tính của mô phỏng NPC.
 - [x] Thêm kiểm thử vector hash cố định, nội suy tại số nguyên/phân số và giới hạn giữa hai mẫu.
 - [x] GitHub Actions run #117 xác nhận kiểm thử và build APK thành công cho thay đổi cảnh giới.
-- [ ] Chờ CI cho module noise.
+- [x] GitHub Actions run #118 xác nhận kiểm thử và build APK thành công cho module noise.
+
+
+## Tách tiện ích escape HTML (2026-11-23)
+- [x] Chuyển helper escape ký tự HTML sang `www/js/text.js` (`window.GameText.escapeHtml`).
+- [x] `game.js` giữ alias `esc` để toàn bộ nơi hiển thị chuỗi tiếp tục dùng đúng helper cũ; không đổi quy tắc escape `&`, `<`, `>` và dấu nháy kép.
+- [x] Bổ sung kiểm thử ký tự đặc biệt, chuỗi rỗng, chuỗi đã encode và đầu vào không phải chuỗi.
+- [ ] Chờ CI xác nhận kiểm thử và APK cho commit này.

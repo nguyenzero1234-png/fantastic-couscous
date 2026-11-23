@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
@@ -243,4 +243,14 @@ test("noise hash ổn định và value noise nội suy trơn", () => {
   assert.equal(N.value(42, 7, -2), N.hash(42, 7, -2));
   assert.ok(N.value(42, 7, 2.5) >= Math.min(N.hash(42, 7, 2), N.hash(42, 7, 3)));
   assert.ok(N.value(42, 7, 2.5) <= Math.max(N.hash(42, 7, 2), N.hash(42, 7, 3)));
+});
+
+
+test("text utilities escape HTML như helper cũ", () => {
+  const E = window.GameText.escapeHtml;
+  assert.equal(E("A&B <C> \"D\""), "A&amp;B &lt;C&gt; &quot;D&quot;");
+  assert.equal(E("không có ký tự đặc biệt"), "không có ký tự đặc biệt");
+  assert.equal(E("&lt;"), "&amp;lt;");
+  assert.equal(E(""), "");
+  assert.throws(() => E(null), TypeError);
 });
