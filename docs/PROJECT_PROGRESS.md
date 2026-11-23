@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-23
-> Mốc mới: tách bộ tính hệ số linh lực sang `rewards.js`.  
+> Mốc mới: mở rộng `rewards.js` với công thức thưởng nhiệm vụ, chuỗi nhiệm vụ và liên hoàn ngày học.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -22,13 +22,15 @@
 - [x] Giữ các script ở dạng classic script để tương thích với global dùng chung trong `notify.js` và `schedule.js`.
 - [x] Tách cấu hình giao diện (skin, density, font size, theme) sang `www/js/ui.js`, cung cấp API `window.GameUI.apply(S)`.
 - [x] Tách trạng thái và phép tính timer phiên nhàn hạ/phiên học sang `www/js/timer.js` (`window.GameTimer`).
-- [x] Tách phép tính hệ số linh lực và thưởng Thiên Cơ Lệnh sang `www/js/rewards.js` (`window.GameRewards`); phần điều phối trạng thái vẫn do `game.js` quản lý.
+- [x] Tách phép tính hệ số linh lực và thưởng Thiên Cơ Lệnh sang `www/js/rewards.js` (`window.GameRewards`).
+- [x] Tách công thức thưởng hoàn thành nhiệm vụ, hiệu ứng thưởng theo nhiệm vụ, thưởng hoàn thành chuỗi và hệ số liên hoàn ngày học sang `GameRewards`; `game.js` vẫn quản lý trạng thái, điều kiện hiệu ứng và lưu lịch sử.
 - [x] Bổ sung tài liệu kiến trúc và tiến độ tại `docs/FOUNDATION_STAGE_1.md`.
 
 ### Kiểm tra
 - [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `ui.js`, `timer.js`, `game.js`, `notify.js`, `schedule.js`.
 - [x] GitHub Actions build APK cho commit `8a7da3cd94b7aab9d3333a04f28b9863c35dae04` thành công: [Build run #23](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45169198792).
-- [x] Sau khi tách `rewards.js`: parse cú pháp `game.js`/`rewards.js`, kiểm tra thứ tự nạp script và 188 ca kiểm tra runtime cho công thức thưởng linh lực đều đạt; chưa xác nhận build APK mới hoặc kiểm thử trên Android thật.
+- [x] Sau khi tách `rewards.js` bước đầu: parse cú pháp, thứ tự nạp script và 188 ca kiểm tra runtime cho công thức thưởng linh lực đạt.
+- [ ] Sau khi mở rộng `rewards.js` với thưởng nhiệm vụ/chuỗi/liên hoàn: chạy kiểm thử hồi quy đối chiếu công thức cũ và mới; chưa xác nhận build APK mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
 - [ ] Chưa có hạng mục đang thực hiện được xác nhận tại thời điểm cập nhật.
@@ -36,7 +38,7 @@
 ## Việc cần làm tiếp
 
 ### Ưu tiên 1 — Hoàn thiện cấu trúc module
-- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ưu tiên gameplay/domain; phần tính hệ số thưởng đã tách bước đầu).
+- [ ] Tiếp tục tách các quy tắc gameplay độc lập khỏi `game.js`; không di chuyển các luồng có nhiều tác động phụ khi chưa có kiểm thử hồi quy đầy đủ.
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
 
