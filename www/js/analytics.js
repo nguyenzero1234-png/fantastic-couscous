@@ -19,6 +19,15 @@
   const l=L.filter(x=>D.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);
   return {m,n,d,l};
  }
+ function studyWindowStats(history,startKey,endKey){
+  const H=history||{};
+  const days=Object.keys(H).filter(key=>key>=startKey&&key<=endKey);
+  return {
+   days,
+   daysWithStudy:days.filter(key=>H[key].m>0).length,
+   bestMinutes:Math.max(0,...days.map(key=>H[key].m||0))
+  };
+ }
  function sumCountsBetween(counts,startKey,endKey){
   let total=0;
   const C=counts||{};
@@ -62,5 +71,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats});
 })(window);

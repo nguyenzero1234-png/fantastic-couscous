@@ -518,3 +518,24 @@ test("analytics cộng số nhiệm vụ theo khoảng ngày với cả hai đ�
   assert.equal(A.sumCountsBetween(C, "2026-11-25", "2026-11-30"), 0);
   assert.equal(A.sumCountsBetween({}, "2026-11-20", "2026-11-24"), 0);
 });
+
+
+test("analytics tổng hợp ngày học và phút cao nhất trong cửa sổ ngày", () => {
+  const A = window.GameAnalytics;
+  const H = {
+    "2026-11-20": { m: 30 }, "2026-11-21": { m: 0 },
+    "2026-11-22": { m: 120 }, "2026-11-23": { m: 45 },
+    "2026-11-24": { m: 240 }
+  };
+  assert.deepEqual(JSON.parse(JSON.stringify(A.studyWindowStats(H, "2026-11-21", "2026-11-23"))), {
+    days: ["2026-11-21", "2026-11-22", "2026-11-23"],
+    daysWithStudy: 2,
+    bestMinutes: 120
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(A.studyWindowStats(H, "2026-11-24", "2026-11-24"))), {
+    days: ["2026-11-24"], daysWithStudy: 1, bestMinutes: 240
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(A.studyWindowStats({}, "2026-11-20", "2026-11-24"))), {
+    days: [], daysWithStudy: 0, bestMinutes: 0
+  });
+});

@@ -982,7 +982,7 @@ function renderEvents(){
   const weekQuests=()=>GameAnalytics.sumCountsBetween(S.cnt,ws,T);
   const weekNight=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h>=22||h<5);
   const weekDawn=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h<7);
-  const wDs=()=>Object.keys(S.hist||{}).filter(k=>k>=ws&&k<=T),wDays=()=>wDs().filter(k=>S.hist[k].m>0).length,wBest=()=>Math.max(0,...wDs().map(k=>S.hist[k].m||0)),cs=(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0;
+  const weekStats=()=>GameAnalytics.studyWindowStats(S.hist,ws,T),wDs=()=>weekStats().days,wDays=()=>weekStats().daysWithStudy,wBest=()=>weekStats().bestMinutes,cs=(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0;
   const EXTRA=[
     {id:"xs1",n:"Canh Khuya Tụng Kinh",desc:"Hoàn thành ≥3 nhiệm vụ trong khung 22h–5h tuần này.",ok:()=>weekNight()>=3,r:70,ck:"xs1:"+ws},
     {id:"xs2",n:"Bình Minh Công Pháp",desc:"Hoàn thành ≥3 nhiệm vụ trước 7h tuần này.",ok:()=>weekDawn()>=3,r:70,ck:"xs2:"+ws},
