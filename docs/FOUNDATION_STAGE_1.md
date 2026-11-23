@@ -152,3 +152,10 @@ www/js/
 - `GameStreak.current(streak, today, yesterday)` xác định chuỗi còn hiệu lực khi lần học gần nhất là hôm nay hoặc hôm qua; các trường hợp cũ hơn trả về 0.
 - Wrapper `curStreak` trong `game.js` tiếp tục cung cấp state và ngày lịch game.
 - CI #140 xác nhận 33/33 kiểm thử JavaScript, build APK và tải artifact thành công.
+
+
+## Helper chọn kiếp có thành tích cao nhất
+- `GameProgressData.bestKiep(records, currentKiepPoints, currentPoints, currentKiepNumber)` chọn kết quả cao nhất trong các kiếp đã qua và kiếp hiện tại.
+- Giữ nguyên thứ tự khi hòa điểm: bản ghi lịch sử đầu tiên có điểm cao nhất được giữ; kiếp hiện tại chỉ thắng khi điểm cao hơn nghiêm ngặt.
+- `game.js` vẫn cung cấp dữ liệu từ save và wrapper `bk`; helper không truy cập state toàn cục.
+- CI #142 xác nhận 34/34 kiểm thử JavaScript, build APK và tải artifact thành công.

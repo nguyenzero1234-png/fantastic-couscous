@@ -235,3 +235,11 @@
 - [x] `game.js` giữ wrapper `curStreak`; nguồn ngày hiện tại/ngày hôm qua vẫn lấy từ lịch game.
 - [x] Bổ sung test cho học hôm nay, hôm qua, chuỗi đã cũ, streak 0 và dữ liệu rỗng.
 - [x] CI #140: 33/33 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
+
+
+## Tách phép chọn kiếp có thành tích cao nhất (2026-11-23)
+- [x] Chuyển phép chọn kiếp có linh lực cao nhất sang `GameProgressData.bestKiep(records, currentKiepPoints, currentPoints, currentKiepNumber)`.
+- [x] Giữ nguyên thứ tự ưu tiên khi hòa điểm: kiếp lịch sử đứng trước; kiếp hiện tại chỉ thay thế khi điểm cao hơn nghiêm ngặt.
+- [x] Giữ nguyên cách làm tròn điểm hiện tại và dùng giá trị lớn hơn giữa điểm kiếp hiện tại với linh lực đang có.
+- [x] Bổ sung test cho kiếp lịch sử cao nhất, kiếp hiện tại dẫn đầu, hòa điểm và danh sách lịch sử rỗng.
+- [x] CI #142: 34/34 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
