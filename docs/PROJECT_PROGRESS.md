@@ -577,3 +577,142 @@
 - [ ] Từng bước thay thế các module cũ bằng module có ranh giới chức năng mới; chỉ xóa module cũ sau khi không còn tham chiếu từ HTML, game, tests hoặc workflow.
 - [ ] Chuyển các module hiện hữu vào `core/`, `data/`, `systems/`, `ui/` theo đúng trách nhiệm; không giữ song song hai nguồn state hoặc hai cơ chế lưu.
 - [ ] Chạy đầy đủ test suite và kiểm tra runtime sau khi hoàn thành nhóm state/core.
+
+---
+
+# Lộ trình chuẩn tái cấu trúc và phát triển (nguồn tham chiếu chính)
+
+> Đây là lộ trình đã thống nhất với chủ dự án. Khi tiếp tục ở cuộc trò chuyện mới, đọc mục này trước khi sửa code. Cập nhật trạng thái sau mỗi mốc đã kiểm chứng.
+
+## Nguyên tắc không thay đổi
+
+1. Làm việc trên nhánh `stage-1/foundation`; không tự ý đổi nhánh hoặc merge.
+2. Ưu tiên tách `game.js` theo **chức năng thực tế**, không chỉ di chuyển file hoặc tạo wrapper để tạo cảm giác đã modular hóa.
+3. Giữ classic scripts, global API và các `onclick` hiện tại trong giai đoạn chuyển đổi; không chuyển sang ES modules nếu chưa có quyết định mới.
+4. Thứ tự kiến trúc mục tiêu: `core → data → systems → ui → game.js`. Mọi script phải được nạp sau dependency và trước consumer.
+5. Không xóa module cũ trước khi quét toàn repo (HTML, JS, tests, workflow) và xác nhận không còn tham chiếu. Dùng compatibility guard có thời hạn khi cần.
+6. Mỗi lần tách phải giữ nguyên gameplay/save schema, có test hồi quy phù hợp và kiểm tra cú pháp + thứ tự nạp.
+7. Gom thay đổi thành các đợt hợp lý, tránh commit dồn dập làm GitHub Actions concurrency hủy workflow đang chạy. Chỉ báo CI pass khi đã xem kết quả thực tế.
+8. **Không kiểm tra, build, ký APK, tạo keystore hoặc xử lý Android trong các giai đoạn 1–6. Android chỉ được xem xét ở giai đoạn 7.**
+
+## Cấu trúc đích
+
+```text
+www/js/
+├── core/
+│   ├── state.js
+│   ├── storage.js
+│   ├── game-loop.js
+│   ├── date.js
+│   ├── time-format.js
+│   ├── noise.js
+│   ├── text.js
+│   └── events.js              # Chỉ tạo nếu thật sự có nhu cầu pub/sub
+├── data/
+│   ├── quest-data.js          # PLAN, preset nhiệm vụ, prompt AI
+│   ├── progression-data.js
+│   ├── npc-data.js
+│   ├── npc-roster.js
+│   ├── kiep-nan-data.js
+│   ├── diary-data.js
+│   ├── leaderboard-data.js
+│   ├── item-data.js
+│   ├── rebirth-data.js
+│   ├── cultivation-display-data.js
+│   └── story-data.js
+├── systems/
+│   ├── quests.js              # Parser và quy tắc nhiệm vụ
+│   ├── rewards.js              # Nhóm nghiệp vụ thưởng theo phạm vi thực tế
+│   ├── streak.js
+│   ├── analytics.js
+│   ├── pets.js
+│   ├── leaderboard.js
+│   ├── sect.js                 # Tông môn và chiến tông môn
+│   ├── heavenly-tribulation.js
+│   ├── story.js
+│   ├── god.js
+│   ├── legacy-missions.js
+│   └── quest-completion.js
+├── ui/
+│   ├── preferences.js
+│   ├── pets.js
+│   ├── exam-modal.js
+│   ├── leaderboard.js
+│   ├── sect.js
+│   ├── heavenly-tribulation.js
+│   ├── statistics.js
+│   ├── map.js
+│   └── ...                    # Chỉ tạo theo chức năng UI thực tế
+└── game.js                    # Bootstrap, render điều phối, askName và vòng lặp
+```
+
+Không bắt buộc tạo file rỗng để khớp sơ đồ. Có thể chia nhỏ khi module quá lớn, nhưng ranh giới phải theo trách nhiệm và dependency rõ ràng. `events.js` không phải hệ thống gameplay “Kỳ sự”; chỉ tạo nếu cần event bus kỹ thuật.
+
+## Lộ trình 7 giai đoạn
+
+### Giai đoạn 1 — Nền tảng và ổn định
+- [x] Tạo `core/state.js`, đưa khởi tạo state, migration và persistence qua API thống nhất.
+- [x] Chuyển storage sang `core/storage.js`; giữ compatibility guard tạm thời.
+- [x] Chuyển game loop/timer sang `core/game-loop.js`.
+- [x] Chuyển cấu hình giao diện sang `ui/preferences.js`.
+- [x] Di chuyển nhóm data đã liệt kê vào `data/` và cập nhật thứ tự script/test.
+- [ ] Hoàn tất tách dữ liệu nhiệm vụ (PLAN, preset, AI prompt) khỏi `game.js` vào `data/quest-data.js`.
+- [ ] Rà soát và xác nhận test suite hiện tại xanh trên commit mới nhất; không dùng kết quả CI cũ để kết luận trạng thái hiện tại.
+
+### Giai đoạn 2 — Hoàn thiện core
+- [ ] Chuyển date helpers sang `core/date.js`.
+- [ ] Chuyển time formatting sang `core/time-format.js`.
+- [ ] Chuyển noise helpers sang `core/noise.js`.
+- [ ] Chuyển text/HTML escaping sang `core/text.js`.
+- [ ] Chỉ bổ sung `core/events.js` nếu xác định được use case pub/sub kỹ thuật cụ thể.
+- [ ] Chuẩn hóa dependency injection/API và thứ tự nạp script.
+
+### Giai đoạn 3 — Tách systems theo nghiệp vụ
+- [ ] Nhiệm vụ: parser/quy tắc vào `systems/quests.js`; tách biệt với dữ liệu nhiệm vụ.
+- [ ] Thưởng: rà soát các luồng thưởng và gom theo trách nhiệm vào `systems/rewards.js`.
+- [ ] Tách streak, analytics, pets, leaderboard.
+- [ ] Hợp nhất nghiệp vụ tông môn và chiến tông môn vào `systems/sect.js` khi API tương thích đã được kiểm chứng.
+- [ ] Tách thiên kiếp, story, god mode, legacy missions và quest completion.
+- [ ] Mỗi module nhận state/dịch vụ qua tham số rõ ràng; không tạo thêm global phụ thuộc ngầm nếu tránh được.
+
+### Giai đoạn 4 — Tách UI theo màn hình/chức năng
+- [ ] Tách UI linh thú, modal thiên kiếp, leaderboard, tông môn, thống kê, bản đồ và các tab còn lại theo code thực tế.
+- [ ] Chuyển renderer, DOM event binding và tương tác giao diện vào `ui/`; giữ logic nghiệp vụ trong `systems/`.
+- [ ] Không để module data/core tự gắn handler hoặc thực thi side effect giao diện khi vừa được nạp.
+
+### Giai đoạn 5 — Thu gọn game.js
+- [ ] Chuyển các logic gameplay và renderer còn lại khỏi `game.js`.
+- [ ] Giữ `game.js` làm bootstrap, khởi tạo dependency, điều phối render, `askName` và vòng lặp cấp ứng dụng.
+- [ ] Mục tiêu là giảm trách nhiệm thực sự của file, không chỉ đổi số dòng bằng cách chuyển nguyên khối không phân tích.
+
+### Giai đoạn 6 — Kiểm thử và dọn migration
+- [ ] Chạy toàn bộ `npm test`, parse cú pháp mọi JS và kiểm tra thứ tự nạp.
+- [ ] Thêm test tích hợp cho luồng chơi chính: load/save, tạo và hoàn thành nhiệm vụ, timer, thưởng, tải lại.
+- [ ] Rà quét tham chiếu toàn repo; xóa compatibility guards/file cũ chỉ khi không còn consumer.
+- [ ] Kiểm tra hồi quy trình duyệt và các script phụ thuộc như `notify.js`, `schedule.js`.
+- [ ] Ghi rõ những phần chưa thể kiểm thử bằng môi trường hiện có; không tuyên bố nghiệm thu vượt quá bằng chứng.
+
+### Giai đoạn 7 — Android và phát hành (để cuối cùng)
+- [ ] Chỉ bắt đầu sau khi người dùng xác nhận các giai đoạn 1–6 đã đạt yêu cầu.
+- [ ] Kiểm tra Capacitor, build và cài đặt trên thiết bị Android thật.
+- [ ] Chạy checklist dữ liệu, thông báo, timer, backup/restore và vòng đời ứng dụng.
+- [ ] Thiết lập ký APK/release an toàn bằng keystore/secrets do chủ dự án quản lý; tuyệt đối không commit khóa riêng tư.
+- [ ] Kiểm tra artifact và quy trình phát hành.
+
+## Trạng thái tại thời điểm ghi lộ trình
+
+- Đã có các module nền tảng `core/state.js`, `core/storage.js`, `core/game-loop.js`, `ui/preferences.js` và nhiều module `data/`.
+- Đã bắt đầu tổ chức `systems/` với module tông môn; một số module nghiệp vụ vẫn đang ở đường dẫn cũ và cần chuyển theo đợt.
+- `game.js` vẫn còn lớn; chưa được coi là đã tách xong.
+- CI gần nhất được ghi nhận trong ngữ cảnh làm việc có lỗi test kỳ vọng thứ tự catalog vật phẩm; test đã được sửa ở commit `58a0014e736697011b79263a4ff43eaa3212ea79`, nhưng **chưa xác nhận CI của commit sửa lỗi đã hoàn tất thành công**.
+- Android/build/ký APK đang được hoãn theo chỉ đạo; không làm trong các giai đoạn 1–6.
+
+## Quy trình cập nhật tài liệu
+
+Sau mỗi đợt thay đổi:
+1. Ghi module/file đã chuyển, API mới và compatibility còn giữ.
+2. Ghi test thực sự đã chạy, số test pass/fail và commit/CI tương ứng.
+3. Cập nhật checkbox của giai đoạn; không đánh dấu hoàn thành chỉ vì đã tạo file.
+4. Ghi lỗi còn tồn tại và bước tiếp theo cụ thể.
+5. Luôn đọc mục này trước khi tiếp tục ở chat mới; đây là nguồn chuẩn về kiến trúc và quyết định đã thống nhất.
+
