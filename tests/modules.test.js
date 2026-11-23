@@ -1403,3 +1403,14 @@ test("GameEventsUI render sự kiện tuần/tháng và Kỳ Sự Cửu Châu",(
  assert.match(host.innerHTML,/Nguyệt Luyện/);
  assert.match(host.innerHTML,/Kỳ Sự Cửu Châu/);
 });
+
+
+test("GameActivityUI render lịch học, bảo khố và chuỗi nhiệm vụ",()=>{
+ const nodes={lq:{value:"",innerHTML:""},now:{innerHTML:""},nowbar:{hidden:false,textContent:""},slots:{innerHTML:""},shop:{innerHTML:""},inv:{innerHTML:""},buff:{textContent:""},titles:{innerHTML:""},chains:{innerHTML:""}};
+ const S={sched:{},quests:[],inv:{},dailyBought:{},points:1000,chains:[],ui:{},claimed:{}};
+ const M=window.GameActivityUI.create({S,nowHM:()=>"12:00",today:()=>"2026-11-24",tm:()=>720,isDone:()=>false,sq:()=>null,rn:x=>x.label||"",ITEMS:[{id:"x",c:10,n:"Tâm Đan",d:"Tăng linh lực",use:false,once:false}],IC:{x:"✦"},buffTxt:()=>"Không có buff",TITLES:[],nwS:()=>({t:{}}),escapeHtml:x=>String(x),isExpired:()=>false,isUnlocked:()=>true,isTitleUnlocked:()=>false,renderStepRow:()=>"step",$:id=>nodes[id]});
+ M.renderSchedule();M.renderShop();M.renderChains();
+ assert.match(nodes.now.innerHTML,/Không có việc trong khung giờ này/);
+ assert.match(nodes.shop.innerHTML,/Tâm Đan/);
+ assert.match(nodes.chains.innerHTML,/Chưa có chuỗi/);
+});

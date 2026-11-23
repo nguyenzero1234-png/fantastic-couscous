@@ -930,3 +930,11 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ state kỳ sự `KSD` dùng chung với event handlers; module nhận analytics, lịch tuần và callback DOM qua dependency injection.
 - [x] `game.js` giữ wrapper `renderEvents` để bảo toàn thứ tự điều phối.
 - [x] Bổ sung test render với trạng thái tiến độ rỗng.
+
+
+## Gom UI lịch học, bảo khố và liên hoàn vào ui/activities.js (2026-11-24)
+
+- [x] Gom ba renderer liên quan đến luồng Tu Luyện — lịch học, cửa hàng/bảo khố và chuỗi nhiệm vụ — vào một module UI theo nhóm chức năng.
+- [x] Giữ state, helper nhiệm vụ, catalog vật phẩm, buff và DOM accessor qua dependency injection; event handlers tiếp tục ở bootstrap.
+- [x] `game.js` giữ ba wrapper render để không đổi vòng lặp điều phối.
+- [x] Bổ sung test cho trạng thái lịch rỗng, catalog cửa hàng và chuỗi trống.
