@@ -17,11 +17,24 @@ jobs:
       - run: npm install
       - run: npx cap add android
 
-      - name: Thêm quyền thông báo Android
+      - name: Thêm quyền thông báo + Exact Alarm
         run: |
           MF=android/app/src/main/AndroidManifest.xml
+
+          # POST_NOTIFICATIONS (Android 13+)
           grep -q "POST_NOTIFICATIONS" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n</manifest>#' "$MF"
-          grep "POST_NOTIFICATIONS" "$MF"
+
+          # SCHEDULE_EXACT_ALARM (Android 12+) — cho phép hẹn giờ chính xác
+          grep -q "SCHEDULE_EXACT_ALARM" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n</manifest>#' "$MF"
+
+          # USE_EXACT_ALARM (Android 14+) — một số máy cần thêm quyền này
+          grep -q "USE_EXACT_ALARM" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n</manifest>#' "$MF"
+
+          # WAKE_LOCK — giúp thông báo đánh thức máy khi cần
+          grep -q "WAKE_LOCK" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.WAKE_LOCK" />\n</manifest>#' "$MF"
+
+          echo "=== Quyền đã thêm ==="
+          grep -E "POST_NOTIFICATIONS|SCHEDULE_EXACT_ALARM|USE_EXACT_ALARM|WAKE_LOCK" "$MF" || true
 
       - name: Đặt icon app tùy chỉnh
         run: |
