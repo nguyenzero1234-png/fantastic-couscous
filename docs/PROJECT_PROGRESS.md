@@ -174,7 +174,7 @@
 - [x] Tạo `www/js/npc-data.js` (`window.GameNpcData`) cho quy tắc xác định NPC có thiên phú độc nhất: NPC ở chỉ số 9 luôn có, hoặc NPC có cờ `tk`.
 - [x] `game.js` giữ alias `isTK` và chuyển việc kiểm tra sang module thuần; danh sách NPC và dữ liệu thiên phú không thay đổi.
 - [x] Bổ sung test cho chỉ số đặc biệt, cờ `tk`, NPC thường, chỉ số âm và ngoài phạm vi.
-- [ ] Chờ CI xác nhận kiểm thử và build APK.
+- [x] CI #124 xác nhận kiểm thử và build APK thành công; artifact APK đã được tạo.
 
 
 ## Đợt tách helper thuần theo lô (2026-11-23)
@@ -182,4 +182,4 @@
 - [x] Chuyển kiểm tra hạn chót và mở khóa chuỗi sang `GameQuestData.isExpired()` / `isUnlocked()`; giữ nguyên điều kiện, thứ tự lọc và cả hành vi biên của `slice(0, indexOf())`.
 - [x] Chuyển phép tính linh lực tại mốc ngày sang `GameProgressData.playerXpAt(history, points, dateKey)`; wrapper vẫn tạo khóa ngày bằng local locale `sv`.
 - [x] Bổ sung test cho làm tròn phút, hạn chót đúng/sau thời điểm, chuỗi nhiệm vụ và dữ liệu lịch sử.
-- [ ] CI #125 phát hiện test kỳ vọng sai ở phép tính XP theo ngày (23/24 test đạt); đã sửa expected theo đúng công thức cũ, chờ CI xác nhận lại.
+- [x] CI #126: 24/24 kiểm thử JavaScript đạt; Capacitor sync và Gradle assembleDebug thành công; APK artifact đã được tải lên.
