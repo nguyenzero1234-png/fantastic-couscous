@@ -35,6 +35,8 @@
 - [x] Sau khi tách `analytics.js`: parse cú pháp, kiểm tra thứ tự nạp script và 1.000 bộ dữ liệu hồi quy đối chiếu thống kê tổng quan, chuỗi ngày tốt nhất, biểu đồ và chỉ số kiếp nạn đều đạt.
 - [x] Sau khi tách `quest-data.js`: parse cú pháp, thứ tự nạp script và 109 ca hồi quy cho parser độ khó, thời lượng, lặp lại, hạn chót và dữ liệu sai đều đạt.
 - [x] Sau khi tách `schedule-data.js`: parse cú pháp, thứ tự nạp script và 1.039 ca hồi quy cho định dạng giờ, khoảng thời gian, trùng lịch và dữ liệu biên đều đạt.
+- [x] Thêm `tests/modules.test.js` và lệnh `npm test` dùng Node.js built-in test runner; chưa đánh dấu chạy đạt cho tới khi thực thi trên CI.
+- [ ] Chưa xác nhận `npm test` trên môi trường repository/CI.
 - [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
@@ -46,7 +48,8 @@
 - [x] Kiểm thử 109 ca parser với thời gian/ngẫu nhiên giả lập; không có sai khác.
 - [x] Tách parser lịch học và kiểm tra trùng khung giờ sang `www/js/schedule-data.js`.
 - [x] Kiểm thử 1.039 ca lịch, gồm dữ liệu ngẫu nhiên và biên; không có sai khác.
-- [x] Kiểm tra cú pháp và thứ tự nạp các module mới trước `game.js`.
+- [x] Tạo bộ kiểm thử tự động `tests/modules.test.js` và lệnh `npm test`.
+- [ ] Chạy `npm test` trên môi trường CI và bổ sung test cho storage/timer cùng các luồng giao diện.
 
 ## Việc cần làm tiếp
 
@@ -55,6 +58,7 @@
 - [x] Tách phép tổng hợp thống kê học tập và chỉ số kiếp nạn sang `www/js/analytics.js`.
 - [x] Tách parser nhập nhiệm vụ hàng loạt sang `www/js/quest-data.js`.
 - [x] Tách parser lịch học dạng văn bản và kiểm tra xung đột giờ sang `www/js/schedule-data.js`.
+- [x] Thêm khung kiểm thử tự động Node.js cho các module thuần.
 - [ ] Tiếp tục tách các quy tắc gameplay độc lập khỏi `game.js`; không di chuyển các luồng có nhiều tác động phụ khi chưa có kiểm thử hồi quy đầy đủ.
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
