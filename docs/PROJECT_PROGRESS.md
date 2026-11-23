@@ -21,6 +21,12 @@
 - [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
 - [x] Đã xử lý cảnh báo dependency cũ: sau nâng đồng bộ Capacitor 7.6.10, `npm audit` ở run #86 báo 0 lỗ hổng (không còn 3 moderate, 1 high, 1 critical đã ghi ở giai đoạn trước).
 
+## Tái cấu trúc core và UI (2026-11-24)
+- [x] Chuyển bộ đếm phiên chơi/phiên tập trung từ `timer.js` sang `core/game-loop.js`.
+- [x] Chuyển áp dụng skin, mật độ và giao diện từ `ui.js` sang `ui/preferences.js`.
+- [x] Giữ hai file cũ làm compatibility guard trong giai đoạn chuyển tiếp.
+- [x] Cập nhật thứ tự script và test harness để quét/nạp module đệ quy theo đường dẫn mới.
+
 ## Tái cấu trúc core storage (2026-11-24)
 - [x] Chuyển toàn bộ triển khai lưu/đọc, validate, backup/restore và import/export sang `www/js/core/storage.js`.
 - [x] `www/js/storage.js` chỉ còn là compatibility guard, không còn chứa nghiệp vụ lưu trữ.
