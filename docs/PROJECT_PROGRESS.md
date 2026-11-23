@@ -117,3 +117,10 @@
 - [x] Tách định dạng thời lượng, chuyển đổi giờ `HH:MM` ↔ phút, và lấy giờ hiện tại sang `www/js/time-format.js` (`window.GameTimeFormat`).
 - [x] `game.js` dùng lại module mới qua các alias giữ nguyên tên cũ (`pad`, `fmt`, `tm`, `hm`, `nowHM`) để hạn chế thay đổi call-site.
 - [x] Bổ sung test cho giá trị 0, giờ/phút hai chữ số, thời lượng có giờ, và chuyển đổi mốc 24 giờ; kiểm tra module được nạp trước `game.js`.
+
+
+## Tách module tiến độ và điểm thiên kiếp (2026-11-23)
+- [x] Tạo `www/js/progression-data.js` (`window.GameProgressData`) cho xếp loại điểm, hàm chuẩn hóa tiến độ, tính điểm thiên kiếp của người chơi/NPC và tiến độ đạo tâm.
+- [x] Thay bốn công thức tương ứng trong `game.js` bằng lời gọi module; giữ nguyên dữ liệu đầu vào, thứ tự tính và các giới hạn min/max.
+- [x] Nạp module trước `game.js` và bổ sung test ranh giới xếp loại, điểm 0/100, tiến độ âm/vượt ngưỡng.
+- [ ] Chờ CI xác nhận `npm test` và APK sau thay đổi.
