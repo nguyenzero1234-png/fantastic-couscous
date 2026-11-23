@@ -28,6 +28,7 @@
 ### Kiểm tra
 - [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `ui.js`, `timer.js`, `game.js`, `notify.js`, `schedule.js`.
 - [x] GitHub Actions build APK cho commit `8a7da3cd94b7aab9d3333a04f28b9863c35dae04` thành công: [Build run #23](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45169198792).
+- [x] Sau khi tách `rewards.js`: parse cú pháp `game.js`/`rewards.js`, kiểm tra thứ tự nạp script và 188 ca kiểm tra runtime cho công thức thưởng linh lực đều đạt; chưa xác nhận build APK mới hoặc kiểm thử trên Android thật.
 
 ## Đang thực hiện
 - [ ] Chưa có hạng mục đang thực hiện được xác nhận tại thời điểm cập nhật.
