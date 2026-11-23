@@ -5,6 +5,13 @@
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
+## Nâng cấp dependency (2026-11-23)
+- [x] Nâng đồng bộ `@capacitor/android`, `@capacitor/cli`, `@capacitor/core` lên `^7.6.10` và `@capacitor/local-notifications` lên `^7.0.7` để xử lý cây dependency có lỗ hổng.
+- [x] Cập nhật GitHub Actions dùng JDK 21 cho Capacitor 7.
+- [x] CI sau khi nâng cấp xác nhận `npm test`, `npx cap add android` và `npx cap sync android` đều thành công; `npm audit` báo 0 lỗ hổng (run #83).
+- [ ] Xác nhận build APK trên JDK 21 hoàn tất: run #83 dùng JDK 17 nên lỗi `invalid source release: 21`; run #84 với JDK 21 đang kiểm tra Gradle.
+- [ ] Đồng bộ và commit lại `package-lock.json` sau khi hoàn tất nâng cấp; workflow hiện dùng `npm install` để tái tạo lock trong môi trường CI.
+
 ## Ghi nhận CI mới nhất (2026-11-23)
 - [x] Điều tra hai lần build lỗi #74 và #75: cả hai cùng thất bại tại test `schedule parser từ chối giờ sai và khung trùng`; nguyên nhân là kỳ vọng của test chưa khớp hành vi parser hiện tại. Đã điều chỉnh test để giữ tương thích hành vi cũ.
 - [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
