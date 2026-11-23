@@ -1086,3 +1086,42 @@ test("GameNpcRoster tạo đủ 50 NPC, cấu hình mô phỏng và tiểu sử 
   assert.equal(R.STG.length, 9);
   assert.equal(R.NVC_TITLES.length, 9);
 });
+
+
+test("GameLegacyMissions khởi tạo tiến trình xuyên kiếp và mở khóa thành tựu đúng điều kiện", () => {
+  const S = { tutDone: true, rb: 1 };
+  const saved = [];
+  const notices = [];
+  const timers = [];
+  const M = window.GameLegacyMissions.create({
+    S,
+    save: () => saved.push(true),
+    say: value => notices.push(value),
+    now: () => 123456,
+    setTimeoutFn: (fn, delay) => timers.push({ fn, delay }),
+    formatDate: value => "DATE-" + value
+  });
+  assert.equal(M.definitions.length, 8);
+  assert.equal(M.lifeTrack().q, 0);
+  const newly = M.check();
+  assert.deepEqual(newly, ["Sơ Nhập Đạo Đồ"]);
+  assert.equal(S.legacy.L1, 123456);
+  assert.equal(saved.length, 1);
+  assert.equal(timers[0].delay, 250);
+  timers[0].fn();
+  assert.match(notices[0], /Sơ Nhập Đạo Đồ/);
+  assert.deepEqual(M.check(), []);
+  assert.equal(saved.length, 1);
+  S.life.q = 100;
+  S.life.top10 = 1;
+  S.life.exOk = 5;
+  S.life.sectN = 3;
+  S.life.excel = 1;
+  S.life.anXa = 1;
+  S.rb = 2;
+  const unlocked = M.check();
+  assert.equal(unlocked.length, 7);
+  assert.equal(Object.keys(S.legacy).length, 8);
+  assert.match(M.render(), /Sứ mệnh xuyên kiếp/);
+  assert.match(M.render(), /DATE-123456/);
+});
