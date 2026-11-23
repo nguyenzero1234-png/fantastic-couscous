@@ -860,3 +860,12 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền state, dữ liệu tông môn, điểm chiến, lịch tuần và nhiệm vụ qua dependency injection; `game.js` giữ wrapper `renderSect` để giữ nguyên điều phối hiện tại.
 - [x] Bổ sung test render với trạng thái chưa gia nhập tông môn.
 - [ ] Tiếp tục tách các màn hình leaderboard/thiên kiếp/bản đồ và logic còn trong `game.js`.
+
+
+## Tách bản đồ Cửu Châu sang ui/map.js (2026-11-24)
+
+- [x] Chuyển cấu hình điểm đến, dựng bản đồ và xử lý chọn địa điểm sang `ui/map.js`.
+- [x] Truyền state, danh sách tông môn, escape HTML, điều hướng và render ứng dụng qua dependency injection.
+- [x] `game.js` giữ wrapper `renderMap` và module UI không tự phụ thuộc vào bootstrap global ngoài các dependency đã nhận.
+- [x] Bổ sung test render bản đồ và chọn địa điểm.
+- [ ] Tiếp tục tách UI leaderboard, thiên kiếp, nhật ký và logic còn lại.

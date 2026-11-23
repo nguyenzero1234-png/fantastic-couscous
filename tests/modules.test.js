@@ -1318,3 +1318,14 @@ test("GameSectUI render màn hình tông môn từ dependency được tiêm",()
  assert.match(host.innerHTML,/Tông môn chiến tuần này/);
  assert.match(host.innerHTML,/Tuần trước/);
 });
+
+
+test("GameMapUI render bản đồ và xử lý chọn địa điểm",()=>{
+ const info={innerHTML:"",onclick:null},host={innerHTML:"",onclick:null,querySelector:()=>info};
+ const sects=Array.from({length:6},(_,i)=>({n:"Tông "+i}));
+ const M=window.GameMapUI.create({S:{name:"Đạo hữu",sect:null},SECTS:sects,escapeHtml:x=>String(x),rank:()=>4,navigate:()=>{},render:()=>{},$:id=>id==="map"?host:info});
+ M.render();
+ assert.match(host.innerHTML,/Bản đồ Cửu Châu/);
+ host.onclick({target:{closest:()=>({dataset:{map:"0"}})}});
+ assert.match(info.innerHTML,/Cửu Châu/);
+});
