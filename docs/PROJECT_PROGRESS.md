@@ -999,3 +999,4 @@ Sau mỗi đợt thay đổi:
 - [x] Dùng `GameLeaderboardSimulation` làm lõi; inject dữ liệu NPC, dữ liệu xếp hạng, lịch, save và chiến tông môn.
 - [x] Giữ API wrapper ở `game.js` để UI, thiên kiếp và lệnh Thiên Đạo không đổi call-site.
 - [x] Bổ sung test bảng, cân bằng tuần và cơ duyên.
+- [x] Giữ nguyên factory `+"`GameLeaderboardSimulation`"+` và bổ sung `+"`GameLeaderboardSystem`"+` cùng file; không ghi đè lõi mô phỏng đã có.
