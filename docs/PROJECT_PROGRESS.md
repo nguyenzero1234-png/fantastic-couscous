@@ -5,6 +5,11 @@
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
+## Ghi nhận CI mới nhất (2026-11-23)
+- [x] Điều tra hai lần build lỗi #74 và #75: cả hai cùng thất bại tại test `schedule parser từ chối giờ sai và khung trùng`; nguyên nhân là kỳ vọng của test chưa khớp hành vi parser hiện tại. Đã điều chỉnh test để giữ tương thích hành vi cũ.
+- [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
+- [ ] Xử lý cảnh báo dependency: npm audit ghi nhận 5 lỗ hổng (3 moderate, 1 high, 1 critical) ở `@capacitor/cli`, `glob`, `minimatch`, `rimraf`, `tar`. Audit đề xuất nâng `@capacitor/cli` lên 7.6.10, đây là nâng major so với nhánh Capacitor 6 hiện tại; cần lập kế hoạch nâng đồng bộ Capacitor và kiểm tra tương thích trước khi áp dụng, không dùng `npm audit fix --force` một cách mù quáng.
+
 ## Đã hoàn thành
 
 ### Nền tảng và độ an toàn dữ liệu
