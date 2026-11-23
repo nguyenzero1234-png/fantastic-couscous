@@ -213,4 +213,4 @@
 - [x] Truyền lịch sử học, bộ đếm nhiệm vụ, loại chu kỳ, loại chỉ số, ngày hiện tại và đầu tuần từ caller; module không đọc state toàn cục.
 - [x] Giữ nguyên cách cộng phút học, linh lực, số nhiệm vụ và quy tắc mặc định đếm ngày học từ 30 phút.
 - [x] Bổ sung test cho từng chu kỳ, từng loại chỉ số và dữ liệu rỗng.
-- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.
+- [ ] CI #133: 29/30 test đạt; kỳ vọng test tuần tính nhầm Chủ nhật trước đầu tuần (thứ Hai) vào tuần hiện tại. Đã sửa expected 150 thành 100, chờ CI chạy lại.
