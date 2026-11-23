@@ -329,3 +329,8 @@ www/js/
 - [x] Kept gameplay state and services injected from `game.js`; save key/schema and pet balance rules unchanged.
 - [x] Added module contract and safe no-button interaction tests.
 - [ ] Await CI; no real Android-device test performed.
+
+ 
+## Pet UI syntax correction
+- [x] Fixed an extra function-closing brace caught by CI #45217666431.
+- [ ] Await full CI rerun.

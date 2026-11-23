@@ -31,8 +31,6 @@
         S.petReveal=null;S.petEvolution=null;save();render();
       });
     }
-  }
-  
  }
  function handleClick(e,d){
   const {S,$,PS,petRank,setAct,say,modGain,petAcc,hAdd,today,Date,save,render}=d;

@@ -407,3 +407,9 @@
 - [x] `game.js` chỉ còn wrapper truyền state, dữ liệu linh thú và dịch vụ UI; module không tự đọc biến toàn cục gameplay.
 - [x] Thêm kiểm thử hợp đồng module và nhánh click không có nút; giữ nguyên cách tính buff, chi phí tiến hóa và thu hoạch.
 - [ ] Chờ CI xác nhận; chưa kiểm thử trên thiết bị Android thật.
+
+ 
+## Sửa lỗi cú pháp module giao diện linh thú
+- [x] CI #45217666431 phát hiện dư dấu đóng hàm trong `pet-ui.js` trước khi build APK.
+- [x] Sửa cấu trúc đóng hàm, không thay đổi logic gameplay.
+- [ ] Chờ CI kiểm tra lại toàn bộ test và APK.
