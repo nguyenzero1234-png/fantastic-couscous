@@ -1,0 +1,64 @@
+# Project Progress Tracker
+
+> Cập nhật lần cuối: 2026-11-23  
+> Nhánh theo dõi: `stage-1/foundation`  
+> Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
+
+## Đã hoàn thành
+
+### Nền tảng và độ an toàn dữ liệu
+- [x] Kiểm tra và xác thực dữ liệu khi đọc save từ `localStorage`.
+- [x] Ghi log lỗi lưu và phát sự kiện `game-save-error` thay vì im lặng bỏ qua lỗi.
+- [x] Tắt `android.allowMixedContent` trong `capacitor.config.json`.
+- [x] Thêm cơ chế backup tự động vào `quest-study-v1.backup`.
+- [x] Khôi phục từ backup hợp lệ khi save chính bị thiếu hoặc hỏng; phát sự kiện `game-save-recovered`.
+- [x] Lỗi khi ghi backup không làm gián đoạn việc ghi save chính.
+
+### Tách module bước đầu
+- [x] Tách phần đọc/ghi save sang `www/js/storage.js` (IIFE, cung cấp `window.GameStorage`).
+- [x] Chuyển `www/js/game.js` sang dùng `GameStorage.load()` và `GameStorage.save()`.
+- [x] Nạp `storage.js` trước `game.js` trong `www/index.html`.
+- [x] Giữ các script ở dạng classic script để tương thích với global dùng chung trong `notify.js` và `schedule.js`.
+- [x] Bổ sung tài liệu kiến trúc và tiến độ tại `docs/FOUNDATION_STAGE_1.md`.
+
+### Kiểm tra
+- [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `game.js`, `notify.js`, `schedule.js`.
+- [x] GitHub Actions build APK cho commit `8a7da3cd94b7aab9d3333a04f28b9863c35dae04` thành công: [Build run #23](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45169198792).
+
+## Đang thực hiện
+- [ ] Chưa có hạng mục đang thực hiện được xác nhận tại thời điểm cập nhật.
+
+## Việc cần làm tiếp
+
+### Ưu tiên 1 — Hoàn thiện cấu trúc module
+- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ví dụ: state, UI/render, gameplay/domain, timer/rewards).
+- [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
+- [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
+
+### Ưu tiên 2 — Kiểm thử và độ tin cậy
+- [ ] Thêm kiểm thử tự động cho load/save, validate dữ liệu, backup và recovery.
+- [ ] Kiểm thử luồng chơi chính: tạo/lưu nhiệm vụ, hoàn thành nhiệm vụ, timer, phần thưởng và tải lại ứng dụng.
+- [ ] Kiểm thử trên thiết bị Android thật; xác nhận dữ liệu không mất sau khi đóng/mở lại app.
+- [ ] Cải thiện thông báo cho người dùng khi lưu thất bại hoặc khôi phục dữ liệu.
+
+### Ưu tiên 3 — Quản lý dữ liệu người chơi
+- [ ] Thiết kế chức năng xuất/nhập bản sao lưu toàn bộ dữ liệu người chơi.
+- [ ] Xem xét đồng bộ dữ liệu ngoài thiết bị (chỉ triển khai khi có thiết kế bảo mật, xác thực và xử lý xung đột phù hợp).
+- [ ] Kiểm thử các tình huống storage đầy, JSON lỗi, dữ liệu phiên bản cũ và backup không hợp lệ.
+
+### Ưu tiên 4 — Quy trình phát hành
+- [ ] Rà soát workflow build APK và bổ sung kiểm thử tự động trước bước build.
+- [ ] Thiết lập quy trình ký APK/release an toàn; không đưa keystore hoặc secrets vào repository.
+- [ ] Tạo checklist phát hành và kiểm tra bản build trên thiết bị trước khi phát hành.
+
+## Ghi chú kỹ thuật
+- `game.js` vẫn còn lớn và phần gameplay chưa được tách hoàn toàn; lần tách hiện tại chỉ là bước đầu cho storage.
+- Save hiện vẫn lưu cục bộ trên thiết bị bằng `localStorage`; backup hiện tại cũng nằm trên cùng thiết bị, không thay thế backup ngoài thiết bị.
+- Việc parse cú pháp và build APK thành công chưa thay thế cho kiểm thử chức năng trên thiết bị thật.
+- Các thay đổi của giai đoạn này nằm trên nhánh `stage-1/foundation`; không coi `main` đã được cập nhật.
+
+## Quy tắc cập nhật
+1. Khi bắt đầu một hạng mục, chuyển nó sang mục **Đang thực hiện**.
+2. Chỉ đánh dấu hoàn thành sau khi đã kiểm tra kết quả; ghi kèm commit hoặc link CI nếu có.
+3. Nếu phát sinh lỗi hoặc thay đổi phạm vi, ghi rõ trong mục phù hợp.
+4. Sau mỗi mốc hoàn thành, cập nhật ngày và nội dung file này trong cùng nhánh làm việc.
