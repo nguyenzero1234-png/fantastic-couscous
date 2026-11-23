@@ -111,3 +111,9 @@
 2. Chỉ đánh dấu hoàn thành sau khi đã kiểm tra kết quả; ghi kèm commit hoặc link CI nếu có.
 3. Nếu phát sinh lỗi hoặc thay đổi phạm vi, ghi rõ trong mục phù hợp.
 4. Sau mỗi mốc hoàn thành, cập nhật ngày và nội dung file này trong cùng nhánh làm việc.
+
+
+### Tách module tiện ích thuần tiếp theo
+- [x] Tách định dạng thời lượng, chuyển đổi giờ `HH:MM` ↔ phút, và lấy giờ hiện tại sang `www/js/time-format.js` (`window.GameTimeFormat`).
+- [x] `game.js` dùng lại module mới qua các alias giữ nguyên tên cũ (`pad`, `fmt`, `tm`, `hm`, `nowHM`) để hạn chế thay đổi call-site.
+- [x] Bổ sung test cho giá trị 0, giờ/phút hai chữ số, thời lượng có giờ, và chuyển đổi mốc 24 giờ; kiểm tra module được nạp trước `game.js`.
