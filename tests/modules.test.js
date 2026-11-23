@@ -637,14 +637,17 @@ test("nhật ký tu tiên sinh nội dung xác định từ dữ liệu được
   ]);
   const full = D.generate("2026-11-23", { n: 2, m: 125, p: 80.6 }, {
     isToday: true, streak: 7, tm: true, sectName: "Thanh Vân",
-    menh: 60, petName: "Tiểu Hồ", storyTitles: ["Khai mạch"], prevMemory: null
+    menh: 60, storyTitles: ["Khai mạch"], prevMemory: null
   }, quotes);
   assert.ok(full[0].includes("2 nhiệm vụ, tu luyện 2 giờ 5 phút, thu 81 linh lực."));
   assert.ok(full.some(x => x.includes("Chuỗi 7 ngày.")));
   assert.ok(full.some(x => x.includes("Dưới cờ Thanh Vân.")));
-  assert.ok(full.some(x => x.includes("Linh thú Tiểu Hồ")));
   assert.ok(full.some(x => x.includes("Đạo Văn: Khai mạch.")));
   assert.equal(full.length, 7);
+  const petOnly = D.generate("2026-11-24", { n: 1, m: 30, p: 10 }, {
+    isToday: true, streak: 0, petName: "Tiểu Hồ"
+  }, quotes);
+  assert.ok(petOnly.some(x => x.includes("Linh thú Tiểu Hồ")));
 });
 
 test("nhật ký tu tiên không sửa dữ liệu đầu vào và giới hạn bảy dòng", () => {

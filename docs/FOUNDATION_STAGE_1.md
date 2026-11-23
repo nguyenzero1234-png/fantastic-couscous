@@ -219,3 +219,9 @@ www/js/
 - CI #160 xác nhận nội dung nhật ký đúng; lỗi là khác realm giữa mảng do VM tạo và mảng test của Node.
 - Chuẩn hóa mảng kết quả qua JSON trong assertion để chỉ so sánh dữ liệu, không so sánh prototype của realm.
 - Chờ CI chạy lại toàn bộ.
+
+
+## Điều chỉnh test giới hạn dòng nhật ký
+- CI #161 cho thấy dòng linh thú hợp lệ có thể bị loại khi nhật ký đã đủ bảy dòng; đây là hành vi giới hạn có chủ đích.
+- Tách kiểm tra nhánh linh thú thành ca độc lập để xác minh nội dung mà không giả định thứ tự xuất hiện trong nhật ký dài.
+- Chờ CI chạy lại.
