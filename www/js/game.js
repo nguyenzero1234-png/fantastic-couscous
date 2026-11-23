@@ -16,9 +16,9 @@ const fmt=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (
 let extra="",tmr=0;
 const say=t=>{const m=t+extra;extra="";$("msg").textContent=m;if(!m)return;const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>el.classList.remove("on"),3800);if(/\+\d|Đột phá|Danh hiệu mới|Hoàn thành/.test(m))burst()};
 function burst(){sfx(523);setTimeout(()=>sfx(784),130);if(navigator.vibrate)try{navigator.vibrate(40)}catch(e){}for(let i=0;i<26;i++){const c=document.createElement("i");c.className="cf";const a=Math.random()*6.283,d=80+Math.random()*140;c.style.cssText="--dx:"+Math.cos(a)*d+"px;--dy:"+(Math.sin(a)*d-60)+"px;--r:"+(Math.random()*720-360)+"deg;background:hsl("+(Math.random()*360|0)+" 80% 60%)";document.body.appendChild(c);setTimeout(()=>c.remove(),1300)}}
-let run=false,last=0;
 
-let fq=null,fEnd=0;
+
+
 const QM={"1":2,"3":1.75,"0":1.5};
 const cl=p=>Object.keys(S.claimed).filter(k=>k[0]===p).length;
 const TITLES=[
@@ -1085,7 +1085,7 @@ const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
 const calc=()=>Math.max(1,Math.round(dur()/60*S.perHour*parseFloat($("nl").value)*qm()));
 function finish(q){
   const t=today();
-  if(fq===q)fq=null;
+  if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();
   if(S.streak.last!==t){
     let c=S.streak.last===dayStr(1);
     if(!c&&S.streak.last===dayStr(2)&&S.inv.the>0){S.inv.the--;c=true;extra=" Đã dùng Tục Mệnh Phù — chuỗi được giữ."}
@@ -1116,8 +1116,8 @@ function finish(q){
   if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=modGain(Math.round(st.reduce((s,x)=>s+x.got,0)*0.25)+(eqT("t7")?120:0));S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
 }
 function startFocus(q){
-  if(fq){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
-  fq=q;fEnd=Date.now()+q.mins*60000;say("Bắt đầu học: "+q.name);render();
+  if(!GameTimer.startFocus(q,q.mins*60000)){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
+  say("Bắt đầu học: "+q.name);render();
 }
 function renderMap(){
   const el=$("map");if(!el)return;
@@ -1251,7 +1251,7 @@ function renderMore(){
   renderChains();renderEvents();renderLich();renderShop();renderLb();renderExams();renderVan();renderSect();renderStats();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
   $("prev").textContent="= "+calc()+" linh lực";
   if(document.activeElement!==$("ph"))$("ph").value=S.perHour;
-  $("focus").hidden=!fq;if(fq)$("fn").textContent=fq.name;
+  const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask)$("fn").textContent=focusTask.name;
   $("st").textContent=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
   const th=S.hist[today()]||{p:0,m:0};
   $("sm").textContent=th.m+" phút";
@@ -1270,7 +1270,7 @@ function render(){
   $("pts").textContent=S.points;
   $("today").textContent="Hôm nay: +"+(S.hist[today()]||{p:0}).p+" linh lực"+(TITLES.some(t=>t.id===S.title&&tok(t))?", danh hiệu "+TITLES.find(t=>t.id===S.title).n:"");
   $("gt").textContent=$("gt2").textContent=fmt(S.gameSec);
-  $("run").textContent=run?"Tạm dừng":"Khai mở nhàn hạ";
+  $("run").textContent=GameTimer.isPlaying()?"Tạm dừng":"Khai mở nhàn hạ";
   if(document.activeElement!==$("rate"))$("rate").value=S.rate;
   const m=Math.max(0,parseInt($("mins").value)||0);
   $("cost").textContent="Cần "+LC(m)+" linh lực, tu vi giảm tương ứng";
@@ -1512,7 +1512,7 @@ $("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
     if(expired(q)){say("Nhiệm vụ nhanh đã hết hạn. Hãy xóa hoặc tạo lại.");return}
   }
   if(b.dataset.a==="rn"){q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();render();say("Đã tạo lại, không còn hạn.");return}
-  if(b.dataset.a==="d"){if(fq===q)fq=null;S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
+  if(b.dataset.a==="d"){if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
   else if(b.dataset.a==="p"){startFocus(q);return}
   else if(isDone(q)){const g=q.got||q.pts;S.points=Math.max(0,S.points-g);hAdd(q.doneOn,-g,-(q.mins||0));if(S.cnt&&S.cnt[q.doneOn]>0)S.cnt[q.doneOn]--;q.doneOn=null;q.got=0;say("Đã bỏ hoàn thành, trừ "+g+" linh lực.")}
   else{finish(q);say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
@@ -1530,24 +1530,24 @@ $("buy").onclick=()=>{
   S.points-=cost;const bo=(S.lt||0)+(petBuff().mn||0)+(eqT("n13")?5:0);S.sl=0;S.lt=0;S.gameSec+=(m+bo)*60;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+(bo?" (+"+bo+")":"")+" phút chơi.");
 };
 $("run").onclick=()=>{
-  if(!run&&S.gameSec<=0){say("Chưa có giờ chơi. Hãy đổi linh lực trước.");return}
-  run=!run;last=Date.now();say(run?"Đang tính giờ chơi.":"Đã tạm dừng.");render();
+  if(!GameTimer.isPlaying()&&S.gameSec<=0){say("Chưa có giờ chơi. Hãy đổi linh lực trước.");return}
+  const playing=GameTimer.togglePlay(S.gameSec);say(playing?"Đang tính giờ chơi.":"Đã tạm dừng.");render();
 };
 setInterval(()=>{
-  if(!run)return;
-  const dt=Math.floor((Date.now()-last)/1000);if(dt<1)return;
-  last+=dt*1000;S.gameSec=Math.max(0,S.gameSec-dt);
-  if(S.gameSec===0){run=false;say("Hết giờ chơi. Quay lại làm nhiệm vụ nhé.")}
+  if(!GameTimer.isPlaying())return;
+  const tick=GameTimer.tickPlay(S.gameSec);if(tick.elapsed<1)return;
+  S.gameSec=tick.remaining;
+  if(tick.ended)say("Hết giờ chơi. Quay lại làm nhiệm vụ nhé.");
   save();render();
 },500);
 setInterval(()=>{
-  if(!fq)return;
-  if(!S.quests.includes(fq)){fq=null;render();return}
-  const left=Math.ceil((fEnd-Date.now())/1000);
-  if(left<=0){const q=fq;finish(q);save();render();say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".");return}
+  const q=GameTimer.activeFocus();if(!q)return;
+  if(!S.quests.includes(q)){GameTimer.cancelFocus();render();return}
+  const left=GameTimer.focusRemaining();
+  if(left<=0){GameTimer.cancelFocus();finish(q);save();render();say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".");return}
   $("ft").textContent=fmt(left);
 },500);
-$("fx").onclick=()=>{fq=null;say("Đã hủy phiên học, không tính linh lực.");render()};
+$("fx").onclick=()=>{GameTimer.cancelFocus();say("Đã hủy phiên học, không tính linh lực.");render()};
 $("nd").oninput=$("nl").onchange=$("nq").onchange=renderMore;
 $("ladd").onclick=()=>{
   const s=$("ls").value,e=$("le").value,qid=$("lq").value,q=S.quests.find(x=>x.id===qid),label=q?q.name:$("ll").value.trim();
