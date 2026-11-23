@@ -1193,3 +1193,34 @@ test("GameSectSystem đóng gói tông môn, điều kiện bái sư và buff th
   exams = [];
   assert.equal(M.masters[5].ok(), false);
 });
+
+
+test("GameState tạo state mặc định, migration dữ liệu cũ và lưu đúng key", () => {
+  const calls=[];
+  const old={quests:[{id:"q1"}],points:12,perHour:90,lb:{bal:[1]},fb:{n:2,v:5},menh:null,ui:null};
+  const storage={load:(key,defaults)=>{calls.push(["load",key,defaults]);return old;},save:(key,state)=>calls.push(["save",key,state])};
+  const ui=[];
+  const prior=window.GameUI;
+  window.GameUI={apply:state=>ui.push(state)};
+  const M=window.GameState.create({storage});
+  assert.equal(M.key,"quest-study-v1");
+  assert.equal(M.state,old);
+  assert.equal(M.state.perHour,200);
+  assert.equal(M.state.ph200,1);
+  assert.equal(M.state.menh,100);
+  assert.equal(M.state.tdPenalty,false);
+  assert.equal(M.state.failStreak,0);
+  assert.equal(M.state.tdStacks,0);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.state.dailyBought)),{});
+  assert.equal(M.state._balCleared,1);
+  assert.equal(M.state.bal,0);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.state.lb.bal)),Array(50).fill(0));
+  assert.deepEqual(JSON.parse(JSON.stringify(M.state.fx)),[{n:2,v:5,t:""}]);
+  assert.equal(M.state.fb,undefined);
+  assert.deepEqual(JSON.parse(JSON.stringify(ui)),[old]);
+  M.save();
+  assert.equal(calls[1][0],"save");
+  assert.equal(calls[1][1],"quest-study-v1");
+  assert.equal(calls[1][2],old);
+  window.GameUI=prior;
+});
