@@ -789,25 +789,12 @@ function exCond(e){
 }
 const exGod=e=>S.god?`<small style="display:block;margin-top:6px;color:var(--gold);line-height:1.5"><b>[God] Điều kiện đạt 100:</b><br>${exCond(e).join("<br>")}</small>`:"";
 // Đạo tâm: số ngày (trong 14 ngày trước kiếp) có học, tính từ nhật ký HOẶC chuỗi ngày liên tiếp đang có.
-const actDays=(d,cur)=>{
-  const td=new Date(today()+"T12:00:00");d=new Date(cur||d>td?td:d); // kiếp bị tua đến tương lai: lấy 14 ngày gần nhất đến hôm nay
-  const st=S.streak,sk=new Set();
-  if(st&&st.n>0&&st.last){const L=new Date(st.last+"T12:00:00");for(let i=0;i<Math.min(st.n,14);i++){const x=new Date(L);x.setDate(x.getDate()-i);sk.add(x.toLocaleDateString("sv"))}}
-  let n=0;
-  for(let j=0;j<14;j++){const x=new Date(d);x.setDate(x.getDate()-j);const k=x.toLocaleDateString("sv"),h=S.hist[k];if((h&&h.m>0)||sk.has(k))n++}
-  return n};
+const actDays=(d,cur)=>GameProgressData.activeDays(S.hist,S.streak,d,cur,today());
 // Linh lực người chơi tại ngày dv: lịch sử đến ngày đó + phần linh lực không có trong nhật ký (đặt tay).
 // Nếu lịch sử đã được tính hết (độ kiếp đúng hạn / hạn đã qua so với dữ liệu) thì dùng đúng linh lực hiện có.
 function playerXpAt(dv){return GameProgressData.playerXpAt(S.hist,S.points,dv.toLocaleDateString("sv"))}
 // Chuỗi học liên tục (số ngày liên tiếp có học) tính đến ngày d. cur: đang độ kiếp đúng hạn/bị tua → tính đến hôm nay và gộp chuỗi hiện tại (kể cả được Tục Mệnh Phù giữ).
-function streakAt(d,cur){
-  const td=new Date(today()+"T12:00:00");d=new Date(cur||d>td?td:d);
-  const key=x=>x.toLocaleDateString("sv"),has=x=>{const h=S.hist[key(x)];return !!(h&&h.m>0)};
-  const x=new Date(d);if(!has(x))x.setDate(x.getDate()-1); // hôm nay chưa học vẫn chưa mất chuỗi
-  let n=0;while(n<400&&has(x)){n++;x.setDate(x.getDate()-1)}
-  const st=S.streak;if(cur&&st&&st.n>0&&st.last&&(st.last===today()||st.last===dayStr(1)))n=Math.max(n,st.n);
-  return n;
-}
+function streakAt(d,cur){return GameProgressData.streakAt(S.hist,S.streak,d,cur,today(),dayStr(1))}
 // Đạo tâm 0..1 = chuỗi / chuỗi yêu cầu của kiếp (chuỗi càng dài, kiếp càng cuối càng đòi hỏi nhiều)
 const daoTam=(st,e)=>GameProgressData.taoTamProgress(st,e);
 const EXOPEN={};

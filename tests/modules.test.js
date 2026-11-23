@@ -329,3 +329,22 @@ test("progression data tính linh lực tại mốc ngày như helper cũ", () =
   assert.equal(P.playerXpAt(history, 500, "2026-11-24"), 500);
   assert.equal(P.playerXpAt({ "2026-11-20": { p: 0 } }, 42, "2026-11-20"), 42);
 });
+
+
+test("progression data tính ngày hoạt động và chuỗi theo nhật ký/streak", () => {
+  const P = window.GameProgressData;
+  const today = "2026-11-23", yesterday = "2026-11-22";
+  const date = new Date(today + "T12:00:00");
+  const history = {
+    "2026-11-23": { m: 20 }, "2026-11-22": { m: 10 },
+    "2026-11-20": { m: 30 }, "2026-11-19": { m: 0 }
+  };
+  const streak = { last: today, n: 3 };
+  assert.equal(P.activeDays(history, streak, date, false, today), 4);
+  assert.equal(P.activeDays(history, { last: "", n: 0 }, date, false, today), 3);
+  assert.equal(P.activeDays(history, streak, new Date("2026-11-30T12:00:00"), false, today), 4);
+  assert.equal(P.streakAt(history, streak, date, false, today, yesterday), 3);
+  assert.equal(P.streakAt(history, { last: "", n: 0 }, date, false, today, yesterday), 2);
+  assert.equal(P.streakAt(history, streak, date, true, today, yesterday), 3);
+  assert.equal(P.streakAt(history, { last: yesterday, n: 5 }, date, true, today, yesterday), 5);
+});

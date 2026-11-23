@@ -44,8 +44,43 @@
     return upto + Math.max(0, points - total);
   };
 
+
+  const activeDays = (history, streak, dateValue, cur, todayKey) => {
+    const td = new Date(todayKey + "T12:00:00");
+    const date = new Date(cur || dateValue > td ? td : dateValue);
+    const st = streak, seen = new Set();
+    if (st && st.n > 0 && st.last) {
+      const last = new Date(st.last + "T12:00:00");
+      for (let i = 0; i < Math.min(st.n, 14); i++) {
+        const day = new Date(last); day.setDate(day.getDate() - i);
+        seen.add(day.toLocaleDateString("sv"));
+      }
+    }
+    let count = 0;
+    for (let j = 0; j < 14; j++) {
+      const day = new Date(date); day.setDate(day.getDate() - j);
+      const key = day.toLocaleDateString("sv"), entry = history[key];
+      if ((entry && entry.m > 0) || seen.has(key)) count++;
+    }
+    return count;
+  };
+
+  const streakAt = (history, streak, dateValue, cur, todayKey, yesterdayKey) => {
+    const td = new Date(todayKey + "T12:00:00");
+    const date = new Date(cur || dateValue > td ? td : dateValue);
+    const key = value => value.toLocaleDateString("sv");
+    const has = value => { const entry = history[key(value)]; return !!(entry && entry.m > 0); };
+    const day = new Date(date);
+    if (!has(day)) day.setDate(day.getDate() - 1);
+    let count = 0;
+    while (count < 400 && has(day)) { count++; day.setDate(day.getDate() - 1); }
+    const st = streak;
+    if (cur && st && st.n > 0 && st.last && (st.last === todayKey || st.last === yesterdayKey)) count = Math.max(count, st.n);
+    return count;
+  };
+
   root.GameProgressData = Object.freeze({
     grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress,
-    realmIndex, realmName, playerXpAt
+    realmIndex, realmName, playerXpAt, activeDays, streakAt
   });
 })(typeof window !== "undefined" ? window : globalThis);

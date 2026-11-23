@@ -111,3 +111,9 @@ www/js/
 - `GameQuestData.isExpired(quest, isDone, now)` và `isUnlocked(quests, quest, isDone)`: tách quy tắc hạn chót và mở khóa bước trong chuỗi; trạng thái nhiệm vụ và thời gian vẫn do `game.js` cung cấp.
 - `GameProgressData.playerXpAt(history, points, dateKey)`: tính linh lực tích lũy đến một ngày từ lịch sử; không đọc state toàn cục.
 - Các wrapper trong `game.js` giữ nguyên nguồn thời gian, lịch sử và trạng thái hiện có; không đổi save schema.
+
+
+## Helper tiến trình theo ngày
+- `GameProgressData.activeDays(history, streak, date, cur, todayKey)` tính số ngày hoạt động trong cửa sổ 14 ngày, kết hợp nhật ký và chuỗi được giữ.
+- `GameProgressData.streakAt(history, streak, date, cur, todayKey, yesterdayKey)` tính chuỗi liên tiếp tại mốc thiên kiếp. Mọi nguồn trạng thái/ngày đều được truyền vào; module không đọc `S` hay gọi DOM.
+- `game.js` giữ wrapper để cung cấp đúng ngày local và dữ liệu save hiện tại.

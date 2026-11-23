@@ -183,3 +183,10 @@
 - [x] Chuyển phép tính linh lực tại mốc ngày sang `GameProgressData.playerXpAt(history, points, dateKey)`; wrapper vẫn tạo khóa ngày bằng local locale `sv`.
 - [x] Bổ sung test cho làm tròn phút, hạn chót đúng/sau thời điểm, chuỗi nhiệm vụ và dữ liệu lịch sử.
 - [x] CI #126: 24/24 kiểm thử JavaScript đạt; Capacitor sync và Gradle assembleDebug thành công; APK artifact đã được tải lên.
+
+
+## Tách phép tính ngày hoạt động và chuỗi trong thiên kiếp (2026-11-23)
+- [x] Chuyển phép đếm ngày có học trong 14 ngày sang `GameProgressData.activeDays()`; truyền lịch sử, streak và ngày hiện tại từ caller.
+- [x] Chuyển tính chuỗi tại mốc thiên kiếp sang `GameProgressData.streakAt()`; giữ nguyên quy tắc hôm nay chưa học vẫn tính chuỗi từ hôm qua và quy tắc gộp streak hiện hành khi tua kiếp.
+- [x] Bổ sung kiểm thử cho lịch sử rời rạc, streak hiện hành, mốc tương lai và ngày hôm nay chưa học.
+- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.
