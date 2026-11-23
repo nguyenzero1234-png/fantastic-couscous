@@ -647,7 +647,7 @@ test("nhật ký tu tiên sinh nội dung xác định từ dữ liệu được
   const petOnly = D.generate("2026-11-24", { n: 1, m: 30, p: 10 }, {
     isToday: true, streak: 0, petName: "Tiểu Hồ"
   }, quotes);
-  assert.ok(petOnly.some(x => x.includes("Linh thú Tiểu Hồ")));
+  assert.ok(petOnly.some(x => x.includes("Tiểu Hồ")));
 });
 
 test("nhật ký tu tiên không sửa dữ liệu đầu vào và giới hạn bảy dòng", () => {

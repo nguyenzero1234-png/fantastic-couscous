@@ -301,4 +301,5 @@
 - [x] CI #159 chạy 46 test, phát hiện một expected value trong test chưa khớp lựa chọn câu xác định theo seed; đã sửa kỳ vọng theo đúng thuật toán, không đổi code sinh nhật ký.
 - [x] CI #160 cho thấy nội dung thực tế đã khớp expected; lỗi còn lại do so sánh mảng từ VM context khác realm bằng `deepStrictEqual`. Đã chuẩn hóa kết quả qua JSON trước khi so sánh.
 - [x] CI #161 xác nhận lỗi test do kỳ vọng linh thú xuất hiện trong một nhật ký đã chạm giới hạn bảy dòng; chuyển kiểm tra nhánh linh thú sang ca kiểm thử độc lập để không phụ thuộc thứ tự cắt dòng.
+- [x] CI #162 xác nhận nhánh linh thú sinh một trong hai cách diễn đạt (tên linh thú đứng đầu hoặc sau cụm “Linh thú”); đã nới assertion để kiểm tra tên linh thú thay vì ép một câu cố định.
 - [ ] Chờ CI chạy lại; chưa có kiểm thử trên thiết bị thật.

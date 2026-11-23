@@ -225,3 +225,9 @@ www/js/
 - CI #161 cho thấy dòng linh thú hợp lệ có thể bị loại khi nhật ký đã đủ bảy dòng; đây là hành vi giới hạn có chủ đích.
 - Tách kiểm tra nhánh linh thú thành ca độc lập để xác minh nội dung mà không giả định thứ tự xuất hiện trong nhật ký dài.
 - Chờ CI chạy lại.
+
+
+## Điều chỉnh assertion câu linh thú
+- CI #162 xác nhận helper có hai câu hợp lệ cho linh thú; test trước đó chỉ chấp nhận một cách diễn đạt.
+- Assertion hiện kiểm tra tên linh thú có trong dòng nhật ký, không ép lựa chọn câu cụ thể.
+- Chờ CI chạy lại.
