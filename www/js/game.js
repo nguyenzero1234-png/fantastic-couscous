@@ -11,8 +11,8 @@ const $=id=>document.getElementById(id);
 const today=()=>new Date(Date.now()+(S.dOff||0)*864e5).toLocaleDateString("sv");
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===today());
-const pad=n=>String(n).padStart(2,"0");
-const fmt=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":":"")+pad(m)+":"+pad(x)};
+const pad=GameTimeFormat.pad;
+const fmt=GameTimeFormat.formatDuration;
 let extra="",tmr=0;
 const say=t=>{const m=t+extra;extra="";$("msg").textContent=m;if(!m)return;const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>el.classList.remove("on"),3800);if(/\+\d|Đột phá|Danh hiệu mới|Hoàn thành/.test(m))burst()};
 function burst(){sfx(523);setTimeout(()=>sfx(784),130);if(navigator.vibrate)try{navigator.vibrate(40)}catch(e){}for(let i=0;i<26;i++){const c=document.createElement("i");c.className="cf";const a=Math.random()*6.283,d=80+Math.random()*140;c.style.cssText="--dx:"+Math.cos(a)*d+"px;--dy:"+(Math.sin(a)*d-60)+"px;--r:"+(Math.random()*720-360)+"deg;background:hsl("+(Math.random()*360|0)+" 80% 60%)";document.body.appendChild(c);setTimeout(()=>c.remove(),1300)}}
@@ -89,9 +89,9 @@ const PLAN={
  code:["Cài môi trường, Git, tạo repo đầu tiên|60","Ôn cú pháp C++ hoặc Python: 10 bài cơ bản|90","Cấu trúc dữ liệu: mảng, stack, queue|90","Danh sách liên kết: tự cài đặt|90","Cây nhị phân và các cách duyệt|90","Giải thuật sắp xếp, so sánh độ phức tạp|90","Đồ thị: BFS và DFS|90","Ôn giữa kì: 5 bài LeetCode Easy|120","OOP: thiết kế lớp cho mini project|90","Mini project: khung chương trình, chức năng 1|120","Mini project: chức năng 2 và viết test|120","Quy hoạch động: 5 bài kinh điển|120","Mini project: hoàn thiện, viết README|120","Code review và tối ưu mã nguồn|90","Tổng kết: đẩy lên GitHub, viết bài học kinh nghiệm|60"],
  nckh:["Chọn chủ đề, đọc 3 bài tổng quan|90","Tìm 10 tài liệu, quản lý bằng Zotero|75","Xác định câu hỏi nghiên cứu và giả thuyết|75","Viết tổng quan tài liệu (1 trang)|90","Thiết kế phương pháp và dữ liệu|90","Viết đề cương, gửi giảng viên|120","Thu thập và chuẩn bị dữ liệu|120","Chạy thí nghiệm đầu tiên|120","Phân tích kết quả, vẽ biểu đồ|90","Viết phần Phương pháp và Kết quả|120","Viết phần Giới thiệu và Thảo luận|120","Viết abstract tiếng Anh|75","Làm slide báo cáo|90","Tập báo cáo, xin phản hồi|90","Nộp bài hoặc hội nghị sinh viên, rút kinh nghiệm|60"]
 };
-const nowHM=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())};
-const tm=h=>+h.slice(0,2)*60+ +h.slice(3);
-const hm=m=>pad(Math.floor(m/60))+":"+pad(m%60);
+const nowHM=GameTimeFormat.currentClock;
+const tm=GameTimeFormat.toMinutes;
+const hm=GameTimeFormat.toClock;
 const sq=x=>S.quests.find(y=>y.id===x.qid);
 const B=[
  {n:"Miêu Miên Tử",t:"Thụy Miêu Đạo Nhân",b:.05,r:.8,v:4,p:3,d:"Ngủ nhiều hơn tu, thỉnh thoảng bật dậy khổ luyện một đợt rồi lại ngủ"},
