@@ -201,6 +201,50 @@ test("storage vẫn lưu save chính khi không ghi được backup", () => {
   failBackupWrites = false;
 });
 
+
+test("storage xuất backup có metadata và giữ nguyên dữ liệu", () => {
+  const state = { quests: [{ id: "q1" }], points: 42, theme: "jade" };
+  const raw = window.GameStorage.exportData(state);
+  const backup = JSON.parse(raw);
+  assert.equal(backup.app, "tu-tien-hoc-dao");
+  assert.equal(backup.formatVersion, 1);
+  assert.ok(Number.isFinite(Date.parse(backup.exportedAt)));
+  assert.deepEqual(JSON.parse(JSON.stringify(backup.data)), state);
+  assert.deepEqual(JSON.parse(JSON.stringify(window.GameStorage.parseBackup(raw))), state);
+});
+
+test("storage nhập backup versioned và bảo toàn save cũ vào backup trước", () => {
+  storageData.clear();
+  const oldState = { quests: [], points: 11 };
+  const newState = { quests: [{ id: "imported" }], points: 88 };
+  storageData.set("import-save", JSON.stringify(oldState));
+  const raw = window.GameStorage.exportData(newState);
+  const imported = window.GameStorage.importData("import-save", raw);
+  assert.equal(imported.points, 88);
+  assert.equal(JSON.parse(storageData.get("import-save")).points, 88);
+  assert.equal(JSON.parse(storageData.get("import-save.backup")).points, 11);
+});
+
+test("storage nhập được backup JSON legacy và từ chối dữ liệu lỗi mà không sửa save", () => {
+  storageData.clear();
+  storageData.set("legacy-save", JSON.stringify({ quests: [], points: 7 }));
+  const legacy = JSON.stringify({ quests: [{ id: "legacy" }], points: 19 });
+  assert.equal(window.GameStorage.importData("legacy-save", legacy).points, 19);
+  const before = storageData.get("legacy-save");
+  assert.throws(() => window.GameStorage.importData("legacy-save", "{broken"), /JSON|position|property/i);
+  assert.throws(() => window.GameStorage.importData("legacy-save", JSON.stringify({ quests: [], points: "bad" })), /invalid/i);
+  assert.equal(storageData.get("legacy-save"), before);
+});
+
+test("storage từ chối nhập nếu không thể bảo toàn save hiện tại", () => {
+  storageData.clear(); failWrites = false; failBackupWrites = true;
+  storageData.set("protected-save", JSON.stringify({ quests: [], points: 31 }));
+  const raw = window.GameStorage.exportData({ quests: [], points: 99 });
+  assert.throws(() => window.GameStorage.importData("protected-save", raw), /quota exceeded/);
+  assert.equal(JSON.parse(storageData.get("protected-save")).points, 31);
+  failBackupWrites = false;
+});
+
 test("timer đếm phiên và focus theo thời gian giả lập", () => {
   const NativeDate = Date;
   let now = 100000;
