@@ -935,7 +935,7 @@ test("sect war reward gives consolation for defeat and safely skips no-sect stat
   const base = { lb: { week: "2026-11-23" }, points: 0, inv: {} };
   const deps = { state: { ...base, sect: 0 }, sects: Array.from({length:6}, (_,i)=>({n:"T"+i})),
     weekEnd: new Date("2026-11-23T00:00:00").getTime() - 2*6048e5,
-    scoreWeek: () => [0, 0, 200, 0, 0, 0], modGain: x => x, hasTitle: () => false,
+    scoreWeek: () => [0, 0, 0, 200, 0, 0], modGain: x => x, hasTitle: () => false,
     today: () => "2026-11-23", addHistory: () => {}, log: () => {}, random: () => 1 };
   const msg = window.GameSectWar.reward(deps);
   assert.match(msg, /linh lực an ủi/);

@@ -452,3 +452,9 @@
 - [x] CI #45219895817 cho thấy 3 kỳ vọng test không khớp dữ liệu gốc: điểm bình quân chia cả NPC và người chơi; tuần hiện tại dùng đối thủ theo vòng ghép thực; thưởng thắng tính theo chênh lệch thực.
 - [x] Sửa fixture/kỳ vọng test, không thay đổi thuật toán gameplay.
 - [ ] Chờ CI chạy lại.
+
+ 
+## Sửa fixture đối thủ trong test thưởng thua
+- [x] CI #45220050458: 62/63 test đạt; fixture cuối đặt điểm ở sai tông đối thủ theo vòng ghép tuần.
+- [x] Chuyển điểm đối thủ sang đúng tông số 3; không đổi logic game.
+- [ ] Chờ CI.

@@ -373,3 +373,9 @@ www/js/
 - [x] CI #45219895817 exposed three test expectations inconsistent with existing rules: per-member average includes the player, opponent pairing follows the actual week rotation, and victory reward follows the real score differential.
 - [x] Corrected test fixtures and expected values without changing gameplay logic.
 - [ ] Await CI.
+
+ 
+## Correct weekly opponent fixture
+- [x] CI #45220050458 passed 62/63 tests; the defeat fixture assigned points to the wrong opponent for the actual weekly pairing.
+- [x] Moved the opponent score to the correct sect index; no gameplay logic changed.
+- [ ] Await CI.
