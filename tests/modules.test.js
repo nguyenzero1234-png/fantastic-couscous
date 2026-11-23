@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
