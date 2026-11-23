@@ -89,8 +89,18 @@
     return count;
   };
 
+  const examConditions = (exam, scoreAt, realmName) => {
+    let days = 0;
+    while (days <= exam.ls && scoreAt(exam.chuan * 10, exam, days / exam.ls) < 100) days++;
+    return [
+      `${exam.a * 100} điểm linh lực (linh lực ≥ ${exam.chuan}, ${realmName(exam.chuan)}) + ${exam.bm} điểm đạo tâm (chuỗi ≥ ${exam.ls} ngày)`,
+      days > exam.ls ? "Không thể đạt 100" : `Đạt 100 khi linh lực ≥ ${exam.chuan} và chuỗi học liên tục ≥ ${days} ngày`,
+      `Chuỗi ${Math.round(exam.ls / 2)} ngày → +${Math.round(exam.bm / 2)} điểm đạo tâm · không có chuỗi → +0`
+    ];
+  };
+
   root.GameProgressData = Object.freeze({
-    grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress,
+    grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress, examConditions,
     realmIndex, realmName, playerXpAt, bestKiep, activeDays, streakAt
   });
 })(typeof window !== "undefined" ? window : globalThis);

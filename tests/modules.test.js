@@ -786,6 +786,21 @@ test("rebirth previousMemory định dạng ký ức kiếp trước và xử l�
     "Ký ức kiếp trước: đỉnh 500 linh lực.");
 });
 
+test("progression examConditions giữ nguyên điều kiện đạt điểm tối đa", () => {
+  const P = window.GameProgressData;
+  const exam = { a: 0.7, bm: 30, chuan: 1000, ls: 10 };
+  const calls = [];
+  const scoreAt = (xp, e, days) => { calls.push([xp, days]); return days >= 0.6 ? 100 : 99; };
+  assert.deepEqual(JSON.parse(JSON.stringify(P.examConditions(exam, scoreAt, xp => `Cảnh giới ${xp}`))), [
+    "70 điểm linh lực (linh lực ≥ 1000, Cảnh giới 1000) + 30 điểm đạo tâm (chuỗi ≥ 10 ngày)",
+    "Đạt 100 khi linh lực ≥ 1000 và chuỗi học liên tục ≥ 6 ngày",
+    "Chuỗi 5 ngày → +15 điểm đạo tâm · không có chuỗi → +0"
+  ]);
+  assert.deepEqual(calls, [[10000,0],[10000,0.1],[10000,0.2],[10000,0.3],[10000,0.4],[10000,0.5],[10000,0.6]]);
+  assert.equal(P.examConditions({ ...exam, ls: 2 }, () => 99, () => "X")[1], "Không thể đạt 100");
+});
+
+
 test("sect-war stats tổng hợp linh lực và số tu sĩ theo tông môn", () => {
   const W = window.GameSectWar;
   assert.deepEqual(JSON.parse(JSON.stringify(W.stats(3, [

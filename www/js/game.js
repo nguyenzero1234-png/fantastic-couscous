@@ -772,13 +772,7 @@ const kh=(xp,e,D)=>GameProgressData.examScore(xp,e,D);
 // Cùng đường cong L như kh() nhưng nhân 100 thay vì A, nên NPC đạt 100 khi linh lực ≥ mốc viên mãn (chuan).
 const khNpc=(xp,e)=>GameProgressData.npcExamScore(xp,e);
 // Chỉ hiện ở chế độ god: điều kiện để đạt 100 điểm
-function exCond(e){
-  let d=0;while(d<=e.ls&&kh(e.chuan*10,e,d/e.ls)<100)d++;
-  const rows=[`${e.a*100} điểm linh lực (linh lực ≥ ${e.chuan}, ${rname(e.chuan)}) + ${e.bm} điểm đạo tâm (chuỗi ≥ ${e.ls} ngày)`];
-  rows.push(d>e.ls?"Không thể đạt 100":`Đạt 100 khi linh lực ≥ ${e.chuan} và chuỗi học liên tục ≥ ${d} ngày`);
-  rows.push(`Chuỗi ${Math.round(e.ls/2)} ngày → +${Math.round(e.bm/2)} điểm đạo tâm · không có chuỗi → +0`);
-  return rows;
-}
+function exCond(e){return GameProgressData.examConditions(e,kh,rname)}
 const exGod=e=>S.god?`<small style="display:block;margin-top:6px;color:var(--gold);line-height:1.5"><b>[God] Điều kiện đạt 100:</b><br>${exCond(e).join("<br>")}</small>`:"";
 // Đạo tâm: số ngày (trong 14 ngày trước kiếp) có học, tính từ nhật ký HOẶC chuỗi ngày liên tiếp đang có.
 const actDays=(d,cur)=>GameProgressData.activeDays(S.hist,S.streak,d,cur,today());
