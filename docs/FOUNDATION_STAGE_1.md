@@ -309,3 +309,9 @@ www/js/
 - GameRewards.rewardFactors(state, now) nhận trạng thái đã chuẩn hóa và timestamp từ caller, trả {td, balance, status} mà không đọc state toàn cục hoặc đồng hồ hệ thống.
 - game.js giữ wrapper để lấy trạng thái hiện hành; công thức trừng phạt tối thiểu 0,7, cân bằng và buff trạng thái được giữ nguyên.
 - Kiểm thử bao phủ ngưỡng trừng phạt, hiệu lực buff theo timestamp và giá trị mặc định.
+
+
+## Sửa kiểm thử số thực hệ số thưởng (2026-11-23)
+- [x] CI #177 phát hiện sai khác biểu diễn số thực IEEE-754 (`0.5720000000000001` so với `0.572`), không phải sai công thức gameplay.
+- [x] Chuyển assertion trường `status` sang so sánh sai số tuyệt đối dưới `1e-12`; các hệ số `td` và `balance` vẫn so sánh chính xác.
+- [ ] Chờ CI xác nhận lại.

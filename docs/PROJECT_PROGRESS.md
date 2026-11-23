@@ -387,3 +387,9 @@
 - [x] game.js chỉ gom trạng thái runtime và thời điểm hiện tại rồi gọi helper; giữ nguyên công thức và thứ tự nhân.
 - [x] Thêm test cho trừng phạt nhiều tầng, hệ số cân bằng, tâm ma, hiệu ứng còn hạn/hết hạn và mặc định.
 - [ ] Chờ CI xác nhận test và APK; chưa kiểm thử trên thiết bị Android thật.
+
+
+## Sửa kiểm thử số thực hệ số thưởng (2026-11-23)
+- [x] CI #177 phát hiện sai khác biểu diễn số thực IEEE-754 (`0.5720000000000001` so với `0.572`), không phải sai công thức gameplay.
+- [x] Chuyển assertion trường `status` sang so sánh sai số tuyệt đối dưới `1e-12`; các hệ số `td` và `balance` vẫn so sánh chính xác.
+- [ ] Chờ CI xác nhận lại.

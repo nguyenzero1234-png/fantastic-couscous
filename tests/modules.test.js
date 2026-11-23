@@ -77,7 +77,10 @@ test("các module giao diện và tiến trình được khởi tạo trong môi
 
 test("rewards tạo hệ số từ trạng thái tường minh và thời điểm truyền vào", () => {
   const R = window.GameRewards;
-  assert.deepEqual(JSON.parse(JSON.stringify(R.rewardFactors({ tdPenalty: true, tdStacks: 3, balanced: true, balMult: 1.2, tm: true, tma: true, cbUntil: 1500 }, 1000))), { td: 0.85, balance: 1.2, status: 0.572 });
+  const factors = R.rewardFactors({ tdPenalty: true, tdStacks: 3, balanced: true, balMult: 1.2, tm: true, tma: true, cbUntil: 1500 }, 1000);
+  assert.equal(factors.td, 0.85);
+  assert.equal(factors.balance, 1.2);
+  assert.ok(Math.abs(factors.status - 0.572) < 1e-12);
   assert.deepEqual(JSON.parse(JSON.stringify(R.rewardFactors({ tdPenalty: true, tdStacks: 20, balanced: false, balMult: 1.2, tm: false, tma: false, cbUntil: 1000 }, 1000))), { td: 0.7, balance: 1, status: 1 });
   assert.deepEqual(JSON.parse(JSON.stringify(R.rewardFactors({}, 0))), { td: 1, balance: 1, status: 1 });
 });
