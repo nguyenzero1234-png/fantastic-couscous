@@ -12,6 +12,8 @@ Phạm vi của nhánh `stage-1/foundation`: giảm rủi ro mất dữ liệu v
 - Giữ nguyên khóa lưu `quest-study-v1` và định dạng dữ liệu hiện tại để tránh làm mất tương thích với tiến trình cũ.
 - Tách toàn bộ phần đọc/ghi `localStorage`, kiểm tra save và backup/restore sang `www/js/storage.js` (`window.GameStorage`). `game.js` gọi `GameStorage.load()` khi khởi tạo và `GameStorage.save()` khi lưu.
 - Nạp `storage.js` trước `game.js` trong `index.html`. Các script vẫn dùng classic script và API toàn cục nhỏ để không phá tương thích với `notify.js` và `schedule.js`.
+- Tách `ui.js`, `timer.js`, `rewards.js`, `streak.js`, `analytics.js`, `quest-data.js` và `schedule-data.js`; các module mới vẫn dùng classic script và được nạp trước `game.js`.
+- Thêm bộ kiểm thử Node.js built-in tại `tests/modules.test.js`, chạy bằng `npm test`; hiện có test cú pháp script, thứ tự nạp, công thức thưởng, streak/tâm ma, thống kê và parser nhiệm vụ/lịch học.
 
 ## Kiến trúc mục tiêu
 
