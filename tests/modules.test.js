@@ -660,3 +660,26 @@ test("nhật ký tu tiên không sửa dữ liệu đầu vào và giới hạn 
   assert.ok(result.length <= 7);
   assert.ok(result.some(x => x === "Đạo Văn: A · B."));
 });
+
+
+test("cơ duyên bảng xếp hạng chọn kết quả xác định và giữ nguyên thứ tự", () => {
+  const L = window.GameLeaderboardData;
+  const rows = [
+    { n: "NPC A", i: 2, u: 0, rank: 8 },
+    { n: "Bạn", i: -1, u: 1, rank: 9 },
+    { n: "NPC B", i: 4, u: 0, rank: 10 }
+  ];
+  const calls = [];
+  const hash = (...args) => {
+    calls.push(args);
+    return ({ 3: 0.1, 900: 0.35, 5: 0.8 })[args[0] - 100] ?? 0.1;
+  };
+  const result = L.rollSpecial(rows, 77, 100, hash);
+  assert.deepEqual(JSON.parse(JSON.stringify(result)), [
+    { row: rows[0], k: 0 },
+    { row: rows[1], k: 1 }
+  ]);
+  assert.equal(calls.length, 3);
+  assert.deepEqual(calls.map(x => x.slice(1)), [[140, 77], [140, 77], [140, 77]]);
+  assert.deepEqual(JSON.parse(JSON.stringify(L.rollSpecial([], 1, 2, hash))), []);
+});

@@ -689,11 +689,8 @@ function lbRows(){const t=Date.now(),rows=B.map((b,i)=>({n:b.n,s:Math.max(0,bs(i
 function spRoll(rows,seed){
   if(!S.lb.sp)S.lb.sp={};if(!S.lb.spl)S.lb.spl=[];
   const nx=nextEx(),got=[];if(!nx)return got;
-  rows.forEach(r=>{
-    if(r.rank<rows.length-2)return; // chỉ 3 hạng cuối
-    if(r.u?spA():S.lb.sp[r.i])return; // không giữ 2 cơ duyên đặc biệt cùng lúc
-    const q=Math.abs(hs((r.u?900:r.i+1)+KSALT,140,seed)),k=q<.2?0:q<.4?1:q<.6?2:-1;
-    if(k<0)return;
+  const eligible=rows.filter(r=>r.rank>=rows.length-2&&!(r.u?spA():S.lb.sp[r.i]));
+  GameLeaderboardData.rollSpecial(eligible,seed,KSALT,hs).forEach(({row:r,k})=>{
     if(r.u){S.sp={k,ex:nx.id,t:Date.now()};vlog("Cơ duyên đặc biệt: "+SPQ[k].n+" — hiệu lực đến "+nx.n)}
     else S.lb.sp[r.i]={k,ex:nx.id,x0:(Date.now()-S.lb.t0)/SP};
     S.lb.spl.unshift({t:Date.now(),n:r.n,u:r.u?1:0,k,ex:nx.id});got.push({n:r.u?"bạn":r.n,k,u:r.u?1:0});

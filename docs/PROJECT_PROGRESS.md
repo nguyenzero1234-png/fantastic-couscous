@@ -303,3 +303,12 @@
 - [x] CI #161 xác nhận lỗi test do kỳ vọng linh thú xuất hiện trong một nhật ký đã chạm giới hạn bảy dòng; chuyển kiểm tra nhánh linh thú sang ca kiểm thử độc lập để không phụ thuộc thứ tự cắt dòng.
 - [x] CI #162 xác nhận nhánh linh thú sinh một trong hai cách diễn đạt (tên linh thú đứng đầu hoặc sau cụm “Linh thú”); đã nới assertion để kiểm tra tên linh thú thay vì ép một câu cố định.
 - [ ] Chờ CI chạy lại; chưa có kiểm thử trên thiết bị thật.
+
+
+## Tách phép chọn cơ duyên bảng xếp hạng (2026-11-23)
+- [x] Thêm `GameLeaderboardData.rollSpecial(rows, seed, salt, hash)` để tính kết quả cơ duyên đặc biệt thuần, không đọc hoặc sửa save.
+- [x] Giữ nguyên thứ tự duyệt, công thức hash, ngưỡng 20% cho từng loại và trường hợp không trúng; điều kiện hạng cuối và trạng thái đang giữ cơ duyên vẫn do `game.js` lọc.
+- [x] `spRoll` chỉ còn quản lý trạng thái, thời hạn và nhật ký nhận cơ duyên.
+- [x] Bổ sung kiểm thử kết quả, thứ tự gọi hash và đầu vào rỗng.
+- [x] CI #163 xác nhận 46/46 test, build APK và tải artifact `TuTienHocDao-apk` thành công.
+- [ ] Chờ CI cho module cơ duyên; chưa kiểm thử cài đặt trên thiết bị Android thật.

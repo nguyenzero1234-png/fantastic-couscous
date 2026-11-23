@@ -231,3 +231,10 @@ www/js/
 - CI #162 xác nhận helper có hai câu hợp lệ cho linh thú; test trước đó chỉ chấp nhận một cách diễn đạt.
 - Assertion hiện kiểm tra tên linh thú có trong dòng nhật ký, không ép lựa chọn câu cụ thể.
 - Chờ CI chạy lại.
+
+
+## Module lựa chọn cơ duyên bảng xếp hạng
+- `www/js/leaderboard-data.js` tách phép tính xác định loại cơ duyên thành `GameLeaderboardData.rollSpecial`.
+- Caller truyền danh sách nhân vật đủ điều kiện, seed, salt và hàm hash; module trả kết quả theo đúng thứ tự đầu vào, không sửa trạng thái.
+- `game.js` tiếp tục xử lý điều kiện hạng, cơ duyên đang giữ, thời hạn hiệu lực và lịch sử nhận thưởng.
+- CI #163 đã build APK thành công cho phiên bản trước; CI của commit mới sẽ xác nhận module này.
