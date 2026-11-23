@@ -420,3 +420,9 @@
 - [x] Dependency tuần, thống kê học, điểm thưởng và UI được truyền tường minh; `game.js` giữ wrapper tương thích.
 - [x] Bổ sung test chọn nhiệm vụ, đổi tuần, điều kiện tiến độ và chống nhận thưởng trùng.
 - [ ] Chờ CI kiểm tra và build APK.
+
+ 
+## Sửa assertion kiểm thử nhiệm vụ tông môn
+- [x] CI #45218899278 chạy 58/60 test; hai lỗi còn lại do so sánh mảng từ VM khác realm, không phải sai khác dữ liệu.
+- [x] Chuẩn hóa kết quả test qua JSON trước khi deep equality để so sánh nội dung độc lập realm.
+- [ ] Chờ CI chạy lại.

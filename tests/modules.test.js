@@ -884,7 +884,7 @@ test("sect missions giữ lựa chọn theo tuần, tiến độ và chỉ nhậ
   const S = { sect: 0, cnt: { "2026-11-23": 5 }, streak: { n: 3 }, stl: [], sm: null };
   const deps = { weekStart: () => "2026-11-23", sumMins: () => 150, Date };
   const missions = M.list(S, deps);
-  assert.deepEqual(missions.map(x => x.id), ["q5", "st3"]);
+  assert.deepEqual(JSON.parse(JSON.stringify(missions.map(x => x.id))), ["q5", "st3"]);
   assert.equal(missions.find(x => x.id === "q5").met(), 5);
   assert.equal(missions.find(x => x.id === "st3").met(), 3);
   const calls = [];
@@ -896,12 +896,12 @@ test("sect missions giữ lựa chọn theo tuần, tiến độ và chỉ nhậ
   assert.equal(calls.filter(x => x[0] === "points").length, 1);
   assert.equal(calls.filter(x => x[0] === "save").length, 1);
   const nextWeek = M.list(S, { ...deps, weekStart: () => "2026-11-30" });
-  assert.deepEqual(nextWeek.map(x => x.id), ["m120", "lg2"]);
+  assert.deepEqual(JSON.parse(JSON.stringify(nextWeek.map(x => x.id))), ["m120", "lg2"]);
   assert.deepEqual(S.sm.got, {});
 });
 
 test("sect missions không khởi tạo nhiệm vụ khi chưa gia nhập tông môn", () => {
   const S = { sect: null, sm: null };
-  assert.deepEqual(window.GameSectMissions.list(S, { weekStart: () => "2026-11-23" }), []);
+  assert.deepEqual(JSON.parse(JSON.stringify(window.GameSectMissions.list(S, { weekStart: () => "2026-11-23" }))), []);
   assert.equal(S.sm, null);
 });

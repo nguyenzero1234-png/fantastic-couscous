@@ -341,3 +341,9 @@ www/js/
 - [x] Injected date/week, study aggregation, rewards, persistence, and UI callbacks; retained game.js compatibility wrappers.
 - [x] Added tests for weekly rotation, progress, no duplicate claims, and no-sect state.
 - [ ] Await CI test and APK build.
+
+ 
+## Sect mission test adjustment
+- [x] CI #45218899278 passed 58/60 tests; two assertions compared cross-VM arrays with different realm prototypes.
+- [x] Normalize returned arrays through JSON before deep equality.
+- [ ] Await CI rerun.
