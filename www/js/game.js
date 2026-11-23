@@ -810,28 +810,7 @@ function resolveEx(){
   if(pending&&!S.exLock){S.exLock=pending.id;setTimeout(()=>showExModal(pending),300)}
 }
 function showExModal(e){
-  const r=S.sem&&S.sem.res[e.id],me=r&&r.rows.find(z=>z.u);
-  const ml=r&&r.menhLoss?r.menhLoss:0;
-  $("thd").innerHTML=`<div class="box" style="border-color:var(--gold)"><h2>Thiên Kiếp Giáng Lâm</h2>
-    <small>Ngày thứ ${e.day} của kiếp · ${e.n}</small>
-    <p style="margin:12px 0;line-height:1.65">${e.desc}</p>
-    <p style="margin:10px 0;line-height:1.65"><b>${e.kind}</b><br>Viên mãn ${RL[e.need][0]} → thăng ${RL[e.need+1][0]} · Hệ số ×${e.w}</p>${exGod(e)}
-    ${me?`<p style="margin:10px 0">Kết quả của ngươi: <b>${me.s} điểm — ${me.g}</b>${me.st!=null?` <small>(chuỗi học ${me.st} ngày)</small>`:""}${me.ok?"":" (chưa đủ tu vi)"}${ml?` · <span style="color:var(--red)">Trừ ${ml} Mệnh</span>${(S.failStreak||0)>1?` (chuỗi fail ${S.failStreak})`:""}`:""}</p>`:""}
-    <p style="margin:10px 0;color:var(--mute);font-size:14px">Phải xác nhận đã đối diện thiên kiếp này trước khi tiếp tục tu luyện. Sau đó sẽ chuyển tới tab Thiên kiếp để xem bảng và nhận thưởng (nếu đủ điều kiện).</p>
-    <div class="row"><button class="btn" style="margin-left:0" id="exok">Kính nhận thiên kiếp</button></div>
-  </div>`;
-  $("thd").hidden=false;
-  // Khóa tương tác nền
-  document.body.style.pointerEvents="none";
-  $("thd").style.pointerEvents="auto";
-  $("exok").onclick=()=>{
-    if(S.sem&&S.sem.res[e.id])S.sem.res[e.id].seen=true;
-    S.exLock=null;save();$("thd").hidden=true;
-    document.body.style.pointerEvents="";
-    const next=EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen);
-    if(next){S.exLock=next.id;setTimeout(()=>showExModal(next),200)}
-    else{go("w","x");render()}
-  };
+  GameExamModal.show({state:S,realmLabels:RL,exGod,save,go,render,findNext:()=>EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen),document,body:document.body,setTimeout},e);
 }
 function renderExams(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(100,Math.round((x-lo)/(hi-lo)*100));

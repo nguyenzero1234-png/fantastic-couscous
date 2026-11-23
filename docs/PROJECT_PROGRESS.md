@@ -458,3 +458,10 @@
 - [x] CI #45220050458: 62/63 test đạt; fixture cuối đặt điểm ở sai tông đối thủ theo vòng ghép tuần.
 - [x] Chuyển điểm đối thủ sang đúng tông số 3; không đổi logic game.
 - [ ] Chờ CI.
+
+
+## Tách modal xác nhận thiên kiếp (2026-11-23)
+- [x] Chuyển giao diện, khóa nền và luồng xác nhận/tiếp tục thiên kiếp sang `www/js/exam-modal.js`.
+- [x] Tiêm state, DOM, lưu game, điều hướng và callback tìm kiếp tiếp theo; giữ wrapper tương thích trong `game.js`.
+- [x] Bổ sung kiểm thử xác nhận, mở khóa nền và điều hướng.
+- [ ] Chờ CI kiểm thử và build APK.

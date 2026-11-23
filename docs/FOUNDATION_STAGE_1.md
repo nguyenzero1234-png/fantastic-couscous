@@ -379,3 +379,10 @@ www/js/
 - [x] CI #45220050458 passed 62/63 tests; the defeat fixture assigned points to the wrong opponent for the actual weekly pairing.
 - [x] Moved the opponent score to the correct sect index; no gameplay logic changed.
 - [ ] Await CI.
+
+
+## Exam confirmation modal extraction
+- [x] Moved exam confirmation UI, background lock and sequential confirmation into `www/js/exam-modal.js`.
+- [x] Injected state, DOM, persistence, navigation and next-event lookup; retained wrapper in `game.js`.
+- [x] Added a confirmation-flow regression test.
+- [ ] Await CI tests and APK build.

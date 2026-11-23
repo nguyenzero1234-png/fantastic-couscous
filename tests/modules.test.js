@@ -942,3 +942,13 @@ test("sect war reward gives consolation for defeat and safely skips no-sect stat
   assert.equal(deps.state.points, 31);
   assert.equal(window.GameSectWar.reward({ state: { sect: null } }), "");
 });
+
+
+test("exam modal xác nhận thiên kiếp, mở khóa nền và điều hướng",()=>{
+ const elements={thd:{style:{},hidden:true},exok:{}},body={style:{}},calls=[];
+ const state={sem:{res:{e1:{rows:[{u:true,s:90,g:"Giỏi",ok:true}],menhLoss:0,seen:false}}},exLock:"e1"};
+ const event={id:"e1",day:3,n:"Kiếp thử",desc:"Mô tả",kind:"Lôi kiếp",need:0,w:1};
+ const deps={state,realmLabels:[["Phàm"],["Linh"]],exGod:()=>"",save:()=>calls.push("save"),go:(...x)=>calls.push(["go",...x]),render:()=>calls.push("render"),findNext:()=>null,document:{getElementById:id=>elements[id]},body,setTimeout:fn=>fn()};
+ window.GameExamModal.show(deps,event);assert.equal(elements.thd.hidden,false);assert.match(elements.thd.innerHTML,/Thiên Kiếp Giáng Lâm/);assert.equal(body.style.pointerEvents,"none");elements.exok.onclick();
+ assert.equal(state.sem.res.e1.seen,true);assert.equal(state.exLock,null);assert.equal(elements.thd.hidden,true);assert.deepEqual(calls,["save",["go","w","x"],"render"]);
+});
