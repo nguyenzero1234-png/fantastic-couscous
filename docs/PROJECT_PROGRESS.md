@@ -32,6 +32,7 @@
 - [x] Lỗi khi ghi backup không làm gián đoạn việc ghi save chính.
 
 ### Tách module bước đầu
+- [x] Tách quy tắc thuần xếp hạng linh thú và tính buff linh thú sang `www/js/pet-data.js` (`window.GamePetData`); `game.js` vẫn giữ trạng thái linh thú và tác động phụ.
 - [x] Tách phần đọc/ghi save sang `www/js/storage.js` (IIFE, cung cấp `window.GameStorage`).
 - [x] Chuyển `www/js/game.js` sang dùng `GameStorage.load()` và `GameStorage.save()`.
 - [x] Nạp `storage.js`, `ui.js` và `timer.js` trước `game.js` trong `www/index.html`.
@@ -77,6 +78,7 @@
 - [x] Tách parser nhập nhiệm vụ hàng loạt sang `www/js/quest-data.js`.
 - [x] Tách parser lịch học dạng văn bản và kiểm tra xung đột giờ sang `www/js/schedule-data.js`.
 - [x] Thêm khung kiểm thử tự động Node.js cho các module thuần.
+- [x] Tách thêm quy tắc xếp hạng và buff linh thú sang `pet-data.js`, có test bao phủ tất cả 12 loại buff.
 - [ ] Tiếp tục tách các quy tắc gameplay độc lập khỏi `game.js`; không di chuyển các luồng có nhiều tác động phụ khi chưa có kiểm thử hồi quy đầy đủ.
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
