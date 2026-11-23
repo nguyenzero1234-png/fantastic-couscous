@@ -139,3 +139,10 @@ www/js/
 ## Predicate miễn hiệu ứng NPC
 - `GameNpcData.isImmuneTaiHu(index, npcs)` kiểm tra NPC Cố Thái Hư theo đúng chỉ số và tên hiện có.
 - Wrapper trong `game.js` giữ nguyên call-site; module nhận danh sách NPC từ caller, không đọc dữ liệu toàn cục.
+
+
+## Helper tổng phút lịch sử
+- `GameAnalytics.sumMinutes(history, predicate)` cộng trường `m` của các ngày thỏa điều kiện do caller cung cấp.
+- `game.js` giữ wrapper `sumMins`; lọc tuần và tháng vẫn nằm ở caller, giữ nguyên ngày bắt đầu/kết thúc và quy tắc khóa ngày.
+- Kiểm thử bao gồm lịch sử đầy đủ, khoảng ngày, ngày không học, dữ liệu rỗng và predicate không khớp.
+- CI #138 xác nhận 32/32 test JavaScript, build APK và tải artifact thành công.

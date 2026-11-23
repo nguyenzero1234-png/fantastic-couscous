@@ -221,3 +221,10 @@
 - [x] Giữ nguyên điều kiện chỉ số không âm, NPC tồn tại và tên NPC khớp chính xác.
 - [x] Bổ sung test cho NPC đặc biệt, NPC thường, chỉ số âm/ngoài phạm vi và danh sách rỗng.
 - [x] CI #136 xác nhận kiểm thử JavaScript, Gradle `assembleDebug` và tải APK artifact thành công.
+
+
+## Tách phép cộng phút học theo điều kiện (2026-11-23)
+- [x] Chuyển phép cộng phút học từ lịch sử theo predicate sang `GameAnalytics.sumMinutes(history, predicate)`; caller vẫn quyết định cửa sổ tuần/tháng.
+- [x] `game.js` giữ wrapper `sumMins` và truyền `S.hist` cùng predicate như trước; không đổi điều kiện lọc hay thứ tự duyệt lịch sử.
+- [x] Bổ sung kiểm thử cho toàn bộ lịch sử, khoảng ngày, ngày 0 phút, dữ liệu rỗng và predicate không khớp.
+- [x] CI #138: 32/32 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
