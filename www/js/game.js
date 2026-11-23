@@ -1099,13 +1099,14 @@ function finish(q){
     S.streak.n=c?prevN+1:1;S.streak.last=t;
   }
   const tf=TB(q),ls=LS(),pb=petBuff();if(S.pw>0)S.pw--;
-  let tmb=0,m=1+Math.min(tf.cap,0.05*(S.streak.n-1));
+  let tmb=0,m=GameRewards.streakMultiplier(S.streak.n,tf.cap);
   if((q.mins||0)>=25){if(S.tm){S.tmTasks=(S.tmTasks||0)+1;if(S.tmTasks>=2){S.tm=0;S.tmTasks=0;ls.tmc=(ls.tmc||0)+1;extra+=" Tâm Ma Tự Thân đã tan.";tmb=eqT("n12")?40:0}}if(S.tma&&(q.mins||0)>=45){S.tmaTasks=(S.tmaTasks||0)+1;if(S.tmaTasks>=3){S.tma=0;S.tmaTasks=0;extra+=" Thiên Ma Nhập Tâm đã bị trấn áp."}}}
   if(S.buff.n>0){m*=S.buff.m;S.buff.n--}
   if(S.tb&&Date.now()<S.tb)m*=1.2;
   m*=tf.mult;
-  q.got=modGain(Math.round(q.pts*m)+tf.flat+tmb);
-  (S.fx||[]).forEach(e=>{if(e.n>0&&(!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60))){q.got+=modGain(e.v);e.n--}});S.fx=(S.fx||[]).filter(e=>e.n>0);
+  const eligibleFx=(S.fx||[]).filter(e=>e.n>0&&(!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60)));
+  const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,eligibleFx,rewardFactors());
+  q.got=questReward.gain;S.fx=questReward.effects;
   {const h=hourNow(),ks=KS();ls.q++;S.life=S.life||{};S.life.q=(S.life.q||0)+1;ls.m+=q.mins||0;if(h>=22||h<5)ls.ni++;if(h<7)ls.da++;if(q.due)ls.ru++;if((q.mins||0)>=120)ls.lg++;ls.ms=Math.max(ls.ms,S.streak.n);ks.ms=Math.max(ks.ms,S.streak.n);
    if(pb.dr&&Math.random()<pb.dr){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
   const r0=myRk();(S.cnt||(S.cnt={}))[t]=(S.cnt[t]||0)+1;(S.stl||(S.stl=[])).push([Date.now(),q.mins||0]);if(S.stl.length>300)S.stl.shift();q.doneOn=t;
@@ -1114,7 +1115,7 @@ function finish(q){
   ls.top=ls.top||(myRk()<=10?1:0);if(myRk()<=1)ls.t1=1;ls.mc=Math.max(ls.mc||0,S.cnt[t]);
   vlog("Hoàn thành "+q.name+": +"+q.got+" linh lực"+(S.tdPenalty?" (Trừng Phạt −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"%)":"")+", giờ học hôm nay "+(((S.hist[t]||{}).m||0)/60).toFixed(1)+" giờ, tu vi "+rname(uxp())+", hạng "+r0+" → "+myRk());
   const c=q.chain&&S.chains.find(x=>x.id===q.chain);
-  if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=modGain(Math.round(st.reduce((s,x)=>s+x.got,0)*0.25)+(eqT("t7")?120:0));S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
+  if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=GameRewards.chainCompletionReward(st.reduce((s,x)=>s+x.got,0),eqT("t7"),rewardFactors());S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
 }
 function startFocus(q){
   if(!GameTimer.startFocus(q,q.mins*60000)){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
