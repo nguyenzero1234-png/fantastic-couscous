@@ -10,7 +10,7 @@ const save=()=>GameStorage.save(KEY,S);
 const $=id=>document.getElementById(id);
 const today=()=>GameDateData.today(S.dOff||0);
 const esc=GameText.escapeHtml;
-const isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===today());
+const isDone=q=>GameQuestData.isDone(q,today());
 const pad=GameTimeFormat.pad;
 const fmt=GameTimeFormat.formatDuration;
 let extra="",tmr=0;

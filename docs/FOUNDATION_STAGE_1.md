@@ -93,3 +93,8 @@ www/js/
 ## Module lịch chiến tông môn
 - `www/js/sect-war.js` cung cấp `GameSectWar.pairs(week)` để tạo 3 cặp từ 6 tông theo chu kỳ 5 tuần và `GameSectWar.flavor(a,b)` để chọn lời dẫn trận đấu.
 - `game.js` giữ các alias tương thích; tính điểm, lịch tuần, phần thưởng và trạng thái người chơi vẫn ở module game vì phụ thuộc dữ liệu runtime.
+
+
+## Quy tắc hoàn thành nhiệm vụ
+- `GameQuestData.isDone(quest, today)` là hàm thuần xác định trạng thái hoàn thành dựa trên `doneOn`, `repeat` và ngày hiện tại được tiêm vào.
+- `game.js` giữ wrapper gọi ngày lịch game hiện tại; không thay đổi cấu trúc lưu nhiệm vụ hoặc hành vi nhiệm vụ lặp.

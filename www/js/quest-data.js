@@ -7,6 +7,7 @@
   if(s==="1.25"||s==="vua"||s==="vừa"||s==="medium")return 1.25;
   return 1;
  }
+ function isDone(quest,today){return !!quest.doneOn&&(!quest.repeat||quest.doneOn===today)}
  function parseBulkLine(line,options){
   const o=options||{},clock=typeof o.now==="function"?o.now:()=>o.now==null?Date.now():o.now,random=o.random||Math.random;
   const parts=String(line||"").split("|").map(x=>x.trim());
@@ -20,5 +21,5 @@
   const pts=Math.max(1,Math.round(mins/60*(o.perHour||200)*diff));
   return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
  }
- global.GameQuestData=Object.freeze({parseDiff,parseBulkLine});
+ global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone});
 })(window);

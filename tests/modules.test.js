@@ -269,3 +269,13 @@ test("sect war giữ nguyên lịch ghép cặp và lời dẫn chiến tông m�
   assert.deepEqual(Array.from(W.flavor(2, 3)), ["Bách Thảo đồng tâm", "Y đạo hợp lực, lấy nhu thắng cương."]);
   assert.equal(W.flavor(2, 3), W.flavor(2, 3));
 });
+
+
+test("quest data xác định hoàn thành một lần và nhiệm vụ lặp theo ngày", () => {
+  const done = window.GameQuestData.isDone;
+  assert.equal(done({ doneOn: null, repeat: false }, "2026-11-23"), false);
+  assert.equal(done({ doneOn: "2026-11-22", repeat: false }, "2026-11-23"), true);
+  assert.equal(done({ doneOn: "2026-11-22", repeat: true }, "2026-11-23"), false);
+  assert.equal(done({ doneOn: "2026-11-23", repeat: true }, "2026-11-23"), true);
+  assert.equal(done({ doneOn: "", repeat: true }, "2026-11-23"), false);
+});

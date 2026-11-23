@@ -161,3 +161,10 @@
 - [x] `game.js` giữ alias `warPairs` và `warFlavor`; không đổi cách tính điểm, lịch tuần hay phần thưởng chiến tông.
 - [x] Bổ sung kiểm thử lịch ghép ở tuần âm/dương, bảo đảm đủ 6 tông không trùng cặp và kiểm tra lời dẫn.
 - [x] CI #121 chạy 18/19 test đạt; assertion mảng từ VM cần chuẩn hóa về mảng Node trước khi so sánh. Đã sửa ở commit kế tiếp, chờ CI xác nhận.
+
+
+## Tách quy tắc hoàn thành nhiệm vụ (2026-11-23)
+- [x] Chuyển phép xác định nhiệm vụ đã hoàn thành sang `GameQuestData.isDone(quest, today)`; truyền ngày hiện tại vào để giữ hàm thuần, dễ kiểm thử.
+- [x] `game.js` giữ wrapper `isDone` và tiếp tục lấy ngày từ lịch game; nhiệm vụ lặp vẫn chỉ được xem là hoàn thành trong đúng ngày.
+- [x] Bổ sung kiểm thử cho nhiệm vụ thường, nhiệm vụ lặp, ngày trùng/khác và trạng thái chưa hoàn thành.
+- [ ] Chờ CI xác nhận kiểm thử và build APK.
