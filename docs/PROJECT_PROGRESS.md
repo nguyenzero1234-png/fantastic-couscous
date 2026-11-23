@@ -548,3 +548,13 @@
 - [x] Nạp module trước `game.js` và thêm kiểm thử cho điều kiện/buff của cả 6 sư phụ.
 - [ ] Tiếp tục phân loại module hiện hữu vào `core/`, `data/`, `systems/`, `ui/`; di chuyển có kiểm soát và cập nhật đường dẫn script/test, không tạo thêm module rời rạc.
 - [ ] Tiếp tục tách các hệ thống gameplay lớn còn nằm trong `game.js`; Android vẫn để sau theo yêu cầu.
+
+
+## Tái khởi tạo kiến trúc module từ core/state.js (2026-11-24)
+- [x] Tạo `www/js/core/state.js` làm đầu mối duy nhất cho key lưu trữ, state mặc định, migration dữ liệu cũ và persistence.
+- [x] Chuyển khởi tạo state, migration và hàm `save` khỏi `game.js`; file game chỉ nhận state qua `GameState.create()`.
+- [x] Nạp `core/state.js` sau các adapter nền tảng cần thiết và trước `game.js`.
+- [x] Thêm kiểm thử migration dữ liệu cũ, mặc định, UI initialization và lưu state.
+- [ ] Từng bước thay thế các module cũ bằng module có ranh giới chức năng mới; chỉ xóa module cũ sau khi không còn tham chiếu từ HTML, game, tests hoặc workflow.
+- [ ] Chuyển các module hiện hữu vào `core/`, `data/`, `systems/`, `ui/` theo đúng trách nhiệm; không giữ song song hai nguồn state hoặc hai cơ chế lưu.
+- [ ] Chạy đầy đủ test suite và kiểm tra runtime sau khi hoàn thành nhóm state/core.
