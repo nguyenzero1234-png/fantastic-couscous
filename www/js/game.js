@@ -1996,7 +1996,7 @@ function setStreak(n){
   }
   LS().ms=Math.max(LS().ms||0,n);KS().ms=Math.max(KS().ms||0,n);
 }
-const curStreak=()=>(S.streak.last===today()||S.streak.last===dayStr(1))?(S.streak.n||0):0;
+const curStreak=()=>GameStreak.current(S.streak,today(),dayStr(1));
 function godAdvance(n,keep){
   const prev=curStreak();
   KS().skd=(KS().skd||0)+n*864e5;S.dOff=(S.dOff||0)+n;if(S.lb)S.lb.t0-=n*864e5;KS().start-=n*864e5;

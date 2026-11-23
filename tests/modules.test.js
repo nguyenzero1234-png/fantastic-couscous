@@ -436,3 +436,13 @@ test("analytics sumMinutes giữ nguyên phép cộng lịch sử theo predicate
   assert.equal(A.sumMinutes({}, () => true), 0);
   assert.equal(A.sumMinutes(H, () => false), 0);
 });
+
+
+test("streak current chỉ trả chuỗi khi lần học cuối là hôm nay hoặc hôm qua", () => {
+  const S = window.GameStreak;
+  assert.equal(S.current({ last: "2026-11-23", n: 7 }, "2026-11-23", "2026-11-22"), 7);
+  assert.equal(S.current({ last: "2026-11-22", n: 4 }, "2026-11-23", "2026-11-22"), 4);
+  assert.equal(S.current({ last: "2026-11-21", n: 9 }, "2026-11-23", "2026-11-22"), 0);
+  assert.equal(S.current({ last: "", n: 0 }, "2026-11-23", "2026-11-22"), 0);
+  assert.equal(S.current(null, "2026-11-23", "2026-11-22"), 0);
+});

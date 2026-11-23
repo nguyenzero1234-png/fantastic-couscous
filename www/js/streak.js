@@ -1,6 +1,10 @@
 /* Quy tắc chuỗi ngày học và tâm ma. Không phụ thuộc DOM, storage hoặc trạng thái global. */
 (function(global){
   "use strict";
+  function current(streak,today,yesterday){
+    const x=streak||{};
+    return x.last===today||x.last===yesterday?(x.n||0):0;
+  }
   function completeDay(input){
     const x=input||{},prevN=Number(x.streak)||0;
     let continued=x.last===x.yesterday,consumeLifeCharm=false,consumeHeartCharm=false,triggerDemon=false,extra="",log="";
@@ -34,5 +38,5 @@
     }
     return {tm,tmTasks,tma,tmaTasks,clearedSelf,clearedHeavenly,taskBonus};
   }
-  global.GameStreak=Object.freeze({completeDay,checkBreak,progressCurses});
+  global.GameStreak=Object.freeze({current,completeDay,checkBreak,progressCurses});
 })(window);
