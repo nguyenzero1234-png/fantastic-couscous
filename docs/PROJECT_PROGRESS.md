@@ -24,6 +24,7 @@
 ## Tái cấu trúc nhóm dữ liệu (2026-11-24)
 - [x] Chuyển 10 module dữ liệu (`progression-data`, `npc-data`, `npc-roster`, `kiep-nan-data`, `diary-data`, `leaderboard-data`, `item-data`, `rebirth-data`, `cultivation-display-data`, `story-data`) vào `www/js/data/`.
 - [x] Cập nhật `index.html` để nạp bản trong `data/`; giữ file cũ làm compatibility guard trong thời gian chuyển đổi.
+- [x] Kiểm tra lại và chuẩn hóa toàn bộ 48 thẻ script sau khi di chuyển; xác nhận không trùng đường dẫn và đủ 10 module data được nạp.
 - [x] Đã chuyển các module dữ liệu tĩnh còn lại trong nhóm này; các entry cũ chỉ còn compatibility guard.
 
 ## Tái cấu trúc core và UI (2026-11-24)
