@@ -778,3 +778,11 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển phần triển khai `GameStreak` sang `www/js/systems/streak.js`; giữ nguyên API toàn cục và nội dung thuật toán.
 - [x] Giữ các đường dẫn gốc làm compatibility guard; nạp implementation trước guard và không đổi thứ tự tương đối với các script kế tiếp.
 - [ ] Chưa xác nhận test/CI cho commit này; tiếp tục chuyển các subsystem còn lại theo đúng cấu trúc phẳng trong lộ trình.
+
+
+## Gom thống kê và chiến tông môn vào systems (2026-11-24)
+
+- [x] Chuyển implementation `GameAnalytics` sang `www/js/systems/analytics.js`; giữ nguyên toàn bộ hàm tổng hợp và API.
+- [x] Chuyển implementation `GameSectWar` sang `www/js/systems/sect-war.js`; giữ nguyên tính điểm, ghép cặp và xử lý thưởng.
+- [x] Giữ compatibility guard ở đường dẫn cũ; nạp module mới ngay trước guard và không đảo thứ tự các dependency hiện hữu.
+- [ ] Chưa xác nhận test/CI; tiếp tục gom các subsystem còn lại và bổ sung kiểm thử đường dẫn.
