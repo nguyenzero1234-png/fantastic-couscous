@@ -656,7 +656,7 @@ Không bắt buộc tạo file rỗng để khớp sơ đồ. Có thể chia nh�
 - [x] Chuyển game loop/timer sang `core/game-loop.js`.
 - [x] Chuyển cấu hình giao diện sang `ui/preferences.js`.
 - [x] Di chuyển nhóm data đã liệt kê vào `data/` và cập nhật thứ tự script/test.
-- [ ] Hoàn tất tách dữ liệu nhiệm vụ (PLAN, preset, AI prompt) khỏi `game.js` vào `data/quest-data.js`.
+- [x] Hoàn tất tách dữ liệu nhiệm vụ (PLAN, preset, AI prompt) khỏi `game.js` vào `data/quest-data.js`; giữ parser nghiệp vụ ở `quest-data.js` gốc.
 - [ ] Rà soát và xác nhận test suite hiện tại xanh trên commit mới nhất; không dùng kết quả CI cũ để kết luận trạng thái hiện tại.
 
 ### Giai đoạn 2 — Hoàn thiện core
@@ -729,4 +729,16 @@ Sau mỗi đợt thay đổi:
 - [x] Xác nhận workflow build APK không tự chạy theo push; CI của giai đoạn 1–6 hiện chỉ thực thi kiểm thử JavaScript. Workflow build được giữ ở chế độ thủ công để dành cho giai đoạn 7.
 - [ ] Không chạy build, sync, kiểm tra hay ký Android trong giai đoạn 1–6.
 - [ ] Sau khi CI xanh, tiếp tục khảo sát và tách dữ liệu nhiệm vụ (PLAN/preset/prompt AI) khỏi `game.js` vào `data/quest-data.js`, rồi rà thứ tự nạp theo kiến trúc core → data → systems → ui → game.js.
+
+
+
+## Tách dữ liệu nhiệm vụ khỏi game.js (2026-11-24)
+
+- [x] Giữ `www/js/quest-data.js` làm parser nghiệp vụ; không ghi đè hoặc trộn parser với dữ liệu tĩnh.
+- [x] Tạo `www/js/data/quest-data.js` chứa `PN`, `PLAN`, `AI_PROMPT`, `CHAIN_PROMPT`, `SCHED_PROMPT`, `PRESET_MIX`, `DEF_Q`, `DEF_C`, `DEF_S`, công bố qua `window.GameQuestTemplates`.
+- [x] Thay khai báo dữ liệu trong `game.js` bằng destructuring API; giữ nguyên nội dung dữ liệu và call-site.
+- [x] Nạp data module sau parser `quest-data.js` và trước `game.js`.
+- [x] Bổ sung test API, số tuần kế hoạch và nội dung prompt/preset.
+- [ ] Chờ CI của commit này xác nhận; không chạy build hoặc tác vụ Android.
+- [ ] Tiếp theo: audit và sắp xếp thứ tự nạp script theo core → data → systems → ui → game.js; chỉ loại bỏ file cũ sau khi rà toàn bộ tham chiếu.
 

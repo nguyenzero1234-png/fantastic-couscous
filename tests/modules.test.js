@@ -1236,3 +1236,21 @@ test("GameState tạo state mặc định, migration dữ liệu cũ và lưu đ
   assert.equal(calls[1][2],old);
   window.GameUI=prior;
 });
+
+
+test("GameQuestTemplates chứa dữ liệu nhiệm vụ, kế hoạch và prompt AI tách khỏi game.js", () => {
+  const D = window.GameQuestTemplates;
+  assert.ok(D);
+  assert.deepEqual(Object.keys(D), ["PN", "PLAN", "AI_PROMPT", "CHAIN_PROMPT", "SCHED_PROMPT", "PRESET_MIX", "DEF_Q", "DEF_C", "DEF_S"]);
+  assert.deepEqual(Object.keys(D.PN), ["en", "code", "nckh"]);
+  assert.equal(D.PLAN.en.length, 15);
+  assert.equal(D.PLAN.code.length, 15);
+  assert.equal(D.PLAN.nckh.length, 15);
+  assert.match(D.AI_PROMPT, /Bạn là gia sư lập kế hoạch học/);
+  assert.match(D.CHAIN_PROMPT, /TÊN CHUỖI/);
+  assert.match(D.SCHED_PROMPT, /HH:MM-HH:MM/);
+  assert.match(D.PRESET_MIX, /VSTEP Listening/);
+  assert.match(D.DEF_Q, /Khởi động/);
+  assert.match(D.DEF_C, /Ôn thi một chương/);
+  assert.match(D.DEF_S, /07:40-07:55/);
+});
