@@ -243,3 +243,12 @@
 - [x] Giữ nguyên cách làm tròn điểm hiện tại và dùng giá trị lớn hơn giữa điểm kiếp hiện tại với linh lực đang có.
 - [x] Bổ sung test cho kiếp lịch sử cao nhất, kiếp hiện tại dẫn đầu, hòa điểm và danh sách lịch sử rỗng.
 - [x] CI #142: 34/34 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
+
+
+## Tách tổng hợp linh lực và nhật ký học theo thời gian (2026-11-23)
+- [x] `GameAnalytics.sumPointsBetween(history, startKey, endKey)`: cộng linh lực với đầu khoảng bao gồm, cuối khoảng loại trừ.
+- [x] `GameAnalytics.pointsThrough(history, dateKey)`: cộng linh lực đến hết ngày được chọn.
+- [x] `GameAnalytics.countStudyLogEntries(studyLog, startKey, endKey, hourPredicate)`: đếm bản ghi theo ngày local và điều kiện giờ; hai đầu ngày bao gồm.
+- [x] Thay wrapper `ugain`, `uxp`, `weekNight`, `weekDawn` trong `game.js`; giữ nguyên điều kiện lọc.
+- [x] `GameAnalytics.sumCountsBetween(counts, startKey, endKey)`: cộng số nhiệm vụ trong khoảng ngày bao gồm cả hai đầu; wrapper `weekQuests` gọi helper.
+- [x] CI #145: 37/37 kiểm thử; CI #146: 38/38 kiểm thử. Cả hai đều build APK và tải artifact thành công.

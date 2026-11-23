@@ -159,3 +159,11 @@ www/js/
 - Giữ nguyên thứ tự khi hòa điểm: bản ghi lịch sử đầu tiên có điểm cao nhất được giữ; kiếp hiện tại chỉ thắng khi điểm cao hơn nghiêm ngặt.
 - `game.js` vẫn cung cấp dữ liệu từ save và wrapper `bk`; helper không truy cập state toàn cục.
 - CI #142 xác nhận 34/34 kiểm thử JavaScript, build APK và tải artifact thành công.
+
+
+## Tổng hợp điểm, nhiệm vụ và nhật ký theo khoảng ngày
+- `sumPointsBetween` giữ khoảng ngày dạng [start, end); `pointsThrough` tính đến hết khóa ngày.
+- `countStudyLogEntries` dùng ngày/giờ local như logic cũ; khung giờ do caller cung cấp.
+- `sumCountsBetween` giữ khoảng ngày dạng [start, end] để khớp thống kê nhiệm vụ tuần.
+- Các wrapper trong `game.js` giữ nguồn state và các mốc thời gian.
+- CI #145 và #146 lần lượt xác nhận 37/37 và 38/38 test JavaScript; build APK và tải artifact đều thành công.
