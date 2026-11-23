@@ -812,5 +812,6 @@ Sau mỗi đợt thay đổi:
 - [x] Hợp nhất ba implementation `GameSectSystem`, `GameSectWar` và `GameSectMissions` vào `systems/sect.js` theo ranh giới nghiệp vụ tông môn.
 - [x] Giữ nguyên ba global API để không đổi call-site; `sect-war.js` và `sect-missions.js` ở thư mục gốc chỉ còn compatibility guard.
 - [x] Thay ba script implementation rời bằng một script `systems/sect.js` được nạp trước consumer; loại bỏ ba implementation phân mảnh cũ.
+- [x] Rà soát lại danh sách script và loại thẻ nạp cũ còn sót của `systems/sect-missions.js`; chỉ giữ một implementation tông môn.
 - [x] Cập nhật test thứ tự nạp để hai compatibility entry point cùng phụ thuộc vào module nghiệp vụ duy nhất.
 - [ ] Cần xác nhận CI sau hợp nhất và tiếp tục gom/tách các nghiệp vụ còn nằm trong `game.js`.
