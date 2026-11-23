@@ -324,8 +324,8 @@ test("progression data tính linh lực tại mốc ngày như helper cũ", () =
     "2026-11-20": { p: 100 }, "2026-11-22": { p: 200 },
     "2026-11-23": { p: 300 }, "2026-11-24": { p: 400 }
   };
-  assert.equal(P.playerXpAt(history, 1200, "2026-11-21"), 700);
-  assert.equal(P.playerXpAt(history, 1200, "2026-11-23"), 1200);
+  assert.equal(P.playerXpAt(history, 1200, "2026-11-21"), 300);
+  assert.equal(P.playerXpAt(history, 1200, "2026-11-23"), 800);
   assert.equal(P.playerXpAt(history, 500, "2026-11-24"), 500);
   assert.equal(P.playerXpAt({ "2026-11-20": { p: 0 } }, 42, "2026-11-20"), 42);
 });

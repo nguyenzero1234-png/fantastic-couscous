@@ -182,4 +182,4 @@
 - [x] Chuyển kiểm tra hạn chót và mở khóa chuỗi sang `GameQuestData.isExpired()` / `isUnlocked()`; giữ nguyên điều kiện, thứ tự lọc và cả hành vi biên của `slice(0, indexOf())`.
 - [x] Chuyển phép tính linh lực tại mốc ngày sang `GameProgressData.playerXpAt(history, points, dateKey)`; wrapper vẫn tạo khóa ngày bằng local locale `sv`.
 - [x] Bổ sung test cho làm tròn phút, hạn chót đúng/sau thời điểm, chuỗi nhiệm vụ và dữ liệu lịch sử.
-- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt refactor helper này.
+- [ ] CI #125 phát hiện test kỳ vọng sai ở phép tính XP theo ngày (23/24 test đạt); đã sửa expected theo đúng công thức cũ, chờ CI xác nhận lại.
