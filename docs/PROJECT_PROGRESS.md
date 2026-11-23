@@ -393,3 +393,10 @@
 - [x] CI #177 phát hiện sai khác biểu diễn số thực IEEE-754 (`0.5720000000000001` so với `0.572`), không phải sai công thức gameplay.
 - [x] Chuyển assertion trường `status` sang so sánh sai số tuyệt đối dưới `1e-12`; các hệ số `td` và `balance` vẫn so sánh chính xác.
 - [ ] Chờ CI xác nhận lại.
+
+ 
+## Tách xử lý hoàn thành nhiệm vụ (2026-11-23)
+- [x] Chuyển luồng hoàn thành nhiệm vụ sang `www/js/quest-completion.js`, nhận state và các dịch vụ runtime qua dependency object.
+- [x] `game.js` chỉ còn wrapper kết nối trạng thái hiện hành với module; giữ nguyên key lưu `quest-study-v1` và schema.
+- [x] Bổ sung kiểm thử tích hợp cho streak, điểm, lịch sử học, thống kê ngày và log hoàn thành.
+- [ ] Chờ CI xác nhận kiểm thử và APK; chưa kiểm thử trên thiết bị Android thật.

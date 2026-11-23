@@ -828,3 +828,46 @@ test("sect-war stats tổng hợp linh lực và số tu sĩ theo tông môn", (
     { xp: 4, n: 1 }, { xp: 0, n: 0 }
   ]);
 });
+
+test("quest completion module cập nhật streak, curse, điểm, lịch sử và thưởng chuỗi", () => {
+  const Q = window.GameQuestCompletion;
+  const state = {
+    streak: { last: "yesterday", n: 2 }, inv: { the: 0 }, sh: 0, tm: 0, tmTasks: 0, tma: 0, tmaTasks: 0,
+    pw: 0, buff: { n: 0, m: 1 }, tb: 0, fx: [], quests: [], chains: [], points: 10,
+    hist: {}, cnt: {}, stl: [], tdPenalty: false, tdStacks: 0
+  };
+  const quest = { id: "q1", name: "Ôn tập", mins: 30, pts: 100, due: 0, chain: null };
+  let extra = "";
+  const logs = [];
+  const daily = { q: 0, m: 0, ni: 0, da: 0, ru: 0, lg: 0, ms: 0, top: 0, t1: 0, mc: 0, tmc: 0 };
+  const deps = {
+    S: state, today: () => "2026-11-23", dayStr: () => "2026-11-22",
+    GameTimer: { activeFocus: () => null, cancelFocus() {} },
+    GameStreak: {
+      completeDay: () => ({ streak: { n: 3, last: "2026-11-23" }, consumeLifeCharm: false, consumeHeartCharm: false, triggerDemon: false, extra: "", log: "" }),
+      progressCurses: () => ({ tm: false, tmTasks: 0, tma: false, tmaTasks: 0, clearedSelf: false, clearedHeavenly: false, taskBonus: 0 })
+    },
+    KS: () => (state.kiepStats ||= {}), extraGet: () => extra, extraSet: v => { extra = v; },
+    vlog: v => logs.push(v), TB: () => ({ cap: 5, flat: 0, mult: 1 }), LS: () => daily,
+    petBuff: () => ({}), GameRewards: {
+      streakMultiplier: () => 1,
+      questCompletionReward: () => ({ gain: 100, effects: [] }),
+      chainCompletionReward: () => 0
+    },
+    eqT: () => false, rewardFactors: () => ({ td: 1, balance: 1, status: 1 }),
+    hourNow: () => 12, ITEMS: [], myRk: () => 50, hAdd: (day, points, mins) => {
+      const h = state.hist[day] ||= { p: 0, m: 0 }; h.p += points; h.m += mins;
+    },
+    rname: () => "Luyện Khí", uxp: () => 10, isDone: q => !!q.doneOn
+  };
+  Q.finish(quest, deps);
+  assert.equal(quest.got, 100);
+  assert.equal(quest.doneOn, "2026-11-23");
+  assert.equal(state.points, 110);
+  assert.equal(state.hist["2026-11-23"].p, 100);
+  assert.equal(state.hist["2026-11-23"].m, 30);
+  assert.equal(state.streak.n, 3);
+  assert.equal(daily.q, 1);
+  assert.equal(daily.m, 30);
+  assert.equal(logs.length, 1);
+});
