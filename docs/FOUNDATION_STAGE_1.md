@@ -207,3 +207,9 @@ www/js/
 - Nội dung nhật ký được tạo từ dữ liệu thống kê và ngữ cảnh truyền vào; module không đọc save, DOM hay biến toàn cục của game.
 - Wrapper trong `game.js` giữ trách nhiệm đọc lịch sử, chuỗi ngày, tông môn, linh thú, ký ức và Đạo Văn.
 - Không thay đổi cấu trúc save hoặc giới hạn tối đa bảy dòng nhật ký.
+
+
+## Ghi chú kiểm thử nhật ký
+- CI #159 xác nhận 45/46 test đạt; test còn lại có expected text viết sai so với quy tắc chọn câu xác định theo seed.
+- Đã sửa expected value để phản ánh đúng kết quả của helper; không thay đổi thuật toán sinh nội dung.
+- Chờ CI xác nhận lại toàn bộ test và APK.

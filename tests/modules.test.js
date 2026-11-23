@@ -631,9 +631,9 @@ test("nhật ký tu tiên sinh nội dung xác định từ dữ liệu được
     isToday: true, streak: 4
   }, quotes);
   assert.deepEqual(empty, [
-    "Hôm nay không có gì để ghi. Trang để trắng. Không hỏi vì sao.",
+    "Một ngày không ngồi xuống. Sổ vẫn mở, chờ.",
     "Chuỗi đang giữ từ hôm trước. Hôm nay còn chưa viết tiếp.",
-    "Trích: Đạo tâm bất động"
+    "Trích: Một bước cũng là đường."
   ]);
   const full = D.generate("2026-11-23", { n: 2, m: 125, p: 80.6 }, {
     isToday: true, streak: 7, tm: true, sectName: "Thanh Vân",
