@@ -77,3 +77,9 @@ www/js/
 - `GameProgressData.realmIndex(xp, realms)`: tìm cảnh giới có ngưỡng linh lực cao nhất không vượt quá XP.
 - `GameProgressData.realmName(xp, realms)`: định dạng tên cảnh giới và tầng 1–9; cảnh giới cuối không chia tầng.
 - `game.js` tiếp tục sở hữu bảng ngưỡng `RL`, chỉ chuyển phép tính thuần sang module; không thay đổi save schema hoặc luật chơi.
+
+
+## Module nhiễu xác định
+- `www/js/noise.js` cung cấp `GameNoise.hash(a,b,c)` và `GameNoise.value(seed,channel,x)`.
+- Đây là các hàm thuần, xác định, không đọc trạng thái hay thời gian; NPC simulation dùng chúng để tạo biến động lặp lại theo seed.
+- `game.js` giữ alias `hs`/`vn` nhằm tránh sửa các call-site và giữ nguyên thuật toán cũ.

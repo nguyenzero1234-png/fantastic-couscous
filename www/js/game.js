@@ -106,8 +106,7 @@ const B=[
  {n:"Vô Song",t:"Thiên Kiêu Vô Song",b:.5,r:6.6,v:35,p:50,d:"Vô Song Chi Tư — tăng thêm 20% tốc độ học."}
 ];
 const F=[9.7,31.3,107.9,389.1];
-const hs=(a,b,c)=>{let h=Math.imul(a,374761393)^Math.imul(b,668265263)^Math.imul(c,2147483647);h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967295*2-1};
-const vn=(sd,k,x)=>{const i=Math.floor(x),f=x-i,u=f*f*(3-2*f);return hs(sd,k,i)*(1-u)+hs(sd,k,i+1)*u};
+const hs=GameNoise.hash, vn=GameNoise.value;
 const BH=[{h:4,lam:.5,dh:3},{h:4,lam:.5,dh:3},{h:4.5,lam:.6,dh:3},{h:5,lam:.7,dh:3.5},{h:6,lam:.8,dh:3.5},{h:7,lam:.9,dh:4},{h:9,lam:.9,dh:4},{h:12,lam:.8,dh:4},{h:12,lam:.9,dh:4},{h:12,lam:1,dh:4,eb:.2,sm:.95}];
 const CDN=["Gặp cao nhân chỉ linh lực","Nhặt được bí kíp cổ","Linh tuyền tẩy thể","Ngộ đạo dưới trăng","Đột phá bình cảnh","Trúng linh dược","Tìm thấy động phủ thượng cổ","Thiên tượng dị biến","Thiên giáng linh quả"];
 const BD={dm:1,dhm:1,vm:1,jm:1,jp:0,cap:24,bm:1,fh:0,lm:1,eb:0,sm:1,neg:0};

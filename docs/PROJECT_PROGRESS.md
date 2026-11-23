@@ -138,3 +138,11 @@
 - [x] `game.js` giữ nguyên bảng ngưỡng `RL` và gọi module mới qua hai wrapper, không đổi dữ liệu hay cách hiển thị.
 - [x] Bổ sung test cho các ngưỡng cảnh giới, ranh giới tầng 1/tầng 9 và cảnh giới cuối không chia tầng.
 - [ ] Chờ CI xác nhận kiểm thử và APK cho commit tách công thức cảnh giới.
+
+
+## Tách bộ sinh nhiễu mô phỏng (2026-11-23)
+- [x] Tách hàm hash số nguyên xác định và value-noise nội suy trơn sang `www/js/noise.js` (`window.GameNoise`).
+- [x] `game.js` dùng hai hàm qua alias `hs` và `vn`; giữ nguyên thuật toán, hệ số và thứ tự tính của mô phỏng NPC.
+- [x] Thêm kiểm thử vector hash cố định, nội suy tại số nguyên/phân số và giới hạn giữa hai mẫu.
+- [x] GitHub Actions run #117 xác nhận kiểm thử và build APK thành công cho thay đổi cảnh giới.
+- [ ] Chờ CI cho module noise.
