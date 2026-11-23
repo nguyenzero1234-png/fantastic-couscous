@@ -313,3 +313,9 @@
 - [x] CI #163 xác nhận 46/46 test, build APK và tải artifact `TuTienHocDao-apk` thành công.
 - [ ] Chờ CI cho module cơ duyên; chưa kiểm thử cài đặt trên thiết bị Android thật.
 - Lưu ý: ca test dùng hash giả lập theo đúng identity truyền vào (NPC: index + 1; người chơi: 900), kiểm tra cả ba nhánh loại cơ duyên.
+
+
+## Tiếp tục tách logic bảng xếp hạng (2026-11-23)
+- [x] CI #165 thành công cho commit `de58b0b`; test JavaScript, Gradle APK debug và upload artifact đều thành công. Artifact `TuTienHocDao-apk` đã được tạo.
+- [x] Tách định dạng mô tả chín hiệu ứng cơ duyên thành hàm thuần `GameLeaderboardData.eventEffectText`; wrapper `efTxt` trong `game.js` giữ nguyên giao diện nội bộ.
+- [x] Bổ sung kiểm thử ngưỡng hash và các nhánh mô tả hiệu ứng; chờ CI của commit mới xác nhận.

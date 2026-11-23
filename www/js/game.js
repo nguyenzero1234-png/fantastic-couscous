@@ -241,7 +241,7 @@ function eff(i,t){
 }
 const hrAt=(i,t)=>eff(i,t).h;
 const hrs=(i,n)=>hrAt(i,n+0.5);
-const efTxt=e=>{const o=BH[e.i];return ["+"+e.dh.toFixed(1)+" giờ học/ngày","hiệu suất ×"+(1.25+0.35*e.c).toFixed(2),(o.neg?"trừ thẳng ":"cộng thẳng ")+Math.round(60*(1+B[e.i].b)*(2+4*e.c)*o.bm)+" linh lực","biến động còn 35%, +"+(0.5*e.dh).toFixed(1)+" giờ học/ngày",(o.neg?"trừ thẳng":"cộng thẳng")+" khoảng 2% linh lực (tối thiểu "+Math.round(150*o.bm)+")","+"+e.dh.toFixed(1)+" giờ học/ngày, kéo dài gấp đôi","hiệu suất ×1,30 và +1 giờ học/ngày","hiệu suất ×1,40 nhưng biến động ×2,5",(o.neg?"trừ thẳng ":"cộng thẳng ")+Math.round(e.flat*o.bm)+" linh lực cố định"][e.k]};
+const efTxt=e=>GameLeaderboardData.eventEffectText(e,B[e.i],BH[e.i]);
 const CH=[],CD=[],SP=60000;
 function cum(i,k){
   const c=CH[i]||(CH[i]=[0]),d=CD[i]||(CD[i]=[0]),b=B[i],o=BH[i];

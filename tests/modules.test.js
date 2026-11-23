@@ -683,3 +683,24 @@ test("cơ duyên bảng xếp hạng chọn kết quả xác định và giữ n
   assert.deepEqual(calls.map(x => x.slice(1)), [[140, 77], [140, 77], [140, 77]]);
   assert.deepEqual(JSON.parse(JSON.stringify(L.rollSpecial([], 1, 2, hash))), []);
 });
+
+
+test("cơ duyên bảng xếp hạng giữ nguyên ngưỡng hash và mô tả đủ chín hiệu ứng", () => {
+  const L = window.GameLeaderboardData;
+  const thresholds = [0, 0.199999, 0.2, 0.399999, 0.4, 0.599999, 0.6];
+  const expected = [0, 0, 1, 1, 2, 2, -1];
+  thresholds.forEach((value, index) => {
+    const result = L.rollSpecial([{ i: 3, u: 0, rank: 1 }], 9, 0, () => value);
+    assert.equal(result.length, expected[index] < 0 ? 0 : 1);
+    if (result.length) assert.equal(result[0].k, expected[index]);
+  });
+  const b = { b: 0.1 }, o = { bm: 1, neg: 0 };
+  const descriptions = Array.from({ length: 9 }, (_, k) =>
+    L.eventEffectText({ i: 0, k, c: 0.5, dh: 2, flat: 700 }, b, o));
+  assert.equal(descriptions.length, 9);
+  assert.ok(descriptions.every(x => typeof x === "string" && x.length > 0));
+  assert.match(descriptions[0], /\+2\.0 giờ học\/ngày/);
+  assert.match(descriptions[1], /hiệu suất/);
+  assert.match(descriptions[8], /700 linh lực cố định/);
+  assert.match(L.eventEffectText({ k: 2, c: 0.5 }, b, { bm: 2, neg: 1 }), /trừ thẳng/);
+});

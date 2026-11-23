@@ -11,5 +11,8 @@
     });
     return result;
   }
-  root.GameLeaderboardData=Object.freeze({rollSpecial});
+  function eventEffectText(e,b,o){
+    return ["+"+e.dh.toFixed(1)+" giờ học/ngày","hiệu suất ×"+(1.25+0.35*e.c).toFixed(2),(o.neg?"trừ thẳng ":"cộng thẳng ")+Math.round(60*(1+b.b)*(2+4*e.c)*o.bm)+" linh lực","biến động còn 35%, +"+(0.5*e.dh).toFixed(1)+" giờ học/ngày",(o.neg?"trừ thẳng":"cộng thẳng")+" khoảng 2% linh lực (tối thiểu "+Math.round(150*o.bm)+")","+"+e.dh.toFixed(1)+" giờ học/ngày, kéo dài gấp đôi","hiệu suất ×1,30 và +1 giờ học/ngày","hiệu suất ×1,40 nhưng biến động ×2,5",(o.neg?"trừ thẳng ":"cộng thẳng ")+Math.round(e.flat*o.bm)+" linh lực cố định"][e.k];
+  }
+  root.GameLeaderboardData=Object.freeze({rollSpecial,eventEffectText});
 })(typeof window!=="undefined"?window:globalThis);

@@ -240,3 +240,9 @@ www/js/
 - CI #163 đã build APK thành công cho phiên bản trước; CI của commit mới sẽ xác nhận module này.
 
 - Test dùng hash giả lập cho hai identity NPC và identity người chơi để kiểm tra ngưỡng và nhánh kết quả; cần CI xác nhận.
+
+
+## Mở rộng module dữ liệu bảng xếp hạng
+- Tách định dạng mô tả chín loại hiệu ứng cơ duyên sang `GameLeaderboardData.eventEffectText(event, npc, buff)`; hàm nhận dữ liệu tường minh, không đọc state hoặc DOM.
+- `game.js` giữ wrapper tương thích `efTxt`; chuỗi tiếng Việt, công thức và quy tắc cộng/trừ được giữ nguyên.
+- Bổ sung test ranh giới ngưỡng hash 0,2 / 0,4 / 0,6 và kiểm tra đủ chín mô tả, bao gồm nhánh hiệu ứng trừ linh lực.
