@@ -213,5 +213,5 @@ test("date data giữ nguyên ngày địa phương, bù ngày và đầu tuần
   assert.equal(D.dayOffset(0, 0, base), day);
   assert.equal(D.weekStart(0, base), day);
   assert.equal(D.weekStart(0, base + 2 * 864e5), day);
-  assert.equal(D.weekStart(0, base - 864e5), new Date(base - 864e5).toLocaleDateString("sv"));
+  assert.equal(D.weekStart(0, base - 864e5), new Date(base - 7 * 864e5).toLocaleDateString("sv"));
 });
