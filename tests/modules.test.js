@@ -1171,7 +1171,7 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
   assert.equal(window.GameItemData.catalog()[0].q[0], 2);
   assert.deepEqual(JSON.parse(JSON.stringify(window.GameItemData.describe({ id: "x", c: 100, q: [2, 60, "q"] }))), {
     tot: 120,
-    d: "Dùng: 2 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +60 linh lực cố định (tổng +120, gấp 1,2 lần giá)"
+    d: "Dùng: 2 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +60 linh lực cố định (tổng +120, hoàn lại đủ giá cộng tác dụng riêng)"
   });
 });
 
