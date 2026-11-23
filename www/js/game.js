@@ -2014,10 +2014,13 @@ function renderSettings(){
   </div>
   <small style="display:block;margin-top:4px">Chỉ học: ẩn bảng, tông, bảo khố phức tạp — giữ nhiệm vụ, nhật trình, thiên kiếp, nhật ký.</small>
 </div>`,1)+fold("bk","Sao lưu & hệ thống",`<small>Dữ liệu chỉ nằm trong trình duyệt này. Xuất ra để không mất khi đổi máy.</small>
-<textarea id="bk" placeholder="Dữ liệu xuất ra hiện ở đây…"></textarea>
+<textarea id="bk" placeholder="Dữ liệu backup JSON sẽ hiện ở đây…"></textarea>
+<input id="bkfile" type="file" accept=".json,application/json" hidden>
 <div class="chips" style="margin-top:8px">
-  <button class="btn alt" data-bk="ex">Xuất</button>
-  <button class="btn alt" data-bk="im">Nhập</button>
+  <button class="btn alt" data-bk="ex">Tạo backup</button>
+  <button class="btn alt" data-bk="dl">Tải file JSON</button>
+  <button class="btn alt" data-bk="im">Nhập JSON</button>
+  <button class="btn alt" data-bk="file">Chọn file backup</button>
   <button class="btn alt" data-bk="sn">${S.snd===0?"Bật âm":"Tắt âm"}</button>
   <button class="btn alt" data-bk="nm">Đổi tên</button>
   <button class="btn alt" data-bk="tut">Hướng dẫn lại</button>
@@ -2036,13 +2039,40 @@ bx.onclick=e=>{
     S.ui[ui.dataset.ui]=ui.dataset.v;save();applyUi();renderSettings();say("Đã đổi giao diện.");return;
   }
   const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
-  if(a==="ex"){$("bk").value=JSON.stringify(S);$("bk").select();try{navigator.clipboard.writeText($("bk").value)}catch(x){}say("Đã xuất dữ liệu. Hãy sao chép và cất giữ.")}
-  else if(a==="im"){try{const o=JSON.parse($("bk").value);if(!Array.isArray(o.quests)||typeof o.points!=="number")throw 0;S=Object.assign({quests:[],points:0,gameSec:0,rate:2,perHour:200,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null},o);if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};applyUi();save();render();say("Đã nhập dữ liệu.")}catch(x){say("Dữ liệu không hợp lệ, chưa thay đổi gì.")}}
+  if(a==="ex"||a==="dl"){
+    try{
+      const raw=GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
+      if(a==="ex"){try{navigator.clipboard&&navigator.clipboard.writeText(raw)}catch(x){}say("Đã tạo backup. Hãy sao chép hoặc tải file để cất giữ.")}
+      else{
+        const blob=new Blob([raw],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");
+        link.href=url;link.download="tu-tien-hoc-dao-backup-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);say("Đã tải file backup JSON.");
+      }
+    }catch(x){say("Không thể tạo backup: "+(x.message||"dữ liệu không hợp lệ."))}
+  }
+  else if(a==="file"){$("bkfile").click()}
+  else if(a==="im"){
+    try{
+      if(!window.confirm("Nhập backup sẽ thay thế tiến trình hiện tại. Bản hiện tại sẽ được lưu thành backup nội bộ trước. Tiếp tục?"))return;
+      const imported=GameStorage.importData(KEY,$("bk").value);
+      S=Object.assign(DEF(),imported);if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
+      applyUi();render();say("Đã nhập backup thành công.");
+    }catch(x){say("Không thể nhập backup: "+(x.message||"dữ liệu không hợp lệ.")+" Tiến trình hiện tại chưa bị thay thế.")}
+  }
   else if(a==="sn"){S.snd=S.snd===0?1:0;save();renderSettings();say(S.snd===0?"Đã tắt âm thanh.":"Đã bật âm thanh.");sfx(660)}
   else if(a==="nm")askName();
   else if(a==="tut"){S.tutDone=0;S.tutStep=0;save();showTut()}
   else if(a==="god"){S.god=!S.god;save();renderSettings();render();say(S.god?"Thiên Đạo đã mở, mọi tab được mở khóa.":"Đã tắt Thiên Đạo.")}
 };
+
+$("bkfile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    $("bk").value=await file.text();
+    say("Đã đọc file backup. Kiểm tra nội dung rồi bấm «Nhập JSON» để xác nhận.");
+  }catch(x){say("Không đọc được file backup.")}
+  e.target.value="";
+});
 
 function checkStreakBreak(){
   // Mất chuỗi vì bỏ ngày (chưa học hôm qua / trước đó) → tâm ma, không cần đợi nhiệm vụ mới
