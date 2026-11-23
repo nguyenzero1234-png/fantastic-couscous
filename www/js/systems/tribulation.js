@@ -4,7 +4,7 @@
  function create(deps){
   const {S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save}=deps;
   const hs=deps.hash,getSalt=deps.getSalt,showTdLenh=deps.showTdLenh,showExModal=deps.showExModal,schedule=deps.schedule;
-  const buildRecord=deps.buildRecord,burst=deps.burst,sfx=deps.sfx,setSalt=deps.setSalt,weekStart=deps.weekStart,LeaderboardSimulation=deps.LeaderboardSimulation,LeaderboardUI=deps.LeaderboardUI,setProfileIndex=deps.setProfileIndex,chkLegacy=deps.chkLegacy,render=deps.render,showThd=deps.showThd;
+  const buildRecord=deps.buildRecord,buildRec=deps.buildRecord,burst=deps.burst,sfx=deps.sfx,setSalt=deps.setSalt,weekStart=deps.weekStart,LeaderboardSimulation=deps.LeaderboardSimulation,LeaderboardUI=deps.LeaderboardUI,setProfileIndex=deps.setProfileIndex,chkLegacy=deps.chkLegacy,render=deps.render,showThd=deps.showThd;
   function resolveEx(){
   if(!S.sem)S.sem={res:{}};
   const now=Date.now();let ch=0,pending=null;

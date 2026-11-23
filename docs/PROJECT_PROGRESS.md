@@ -983,6 +983,7 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền builder hồ sơ kiếp, state, save/render, UI và callback reset qua dependency injection; giữ wrapper `doRebirth`.
 - [x] Bổ sung test reset state, ân xá, xuất sắc và tiến độ xuyên kiếp.
 - [x] Loại bỏ dependency trùng khai báo trong factory khi mở rộng hệ thống cho luân hồi.
+- [x] Gắn callback `+"`buildRecord`"+` vào alias `+"`buildRec`"+` mà luồng luân hồi hiện tại sử dụng.
 
 
 ## Tách lệnh Thiên Đạo và tự kiểm tra sang systems/god-mode.js (2026-11-24)
