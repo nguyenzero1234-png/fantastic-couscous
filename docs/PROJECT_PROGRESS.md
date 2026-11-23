@@ -9,7 +9,7 @@
 - [x] Nâng đồng bộ `@capacitor/android`, `@capacitor/cli`, `@capacitor/core` lên `^7.6.10` và `@capacitor/local-notifications` lên `^7.0.7` để xử lý cây dependency có lỗ hổng.
 - [x] Cập nhật GitHub Actions dùng JDK 21 cho Capacitor 7.
 - [x] CI sau khi nâng cấp xác nhận `npm test`, `npx cap add android` và `npx cap sync android` đều thành công; `npm audit` báo 0 lỗ hổng (run #83).
-- [ ] Xác nhận build APK trên JDK 21 hoàn tất: run #83 dùng JDK 17 nên lỗi `invalid source release: 21`; run #84 với JDK 21 đang kiểm tra Gradle.
+- [x] Build APK debug thành công trên JDK 21 ở run #84: [GitHub Actions #84](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173957884). Run #83 là lượt chạy trung gian dùng JDK 17 nên lỗi `invalid source release: 21`; workflow đã được sửa và run #84 xác nhận đúng cấu hình.
 - [ ] Đồng bộ và commit lại `package-lock.json` sau khi hoàn tất nâng cấp; workflow hiện dùng `npm install` để tái tạo lock trong môi trường CI.
 
 ## Ghi nhận CI mới nhất (2026-11-23)
