@@ -1069,3 +1069,20 @@ test("GameAudio tắt âm thanh theo state và gắn click âm thanh đúng ph�
   listeners[0].fn({ target: { closest(selector) { clicks++; return selector.includes("button") ? { disabled: false } : null; } } });
   assert.equal(clicks, 1);
 });
+
+
+test("GameNpcRoster tạo đủ 50 NPC, cấu hình mô phỏng và tiểu sử ổn định", () => {
+  const R = window.GameNpcRoster.create((a,b,c) => (a * 17 + b * 13 + c) % 97, () => 0.5);
+  assert.equal(R.B.length, 50);
+  assert.equal(R.BH.length, 50);
+  assert.equal(R.B[0].n, "Miêu Miên Tử");
+  assert.equal(R.B[49].n, "Cố Thái Hư");
+  assert.ok(R.B.every(x => x.g === "nam" || x.g === "nu"));
+  assert.ok(R.BH.every(x => Number.isFinite(x.h) && Number.isFinite(x.lam)));
+  assert.equal(typeof R.bio(0), "string");
+  assert.match(R.bio(0), /Miêu Miên Tử|đệ tử ngoại môn/);
+  assert.equal(R.isTK(0), false);
+  assert.equal(R.CDN.length, 9);
+  assert.equal(R.STG.length, 9);
+  assert.equal(R.NVC_TITLES.length, 9);
+});
