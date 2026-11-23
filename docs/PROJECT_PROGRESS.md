@@ -510,3 +510,10 @@
 - [x] Âm thanh nhận trạng thái tắt/mở qua callback, không tự đọc save hoặc biến toàn cục gameplay; `game.js` chỉ giữ các alias tương thích `sfx` và `clk`.
 - [x] Bổ sung test cho trạng thái mute, khởi tạo audio context lười và đăng ký listener.
 - [ ] Tiếp tục tách các subsystem còn lại; Android vẫn để sau.
+
+
+## Tách dữ liệu đội hình Thiên Kiêu (2026-11-24)
+- [x] Chuyển cấu hình 50 NPC, hệ số mô phỏng, hồ sơ thiên phú, tiểu sử và câu chuyện cảnh giới sang `www/js/npc-roster.js`.
+- [x] `GameNpcRoster.create(hash, value)` nhận hàm noise tường minh và trả lại các mảng/dịch vụ tương thích; các phép mô phỏng tiếp tục chạy trong `game.js` trên đúng các mảng mutable này.
+- [x] Bổ sung test số lượng NPC, cấu hình mô phỏng, giới tính, tiểu sử và dữ liệu cảnh giới.
+- [ ] Tiếp tục tách các subsystem gameplay; chưa kiểm thử/ký Android.
