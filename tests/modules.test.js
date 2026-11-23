@@ -1371,3 +1371,14 @@ test("GameDiaryUI render nhật ký ngày và Đạo Văn",()=>{
  assert.match(host.innerHTML,/Đạo Văn · Ký lục/);
  assert.equal(days.length,14);
 });
+
+
+test("GameSettingsUI render tùy chọn giao diện và sao lưu",()=>{
+ const host={innerHTML:""};
+ const M=window.GameSettingsUI.create({S:{ui:{skin:"jade",density:"compact",fs:"lg",theme:"dark"},snd:0,god:true},container:host,fold:(id,title,body)=>"<section data-fold=\""+id+"\">"+body+"</section>"});
+ M.render();
+ assert.match(host.innerHTML,/data-ui="skin"/);
+ assert.match(host.innerHTML,/data-ui="studyOnly"/);
+ assert.match(host.innerHTML,/data-bk="ex"/);
+ assert.match(host.innerHTML,/data-bk="god"/);
+});

@@ -903,3 +903,12 @@ Sau mỗi đợt thay đổi:
 - [x] Tiêm state, ngày hiện tại, sinh nhật ký và kiểm tra mốc truyện qua dependency injection; giữ wrapper `renderDiary`.
 - [x] Bổ sung test số ngày hiển thị và trạng thái Đạo Văn trống.
 - [ ] Tiếp tục rà soát các màn hình và hệ thống còn lại.
+
+
+## Tách renderer cài đặt sang ui/settings.js (2026-11-24)
+
+- [x] Chuyển renderer tùy chỉnh chủ đề, mật độ, cỡ chữ, chế độ Chỉ học và các tùy chọn backup sang `ui/settings.js`.
+- [x] Truyền state, helper gấp/mở và container qua dependency injection; giữ toàn bộ event handling và thao tác lưu/nhập backup ở bootstrap.
+- [x] `game.js` giữ wrapper `renderSettings` để không đổi call-site.
+- [x] Bổ sung test các nhóm tùy chọn và nút backup.
+- [ ] Tiếp tục tách các renderer và logic nghiệp vụ còn lại.
