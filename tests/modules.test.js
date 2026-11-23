@@ -1125,3 +1125,22 @@ test("GameLegacyMissions khởi tạo tiến trình xuyên kiếp và mở khóa
   assert.match(M.render(), /Sứ mệnh xuyên kiếp/);
   assert.match(M.render(), /DATE-123456/);
 });
+
+
+test("GameCultivationDisplayData giữ nguyên bảng màu cảnh giới và câu dẫn", () => {
+  const D = window.GameCultivationDisplayData;
+  assert.equal(D.realmColors.length, 9);
+  assert.equal(D.realmColors[0], "#7fb8a4");
+  assert.equal(D.quotes.length, 20);
+  assert.match(D.quotes[0], /Phương Nguyên/);
+  assert.match(D.quotes[19], /biến tấu Cầu Ma/);
+});
+
+test("GameFortuneData cung cấp đủ dữ liệu cơ duyên theo giờ", () => {
+  const D = window.GameFortuneData;
+  assert.equal(D.epoch, Date.parse("2026-01-01T00:00:00Z"));
+  assert.equal(D.events.length, 6);
+  assert.equal(D.effects.length, 6);
+  assert.equal(D.events[0][0], "Thiên Cơ Hiện Thế");
+  assert.equal(D.effects[5], "cơ hội nhận linh thú");
+});
