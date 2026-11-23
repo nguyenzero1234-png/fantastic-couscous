@@ -1478,3 +1478,12 @@ test("GameLeaderboardSystem tạo bảng, cân bằng tuần và cơ duyên",()=
  assert.match(S.lb.log,/Chốt bảng tuần/);
  assert.match(S.lb.log,/chiến tông/);
 });
+
+
+test("GameTribulationUI render các màn hình kiếp và lịch sử luân hồi",()=>{
+ const nodes={kiep:{innerHTML:""},tmb:{innerHTML:"",insertAdjacentHTML(_p,h){this.innerHTML+=h}},rbs:{innerHTML:""},thd:{innerHTML:"",hidden:true},thx:{},thr:{},thex:{}};
+ const S={kc:{},ln:null,kf:null,rb:0,rbh:[]};
+ const M=window.GameTribulationUI.create({S,uxp:()=>100,ri:()=>0,RL:[["Luyện Khí",0],["Trúc Cơ",100]],rname:()=>"Luyện Khí",KD:120,END:1000,EX:[],exD:()=>new Date(),spA:()=>null,SPQ:[],exGod:()=>false,modGain:()=>1,RW:()=>0,EXOPEN:{},$:id=>nodes[id],today:()=>"2026-11-24",weekStart:()=>"2026-11-23",kmet:()=>({m:0,n:0,d:0,l:0}),kAge:()=>1,kEnd:()=>false,KS:()=>({pk:100}),bestKiep:()=>({pk:100,n:1,cur:false}),fold:(_id,title,body)=>"<section>"+title+body+"</section>",doRebirth:()=>{},say:()=>{},document:{createElement:()=>({click(){}})},Blob:function(){},URL:{createObjectURL:()=>"blob:test"},prompt:()=>{}});
+ M.renderKiep();M.renderRb();M.renderRbs();M.showThd({n:1,name:"Kiếp thử",txt:["Một dòng ký ức"]},false);
+ assert.match(nodes.kiep.innerHTML,/Nhật Kiếp/);assert.match(nodes.kiep.innerHTML,/Tuần Kiếp/);assert.match(nodes.tmb.innerHTML,/Kiếp thứ 1/);assert.match(nodes.rbs.innerHTML,/Các Kiếp Trước/);assert.equal(nodes.thd.hidden,false);assert.match(nodes.thd.innerHTML,/Một dòng ký ức/);
+});

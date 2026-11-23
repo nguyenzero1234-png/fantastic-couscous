@@ -3,6 +3,7 @@
  "use strict";
  function create(deps){
   const {S,uxp,ri,RL,rname,KD,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$}=deps;
+  const today=deps.today,weekStart=deps.weekStart,kmet=deps.kmet,kAge=deps.kAge,kEnd=deps.kEnd,KS=deps.KS,bk=deps.bestKiep,fold=deps.fold,END=deps.END,doRebirth=deps.doRebirth,say=deps.say,document=deps.document,Blob=deps.Blob,URL=deps.URL,prompt=deps.prompt;
   function render(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(100,Math.round((x-lo)/(hi-lo)*100));
   const menh=S.menh==null?100:S.menh;
@@ -26,7 +27,47 @@
   h+=`<div class="box"><small>Thang 100 điểm: Xuất sắc từ 90, Giỏi 80 đến 89, Khá 65 đến 79, Trung bình 50 đến 64, Yếu dưới 50. NPC có công thức riêng, chỉ dựa vào linh lực (không có đạo tâm): đạt 100 khi linh lực ≥ mốc viên mãn của kiếp đó. Điểm của bạn gồm phần linh lực (so với mốc viên mãn của cảnh giới đó — cũng là mức NPC trung bình đạt được vào ngày giáng kiếp) và đạo tâm (chuỗi ngày học liên tục; kiếp càng cuối càng đòi chuỗi dài); mỗi kiếp chia tỉ trọng khác nhau. Đạo tâm chỉ cộng tối đa từ 2 điểm (kiếp đầu) đến 10 điểm (kiếp khó), phần còn lại đến từ linh lực. Chưa đủ tu vi hoặc đạt mức Yếu → trừ Mệnh theo hệ số kiếp (không trừ linh lực trực tiếp). Hết Mệnh sẽ chịu Thiên Đạo Trừng Phạt (−5% mọi nguồn linh lực). Muốn ân xá: hoàn thành kiếp viên mãn và mọi thiên kiếp từ Khá trở lên.</small></div>`;
   $("exams").innerHTML=h;
 }
-  return Object.freeze({render});
+  function renderKiep(){
+  const t=today(),ws=weekStart(),wk=[0,1,2,3,4,5,6].map(i=>{const d=new Date(ws+"T00:00:00");d.setDate(d.getDate()+i);return d.toLocaleDateString("sv")});
+  const ts=(1+.2*ri(uxp()))*(S.ln===t?.75:1),hh=[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7),v=1+(Math.abs(hh)%3)*.25,KC=S.kc||(S.kc={});
+  const D=[["Hạ Kiếp","m",Math.round(30*ts*v/5)*5,20,"phút tu luyện"],["Trung Kiếp","n",Math.max(2,Math.round(2*ts*v)),35,"nhiệm vụ hoàn thành"],["Thượng Kiếp","l",Math.round(45*ts*v/5)*5,60,"phút học liền một phiên"]];
+  const W=[["Tuần Kiếp","m",Math.round(360*ts/30)*30,150,"phút tu luyện"],["Cần Kiếp","d",5,120,"ngày có tu luyện"],["Thiên Lôi Kiếp","n",Math.round(12*ts),220,"nhiệm vụ hoàn thành"]];
+  const dm=S.kf===t?{m:9999,n:99,d:7,l:999}:kmet([t]),wm=S.kf===t?{m:99999,n:999,d:7,l:999}:kmet(wk);
+  const row=(p,a,met,i)=>{const[n,k,T,r,u]=a,key=p+(p==="d"?t:ws)+i,cur=Math.min(met[k],T),ok=met[k]>=T;
+    return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${n}</b><span class="pb">+${r}</span></div><small>${cur}/${T} ${u}</small><div class="bar"><i style="width:${Math.round(cur/T*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" style="margin-left:auto" data-k="${key}" data-r="${r}" ${KC[key]||!ok?"disabled":""}>${KC[key]?"Đã vượt kiếp":"Độ kiếp"}</button></div></li>`};
+  $("kiep").innerHTML=`<div class="box"><h2>Nhật Kiếp</h2><small>Đổi mỗi ngày, độ khó tăng theo cảnh giới. Vượt đủ ba kiếp được thêm 30 linh lực.</small><ul>${D.map((a,i)=>row("d",a,dm,i)).join("")}</ul></div><div class="box"><h2>Tuần Kiếp</h2><small>Đổi vào thứ Hai. Vượt đủ ba kiếp được 1 Tỉnh Thần Linh Trà.</small><ul>${W.map((a,i)=>row("w",a,wm,i)).join("")}</ul></div>`;
+}
+  function renderRb(){
+  const rb=S.rb||0,left=Math.max(0,Math.ceil(KD-kAge()));let h="";
+  if(kEnd())h=`<div class="box" style="margin-bottom:14px;border-color:var(--gold)"><b>Kiếp này đã khép lại</b><br><small>${S.points>=END?"Đã chứng Chân Tiên, kiếp khép lại đúng kỳ hạn.":"Đã đủ "+KD+" ngày của một kiếp."} Bước vào luân hồi: linh lực về 0, mọi vật phẩm, linh thú, danh hiệu, tông môn và hiệu ứng đều trở về hư không. Bảng NPC cùng thiên kiếp làm lại từ đầu. Không còn hiệu ứng vĩnh viễn từ kiếp trước.</small><div class="row"><button class="btn" style="margin-left:0" data-rb="1">Bước vào luân hồi</button></div></div>`;
+  else h=`<small style="display:block;margin:0 2px 10px">Kiếp thứ ${rb+1}, còn ${left} ngày.</small>`;
+  $("tmb").insertAdjacentHTML("beforeend",h);
+}
+  function renderRbs(){
+  const h=S.rbh||[],cur=KS().pk,best=h.reduce((a,r)=>(!a||r.pk>a.pk)?r:a,null);
+  const bb=bk(),top=bb.pk>0?"Kiếp "+bb.n+(bb.cur?" (đang tu)":"")+": "+bb.pk+" linh lực":"chưa có";
+  $("rbs").innerHTML=fold("t7","Các Kiếp Trước",`<div class="grid2"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kiếp đỉnh nhất</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${r.pk>=END?"Chân Tiên":rname(r.pk)}. ${r.days} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`,0);
+}
+  function showThd(r,ask){
+  $("thd").innerHTML=`<div class="box"><h2>Kiếp Trước</h2><small>Kiếp thứ ${r.n} · ${r.name}${r.grade?" · Đánh giá: "+r.grade:""}</small>${r.txt.map(x=>`<p style="margin:10px 0">${x}</p>`).join("")}
+    <div class="row">
+      ${ask?`<button class="btn" style="margin-left:0" id="thr">Bước vào luân hồi</button>`:""}
+      <button class="btn alt" style="margin-left:0" id="thx">${ask?"Để sau":"Đóng"}</button>
+      <button class="btn alt" style="margin-left:0" id="thex">Xuất phán quyết</button>
+    </div></div>`;
+  $("thd").hidden=false;
+  $("thx").onclick=()=>{$("thd").hidden=true};
+  if(ask)$("thr").onclick=()=>{$("thd").hidden=true;doRebirth()};
+  $("thex").onclick=()=>{
+    const text=["Kiếp Trước","Kiếp "+r.n+" · "+r.name+(r.grade?" · "+r.grade:""),"",...(r.txt||[])].join("\n");
+    try{
+      const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="phan-quyet-kiep-"+r.n+".txt";a.click();
+      say("Đã tải phán quyết (.txt). Có thể in hoặc chuyển PDF từ trình duyệt.");
+    }catch(e){prompt("Sao chép phán quyết:",text)}
+  };
+}
+  return Object.freeze({render,renderKiep,renderRb,renderRbs,showThd});
  }
  root.GameTribulationUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

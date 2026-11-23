@@ -1000,3 +1000,11 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ API wrapper ở `game.js` để UI, thiên kiếp và lệnh Thiên Đạo không đổi call-site.
 - [x] Bổ sung test bảng, cân bằng tuần và cơ duyên.
 - [x] Giữ nguyên factory `+"`GameLeaderboardSimulation`"+` và bổ sung `+"`GameLeaderboardSystem`"+` cùng file; không ghi đè lõi mô phỏng đã có.
+
+
+## Gom UI thiên kiếp và lịch sử luân hồi vào ui/heavenly-tribulation.js (2026-11-24)
+
+- [x] Chuyển màn hình Nhật Kiếp/Tuần Kiếp, trạng thái kiếp hiện tại, lịch sử kiếp trước và modal phán quyết vào cùng module UI thiên kiếp.
+- [x] Giữ callback luân hồi, thông báo, dữ liệu mệnh/cảnh giới và DOM qua dependency injection.
+- [x] `game.js` giữ wrapper `renderKiep`, `renderRb`, `renderRbs`, `showThd` cho các call-site cũ.
+- [x] Bổ sung test các màn hình thiên kiếp và lịch sử.
