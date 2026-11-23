@@ -413,3 +413,10 @@
 - [x] CI #45217666431 phát hiện dư dấu đóng hàm trong `pet-ui.js` trước khi build APK.
 - [x] Sửa cấu trúc đóng hàm, không thay đổi logic gameplay.
 - [ ] Chờ CI kiểm tra lại toàn bộ test và APK.
+
+ 
+## Tách nhiệm vụ tông môn (2026-11-23)
+- [x] Chuyển chọn nhiệm vụ tuần, tính tiến độ và nhận thưởng sang `www/js/sect-missions.js`.
+- [x] Dependency tuần, thống kê học, điểm thưởng và UI được truyền tường minh; `game.js` giữ wrapper tương thích.
+- [x] Bổ sung test chọn nhiệm vụ, đổi tuần, điều kiện tiến độ và chống nhận thưởng trùng.
+- [ ] Chờ CI kiểm tra và build APK.

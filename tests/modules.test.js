@@ -877,3 +877,31 @@ test("GamePetUI tách renderer và xử lý tương tác linh thú", () => {
   assert.equal(typeof window.GamePetUI.handleClick, "function");
   assert.doesNotThrow(() => window.GamePetUI.handleClick({ target: { closest() { return null; } } }, {}));
 });
+
+
+test("sect missions giữ lựa chọn theo tuần, tiến độ và chỉ nhận thưởng một lần", () => {
+  const M = window.GameSectMissions;
+  const S = { sect: 0, cnt: { "2026-11-23": 5 }, streak: { n: 3 }, stl: [], sm: null };
+  const deps = { weekStart: () => "2026-11-23", sumMins: () => 150, Date };
+  const missions = M.list(S, deps);
+  assert.deepEqual(missions.map(x => x.id), ["q5", "st3"]);
+  assert.equal(missions.find(x => x.id === "q5").met(), 5);
+  assert.equal(missions.find(x => x.id === "st3").met(), 3);
+  const calls = [];
+  const actions = { ...deps, say: x => calls.push(["say", x]), addPts: x => { calls.push(["points", x]); return x; },
+    vlog: x => calls.push(["log", x]), save: () => calls.push(["save"]), render: () => calls.push(["render"]) };
+  M.claim(S, "q5", actions);
+  M.claim(S, "q5", actions);
+  assert.equal(S.sm.got.q5, 1);
+  assert.equal(calls.filter(x => x[0] === "points").length, 1);
+  assert.equal(calls.filter(x => x[0] === "save").length, 1);
+  const nextWeek = M.list(S, { ...deps, weekStart: () => "2026-11-30" });
+  assert.deepEqual(nextWeek.map(x => x.id), ["m120", "lg2"]);
+  assert.deepEqual(S.sm.got, {});
+});
+
+test("sect missions không khởi tạo nhiệm vụ khi chưa gia nhập tông môn", () => {
+  const S = { sect: null, sm: null };
+  assert.deepEqual(window.GameSectMissions.list(S, { weekStart: () => "2026-11-23" }), []);
+  assert.equal(S.sm, null);
+});

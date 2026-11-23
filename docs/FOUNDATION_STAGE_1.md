@@ -334,3 +334,10 @@ www/js/
 ## Pet UI syntax correction
 - [x] Fixed an extra function-closing brace caught by CI #45217666431.
 - [ ] Await full CI rerun.
+
+ 
+## Sect missions extraction
+- [x] Extracted weekly sect mission selection, progress calculation, and reward claiming into `www/js/sect-missions.js`.
+- [x] Injected date/week, study aggregation, rewards, persistence, and UI callbacks; retained game.js compatibility wrappers.
+- [x] Added tests for weekly rotation, progress, no duplicate claims, and no-sect state.
+- [ ] Await CI test and APK build.
