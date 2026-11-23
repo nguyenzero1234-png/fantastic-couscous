@@ -266,3 +266,10 @@
 - [x] Thay helper `kmins` trong `game.js` bằng wrapper truyền `S.stl` và mốc bắt đầu/kết thúc; giữ nguyên hai đầu khoảng bao gồm.
 - [x] Bổ sung kiểm thử cho khoảng timestamp, mốc đơn, danh sách rỗng và trường hợp không có bản ghi phù hợp.
 - [x] CI #151 xác nhận 40/40 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và artifact APK `TuTienHocDao-apk` đã được tải lên.
+
+
+## Cập nhật CI và kiểm thử tích hợp (2026-11-23)
+- [x] CI run #153 xác nhận commit `c8ce5f4`: kiểm thử JavaScript thành công, `npm audit` thành công, Capacitor sync và build APK debug thành công; artifact `TuTienHocDao-apk` đã được tải lên.
+- [x] Thay wrapper đếm nhật ký học trong `game.js` bằng `GameAnalytics.countStudyLogEntries`; giữ nguyên khoảng ngày bao gồm hai đầu và điều kiện giờ local.
+- [ ] Mở rộng kiểm thử tích hợp để tự phát hiện mọi module `www/js/*.js` chưa được khai báo, nạp trùng hoặc đặt sai thứ tự so với `game.js`; chờ CI xác nhận.
+- [ ] Tiếp tục bổ sung test runtime cho các module chưa được khởi tạo trong harness và kiểm tra luồng gameplay cốt lõi.

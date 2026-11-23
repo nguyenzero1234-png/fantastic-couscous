@@ -180,3 +180,9 @@ www/js/
 - `GameAnalytics.sumStudyMinutesBetween(studyLog, startTimestamp, endTimestamp)` cộng phút của các phiên có timestamp nằm trong khoảng bao gồm cả hai đầu.
 - Wrapper `kmins` trong `game.js` tiếp tục cung cấp `S.stl` và thời gian của kỳ ngộ; không thay đổi cách xác định thời gian hoặc thưởng kỳ ngộ.
 - CI #151 xác nhận 40/40 kiểm thử JavaScript, build APK Android thành công và tải artifact `TuTienHocDao-apk`.
+
+
+## Xác nhận CI gần nhất
+- CI run #153 thành công cho commit `c8ce5f4baf8d05d94d3591dd9f44e639637a14db`: test modules, dependency audit, Capacitor sync, Gradle APK build và upload artifact đều hoàn tất.
+- Artifact APK debug: `TuTienHocDao-apk` (5,796,433 bytes).
+- Chưa có xác nhận cài/chạy trên thiết bị Android thật.

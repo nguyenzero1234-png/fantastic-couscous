@@ -21,7 +21,11 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "npc-data.js", "timer.js"].forEach(load);
+const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
+const scriptNames = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
+const moduleFiles = fs.readdirSync(jsDir)
+  .filter(file => file.endsWith(".js") && !["game.js", "notify.js", "schedule.js"].includes(file));
+scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -29,13 +33,26 @@ test("tất cả script JavaScript trong www/js parse được", () => {
   }
 });
 
-test("thứ tự module phụ thuộc được nạp trước game.js", () => {
-  const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
-  const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "npc-data.js", "game.js"]) {
-    assert.ok(names.includes(name), name + " phải được khai báo");
-    assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
+test("mọi module JavaScript đều được khai báo đúng một lần và nạp trước game.js", () => {
+  const names = scriptNames;
+  const gameIndex = names.indexOf("game.js");
+  assert.notEqual(gameIndex, -1, "game.js phải được khai báo");
+  assert.equal(new Set(names).size, names.length, "không được nạp trùng script");
+  for (const file of moduleFiles) {
+    assert.ok(names.includes(file), file + " phải được khai báo trong index.html");
+    assert.ok(names.indexOf(file) < gameIndex, file + " phải nạp trước game.js");
   }
+  for (const name of ["notify.js", "schedule.js"]) {
+    assert.ok(names.includes(name), name + " phải được khai báo");
+    assert.ok(names.indexOf(name) > gameIndex, name + " phải nạp sau game.js");
+  }
+});
+
+test("các module giao diện và tiến trình được khởi tạo trong môi trường tích hợp", () => {
+  assert.equal(typeof window.GameUI.apply, "function");
+  assert.equal(typeof window.GameProgressData.realmIndex, "function");
+  assert.equal(typeof window.GameProgressData.bestKiep, "function");
+  assert.equal(typeof window.GameAnalytics.sumStudyMinutesBetween, "function");
 });
 
 test("rewards giữ nguyên quy tắc hệ số và tiêu hao hiệu ứng", () => {
