@@ -220,4 +220,4 @@
 - [x] Chuyển predicate nhận diện Cố Thái Hư sang `GameNpcData.isImmuneTaiHu(index, npcs)`; wrapper `immuneTaiHu` trong `game.js` giữ nguyên tên gọi.
 - [x] Giữ nguyên điều kiện chỉ số không âm, NPC tồn tại và tên NPC khớp chính xác.
 - [x] Bổ sung test cho NPC đặc biệt, NPC thường, chỉ số âm/ngoài phạm vi và danh sách rỗng.
-- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.
+- [x] CI #136 xác nhận kiểm thử JavaScript, Gradle `assembleDebug` và tải APK artifact thành công.
