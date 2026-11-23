@@ -343,7 +343,7 @@ test("progression data tính ngày hoạt động và chuỗi theo nhật ký/st
   assert.equal(P.activeDays(history, streak, date, false, today), 4);
   assert.equal(P.activeDays(history, { last: "", n: 0 }, date, false, today), 3);
   assert.equal(P.activeDays(history, streak, new Date("2026-11-30T12:00:00"), false, today), 4);
-  assert.equal(P.streakAt(history, streak, date, false, today, yesterday), 3);
+  assert.equal(P.streakAt(history, streak, date, false, today, yesterday), 2);
   assert.equal(P.streakAt(history, { last: "", n: 0 }, date, false, today, yesterday), 2);
   assert.equal(P.streakAt(history, streak, date, true, today, yesterday), 3);
   assert.equal(P.streakAt(history, { last: yesterday, n: 5 }, date, true, today, yesterday), 5);

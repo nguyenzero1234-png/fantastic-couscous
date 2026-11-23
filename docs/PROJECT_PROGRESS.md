@@ -189,4 +189,4 @@
 - [x] Chuyển phép đếm ngày có học trong 14 ngày sang `GameProgressData.activeDays()`; truyền lịch sử, streak và ngày hiện tại từ caller.
 - [x] Chuyển tính chuỗi tại mốc thiên kiếp sang `GameProgressData.streakAt()`; giữ nguyên quy tắc hôm nay chưa học vẫn tính chuỗi từ hôm qua và quy tắc gộp streak hiện hành khi tua kiếp.
 - [x] Bổ sung kiểm thử cho lịch sử rời rạc, streak hiện hành, mốc tương lai và ngày hôm nay chưa học.
-- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.
+- [ ] CI #128 phát hiện 1 kỳ vọng test streak chưa đúng (24/25 test đạt): streak lưu trong save chỉ được gộp khi tua kiếp (`cur=true`), còn trường hợp thường chỉ đếm ngày liên tiếp trong nhật ký. Đã sửa expected, chờ CI chạy lại.
