@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-23
-> Mốc mới: tách phần áp dụng tùy chỉnh giao diện sang `ui.js`.  
+> Mốc mới: tách bộ tính hệ số linh lực sang `rewards.js`.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -22,6 +22,7 @@
 - [x] Giữ các script ở dạng classic script để tương thích với global dùng chung trong `notify.js` và `schedule.js`.
 - [x] Tách cấu hình giao diện (skin, density, font size, theme) sang `www/js/ui.js`, cung cấp API `window.GameUI.apply(S)`.
 - [x] Tách trạng thái và phép tính timer phiên nhàn hạ/phiên học sang `www/js/timer.js` (`window.GameTimer`).
+- [x] Tách phép tính hệ số linh lực và thưởng Thiên Cơ Lệnh sang `www/js/rewards.js` (`window.GameRewards`); phần điều phối trạng thái vẫn do `game.js` quản lý.
 - [x] Bổ sung tài liệu kiến trúc và tiến độ tại `docs/FOUNDATION_STAGE_1.md`.
 
 ### Kiểm tra
@@ -34,7 +35,7 @@
 ## Việc cần làm tiếp
 
 ### Ưu tiên 1 — Hoàn thiện cấu trúc module
-- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ưu tiên rewards và gameplay/domain).
+- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ưu tiên gameplay/domain; phần tính hệ số thưởng đã tách bước đầu).
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
 
