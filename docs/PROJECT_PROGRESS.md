@@ -213,4 +213,11 @@
 - [x] Truyền lịch sử học, bộ đếm nhiệm vụ, loại chu kỳ, loại chỉ số, ngày hiện tại và đầu tuần từ caller; module không đọc state toàn cục.
 - [x] Giữ nguyên cách cộng phút học, linh lực, số nhiệm vụ và quy tắc mặc định đếm ngày học từ 30 phút.
 - [x] Bổ sung test cho từng chu kỳ, từng loại chỉ số và dữ liệu rỗng.
-- [ ] CI #133/#134: lỗi chỉ nằm ở hai expected của test mới (ranh giới tuần và số ngày học đủ 30 phút trong tháng); logic module giữ nguyên cách lọc cũ. Đã sửa cả hai expected, chờ CI xác nhận.
+- [x] CI #135 xác nhận 30/30 kiểm thử JavaScript đạt; Gradle `assembleDebug` và tải APK artifact thành công.
+
+
+## Tách quy tắc miễn hiệu ứng cho NPC đặc biệt (2026-11-23)
+- [x] Chuyển predicate nhận diện Cố Thái Hư sang `GameNpcData.isImmuneTaiHu(index, npcs)`; wrapper `immuneTaiHu` trong `game.js` giữ nguyên tên gọi.
+- [x] Giữ nguyên điều kiện chỉ số không âm, NPC tồn tại và tên NPC khớp chính xác.
+- [x] Bổ sung test cho NPC đặc biệt, NPC thường, chỉ số âm/ngoài phạm vi và danh sách rỗng.
+- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.

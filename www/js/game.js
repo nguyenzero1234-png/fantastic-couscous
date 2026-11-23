@@ -541,7 +541,7 @@ function gbExtra(i,ms,fn){
    Cửa sổ được chốt (người bị cướp, thành/bại) một lần khi tới giờ và lưu ở S.lb.dv. */
 let BNH_I=-2,BNH_BUSY=0;
 const bnhI=()=>BNH_I>=-1?BNH_I:(BNH_I=B.findIndex(b=>b.n==="Bạch Nhược Hư"));
-const immuneTaiHu=i=>i>=0&&!!B[i]&&B[i].n==="Cố Thái Hư";
+const immuneTaiHu=i=>GameNpcData.isImmuneTaiHu(i,B);
 const bnhBase=()=>{const k=KS().start,b=(k-S.lb.t0)/SP;return isFinite(b)?b:0};
 const bnhX0=w=>bnhBase()+(4+10*w)*1440;
 function bnhSync(){

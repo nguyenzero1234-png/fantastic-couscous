@@ -408,3 +408,15 @@ test("analytics tính tiến độ nhiệm vụ theo ngày, tuần, tháng và l
   assert.equal(A.questProgress(history, counts, { per: "m", met: "other" }, today, week), 2);
   assert.equal(A.questProgress({}, {}, { per: "d", met: "m" }, today, week), 0);
 });
+
+
+test("npc data nhận diện đúng Cố Thái Hư được miễn hiệu ứng", () => {
+  const N = window.GameNpcData;
+  const npcs = [{ n: "Tu sĩ A" }, { n: "Cố Thái Hư" }, { n: "Tu sĩ B" }];
+  assert.equal(N.isImmuneTaiHu(1, npcs), true);
+  assert.equal(N.isImmuneTaiHu(0, npcs), false);
+  assert.equal(N.isImmuneTaiHu(2, npcs), false);
+  assert.equal(N.isImmuneTaiHu(-1, npcs), false);
+  assert.equal(N.isImmuneTaiHu(8, npcs), false);
+  assert.equal(N.isImmuneTaiHu(0, []), false);
+});

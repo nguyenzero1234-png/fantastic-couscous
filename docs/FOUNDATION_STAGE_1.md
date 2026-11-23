@@ -134,3 +134,8 @@ www/js/
 ## Helper tiến độ nhiệm vụ định kỳ
 - `GameAnalytics.questProgress(history, counts, task, todayKey, weekStartKey)` tổng hợp tiến độ theo ngày/tuần/tháng và theo phút học, linh lực, số nhiệm vụ hoặc ngày học đủ 30 phút.
 - Caller cung cấp toàn bộ dữ liệu cần thiết; helper thuần không đọc `S`, ngày hệ thống hay DOM.
+
+
+## Predicate miễn hiệu ứng NPC
+- `GameNpcData.isImmuneTaiHu(index, npcs)` kiểm tra NPC Cố Thái Hư theo đúng chỉ số và tên hiện có.
+- Wrapper trong `game.js` giữ nguyên call-site; module nhận danh sách NPC từ caller, không đọc dữ liệu toàn cục.
