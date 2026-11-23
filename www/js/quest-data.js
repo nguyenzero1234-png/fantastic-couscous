@@ -14,9 +14,9 @@
   const name=parts[0].slice(0,80),mins=Math.min(480,Math.max(5,parseInt(parts[1])||30)),diff=parseDiff(parts[2]);
   const rep=parts[3]==="1"||/^l[aă]p/i.test(parts[3]||"");
   let due=0;const h=(parts[4]||"").toLowerCase();
-  if(h==="1"||h==="1h")due=now+3600000;
-  else if(h==="3"||h==="3h")due=now+3*3600000;
-  else if(h==="0"||h==="homnay"||h==="hôm nay"||h==="today"){const d=new Date(now);due=d.setHours(23,59,59,999)}
+  if(h==="1"||h==="1h")due=clock()+3600000;
+  else if(h==="3"||h==="3h")due=clock()+3*3600000;
+  else if(h==="0"||h==="homnay"||h==="hôm nay"||h==="today"){const d=new Date(clock());due=d.setHours(23,59,59,999)}
   const pts=Math.max(1,Math.round(mins/60*(o.perHour||200)*diff));
   return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
  }
