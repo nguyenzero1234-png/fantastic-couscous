@@ -22,9 +22,9 @@
 - [x] Đã xử lý cảnh báo dependency cũ: sau nâng đồng bộ Capacitor 7.6.10, `npm audit` ở run #86 báo 0 lỗ hổng (không còn 3 moderate, 1 high, 1 critical đã ghi ở giai đoạn trước).
 
 ## Tái cấu trúc nhóm dữ liệu (2026-11-24)
-- [x] Chuyển 7 module dữ liệu (`progression-data`, `npc-data`, `npc-roster`, `kiep-nan-data`, `diary-data`, `leaderboard-data`, `item-data`) vào `www/js/data/`.
+- [x] Chuyển 10 module dữ liệu (`progression-data`, `npc-data`, `npc-roster`, `kiep-nan-data`, `diary-data`, `leaderboard-data`, `item-data`, `rebirth-data`, `cultivation-display-data`, `story-data`) vào `www/js/data/`.
 - [x] Cập nhật `index.html` để nạp bản trong `data/`; giữ file cũ làm compatibility guard trong thời gian chuyển đổi.
-- [ ] Tiếp tục chuyển các module dữ liệu còn lại sau khi CI xác nhận.
+- [x] Đã chuyển các module dữ liệu tĩnh còn lại trong nhóm này; các entry cũ chỉ còn compatibility guard.
 
 ## Tái cấu trúc core và UI (2026-11-24)
 - [x] Chuyển bộ đếm phiên chơi/phiên tập trung từ `timer.js` sang `core/game-loop.js`.
