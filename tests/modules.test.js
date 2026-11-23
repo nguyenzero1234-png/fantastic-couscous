@@ -91,7 +91,7 @@ test("schedule parser từ chối giờ sai và khung trùng", () => {
   assert.deepEqual(JSON.parse(JSON.stringify(P.parseLine("19:00-19:45 | Ôn bài", []))), { start: 1140, end: 1185, label: "Ôn bài" });
   assert.equal(P.parseLine("19:00-19:45 | Ôn bài", [{ s: "19:30", e: "20:00" }]), null);
   assert.equal(P.parseLine("20:00-19:00 | Sai giờ", []), null);
-  assert.equal(P.parseLine("08:00-09:00 | ", []), null);
+  assert.deepEqual(JSON.parse(JSON.stringify(P.parseLine("08:00-09:00 | ", []))), { start: 480, end: 540, label: "" });
 });
 
 test("storage xác thực dữ liệu và nạp save hợp lệ", () => {
