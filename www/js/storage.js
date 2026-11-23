@@ -10,6 +10,43 @@
       Number.isFinite(value.points);
   }
 
+  function parseBackup(raw){
+    const parsed=typeof raw==="string"?JSON.parse(raw):raw;
+    const state=parsed&&parsed.app==="tu-tien-hoc-dao"&&parsed.formatVersion===1?parsed.data:parsed;
+    if(!validSave(state))throw new Error("Backup data is invalid");
+    return state;
+  }
+
+  function exportData(state){
+    if(!validSave(state))throw new Error("Cannot export invalid save data");
+    return JSON.stringify({
+      app:"tu-tien-hoc-dao",
+      formatVersion:1,
+      exportedAt:new Date().toISOString(),
+      data:state
+    },null,2);
+  }
+
+  function importData(key,raw){
+    const state=parseBackup(raw);
+    const backupKey=key+".backup";
+    const current=localStorage.getItem(key);
+    if(current){
+      let parsed;
+      try{parsed=JSON.parse(current)}catch(_){parsed=null}
+      if(validSave(parsed)&&localStorage.getItem(backupKey)!==current){
+        // Không ghi đè tiến trình hiện tại nếu không thể bảo toàn bản trước khi nhập.
+        localStorage.setItem(backupKey,current);
+      }
+    }
+    const serialized=JSON.stringify(state);
+    localStorage.setItem(key,serialized);
+    try{global.NTsave&&global.NTsave()}catch(error){
+      console.warn("[Tu Tiên Học Đạo] Không thể lưu trạng thái thông báo.",error);
+    }
+    return state;
+  }
+
   function load(key,defaults){
     const backupKey=key+".backup";
     let state=Object.assign({},defaults);
@@ -76,5 +113,5 @@
     return ok;
   }
 
-  global.GameStorage=Object.freeze({load,save,validSave});
+  global.GameStorage=Object.freeze({load,save,validSave,parseBackup,exportData,importData});
 })(window);
