@@ -484,3 +484,22 @@ test("analytics cộng linh lực đến hết ngày được chọn", () => {
   assert.equal(A.pointsThrough(H, "2026-11-19"), 0);
   assert.equal(A.pointsThrough({}, "2026-11-24"), 0);
 });
+
+
+test("analytics đếm nhật ký theo khoảng ngày và điều kiện giờ local", () => {
+  const A = window.GameAnalytics;
+  const log = [
+    [new Date(2026, 10, 22, 23, 0).getTime(), 10],
+    [new Date(2026, 10, 23, 4, 30).getTime(), 10],
+    [new Date(2026, 10, 23, 6, 59).getTime(), 10],
+    [new Date(2026, 10, 23, 7, 0).getTime(), 10],
+    [new Date(2026, 10, 24, 1, 0).getTime(), 10],
+    [new Date(2026, 10, 25, 23, 0).getTime(), 10]
+  ];
+  const start = new Date(2026, 10, 23, 12).toLocaleDateString("sv");
+  const end = new Date(2026, 10, 24, 12).toLocaleDateString("sv");
+  assert.equal(A.countStudyLogEntries(log, start, end, h => h >= 22 || h < 5), 2);
+  assert.equal(A.countStudyLogEntries(log, start, end, h => h < 7), 3);
+  assert.equal(A.countStudyLogEntries(log, start, end, h => h === 7), 1);
+  assert.equal(A.countStudyLogEntries([], start, end, () => true), 0);
+});

@@ -19,6 +19,14 @@
   const l=L.filter(x=>D.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);
   return {m,n,d,l};
  }
+ function countStudyLogEntries(studyLog,startKey,endKey,hourPredicate){
+  let total=0;
+  (studyLog||[]).forEach(entry=>{
+   const date=new Date(entry[0]),key=date.toLocaleDateString("sv");
+   if(key>=startKey&&key<=endKey&&hourPredicate(date.getHours()))total++;
+  });
+  return total;
+ }
  function sumMinutes(history,predicate){
   let total=0;
   for(const key in history)if(predicate(key))total+=history[key].m;
@@ -48,5 +56,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries});
 })(window);

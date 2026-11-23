@@ -980,12 +980,8 @@ function renderEvents(){
   }).join("");
   const T=today(),ws=weekStart(),mo=T.slice(0,7);
   const weekQuests=()=>{let n=0;for(const k in S.cnt||{})if(k>=ws&&k<=T)n+=S.cnt[k];return n};
-  const weekNight=()=>{// đếm nhiệm vụ đêm hoàn thành trong tuần từ stl
-    const st=S.stl||[];let n=0;
-    st.forEach(x=>{const d=new Date(x[0]).toLocaleDateString("sv");if(d>=ws&&d<=T){const h=new Date(x[0]).getHours();if(h>=22||h<5)n++}});
-    return n;
-  };
-  const weekDawn=()=>{const st=S.stl||[];let n=0;st.forEach(x=>{const d=new Date(x[0]).toLocaleDateString("sv");if(d>=ws&&d<=T){const h=new Date(x[0]).getHours();if(h<7)n++}});return n};
+  const weekNight=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h>=22||h<5);
+  const weekDawn=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h<7);
   const wDs=()=>Object.keys(S.hist||{}).filter(k=>k>=ws&&k<=T),wDays=()=>wDs().filter(k=>S.hist[k].m>0).length,wBest=()=>Math.max(0,...wDs().map(k=>S.hist[k].m||0)),cs=(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0;
   const EXTRA=[
     {id:"xs1",n:"Canh Khuya Tụng Kinh",desc:"Hoàn thành ≥3 nhiệm vụ trong khung 22h–5h tuần này.",ok:()=>weekNight()>=3,r:70,ck:"xs1:"+ws},
