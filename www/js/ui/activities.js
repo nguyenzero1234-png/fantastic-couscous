@@ -3,7 +3,7 @@
  "use strict";
  function create(deps){
   const {S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,$}=deps;
-  const esc=deps.escapeHtml,expired=deps.isExpired,unlocked=deps.isUnlocked,isTitleUnlocked=deps.isTitleUnlocked,stepRow=deps.renderStepRow;
+  const esc=deps.escapeHtml,expired=deps.isExpired,unlocked=deps.isUnlocked,tok=deps.isTitleUnlocked,stepRow=deps.renderStepRow;
   function renderSchedule(){
   const now=nowHM(),day=(S.sched[today()]||[]).slice().sort((a,b)=>a.s<b.s?-1:1);
   const v=$("lq").value;
@@ -29,13 +29,6 @@
   $("buff").textContent=buffTxt();
   $("titles").innerHTML=TITLES.map(t=>{const ok=tok(t);return `<li class="${ok?"":"lock"}"><div class="nm">${t.n}${nwS().t[t.id]?'<span class="nd" title="Mới"></span>':""}<small>${t.d}</small><small style="color:var(--gold)">Buff: ${t.b}</small></div>${ok?`<button class="btn ${S.title===t.id?"":"alt"}" data-a="eq" data-id="${t.id}">${S.title===t.id?"Đang đeo":"Đeo"}</button>`:"🔒"}</li>`}).join("");
 }
-const qm=()=>QM[$("nq").value]||1;
-const rem=t=>GameTimeFormat.remaining(t,Date.now());
-const expired=q=>GameQuestData.isExpired(q,isDone,Date.now());
-const weekStart=()=>GameDateData.weekStart(S.dOff||0);
-const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
-const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
-const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
   function renderChains(){
   $("chains").innerHTML=S.chains.length?S.chains.map(c=>{
     const st=S.quests.filter(x=>x.chain===c.id),d=st.filter(isDone).length;

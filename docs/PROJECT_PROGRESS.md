@@ -946,3 +946,10 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền state, dữ liệu truyện/nhật ký, cảnh giới, tông môn, linh thú, danh hiệu và callback thông báo qua dependency injection.
 - [x] `game.js` giữ API wrapper cũ để các luồng luân hồi và UI nhật ký không đổi call-site.
 - [x] Bổ sung test cho các mốc truyện và dữ liệu nhật ký.
+
+
+## Sửa phạm vi trích xuất ui/activities.js (2026-11-24)
+
+- [x] Chỉ đưa ba renderer lịch học, cửa hàng và chuỗi nhiệm vụ vào module UI; giữ helper `expired`, `weekStart`, `evCur` và `stepRow` ở bootstrap/systems.
+- [x] Tránh khai báo trùng tên helper trong factory và giữ dependency injection rõ ràng.
+- [ ] Chờ CI xác nhận lại toàn bộ test sau sửa.
