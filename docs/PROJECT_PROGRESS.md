@@ -770,3 +770,11 @@ Sau mỗi đợt thay đổi:
 - [x] Xác nhận wrapper hiện chỉ kiểm tra global API đã tồn tại; chưa xóa wrapper để giữ tương thích với cách nạp script cũ.
 - [x] Bổ sung test thứ tự nạp: mọi implementation phải đứng trước wrapper tương ứng; xác nhận 4 helper thuần được nạp từ `core/`.
 - [ ] Chưa gom lại toàn bộ thứ tự script theo nhóm lớn; các file gameplay cũ vẫn cần dependency audit trước khi di chuyển.
+
+
+## Gom nhóm nghiệp vụ thưởng và chuỗi học vào systems (2026-11-24)
+
+- [x] Chuyển phần triển khai `GameRewards` sang `www/js/systems/rewards.js`; giữ nguyên API toàn cục và nội dung thuật toán.
+- [x] Chuyển phần triển khai `GameStreak` sang `www/js/systems/streak.js`; giữ nguyên API toàn cục và nội dung thuật toán.
+- [x] Giữ các đường dẫn gốc làm compatibility guard; nạp implementation trước guard và không đổi thứ tự tương đối với các script kế tiếp.
+- [ ] Chưa xác nhận test/CI cho commit này; tiếp tục chuyển các subsystem còn lại theo đúng cấu trúc phẳng trong lộ trình.
