@@ -77,7 +77,9 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
     ["systems/sect-war.js", "sect-war.js"],
     ["systems/legacy-missions.js", "legacy-missions.js"],
     ["systems/quest-completion.js", "quest-completion.js"],
-    ["systems/sect-missions.js", "sect-missions.js"]
+    ["systems/sect-missions.js", "sect-missions.js"],
+    ["ui/pets.js", "pet-ui.js"],
+    ["ui/exam-modal.js", "exam-modal.js"]
   ];
   for (const [implementation, compatibility] of compatibilityPairs) {
     assert.ok(names.indexOf(implementation) !== -1, implementation + " phải được khai báo");

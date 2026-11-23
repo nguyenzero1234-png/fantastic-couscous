@@ -796,3 +796,12 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ đường dẫn cũ làm compatibility guard; script implementation đứng ngay trước wrapper tại vị trí cũ.
 - [x] Bổ sung assertion cho cả 7 cặp implementation/compatibility trong `tests/modules.test.js`; test kiểm tra implementation được nạp trước đường dẫn tương thích.
 - [ ] Cần xác nhận CI xanh sau đợt di chuyển; chưa coi giai đoạn systems hoàn tất.
+
+
+## Gom renderer linh thú và modal thiên kiếp vào ui (2026-11-24)
+
+- [x] Chuyển renderer/tương tác linh thú sang `ui/pets.js` và modal xác nhận thiên kiếp sang `ui/exam-modal.js`.
+- [x] Giữ nguyên global API `GamePetUI` và `GameExamModal`; các đường dẫn gốc là compatibility guard.
+- [x] Giữ nguyên vị trí tương đối trong danh sách script và nạp implementation trước wrapper.
+- [x] Bổ sung test kiểm tra thứ tự nạp implementation/UI compatibility.
+- [ ] Tiếp tục audit các UI entry point và tách trách nhiệm còn nằm trong `game.js`.
