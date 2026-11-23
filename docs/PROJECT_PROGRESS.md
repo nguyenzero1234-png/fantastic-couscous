@@ -841,4 +841,5 @@ Sau mỗi đợt thay đổi:
 - [x] Đóng gói trạng thái bộ lọc trong module; truyền state, analytics, định dạng thời gian, cảnh giới và callback qua dependency injection.
 - [x] `game.js` chỉ khởi tạo `GameStatisticsUI` và giữ wrapper `renderStats` để không đổi các điểm gọi.
 - [x] Bổ sung test cho trạng thái và tương tác bộ lọc.
+- [x] Sửa assertion kiểm thử để chuẩn hóa object qua JSON khi so sánh dữ liệu được tạo trong VM realm.
 - [ ] Tiếp tục tách các màn hình và subsystem lớn hơn; chưa coi `game.js` đã thu gọn xong.
