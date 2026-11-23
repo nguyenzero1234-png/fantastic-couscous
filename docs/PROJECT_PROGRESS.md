@@ -11,7 +11,8 @@
 - [x] CI sau khi nâng cấp xác nhận `npm test`, `npx cap add android` và `npx cap sync android` đều thành công; `npm audit` báo 0 lỗ hổng (run #83).
 - [x] Build APK debug thành công trên JDK 21 ở run #84: [GitHub Actions #84](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173957884). Run #83 là lượt chạy trung gian dùng JDK 17 nên lỗi `invalid source release: 21`; workflow đã được sửa và run #84 xác nhận đúng cấu hình.
 - [x] Tạo `package-lock.json` tương thích Capacitor 7 trong CI run #86 (artifact `capacitor7-package-lock`, 39 KB).
-- [ ] Commit `package-lock.json` tự động bằng workflow; lần thử #88 gặp push non-fast-forward vì tài liệu tiến độ được cập nhật đồng thời. Đã thêm bước `git pull --rebase` trước khi commit để tránh xung đột tương tự; chờ CI xác nhận.
+- [x] Đã commit `package-lock.json` lên nhánh (`lockfileVersion: 3`, Capacitor CLI 7.6.10); CI đã xác nhận test, audit và bước đồng bộ lockfile thành công ở run #91.
+- [x] Chuyển workflow sang `npm ci` dùng lockfile cố định, loại bỏ cơ chế tự commit lockfile để CI có tính tái lập và không tự ghi vào nhánh.
 
 ## Ghi nhận CI mới nhất (2026-11-23)
 - [x] Run #84, #85 và #86 build APK debug thành công trên JDK 21; run #86 có thêm artifact lockfile.
