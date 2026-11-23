@@ -48,3 +48,9 @@ www/js/
 ## Giới hạn
 
 Đây là hardening bước đầu, chưa phải hệ thống backup tự động. Lưu trữ vẫn nằm trên thiết bị/trình duyệt; xóa dữ liệu ứng dụng vẫn có thể làm mất tiến trình. Build APK trên commit trước của nhánh đã thành công qua GitHub Actions. Commit tách module này sẽ kích hoạt build mới; build thành công cũng chưa thay thế kiểm thử thao tác trên thiết bị thật.
+
+
+## Module `pet-data.js`
+- `window.GamePetData.rank(pet, level)`: chọn danh hiệu theo cấp linh thú, giữ nguyên quy tắc chặn cấp và tên dự phòng.
+- `window.GamePetData.buff(pets, active)`: tính buff thuần cho 12 loại linh thú; `game.js` vẫn giữ trạng thái và side effects.
+- Script được nạp trước `game.js`; bộ test Node kiểm tra thứ hạng, đủ 12 loại buff và trường hợp không có linh thú.
