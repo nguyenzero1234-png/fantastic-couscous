@@ -1931,14 +1931,9 @@ const PS=[
   {id:"mm",n:"Mặc Miêu",c:600,d:"Kéo dài giờ nhàn hạ",e:l=>`mỗi lần đổi nhàn hạ tặng thêm ${l} phút`,
   ranks:["Mặc Miêu Ấu","Mặc Miêu Linh","Huyền Mặc Miêu","Thời Quang Mặc Miêu","Thái Cổ Mặc Miêu"]}
 ];
-const petRank=(p,lv)=>{const r=p.ranks;return r?r[Math.min(r.length,Math.max(1,lv|0))-1]:p.n};
+const petRank=(p,lv)=>GamePetData.rank(p,lv);
 if(S.pet&&!S.pets){S.pets={hl:{lv:S.pet.lv+1,t:S.pet.t}};S.act="hl";delete S.pet}
-function petBuff(){
-  const a=S.pets&&S.act&&S.pets[S.act];if(!a)return{};const l=a.lv,o={},k=S.act;
-  if(k==="hq")o.fq=l;if(k==="kl")o.fl=2+2*l;if(k==="ct")o.kp=2+2*l;if(k==="hg")o.dc=2+2*l;
-  if(k==="bh"){o.fr=2*l;o.ft=2*l}if(k==="tt")o.dr=.02*l;if(k==="tn")o.f1=4+2*l;if(k==="pg")o.fs=l;
-  if(k==="ko")o.fm=2*l;if(k==="dm")o.fn=2*l;if(k==="ty")o.rf=2*l;if(k==="mm")o.mn=l;return o;
-}
+function petBuff(){return GamePetData.buff(S.pets,S.act)}
 function petAcc(){const a=S.pets&&S.pets.hl;if(!a||S.act!=="hl")return 0;return Math.floor(Math.min(8,(Date.now()-a.t)/36e5)*(2+a.lv+(eqT("n6")?2:0)))}
 function setAct(id){if(S.act==="hl"){const g=petAcc();if(g){S.points+=g;hAdd(today(),g,0)}}S.act=id;if(id==="hl")S.pets.hl.t=Date.now()}
 function renderPet(){
