@@ -186,3 +186,10 @@ www/js/
 - CI run #153 thành công cho commit `c8ce5f4baf8d05d94d3591dd9f44e639637a14db`: test modules, dependency audit, Capacitor sync, Gradle APK build và upload artifact đều hoàn tất.
 - Artifact APK debug: `TuTienHocDao-apk` (5,796,433 bytes).
 - Chưa có xác nhận cài/chạy trên thiết bị Android thật.
+
+
+## Kiểm thử runtime cho module giao diện
+- Bổ sung môi trường DOM tối thiểu trong harness để chạy `GameUI.apply` mà không cần trình duyệt thật.
+- Kiểm tra bốn tùy chọn skin, density, font size, theme và việc xóa thuộc tính khi trở về mặc định.
+- Kiểm tra mọi đường dẫn script trong `index.html` trỏ tới tệp hiện có trong `www`.
+- CI #154 đã xác nhận bộ test tích hợp trước đó và build APK thành công; thay đổi test mới đang chờ CI.

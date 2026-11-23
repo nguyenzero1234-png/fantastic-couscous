@@ -273,3 +273,10 @@
 - [x] Thay wrapper đếm nhật ký học trong `game.js` bằng `GameAnalytics.countStudyLogEntries`; giữ nguyên khoảng ngày bao gồm hai đầu và điều kiện giờ local.
 - [ ] Mở rộng kiểm thử tích hợp để tự phát hiện mọi module `www/js/*.js` chưa được khai báo, nạp trùng hoặc đặt sai thứ tự so với `game.js`; chờ CI xác nhận.
 - [ ] Tiếp tục bổ sung test runtime cho các module chưa được khởi tạo trong harness và kiểm tra luồng gameplay cốt lõi.
+
+
+## Kiểm thử tích hợp module và giao diện (2026-11-23)
+- [x] CI #154 xác nhận toàn bộ test JavaScript hiện tại, dependency audit, Capacitor sync, Gradle `assembleDebug` và tải APK artifact thành công cho commit `8c00f6d`.
+- [x] Kiểm thử tự động phát hiện module JavaScript chưa được khai báo, script trùng lặp và sai thứ tự nạp quanh `game.js`.
+- [ ] Bổ sung kiểm tra mọi đường dẫn script trong `index.html` tồn tại và kiểm thử hành vi áp dụng/reset tùy chọn giao diện; chờ CI.
+- [ ] Tiếp tục rà soát luồng gameplay và các helper thuần còn nằm trong `game.js`.

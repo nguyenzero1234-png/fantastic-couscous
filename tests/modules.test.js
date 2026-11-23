@@ -7,6 +7,11 @@ const vm = require("node:vm");
 const root = path.resolve(__dirname, "..");
 const jsDir = path.join(root, "www", "js");
 const window = { dispatchEvent(event) { events.push(event.type); } };
+const rootAttributes = new Map();
+const document = { documentElement: {
+  removeAttribute(name) { rootAttributes.delete(name); },
+  setAttribute(name, value) { rootAttributes.set(name, value); }
+} };
 const storageData = new Map();
 const events = [];
 let failWrites = false;
@@ -16,7 +21,7 @@ const localStorage = {
   removeItem(key) { storageData.delete(key); },
   clear() { storageData.clear(); }
 };
-const context = vm.createContext({ window, localStorage, Event: class Event { constructor(type) { this.type = type; } }, console: { warn() {}, error() {}, info() {} }, Date, Math, Object, Array, Number, String, RegExp, JSON });
+const context = vm.createContext({ window, document, localStorage, Event: class Event { constructor(type) { this.type = type; } }, console: { warn() {}, error() {}, info() {} }, Date, Math, Object, Array, Number, String, RegExp, JSON });
 function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
@@ -33,11 +38,14 @@ test("tất cả script JavaScript trong www/js parse được", () => {
   }
 });
 
-test("mọi module JavaScript đều được khai báo đúng một lần và nạp trước game.js", () => {
+test("mọi script được khai báo đều tồn tại trong www và module nạp trước game.js", () => {
   const names = scriptNames;
   const gameIndex = names.indexOf("game.js");
   assert.notEqual(gameIndex, -1, "game.js phải được khai báo");
   assert.equal(new Set(names).size, names.length, "không được nạp trùng script");
+  for (const name of names) {
+    assert.ok(fs.existsSync(path.join(root, name)), name + " phải tồn tại trong www");
+  }
   for (const file of moduleFiles) {
     assert.ok(names.includes(file), file + " phải được khai báo trong index.html");
     assert.ok(names.indexOf(file) < gameIndex, file + " phải nạp trước game.js");
@@ -46,6 +54,18 @@ test("mọi module JavaScript đều được khai báo đúng một lần và n
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) > gameIndex, name + " phải nạp sau game.js");
   }
+});
+
+test("GameUI áp dụng tùy chọn giao diện và xóa thuộc tính mặc định", () => {
+  const apply = window.GameUI.apply;
+  apply({ ui: { skin: "jade", density: "compact", fs: "lg", theme: "dark" } });
+  assert.deepEqual(Object.fromEntries(rootAttributes), {
+    "data-skin": "jade", "data-density": "compact", "data-fs": "lg", "data-theme": "dark"
+  });
+  apply({ ui: {} });
+  assert.deepEqual(Object.fromEntries(rootAttributes), {});
+  apply(null);
+  assert.deepEqual(Object.fromEntries(rootAttributes), {});
 });
 
 test("các module giao diện và tiến trình được khởi tạo trong môi trường tích hợp", () => {
