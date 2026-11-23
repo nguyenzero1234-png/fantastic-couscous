@@ -45,6 +45,16 @@
   };
 
 
+  const bestKiep = (records, currentKiepPoints, currentPoints, currentKiepNumber) => {
+    let best = null;
+    (records || []).forEach(record => {
+      if (!best || record.pk > best.pk) best = { n: record.n, pk: record.pk };
+    });
+    const current = Math.round(Math.max(currentKiepPoints, currentPoints));
+    if (!best || current > best.pk) best = { n: currentKiepNumber, pk: current, cur: 1 };
+    return best;
+  };
+
   const activeDays = (history, streak, dateValue, cur, todayKey) => {
     const td = new Date(todayKey + "T12:00:00");
     const date = new Date(cur || dateValue > td ? td : dateValue);
@@ -81,6 +91,6 @@
 
   root.GameProgressData = Object.freeze({
     grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress,
-    realmIndex, realmName, playerXpAt, activeDays, streakAt
+    realmIndex, realmName, playerXpAt, bestKiep, activeDays, streakAt
   });
 })(typeof window !== "undefined" ? window : globalThis);

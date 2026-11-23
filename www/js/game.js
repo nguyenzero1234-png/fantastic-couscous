@@ -2210,7 +2210,7 @@ const LC=m=>Math.max(1,Math.ceil(m*S.rate*(1-(S.sl?.3:0))*(masterBuff().dc?1-mas
 const hourNow=()=>S.hh!=null?S.hh:new Date().getHours();
 const kAge=()=>(Date.now()-KS().start)/864e5;
 const kEnd=()=>kAge()>=KD; // kiếp chỉ kết thúc khi hết thời gian
-const bk=()=>{let b=null;(S.rbh||[]).forEach(r=>{if(!b||r.pk>b.pk)b={n:r.n,pk:r.pk}});const c=Math.round(Math.max(KS().pk,S.points));if(!b||c>b.pk)b={n:(S.rb||0)+1,pk:c,cur:1};return b};
+const bk=()=>GameProgressData.bestKiep(S.rbh,KS().pk,S.points,(S.rb||0)+1);
 function chkT(){const T=S.tt||(S.tt={}),nw=[];TITLES.forEach(x=>{if(!T[x.id]&&x.ok()){T[x.id]=Date.now();nwS().t[x.id]=1;nw.push(x.n)}});if(nw.length){save();setTimeout(()=>say("Danh hiệu mới: "+nw.join(", ")+"!"),200)}}
 function warGain(){const w=addPts(150+(eqT("n15")?100:0));LS().sw=(LS().sw||0)+1;return w}
 function TB(q){

@@ -446,3 +446,14 @@ test("streak current chỉ trả chuỗi khi lần học cuối là hôm nay ho�
   assert.equal(S.current({ last: "", n: 0 }, "2026-11-23", "2026-11-22"), 0);
   assert.equal(S.current(null, "2026-11-23", "2026-11-22"), 0);
 });
+
+
+test("progression data chọn kiếp có linh lực cao nhất, giữ quy tắc hòa điểm", () => {
+  const P = window.GameProgressData;
+  const history = [{ n: 1, pk: 500 }, { n: 2, pk: 800 }, { n: 3, pk: 700 }];
+  assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep(history, 600, 750, 4))), { n: 2, pk: 800 });
+  assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep(history, 900, 850, 4))), { n: 4, pk: 900, cur: 1 });
+  assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep(history, 800, 750, 4))), { n: 2, pk: 800 });
+  assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep([], 0, 125, 1))), { n: 1, pk: 125, cur: 1 });
+  assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep([{ n: 1, pk: 400 }, { n: 2, pk: 400 }], 0, 0, 3))), { n: 1, pk: 400 });
+});
