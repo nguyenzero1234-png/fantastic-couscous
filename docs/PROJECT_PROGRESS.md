@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-23
-> Mốc mới: tách công thức thưởng nhiệm vụ/chuỗi và hệ số liên hoàn ngày học; kiểm thử hồi quy 898 tình huống.  
+> Mốc mới: tách thống kê/lịch sử học sang `analytics.js`; 1.000 bộ dữ liệu hồi quy đạt.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -32,18 +32,21 @@
 - [x] Sau khi tách `rewards.js` bước đầu: parse cú pháp, thứ tự nạp script và 188 ca kiểm tra runtime cho công thức thưởng linh lực đạt.
 - [x] Sau khi mở rộng `rewards.js`: parse cú pháp, kiểm tra thứ tự nạp script và 898 tình huống hồi quy đối chiếu công thức cũ/mới cho thưởng nhiệm vụ, hiệu ứng vật phẩm, thưởng chuỗi và hệ số liên hoàn ngày học đều đạt.
 - [x] Sau khi tách `streak.js`: parse cú pháp, kiểm tra thứ tự nạp script và 33.200 tình huống hồi quy đối chiếu logic cũ/mới cho streak, vật phẩm bảo hộ, xác suất tâm ma và tiến độ trấn áp đều đạt.
+- [x] Sau khi tách `analytics.js`: parse cú pháp, kiểm tra thứ tự nạp script và 1.000 bộ dữ liệu hồi quy đối chiếu thống kê tổng quan, chuỗi ngày tốt nhất, biểu đồ và chỉ số kiếp nạn đều đạt.
 - [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
 - [x] Tách logic quyết định giữ/đứt chuỗi, dùng phù bảo hộ và tiến độ trấn áp tâm ma sang `www/js/streak.js`.
-- [x] Kiểm thử hồi quy 33.200 tổ hợp cho giữ/đứt chuỗi, Tục Mệnh Phù, Hộ Tâm Phù, xác suất tâm ma và tiến độ trấn áp Tâm Ma/Thiên Ma; không có sai khác so với logic cũ.
-- [x] Kiểm tra cú pháp `game.js`/`streak.js` và xác nhận thứ tự nạp `streak.js` trước `game.js`.
+- [x] Kiểm thử hồi quy 33.200 tổ hợp cho streak, vật phẩm bảo hộ và tiến độ trấn áp; không có sai khác.
+- [x] Tách phép tổng hợp thống kê và chỉ số kiếp nạn sang `www/js/analytics.js`.
+- [x] Kiểm thử 1.000 bộ dữ liệu ngẫu nhiên, so sánh thống kê cũ/mới; không có sai khác.
+- [x] Kiểm tra cú pháp và thứ tự nạp `analytics.js` trước `game.js`.
 
 ## Việc cần làm tiếp
 
 ### Ưu tiên 1 — Hoàn thiện cấu trúc module
 - [x] Tách quy tắc thuần của chuỗi ngày học và tiến độ Tâm Ma/Thiên Ma sang `www/js/streak.js`; `game.js` tiếp tục quản lý vật phẩm, log, save và hiệu ứng UI.
-- [x] Tách quy tắc thuần của chuỗi ngày học và tiến độ Tâm Ma/Thiên Ma sang `www/js/streak.js`; `game.js` tiếp tục quản lý vật phẩm, log, save và hiệu ứng UI.
+- [x] Tách phép tổng hợp thống kê học tập và chỉ số kiếp nạn sang `www/js/analytics.js`.
 - [ ] Tiếp tục tách các quy tắc gameplay độc lập khỏi `game.js`; không di chuyển các luồng có nhiều tác động phụ khi chưa có kiểm thử hồi quy đầy đủ.
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
