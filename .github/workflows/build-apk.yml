@@ -16,11 +16,67 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npx cap add android
+
       - name: Thêm quyền thông báo Android
         run: |
           MF=android/app/src/main/AndroidManifest.xml
           grep -q "POST_NOTIFICATIONS" "$MF" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n</manifest>#' "$MF"
           grep "POST_NOTIFICATIONS" "$MF"
+
+      - name: Đặt icon app tùy chỉnh
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 << 'PY'
+          from PIL import Image
+          import os
+
+          # Ưu tiên favicon, fallback sang avatars/icon
+          candidates = [
+              "www/assets/icons/favicon.jpg",
+              "www/assets/icons/apple-touch-icon.jpg",
+              "www/assets/avatars/icon.jpg",
+          ]
+          src_path = next((p for p in candidates if os.path.exists(p)), None)
+          if not src_path:
+              raise SystemExit("Không tìm thấy file icon nguồn")
+
+          print("Dùng icon:", src_path)
+          im = Image.open(src_path).convert("RGBA")
+
+          # Làm vuông + nền tối cho đẹp trên launcher
+          side = max(im.size)
+          canvas = Image.new("RGBA", (side, side), (15, 12, 35, 255))
+          ox = (side - im.size[0]) // 2
+          oy = (side - im.size[1]) // 2
+          canvas.paste(im, (ox, oy), im)
+
+          sizes = {
+              "mipmap-mdpi": 48,
+              "mipmap-hdpi": 72,
+              "mipmap-xhdpi": 96,
+              "mipmap-xxhdpi": 144,
+              "mipmap-xxxhdpi": 192,
+          }
+          res = "android/app/src/main/res"
+
+          for folder, sz in sizes.items():
+              d = os.path.join(res, folder)
+              os.makedirs(d, exist_ok=True)
+              icon = canvas.resize((sz, sz), Image.LANCZOS)
+
+              # Icon legacy (opaque)
+              opaque = Image.new("RGB", (sz, sz), (15, 12, 35))
+              opaque.paste(icon, (0, 0), icon)
+              opaque.save(os.path.join(d, "ic_launcher.png"), "PNG")
+              opaque.save(os.path.join(d, "ic_launcher_round.png"), "PNG")
+
+              # Adaptive foreground (giữ alpha)
+              icon.save(os.path.join(d, "ic_launcher_foreground.png"), "PNG")
+              print(f"  → {folder} ({sz}px)")
+
+          print("Icon app đã được áp dụng thành công")
+          PY
+
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
