@@ -36,7 +36,7 @@
 - [x] Sau khi tách `quest-data.js`: parse cú pháp, thứ tự nạp script và 109 ca hồi quy cho parser độ khó, thời lượng, lặp lại, hạn chót và dữ liệu sai đều đạt.
 - [x] Sau khi tách `schedule-data.js`: parse cú pháp, thứ tự nạp script và 1.039 ca hồi quy cho định dạng giờ, khoảng thời gian, trùng lịch và dữ liệu biên đều đạt.
 - [x] Thêm `tests/modules.test.js` và lệnh `npm test` dùng Node.js built-in test runner; chưa đánh dấu chạy đạt cho tới khi thực thi trên CI.
-- [ ] Chưa xác nhận `npm test` trên môi trường repository/CI.
+- [x] `npm test` chạy thành công trên GitHub Actions run #76 (có kiểm tra cú pháp, thứ tự script, storage, thưởng, streak/tâm ma, analytics và parser).
 - [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
@@ -49,7 +49,8 @@
 - [x] Tách parser lịch học và kiểm tra trùng khung giờ sang `www/js/schedule-data.js`.
 - [x] Kiểm thử 1.039 ca lịch, gồm dữ liệu ngẫu nhiên và biên; không có sai khác.
 - [x] Tạo bộ kiểm thử tự động `tests/modules.test.js` và lệnh `npm test`.
-- [ ] Chạy `npm test` trên môi trường CI và bổ sung test cho storage/timer cùng các luồng giao diện.
+- [x] `npm test` thành công trên GitHub Actions run #76; các test storage validate/backup/recovery và các module đã tách đều đạt.
+- [ ] Bổ sung test timer và các luồng giao diện.
 
 ## Việc cần làm tiếp
 
