@@ -983,3 +983,10 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền builder hồ sơ kiếp, state, save/render, UI và callback reset qua dependency injection; giữ wrapper `doRebirth`.
 - [x] Bổ sung test reset state, ân xá, xuất sắc và tiến độ xuyên kiếp.
 - [x] Loại bỏ dependency trùng khai báo trong factory khi mở rộng hệ thống cho luân hồi.
+
+
+## Tách lệnh Thiên Đạo và tự kiểm tra sang systems/god-mode.js (2026-11-24)
+
+- [x] Chuyển kiểm tra trạng thái, hiệu chuẩn mô phỏng và toàn bộ lệnh quản trị/kiểm thử sang `systems/god-mode.js`.
+- [x] Truyền state, systems, storage, navigation, timers và UI callbacks qua dependency injection; giữ wrapper `calib`, `selfCheck`, `runGod` cho event handler hiện tại.
+- [x] Bổ sung test lệnh tăng linh lực và callback lịch sử.

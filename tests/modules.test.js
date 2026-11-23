@@ -1454,3 +1454,12 @@ test("GameTribulationSystem luân hồi reset state và giữ tiến độ xuyê
  assert.equal(S.rb,1);assert.equal(S.tdPenalty,false);assert.equal(S.menh,100);assert.equal(S.sect,null);assert.equal(S.life.anXa,1);assert.equal(S.life.excel,1);assert.equal(S.life.sectN,1);assert.equal(salt,7919);
  assert.ok(calls.includes("sim-reset")&&calls.includes("ui-reset")&&calls.includes("profile-reset")&&calls.includes("legacy")&&calls.includes("save")&&calls.includes("render"));
 });
+
+
+test("GameGodModeSystem chạy lệnh cộng linh lực qua dependency",()=>{
+ const S={points:5};let added=0;
+ const M=window.GameGodModeSystem.create({S,KD:120,END:1000,B:[],cum:()=>{},CD:[],ALLS:[],RL:[],TITLES:[],ITEMS:[],IC:{},PS:[],SPQ:[],SECTS:[],KEY:"save",today:()=>"2026-11-24",hAdd:(d,p,m)=>{added+=p},ri:()=>0,say:()=>{},doRebirth:()=>{},showThd:()=>{},lbInit:()=>{},weekStart:()=>"2026-11-23",settle:()=>{},KS:()=>({}),vlog:()=>{},resolveEx:()=>{},warGain:()=>0,nextEx:()=>null,spRoll:()=>[],lbRows:()=>[],save:()=>{},renderGod:()=>{},render:()=>{},go:()=>{},askName:()=>{},sfx:()=>{},burst:()=>{},setStreak:()=>{},curStreak:()=>0,kAge:()=>0,storage:{getItem:()=>"{}"},location:{reload:()=>{}},schedule:()=>{},getMaxXp:()=>1000,$:()=>({value:""})});
+ assert.equal(M.run("pt"),true);
+ assert.equal(S.points,1005);
+ assert.equal(added,1000);
+});
