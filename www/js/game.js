@@ -1104,8 +1104,7 @@ function finish(q){
   if(S.buff.n>0){m*=S.buff.m;S.buff.n--}
   if(S.tb&&Date.now()<S.tb)m*=1.2;
   m*=tf.mult;
-  const eligibleFx=(S.fx||[]).filter(e=>e.n>0&&(!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60)));
-  const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,eligibleFx,rewardFactors());
+  const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60));
   q.got=questReward.gain;S.fx=questReward.effects;
   {const h=hourNow(),ks=KS();ls.q++;S.life=S.life||{};S.life.q=(S.life.q||0)+1;ls.m+=q.mins||0;if(h>=22||h<5)ls.ni++;if(h<7)ls.da++;if(q.due)ls.ru++;if((q.mins||0)>=120)ls.lg++;ls.ms=Math.max(ls.ms,S.streak.n);ks.ms=Math.max(ks.ms,S.streak.n);
    if(pb.dr&&Math.random()<pb.dr){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
