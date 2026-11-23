@@ -982,3 +982,4 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển điều phối luân hồi, reset state kiếp, reset cache mô phỏng/bảng, giữ cờ xuyên kiếp và thông báo kết quả sang `GameTribulationSystem.doRebirth()`.
 - [x] Truyền builder hồ sơ kiếp, state, save/render, UI và callback reset qua dependency injection; giữ wrapper `doRebirth`.
 - [x] Bổ sung test reset state, ân xá, xuất sắc và tiến độ xuyên kiếp.
+- [x] Loại bỏ dependency trùng khai báo trong factory khi mở rộng hệ thống cho luân hồi.
