@@ -277,3 +277,8 @@ www/js/
 - Helper chỉ nhận record và mốc linh lực, không đọc state/DOM; `game.js` vẫn đảm nhiệm dựng lời kể, dữ liệu lịch sử và các điều kiện ân xá.
 - Giữ nguyên các ngưỡng và thứ tự ưu tiên cũ; test bao phủ các nhánh xếp loại và trường hợp số ngày bằng 0.
 - CI #171 xác nhận commit `55690d84` build APK thành công; CI của module mới cần xác nhận lại.
+
+
+## Ghi chú kiểm thử CI #172
+- CI phát hiện fixture của nhánh Xuất Sắc đặt `hrs=40, days=10`, tương đương 4.0 giờ/ngày; kết quả Giỏi là đúng theo quy tắc cũ.
+- Sửa fixture thành `hrs=50, days=10` để kiểm tra đúng ngưỡng 5.0 giờ/ngày. Không thay đổi logic sản phẩm.

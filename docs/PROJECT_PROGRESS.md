@@ -355,4 +355,5 @@
 - [x] Chuyển phần phân loại cấp bậc và câu tổng kết khỏi `game.js`; giữ nguyên ngưỡng giờ học, hạng, linh lực đỉnh và nội dung tiếng Việt.
 - [x] Thêm kiểm thử cho đủ sáu nhánh xếp loại và dữ liệu ngày bằng 0; helper không đọc state hoặc DOM.
 - [x] CI #171 xác nhận commit `55690d84` thành công, bao gồm test, dependency audit, Gradle APK debug và artifact APK.
-- [ ] Chờ CI kiểm tra module phân loại kiếp mới; chưa kiểm thử trên thiết bị Android thật.
+- [ ] CI #172 phát hiện fixture kiểm thử sai dữ liệu (40/10 giờ tương đương 4.0, không đủ điều kiện Xuất Sắc); đã sửa fixture thành 50/10 và chờ CI chạy lại.
+- [ ] Chưa kiểm thử trên thiết bị Android thật.
