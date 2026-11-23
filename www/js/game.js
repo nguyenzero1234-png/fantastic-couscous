@@ -404,7 +404,6 @@ function settle(){
   S.lb.week=weekStart();save();
 }
 const spark=(i,t0)=>GameLeaderboardData.sparkline(Array.from({length:40},(_,j)=>sc(i,t0-(39-j)*90000)));
-let PV={};
 const xr=()=>S.sem?Object.values(S.sem.res).filter(r=>r.claimed):[];
 const RL=[["Luyện Khí",0],["Trúc Cơ",20000],["Kim Đan",42000],["Nguyên Anh",66000],["Hóa Thần",92000],["Luyện Hư",118000],["Hợp Thể",145000],["Đại Thừa",172000],["Chân Tiên",200000]];
 const END=200000,KD=119;/* END = ngưỡng vào Chân Tiên (không có trần: linh lực tăng đến hết kiếp). Kiếp chỉ kết thúc khi hết KD ngày */
@@ -1478,7 +1477,7 @@ function doRebirth(){
   if(S.lb){S.lb.t0=Date.now();S.lb.adj=Array(50).fill(0);S.lb.bal=Array(50).fill(0);S.lb.week=weekStart();S.lb.log="";S.lb.sp={};S.lb.spx={};S.lb.spl=[];S.lb.gb=[];S.lb.dv=[];S.lb.hh=[];S.lb.td=[]}
   S.bal=0
   S.sp=null;
-  LeaderboardSimulation.reset();PV={};PI=null;
+  LeaderboardSimulation.reset();LeaderboardUI.reset();PI=null;
   vlog("Luân hồi lần "+S.rb+". Mọi thứ của kiếp trước đã trở về hư không.");
   chkLegacy();
   save();render();showThd(rec);sfx(392);setTimeout(()=>sfx(659),150);

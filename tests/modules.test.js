@@ -1360,6 +1360,8 @@ test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển
  M.toggleAll();
  assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{showAll:true});
  assert.equal(nodes.lball.textContent,"Chỉ hiện top 20");
+ M.reset();
+ assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{showAll:false});
 });
 
 

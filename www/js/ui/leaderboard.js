@@ -42,7 +42,8 @@ const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
   $("van").innerHTML=h;
 }
   function toggleAll(){showAll=!showAll;$("lball").textContent=showAll?"Chỉ hiện top 20":"Hiện tất cả";render()}
-  return Object.freeze({render,renderTimeline,toggleAll,settings:()=>({showAll})});
+  function reset(){PV={};showAll=false}
+  return Object.freeze({render,renderTimeline,toggleAll,reset,settings:()=>({showAll})});
  }
  root.GameLeaderboardUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

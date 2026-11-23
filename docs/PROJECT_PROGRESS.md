@@ -968,3 +968,10 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ các helper nghiệp vụ `qm`, `rem`, `expired`, `weekStart`, `sumMins`, `evCur`, `unlocked` và `stepRow` ở bootstrap; chỉ renderer được chuyển sang `ui/activities.js`.
 - [x] Cấp alias cảnh giới `ri` cho `systems/story.js` từ dependency `realmIndex`.
 - [ ] Chờ CI xác nhận lại sau khi khôi phục các helper.
+
+
+## Đồng bộ reset cache bảng xếp hạng khi luân hồi (2026-11-24)
+
+- [x] Chuyển reset cache `PV` và trạng thái top 20 vào `LeaderboardUI.reset()`.
+- [x] `doRebirth` gọi reset UI leaderboard cùng mô phỏng; bỏ biến cache trùng còn sót ở `game.js`.
+- [x] Bổ sung test reset bộ lọc bảng.
