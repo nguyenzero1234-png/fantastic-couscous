@@ -42,6 +42,13 @@
   });
   return total;
  }
+ function sumStudyMinutesBetween(studyLog,startTimestamp,endTimestamp){
+  let total=0;
+  (studyLog||[]).forEach(entry=>{
+   if(entry[0]>=startTimestamp&&entry[0]<=endTimestamp)total+=entry[1];
+  });
+  return total;
+ }
  function sumMinutes(history,predicate){
   let total=0;
   for(const key in history)if(predicate(key))total+=history[key].m;
@@ -71,5 +78,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween});
 })(window);

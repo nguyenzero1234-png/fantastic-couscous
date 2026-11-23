@@ -1592,7 +1592,7 @@ function grantPet(prefer){
   const prize={id:p.id,n:petRank(p,1),base:p.n,p};S.petReveal={id:p.id,n:prize.n,base:p.n,e:p.e(1),d:p.d};
   return prize;
 }
-const kmins=o=>(S.stl||[]).filter(x=>x[0]>=o.st&&x[0]<=o.en).reduce((t,x)=>t+x[1],0);
+const kmins=o=>GameAnalytics.sumStudyMinutesBetween(S.stl,o.st,o.en);
 function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}
 function renderKn(){
   const now=Date.now(),L=knList().filter(o=>o.en>now||(kmins(o)>=o.T&&!S.claimed["o:"+o.h]));

@@ -539,3 +539,16 @@ test("analytics tổng hợp ngày học và phút cao nhất trong cửa sổ n
     days: [], daysWithStudy: 0, bestMinutes: 0
   });
 });
+
+
+test("analytics cộng phút học trong khoảng timestamp, bao gồm cả hai đầu", () => {
+  const A = window.GameAnalytics;
+  const log = [
+    [1000, 15], [2000, 30], [3000, 45], [4000, 60]
+  ];
+  assert.equal(A.sumStudyMinutesBetween(log, 2000, 3000), 75);
+  assert.equal(A.sumStudyMinutesBetween(log, 1000, 1000), 15);
+  assert.equal(A.sumStudyMinutesBetween(log, 3500, 5000), 0);
+  assert.equal(A.sumStudyMinutesBetween([], 0, 5000), 0);
+  assert.equal(A.sumStudyMinutesBetween(null, 0, 5000), 0);
+});
