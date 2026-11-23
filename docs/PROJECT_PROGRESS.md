@@ -21,6 +21,11 @@
 - [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
 - [x] Đã xử lý cảnh báo dependency cũ: sau nâng đồng bộ Capacitor 7.6.10, `npm audit` ở run #86 báo 0 lỗ hổng (không còn 3 moderate, 1 high, 1 critical đã ghi ở giai đoạn trước).
 
+## Tái cấu trúc nhóm dữ liệu (2026-11-24)
+- [x] Chuyển 7 module dữ liệu (`progression-data`, `npc-data`, `npc-roster`, `kiep-nan-data`, `diary-data`, `leaderboard-data`, `item-data`) vào `www/js/data/`.
+- [x] Cập nhật `index.html` để nạp bản trong `data/`; giữ file cũ làm compatibility guard trong thời gian chuyển đổi.
+- [ ] Tiếp tục chuyển các module dữ liệu còn lại sau khi CI xác nhận.
+
 ## Tái cấu trúc core và UI (2026-11-24)
 - [x] Chuyển bộ đếm phiên chơi/phiên tập trung từ `timer.js` sang `core/game-loop.js`.
 - [x] Chuyển áp dụng skin, mật độ và giao diện từ `ui.js` sang `ui/preferences.js`.
@@ -32,8 +37,7 @@
 - [x] `www/js/storage.js` chỉ còn là compatibility guard, không còn chứa nghiệp vụ lưu trữ.
 - [x] Nạp `core/storage.js` trước compatibility entry và `core/state.js`; state tiếp tục nhận storage qua dependency injection.
 - [x] Cập nhật test harness để nạp rõ các module core trong môi trường VM.
-- [ ] Chạy `npm test`/CI để xác nhận hồi quy sau thay đổi.
-- [x] Phát hiện CI 4 lỗi test harness/expectation (global binding mô phỏng browser, array cross-realm, số lượng catalog); đang sửa trước khi mở rộng di chuyển module.
+- [x] Phát hiện và sửa 4 lỗi test harness/expectation: mô phỏng global binding của browser, so sánh array cross-realm, và cập nhật số lượng catalog vật phẩm (21).
 
 ## Đã hoàn thành
 
