@@ -446,3 +446,9 @@
 - [x] Giữ wrapper tương thích trong `game.js`, truyền phụ thuộc tường minh.
 - [x] Bổ sung test tính điểm, thưởng thắng, thưởng thua và trạng thái chưa gia nhập tông.
 - [ ] Chờ CI kiểm tra và build APK.
+
+ 
+## Hiệu chỉnh dữ liệu kiểm thử tông môn chiến
+- [x] CI #45219895817 cho thấy 3 kỳ vọng test không khớp dữ liệu gốc: điểm bình quân chia cả NPC và người chơi; tuần hiện tại dùng đối thủ theo vòng ghép thực; thưởng thắng tính theo chênh lệch thực.
+- [x] Sửa fixture/kỳ vọng test, không thay đổi thuật toán gameplay.
+- [ ] Chờ CI chạy lại.

@@ -367,3 +367,9 @@ www/js/
 - [x] Kept compatibility wrappers in game.js and injected dependencies explicitly.
 - [x] Added tests for scoring, victory, defeat and no-sect behavior.
 - [ ] Await CI and APK build.
+
+ 
+## Sect war test fixture correction
+- [x] CI #45219895817 exposed three test expectations inconsistent with existing rules: per-member average includes the player, opponent pairing follows the actual week rotation, and victory reward follows the real score differential.
+- [x] Corrected test fixtures and expected values without changing gameplay logic.
+- [ ] Await CI.

@@ -911,7 +911,7 @@ test("sect war score averages NPC and player contribution per member", () => {
   const score = window.GameSectWar.score(3,
     [{ sect: 0, gain: 100 }, { sect: 0, gain: 60 }, { sect: 1, gain: 80 }],
     0, 40, [2, 1, 0]);
-  assert.deepEqual(JSON.parse(JSON.stringify(score)), [100, 80, 0]);
+  assert.deepEqual(JSON.parse(JSON.stringify(score)), [200 / 3, 80, 0]);
 });
 
 test("sect war reward grants victory reward and optional bonus once per settlement call", () => {
@@ -925,7 +925,7 @@ test("sect war reward grants victory reward and optional bonus once per settleme
     log: x => calls.push(["log", x]), random: () => 0
   });
   assert.match(msg, /đại thắng/);
-  assert.equal(S.points, 360);
+  assert.equal(S.points, 230);
   assert.equal(S.lb.sw, 1);
   assert.equal(S.inv.ca, 1);
   assert.equal(calls.filter(x => x[0] === "history").length, 1);
@@ -935,7 +935,7 @@ test("sect war reward gives consolation for defeat and safely skips no-sect stat
   const base = { lb: { week: "2026-11-23" }, points: 0, inv: {} };
   const deps = { state: { ...base, sect: 0 }, sects: Array.from({length:6}, (_,i)=>({n:"T"+i})),
     weekEnd: new Date("2026-11-23T00:00:00").getTime() - 2*6048e5,
-    scoreWeek: () => [0, 200, 0, 0, 0, 0], modGain: x => x, hasTitle: () => false,
+    scoreWeek: () => [0, 0, 200, 0, 0, 0], modGain: x => x, hasTitle: () => false,
     today: () => "2026-11-23", addHistory: () => {}, log: () => {}, random: () => 1 };
   const msg = window.GameSectWar.reward(deps);
   assert.match(msg, /linh lực an ủi/);
