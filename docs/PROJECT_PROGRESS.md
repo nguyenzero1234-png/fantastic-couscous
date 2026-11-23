@@ -483,3 +483,16 @@
 - [ ] CI #193 (các thay đổi backup/UI/audit mới nhất) đang được GitHub Actions kiểm tra; chỉ cập nhật trạng thái sau khi run kết thúc.
 
 **Kết luận:** Đã hoàn thiện phần backup file và mở rộng kiểm thử trên nhánh nền tảng; build Android debug và audit sạch đã được chứng minh ở CI #192. Giai đoạn 1 vẫn chưa nghiệm thu cuối cùng cho đến khi CI #193 xanh, kiểm thử thiết bị thật đạt, phần tách gameplay đủ tiêu chí và có quyết định về ký APK release.
+
+## Cập nhật sau khi tích hợp backup file — 2026-11-23
+
+- [x] `GameStorage.exportData()` tạo JSON backup có `app`, `formatVersion`, `exportedAt` và payload save.
+- [x] `GameStorage.importData()` nhận format mới và JSON legacy, xác thực schema trước khi ghi; nếu save hiện tại hợp lệ thì phải tạo được backup trước khi thay thế.
+- [x] Giao diện thống kê → Cài đặt → Sao lưu & hệ thống hỗ trợ tạo/copy JSON, tải file JSON, chọn file từ thiết bị và xác nhận trước khi nhập.
+- [x] Thêm 4 kiểm thử export/import, legacy, dữ liệu sai và lỗi quota. Tổng hiện tại dự kiến 71 test; run #199 xác nhận bước test pass.
+- [x] Workflow audit thất bại nếu có advisory high/critical; run #199 bước audit pass.
+- [x] Thêm checklist kiểm thử thiết bị và hướng dẫn ký release tại `docs/ANDROID_QA_CHECKLIST.md`.
+- [ ] Run #199 đang chạy Gradle `assembleDebug`; chưa có kết luận cuối hoặc artifact mới tại thời điểm ghi note.
+- [ ] Kiểm thử Android thật và ký release vẫn cần thiết bị/keystore do chủ dự án quản lý.
+- [ ] Tách gameplay còn lại khỏi `game.js` tiếp tục theo từng subsystem; không coi giai đoạn tách module đã xong.
+
