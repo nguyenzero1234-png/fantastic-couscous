@@ -496,3 +496,10 @@
 - [ ] Kiểm thử Android thật và ký release vẫn cần thiết bị/keystore do chủ dự án quản lý.
 - [ ] Tách gameplay còn lại khỏi `game.js` tiếp tục theo từng subsystem; không coi giai đoạn tách module đã xong.
 
+
+
+## Tách dữ liệu và bộ ghi Đạo Văn (2026-11-24)
+- [x] Chuyển bảng nội dung đột phá cảnh giới `REALM_STORY` sang `www/js/story-data.js`.
+- [x] Tách thao tác ghi nhật ký, chống trùng ID và giới hạn 40 bản ghi thành `GameStoryData.append`; `game.js` giữ wrapper tương thích và vẫn quản lý state/ngày hiện tại.
+- [x] Bổ sung test dữ liệu cảnh giới, chống ghi trùng, sao chép mảng dòng và giới hạn lịch sử.
+- [ ] Tiếp tục tách các subsystem gameplay còn lại; chưa làm kiểm thử hoặc ký Android theo yêu cầu hiện tại.
