@@ -426,3 +426,9 @@
 - [x] CI #45218899278 chạy 58/60 test; hai lỗi còn lại do so sánh mảng từ VM khác realm, không phải sai khác dữ liệu.
 - [x] Chuẩn hóa kết quả test qua JSON trước khi deep equality để so sánh nội dung độc lập realm.
 - [ ] Chờ CI chạy lại.
+
+ 
+## Điều chỉnh kỳ vọng test luân phiên nhiệm vụ tông
+- [x] CI #45219024764 xác nhận 59/60 test; test cuối kỳ vọng sai rằng bộ nhiệm vụ đổi theo tuần.
+- [x] Giữ nguyên hành vi cũ: danh sách nhiệm vụ được chọn theo chỉ số tông môn; sang tuần chỉ reset trạng thái nhận thưởng.
+- [ ] Chờ CI xác nhận.

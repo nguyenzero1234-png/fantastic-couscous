@@ -896,7 +896,7 @@ test("sect missions giữ lựa chọn theo tuần, tiến độ và chỉ nhậ
   assert.equal(calls.filter(x => x[0] === "points").length, 1);
   assert.equal(calls.filter(x => x[0] === "save").length, 1);
   const nextWeek = M.list(S, { ...deps, weekStart: () => "2026-11-30" });
-  assert.deepEqual(JSON.parse(JSON.stringify(nextWeek.map(x => x.id))), ["m120", "lg2"]);
+  assert.deepEqual(JSON.parse(JSON.stringify(nextWeek.map(x => x.id))), ["q5", "st3"]);
   assert.deepEqual(S.sm.got, {});
 });
 

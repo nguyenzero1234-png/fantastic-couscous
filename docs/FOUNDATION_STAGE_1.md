@@ -347,3 +347,9 @@ www/js/
 - [x] CI #45218899278 passed 58/60 tests; two assertions compared cross-VM arrays with different realm prototypes.
 - [x] Normalize returned arrays through JSON before deep equality.
 - [ ] Await CI rerun.
+
+ 
+## Sect mission rotation expectation
+- [x] CI #45219024764 passed 59/60 tests; the remaining assertion incorrectly expected mission IDs to rotate by week.
+- [x] Preserve existing behavior: mission selection is sect-based; week changes reset claim state without changing that sect's selected IDs.
+- [ ] Await CI.
