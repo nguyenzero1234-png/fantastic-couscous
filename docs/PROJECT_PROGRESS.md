@@ -1,6 +1,7 @@
 # Project Progress Tracker
 
-> Cập nhật lần cuối: 2026-11-23  
+> Cập nhật lần cuối: 2026-11-23
+> Mốc mới: tách phần áp dụng tùy chỉnh giao diện sang `ui.js`.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -17,8 +18,9 @@
 ### Tách module bước đầu
 - [x] Tách phần đọc/ghi save sang `www/js/storage.js` (IIFE, cung cấp `window.GameStorage`).
 - [x] Chuyển `www/js/game.js` sang dùng `GameStorage.load()` và `GameStorage.save()`.
-- [x] Nạp `storage.js` trước `game.js` trong `www/index.html`.
+- [x] Nạp `storage.js` và `ui.js` trước `game.js` trong `www/index.html`.
 - [x] Giữ các script ở dạng classic script để tương thích với global dùng chung trong `notify.js` và `schedule.js`.
+- [x] Tách cấu hình giao diện (skin, density, font size, theme) sang `www/js/ui.js`, cung cấp API `window.GameUI.apply(S)`.
 - [x] Bổ sung tài liệu kiến trúc và tiến độ tại `docs/FOUNDATION_STAGE_1.md`.
 
 ### Kiểm tra
@@ -31,7 +33,7 @@
 ## Việc cần làm tiếp
 
 ### Ưu tiên 1 — Hoàn thiện cấu trúc module
-- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ví dụ: state, UI/render, gameplay/domain, timer/rewards).
+- [ ] Tách tiếp các phần độc lập khỏi `game.js` theo từng bước nhỏ (ưu tiên render/UI, sau đó timer/rewards và gameplay/domain).
 - [ ] Xác định rõ API giữa các module; tránh phụ thuộc global ngầm.
 - [ ] Sau mỗi lần tách, kiểm tra thứ tự nạp script và tương thích với `schedule.js`, `notify.js`.
 
