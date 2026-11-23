@@ -29,14 +29,18 @@ function load(name) {
 }
 const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
 const scriptNames = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-const moduleFiles = fs.readdirSync(jsDir)
-  .filter(file => file.endsWith(".js") && !["game.js", "notify.js", "schedule.js"].includes(file));
-load("core/storage.js");
-load("core/state.js");
+function listJsFiles(dir, prefix = "") {
+  return fs.readdirSync(path.join(jsDir, prefix), { withFileTypes: true }).flatMap(entry => {
+    const name = prefix ? prefix + "/" + entry.name : entry.name;
+    if (entry.isDirectory()) return listJsFiles(jsDir, name);
+    return entry.isFile() && entry.name.endsWith(".js") ? [name] : [];
+  });
+}
+const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "notify.js", "schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
-  for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
+  for (const file of listJsFiles(jsDir)) {
     assert.doesNotThrow(() => new vm.Script(fs.readFileSync(path.join(jsDir, file), "utf8"), { filename: file }));
   }
 });
@@ -54,6 +58,8 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
     assert.ok(names.indexOf(file) < gameIndex, file + " phải nạp trước game.js");
   }
   assert.ok(names.indexOf("core/storage.js") < names.indexOf("core/state.js"));
+  assert.ok(names.indexOf("ui/preferences.js") < names.indexOf("game.js"));
+  assert.ok(names.indexOf("core/game-loop.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/state.js") < gameIndex);
   for (const name of ["notify.js", "schedule.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
