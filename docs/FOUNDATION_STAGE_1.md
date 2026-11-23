@@ -41,13 +41,13 @@ www/js/
 
 1. Mở bản web và APK, xác nhận tiến trình cũ vẫn nạp.
 2. Tạo nhiệm vụ, hoàn thành một phiên học, tải lại trang và xác nhận dữ liệu còn nguyên.
-3. Xuất dữ liệu ở Cài đặt → Sao lưu & hệ thống; nhập lại bản xuất trên bản thử nghiệm.
+3. Tạo backup ở Cài đặt → Sao lưu & hệ thống, tải file JSON, rồi nhập file trên bản thử nghiệm; có thể nhập cả JSON legacy.
 4. Thử dữ liệu JSON sai định dạng trên bản thử nghiệm và xác nhận dữ liệu hiện tại không bị ghi đè.
 5. Kiểm tra thông báo Capacitor và các tài nguyên mạng trên Android sau khi tắt mixed content.
 
 ## Giới hạn
 
-Đây là hardening bước đầu, chưa phải hệ thống backup tự động. Lưu trữ vẫn nằm trên thiết bị/trình duyệt; xóa dữ liệu ứng dụng vẫn có thể làm mất tiến trình. Build APK trên commit trước của nhánh đã thành công qua GitHub Actions. Commit tách module này sẽ kích hoạt build mới; build thành công cũng chưa thay thế kiểm thử thao tác trên thiết bị thật.
+Đây là hardening bước đầu, backup tự động chỉ giữ bản trước đó trong localStorage; export file là thao tác thủ công. Lưu trữ vẫn nằm trên thiết bị/trình duyệt; xóa dữ liệu ứng dụng vẫn có thể làm mất tiến trình nếu người dùng chưa cất file backup. Build APK trên commit trước của nhánh đã thành công qua GitHub Actions. Commit tách module này sẽ kích hoạt build mới; build thành công cũng chưa thay thế kiểm thử thao tác trên thiết bị thật.
 
 
 ## Module `pet-data.js`
