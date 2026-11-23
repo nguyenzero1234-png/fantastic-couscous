@@ -2,7 +2,8 @@
 (function(root){
  "use strict";
  function create(deps){
-  const {S,SECTS,escapeHtml,rank,navigate,render:renderApp,$}=deps;
+  const {S,SECTS,$}=deps;
+  const esc=deps.escapeHtml,myRk=deps.rank,go=deps.navigate,renderApp=deps.render;
   function render(){
   const el=$("map");if(!el)return;
   // Tọa độ % theo bản đồ cổ họa Cửu Châu (ảnh gốc)
@@ -55,7 +56,7 @@
   };
   el.querySelector("#mapinfo").onclick=e=>{
     const b=e.target.closest("[data-goto]");if(!b)return;
-    const L=locs[+b.dataset.goto];if(L&&L.go){L.go();render()}
+    const L=locs[+b.dataset.goto];if(L&&L.go){L.go();renderApp()}
   };
 }
   return Object.freeze({render});

@@ -877,3 +877,12 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền danh sách tông môn và DOM accessor qua dependency injection; giữ wrapper `renderLore` trong `game.js`.
 - [x] Bổ sung test kiểm tra nội dung chính và dữ liệu tông môn.
 - [ ] Tiếp tục tách leaderboard, thiên kiếp và các màn hình còn lại.
+
+
+## Tách UI thiên kiếp và Mệnh sang ui/heavenly-tribulation.js (2026-11-24)
+
+- [x] Chuyển renderer cảnh giới, Mệnh, lịch thiên kiếp, kết quả và bảng điểm sang `ui/heavenly-tribulation.js`.
+- [x] Truyền state, dữ liệu thiên kiếp, công thức điểm, buff và DOM accessor qua dependency injection; giữ wrapper `renderExams`.
+- [x] Bổ sung test render trạng thái Mệnh và danh sách thiên kiếp.
+- [x] Sửa dependency alias trong `ui/map.js`: renderer sử dụng đúng escape, rank, navigate và callback render do bootstrap truyền vào.
+- [ ] Tiếp tục tách UI leaderboard và logic thiên kiếp còn lại khỏi `game.js`.

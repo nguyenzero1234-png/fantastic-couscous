@@ -1339,3 +1339,12 @@ test("GameLoreUI dựng Thiên Cơ Lục từ dữ liệu tông môn",()=>{
  assert.match(host.innerHTML,/Nguyên Lưu Chi Chủ/);
  assert.match(host.innerHTML,/Tông 5/);
 });
+
+
+test("GameTribulationUI render màn hình Mệnh và thiên kiếp",()=>{
+ const host={innerHTML:""},S={menh:100,failStreak:0,tdPenalty:false,tdStacks:0,sem:null,sp:null};
+ const M=window.GameTribulationUI.create({S,uxp:()=>0,ri:()=>0,RL:[["Luyện Khí",0],["Trúc Cơ",20000]],rname:()=>"Luyện Khí",KD:119,EX:[],exD:()=>new Date("2026-11-24"),spA:()=>false,SPQ:[],exGod:()=>"",modGain:x=>x,RW:{},EXOPEN:{},$:()=>host});
+ M.render();
+ assert.match(host.innerHTML,/Tu vi của bạn/);
+ assert.match(host.innerHTML,/Mệnh/);
+});
