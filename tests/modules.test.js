@@ -149,3 +149,21 @@ test("timer đếm phiên và focus theo thời gian giả lập", () => {
   assert.equal(T.activeFocus(), null);
   context.Date = NativeDate;
 });
+
+test("pet data giữ nguyên thứ hạng và buff của từng linh thú", () => {
+  const P = window.GamePetData;
+  assert.equal(P.rank({ n: "Linh thú", ranks: ["Ấu", "Trưởng", "Thánh"] }, 2), "Trưởng");
+  assert.equal(P.rank({ n: "Linh thú", ranks: ["Ấu", "Trưởng"] }, 99), "Trưởng");
+  assert.equal(P.rank({ n: "Linh thú", ranks: ["Ấu", "Trưởng"] }, 0), "Ấu");
+  assert.equal(P.rank({ n: "Tên gốc" }, 3), "Tên gốc");
+  const expected = {
+    hq: { fq: 3 }, kl: { fl: 8 }, ct: { kp: 8 }, hg: { dc: 8 },
+    bh: { fr: 6, ft: 6 }, tt: { dr: .06 }, tn: { f1: 10 }, pg: { fs: 3 },
+    ko: { fm: 6 }, dm: { fn: 6 }, ty: { rf: 6 }, mm: { mn: 3 }
+  };
+  for (const [id, buff] of Object.entries(expected)) {
+    assert.deepEqual(JSON.parse(JSON.stringify(P.buff({ [id]: { lv: 3 } }, id))), buff, id);
+  }
+  assert.deepEqual(JSON.parse(JSON.stringify(P.buff({}, "hq"))), {});
+  assert.deepEqual(JSON.parse(JSON.stringify(P.buff({ hq: { lv: 3 } }, null))), {});
+});
