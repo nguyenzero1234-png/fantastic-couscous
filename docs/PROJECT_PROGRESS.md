@@ -152,4 +152,12 @@
 - [x] Chuyển helper escape ký tự HTML sang `www/js/text.js` (`window.GameText.escapeHtml`).
 - [x] `game.js` giữ alias `esc` để toàn bộ nơi hiển thị chuỗi tiếp tục dùng đúng helper cũ; không đổi quy tắc escape `&`, `<`, `>` và dấu nháy kép.
 - [x] Bổ sung kiểm thử ký tự đặc biệt, chuỗi rỗng, chuỗi đã encode và đầu vào không phải chuỗi.
-- [x] CI #119 chạy 17/18 test đạt; một assertion kiểm tra prototype lỗi giữa VM/Node không tương thích. Đã sửa assertion theo nội dung lỗi, chờ CI xác nhận lại.
+- [x] CI #119 phát hiện assertion `TypeError` không tương thích prototype giữa VM/Node; đã sửa ở commit `6462dda`.
+- [x] GitHub Actions run #120 xác nhận toàn bộ kiểm thử và build APK thành công.
+
+
+## Tách lịch chiến tông môn (2026-11-23)
+- [x] Chuyển thuật toán ghép 6 tông thành 3 cặp theo tuần và dữ liệu lời dẫn trận đấu sang `www/js/sect-war.js` (`window.GameSectWar`).
+- [x] `game.js` giữ alias `warPairs` và `warFlavor`; không đổi cách tính điểm, lịch tuần hay phần thưởng chiến tông.
+- [x] Bổ sung kiểm thử lịch ghép ở tuần âm/dương, bảo đảm đủ 6 tông không trùng cặp và kiểm tra lời dẫn.
+- [ ] Chờ CI xác nhận kiểm thử và build APK cho module chiến tông.

@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
@@ -253,4 +253,19 @@ test("text utilities escape HTML như helper cũ", () => {
   assert.equal(E("&lt;"), "&amp;lt;");
   assert.equal(E(""), "");
   assert.throws(() => E(null), /replace/);
+});
+
+
+test("sect war giữ nguyên lịch ghép cặp và lời dẫn chiến tông môn", () => {
+  const W = window.GameSectWar;
+  for (let week = -25; week <= 25; week++) {
+    const pairs = W.pairs(week);
+    assert.equal(pairs.length, 3);
+    assert.deepEqual(pairs.map(x => Array.from(x)), [[0, 1 + (((week % 5) + 5) % 5)], [1 + (((week % 5) + 5 + 1) % 5), 1 + (((week % 5) + 5 + 4) % 5)], [1 + (((week % 5) + 5 + 2) % 5), 1 + (((week % 5) + 5 + 3) % 5)]]);
+    assert.deepEqual([...new Set(pairs.flat())].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5]);
+    assert.ok(pairs.every(pair => pair.length === 2 && pair[0] !== pair[1]));
+  }
+  assert.deepEqual(Array.from(W.flavor(0, 0)), ["Kiếm khí xung thiên", "Hai tông đọ kiếm đạo, tốc chiến quyết thắng thua."]);
+  assert.deepEqual(Array.from(W.flavor(2, 3)), ["Bách Thảo đồng tâm", "Y đạo hợp lực, lấy nhu thắng cương."]);
+  assert.equal(W.flavor(2, 3), W.flavor(2, 3));
 });

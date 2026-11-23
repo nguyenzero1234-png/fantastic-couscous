@@ -362,16 +362,8 @@ function warScores(t1,t2,d1,d2){
   if(S.sect!=null)g[S.sect]+=Math.max(0,ugain(d1,d2));
   return g.map((v,s)=>{const n=SN[s]+(S.sect===s?1:0);return n>0?v/n:0});
 }
-function warPairs(w){const r=((w%5)+5)%5,a=[0,1,2,3,4].map(k=>1+(k+r)%5);return [[0,a[0]],[a[1],a[4]],[a[2],a[3]]]}
-const WARFL=[
-  ["Kiếm khí xung thiên","Hai tông đọ kiếm đạo, tốc chiến quyết thắng thua."],
-  ["Đan lửa đối đầu","Lò đan đỏ rực, bên nào bền bỉ hơn sẽ thắng."],
-  ["Vạn pháp hỗn chiến","Pháp thuật đầy trời, biến hóa vô cùng."],
-  ["Thái Hư ẩn thế","Cổ tông xuất thế, nền tảng quyết định tất cả."],
-  ["Cửu U quỷ ảnh","Bóng tối len lỏi, bất ngờ quyết định cục diện."],
-  ["Bách Thảo đồng tâm","Y đạo hợp lực, lấy nhu thắng cương."]
-];
-function warFlavor(a,b){return WARFL[(a*7+b*13)%WARFL.length];}
+const warPairs=GameSectWar.pairs;
+const warFlavor=GameSectWar.flavor;
 function warReward(){
   if(S.sect==null)return "";
   const s0=new Date(S.lb.week+"T00:00:00").getTime(),s1=s0+7*864e5,w=Math.round((s0-EP)/6048e5);

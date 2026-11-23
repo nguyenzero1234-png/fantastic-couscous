@@ -88,3 +88,8 @@ www/js/
 ## Module tiện ích văn bản
 - `www/js/text.js` cung cấp `GameText.escapeHtml(value)` để escape các ký tự `&`, `<`, `>` và dấu nháy kép trước khi chèn chuỗi vào HTML.
 - `game.js` giữ alias `esc` trỏ tới hàm module; không đổi các call-site và không thêm phụ thuộc DOM.
+
+
+## Module lịch chiến tông môn
+- `www/js/sect-war.js` cung cấp `GameSectWar.pairs(week)` để tạo 3 cặp từ 6 tông theo chu kỳ 5 tuần và `GameSectWar.flavor(a,b)` để chọn lời dẫn trận đấu.
+- `game.js` giữ các alias tương thích; tính điểm, lịch tuần, phần thưởng và trạng thái người chơi vẫn ở module game vì phụ thuộc dữ liệu runtime.
