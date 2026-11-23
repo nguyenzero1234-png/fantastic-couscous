@@ -833,3 +833,12 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ root `pet-data.js` làm compatibility guard và nạp implementation trước consumer.
 - [x] Bổ sung assertion thứ tự nạp.
 - [ ] Tiếp tục tách logic nghiệp vụ linh thú và các hệ thống còn lại khỏi `game.js`.
+
+
+## Tách renderer thống kê sang ui/statistics.js (2026-11-24)
+
+- [x] Chuyển renderer thống kê, bộ lọc 7/30 ngày và linh lực/giờ học sang `ui/statistics.js`.
+- [x] Đóng gói trạng thái bộ lọc trong module; truyền state, analytics, định dạng thời gian, cảnh giới và callback qua dependency injection.
+- [x] `game.js` chỉ khởi tạo `GameStatisticsUI` và giữ wrapper `renderStats` để không đổi các điểm gọi.
+- [x] Bổ sung test cho trạng thái và tương tác bộ lọc.
+- [ ] Tiếp tục tách các màn hình và subsystem lớn hơn; chưa coi `game.js` đã thu gọn xong.

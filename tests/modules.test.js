@@ -1285,3 +1285,13 @@ test("GameQuestTemplates chứa dữ liệu nhiệm vụ, kế hoạch và promp
   assert.ok(D.DEF_C.some(([name]) => name === "Ôn thi một chương"));
   assert.match(D.DEF_S, /07:40-07:55/);
 });
+
+
+test("GameStatisticsUI giữ bộ lọc biểu đồ trong module UI",()=>{
+ const host={innerHTML:""};
+ const M=window.GameStatisticsUI.create({S:{hist:{},cnt:{},streak:{},rbh:[],rb:0,sem:null},$:()=>host,today:()=>"2026-11-24",dayStr:()=>"2026-11-23",GameAnalytics:{summarize:()=>({g:()=>0,sm:()=>0,sn:()=>0,mo:[],mA:0,pA:0,bp:0,bd:"",ls:0})},GameTimeFormat:{hoursLabel:()=>"0 giờ"},fold:()=>"section",uxp:()=>0,ri:()=>0,RL:[["Phàm",0]],rname:()=>"Phàm",EX:[],exD:()=>0,getKD:()=>10,getKAge:()=>0,bestKiep:()=>({n:1,pk:0,cur:true})});
+ assert.deepEqual(M.settings(),{days:7,metric:"p"});
+ M.handleClick({target:{closest:()=>({dataset:{sp:"30",sm:"m"}})}});
+ assert.deepEqual(M.settings(),{days:30,metric:"m"});
+ assert.equal(typeof host.innerHTML,"string");
+});
