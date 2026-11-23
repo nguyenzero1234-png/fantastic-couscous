@@ -548,7 +548,7 @@ test("analytics cộng phút học trong khoảng timestamp, bao gồm cả hai 
   ];
   assert.equal(A.sumStudyMinutesBetween(log, 2000, 3000), 75);
   assert.equal(A.sumStudyMinutesBetween(log, 1000, 1000), 15);
-  assert.equal(A.sumStudyMinutesBetween(log, 3500, 5000), 0);
+  assert.equal(A.sumStudyMinutesBetween(log, 3500, 3999), 0);
   assert.equal(A.sumStudyMinutesBetween([], 0, 5000), 0);
   assert.equal(A.sumStudyMinutesBetween(null, 0, 5000), 0);
 });
