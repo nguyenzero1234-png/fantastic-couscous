@@ -751,3 +751,14 @@ Sau mỗi đợt thay đổi:
 - [x] Bổ sung assertion thứ tự nạp để ngăn hồi quy.
 - [ ] Chưa sắp xếp lại toàn bộ data/systems/ui theo nhóm: các file cũ và compatibility entry point còn dependency cần audit riêng; không đổi thứ tự hàng loạt khi chưa xác minh.
 - [ ] Chưa chạy test/CI trên commit thay đổi này; cần xác nhận CI thực tế trước khi đánh dấu ổn định.
+
+
+## Gom helper thuần vào core (2026-11-24)
+
+- [x] Chuyển `time-format.js` → `core/time-format.js`; giữ nguyên global API `GameTimeFormat`.
+- [x] Chuyển `date-data.js` → `core/date.js`; giữ nguyên global API `GameDateData`.
+- [x] Chuyển `noise.js` → `core/noise.js`; giữ nguyên global API `GameNoise`.
+- [x] Chuyển `text.js` → `core/text.js`; giữ nguyên global API `GameText`.
+- [x] Cập nhật duy nhất các thẻ script tương ứng trong `www/index.html`; giữ thứ tự tương đối để không đổi hành vi bootstrap.
+- [x] Giữ nguyên nội dung và tên API của các helper; không đổi call-site trong gameplay.
+- [ ] Cần xác nhận CI sau commit và tiếp tục rà dependency nhóm data/systems/ui; chưa coi toàn bộ thứ tự script đã chuẩn hóa.
