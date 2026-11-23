@@ -1688,10 +1688,8 @@ $("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").
 let SPD=7,SMT="p";
 function renderStats(){
   const T=today(),days=n=>Array.from({length:n},(_,k)=>dayStr(n-1-k)),H=S.hist,C=S.cnt||{};
-  const g=(d,f)=>(H[d]||{})[f]||0,sm=(a,f)=>a.reduce((t,d)=>t+g(d,f),0),sn=a=>a.reduce((t,d)=>t+(C[d]||0),0);
-  const d7=days(7),d30=days(30),mo=Object.keys(H).filter(k=>k.slice(0,7)===T.slice(0,7));
-  let mA=0,pA=0,bp=0,bd="";for(const k in H){mA+=H[k].m;pA+=H[k].p;if(H[k].p>bp){bp=H[k].p;bd=k}}
-  let ls=0,run=0,pv=null;Object.keys(H).filter(k=>H[k].m>0).sort().forEach(k=>{run=pv&&Math.round((new Date(k)-new Date(pv))/864e5)===1?run+1:1;ls=Math.max(ls,run);pv=k});
+  const d7=days(7),d30=days(30),analytics=GameAnalytics.summarize(H,C,{today:T,days7:d7,days30:d30,streak:(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0});
+  const {g,sm,sn,mo,mA,pA,bp,bd,ls}=analytics;
   const hr=m=>(m/60).toFixed(1)+" giờ";
   const cards=[["Hôm nay",hr(g(T,"m")),g(T,"p")+" linh lực, "+(C[T]||0)+" nhiệm vụ"],["7 ngày qua",hr(sm(d7,"m")),sm(d7,"p")+" linh lực, "+sn(d7)+" nhiệm vụ"],["30 ngày qua",hr(sm(d30,"m")),sm(d30,"p")+" linh lực, "+sn(d30)+" nhiệm vụ"],["Tháng này",hr(mo.reduce((t,k)=>t+H[k].m,0)),mo.reduce((t,k)=>t+H[k].p,0)+" linh lực"],["Tổng cộng",hr(mA),pA+" linh lực"],["Trung bình 30 ngày",(sm(d30,"m")/1800).toFixed(1)+" giờ/ngày",Math.round(sm(d30,"p")/30)+" linh lực/ngày"],["Ngày tốt nhất",bp+" linh lực",bd||"chưa có"],["Chuỗi ngày học",((S.streak.last===T||S.streak.last===dayStr(1))?S.streak.n:0)+" ngày","kỷ lục "+ls+" ngày"],["Số kiếp",((S.rbh||[]).length)+" đã qua","Đang ở kiếp "+((S.rb||0)+1)+", còn "+Math.max(0,Math.ceil(KD-kAge()))+" ngày"],["Kiếp linh lực cao nhất","Kiếp "+bk().n+": "+bk().pk,bk().cur?"kiếp hiện tại đang dẫn đầu":"đã qua"]];
   const arr=days(SPD).map(d=>({d,v:g(d,SMT==="p"?"p":"m")})),mx=Math.max(1,...arr.map(x=>x.v));
@@ -1906,7 +1904,7 @@ $("gn").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.g)};
 $("sn").onclick=e=>{const b=e.target.closest("button");if(b)go(TG,b.dataset.s)};
 
 /* Kiếp nạn */
-function kmet(days){let m=0,n=0,d=0;days.forEach(k=>{const h=S.hist[k];if(h&&h.m>0){m+=h.m;d++}n+=(S.cnt||{})[k]||0});const l=(S.stl||[]).filter(x=>days.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);return{m,n,d,l}}
+function kmet(days){return GameAnalytics.kiepMetrics(S.hist,S.cnt||{},S.stl||[],days)}
 function renderKiep(){
   const t=today(),ws=weekStart(),wk=[0,1,2,3,4,5,6].map(i=>{const d=new Date(ws+"T00:00:00");d.setDate(d.getDate()+i);return d.toLocaleDateString("sv")});
   const ts=(1+.2*ri(uxp()))*(S.ln===t?.75:1),hh=[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7),v=1+(Math.abs(hh)%3)*.25,KC=S.kc||(S.kc={});
