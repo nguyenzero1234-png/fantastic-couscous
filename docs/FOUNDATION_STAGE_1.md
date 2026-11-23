@@ -62,3 +62,7 @@ www/js/
 - `toMinutes(value)` và `toClock(minutes)`: chuyển đổi chuỗi giờ `HH:MM` và tổng phút.
 - `currentClock()`: đọc giờ/phút hiện tại theo local time.
 - `game.js` giữ nguyên tên helper cũ qua alias để không phải sửa các call-site.
+
+
+## Module tiến độ
+- `www/js/progression-data.js` chứa các phép tính thuần: xếp loại điểm, chuẩn hóa tiến độ thiên kiếp, điểm người chơi/NPC và tiến độ đạo tâm. Module không đọc/ghi trạng thái game hoặc thao tác DOM.
