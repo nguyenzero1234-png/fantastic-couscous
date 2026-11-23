@@ -589,3 +589,36 @@ test("analytics cộng phút học trong khoảng timestamp, bao gồm cả hai 
   assert.equal(A.sumStudyMinutesBetween([], 0, 5000), 0);
   assert.equal(A.sumStudyMinutesBetween(null, 0, 5000), 0);
 });
+
+
+test("kiếp nạn data giữ nguyên phép sinh sự kiện xác định theo seed", () => {
+  const K = window.GameKiepNanData;
+  const types = [
+    ["A", "Mô tả A", 1], ["B", "Mô tả B", 1], ["C", "Mô tả C", 1],
+    ["D", "Mô tả D", 1.5], ["E", "Mô tả E", 1], ["F", "Mô tả F", 1]
+  ];
+  const hash = (seed, channel, hour) => channel === 90
+    ? 0.9
+    : ({ 91: 0.1, 92: 0.3, 93: 0.5, 94: 0.7 }[channel] ?? 0.1);
+  const event = K.create(123, 10, 1000000, types, hash);
+  assert.deepEqual(JSON.parse(JSON.stringify(event)), {
+    h: 10, k: 3, W: 3, T: 45, st: 1000000 + 10.7 * 3600000,
+    en: 1000000 + 10.7 * 3600000 + 3 * 3600000,
+    pts: Math.round(45 * 0.8 * (1 + (8 - 3) / 8) * 1.5),
+    name: "D", desc: "Mô tả D"
+  });
+  assert.equal(K.create(123, 10, 1000000, types, () => 0.87), null);
+  assert.equal(K.create(123, 10, 1000000, types, () => 0.88).h, 10);
+});
+
+test("kiếp nạn data không sửa bảng cấu hình và truyền hash từ caller", () => {
+  const K = window.GameKiepNanData;
+  const types = [["A", "A desc", 2], ["B", "B desc", 1]];
+  const before = JSON.stringify(types);
+  const calls = [];
+  const hash = (...args) => { calls.push(args); return args[1] === 90 ? 0.99 : 0.2; };
+  K.create(77, 4, 500, types, hash);
+  assert.equal(JSON.stringify(types), before);
+  assert.ok(calls.length >= 1);
+  assert.ok(calls.every(args => args[0] === 77 && args[2] === 4));
+});

@@ -1576,9 +1576,7 @@ const KN=[
 const KX=["linh lực thưởng ×1,5","+1 Tỉnh Thần Linh Trà","hiệu ứng ×1,3 cho 3 nhiệm vụ kế tiếp","+1 Tích Cốc Đan","+80 linh lực","cơ hội nhận linh thú"];
 function knAt(h){
   if(!S.seed)S.seed=1+Math.floor(Math.random()*1e9);
-  if(hs(S.seed,90,h)<0.88)return null;
-  const g=k=>Math.abs(hs(S.seed,91+k,h)),W=[3,4,6,8][Math.floor(g(0)*4)%4],T=[30,45,60,90,120][Math.floor(g(1)*5)%5],k=Math.floor(g(2)*6)%6,st=KT0+(h+g(3))*36e5;
-  return {h,k,W,T,st,en:st+W*36e5,pts:Math.round(T*0.8*(1+(8-W)/8)*KN[k][2]),name:KN[k][0],desc:KN[k][1]};
+  return GameKiepNanData.create(S.seed,h,KT0,KN,hs);
 }
 function grantPet(prefer){
   const P=S.pets||(S.pets={});

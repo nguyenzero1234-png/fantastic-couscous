@@ -281,3 +281,12 @@
 - [x] Bổ sung kiểm tra mọi đường dẫn script trong `index.html` tồn tại và kiểm thử hành vi áp dụng/reset tùy chọn giao diện.
 - [x] CI #155 phát hiện test kiểm tra sai đường dẫn do `index.html` lưu script dưới `js/`; đã sửa assertion sang `www/js/`. Đây là lỗi của test, không phải lỗi ứng dụng; CI xác nhận lại đang chờ.
 - [ ] Tiếp tục rà soát luồng gameplay và các helper thuần còn nằm trong `game.js`.
+
+
+## Tách bộ sinh dữ liệu kiếp nạn (2026-11-23)
+- [x] Thêm `www/js/kiep-nan-data.js` với hàm thuần `GameKiepNanData.create(seed, hour, epoch, types, hash)`.
+- [x] Chuyển phép xác định xác suất xuất hiện, thời lượng, mục tiêu phút học, loại kiếp và thời điểm bắt đầu khỏi `game.js`; việc khởi tạo seed ngẫu nhiên vẫn thuộc state game.
+- [x] Giữ nguyên hàm hash, thứ tự gọi hash, bảng cấu hình `KN`, công thức điểm và cấu trúc dữ liệu trả về.
+- [x] Bổ sung kiểm thử kết quả xác định, ngưỡng xuất hiện và không làm thay đổi bảng cấu hình.
+- [x] CI #157 xác nhận test, audit dependency, Capacitor sync, build APK và upload artifact thành công.
+- [ ] Chờ CI của đợt tách module này; chưa thay thế kiểm thử trên thiết bị Android thật.
