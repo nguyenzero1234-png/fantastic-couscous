@@ -739,6 +739,6 @@ Sau mỗi đợt thay đổi:
 - [x] Thay khai báo dữ liệu trong `game.js` bằng destructuring API; giữ nguyên nội dung dữ liệu và call-site.
 - [x] Nạp data module sau parser `quest-data.js` và trước `game.js`.
 - [x] Bổ sung test API, số tuần kế hoạch và nội dung prompt/preset.
-- [ ] Chờ CI của commit này xác nhận; không chạy build hoặc tác vụ Android.
+- [x] CI run #45231987984 xác nhận 80/81 test đạt; test mới lỗi do dùng `assert.match` với `DEF_C` là mảng cấu trúc chuỗi, không phải string. Đây là lỗi assertion mới, không phải lỗi runtime; đã sửa assertion để kiểm tra tên preset trong mảng. Chờ CI commit sửa.
 - [ ] Tiếp theo: audit và sắp xếp thứ tự nạp script theo core → data → systems → ui → game.js; chỉ loại bỏ file cũ sau khi rà toàn bộ tham chiếu.
 

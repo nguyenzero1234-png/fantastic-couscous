@@ -1251,6 +1251,6 @@ test("GameQuestTemplates chứa dữ liệu nhiệm vụ, kế hoạch và promp
   assert.match(D.SCHED_PROMPT, /HH:MM-HH:MM/);
   assert.match(D.PRESET_MIX, /VSTEP Listening/);
   assert.match(D.DEF_Q, /Khởi động/);
-  assert.match(D.DEF_C, /Ôn thi một chương/);
+  assert.ok(D.DEF_C.some(([name]) => name === "Ôn thi một chương"));
   assert.match(D.DEF_S, /07:40-07:55/);
 });
