@@ -33,6 +33,7 @@
 - [x] Nạp `core/storage.js` trước compatibility entry và `core/state.js`; state tiếp tục nhận storage qua dependency injection.
 - [x] Cập nhật test harness để nạp rõ các module core trong môi trường VM.
 - [ ] Chạy `npm test`/CI để xác nhận hồi quy sau thay đổi.
+- [x] Phát hiện CI 4 lỗi test harness/expectation (global binding mô phỏng browser, array cross-realm, số lượng catalog); đang sửa trước khi mở rộng di chuyển module.
 
 ## Đã hoàn thành
 
