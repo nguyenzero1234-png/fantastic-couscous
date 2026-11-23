@@ -4,6 +4,16 @@ const BACKUP_KEY=KEY+".backup";
 const validSave=o=>!!o&&typeof o==="object"&&!Array.isArray(o)&&Array.isArray(o.quests)&&typeof o.points==="number"&&Number.isFinite(o.points);
 try{
   const raw=localStorage.getItem(KEY);
+  const recoverBackup=()=>{
+    const backupRaw=localStorage.getItem(BACKUP_KEY);
+    if(!backupRaw)return false;
+    const backup=JSON.parse(backupRaw);
+    if(!validSave(backup))throw new Error("Backup data is invalid");
+    S=Object.assign(S,backup);
+    console.warn("[Tu Tiên Học Đạo] Đã khôi phục từ bản sao lưu gần nhất.");
+    try{window.dispatchEvent(new Event("game-save-recovered"))}catch(_){}
+    return true;
+  };
   if(raw){
     try{
       const parsed=JSON.parse(raw);
@@ -11,14 +21,10 @@ try{
       S=Object.assign(S,parsed);
     }catch(primaryError){
       console.error("[Tu Tiên Học Đạo] Bản lưu chính bị lỗi; đang thử bản sao lưu.",primaryError);
-      const backupRaw=localStorage.getItem(BACKUP_KEY);
-      if(!backupRaw)throw primaryError;
-      const backup=JSON.parse(backupRaw);
-      if(!validSave(backup))throw new Error("Backup data is invalid");
-      S=Object.assign(S,backup);
-      console.warn("[Tu Tiên Học Đạo] Đã khôi phục từ bản sao lưu gần nhất.");
-      try{window.dispatchEvent(new Event("game-save-recovered"))}catch(_){}
+      if(!recoverBackup())throw primaryError;
     }
+  }else if(!recoverBackup()){
+    console.info("[Tu Tiên Học Đạo] Chưa có dữ liệu lưu; bắt đầu tiến trình mới.");
   }
 }catch(e){
   console.error("[Tu Tiên Học Đạo] Không thể đọc dữ liệu đã lưu hoặc bản sao lưu. Giữ trạng thái mặc định để tránh nạp dữ liệu lỗi.",e);
