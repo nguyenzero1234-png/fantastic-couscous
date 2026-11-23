@@ -261,7 +261,7 @@ test("sect war giữ nguyên lịch ghép cặp và lời dẫn chiến tông m�
   for (let week = -25; week <= 25; week++) {
     const pairs = W.pairs(week);
     assert.equal(pairs.length, 3);
-    assert.deepEqual(pairs.map(x => Array.from(x)), [[0, 1 + (((week % 5) + 5) % 5)], [1 + (((week % 5) + 5 + 1) % 5), 1 + (((week % 5) + 5 + 4) % 5)], [1 + (((week % 5) + 5 + 2) % 5), 1 + (((week % 5) + 5 + 3) % 5)]]);
+    assert.deepEqual(Array.from(pairs, x => Array.from(x)), [[0, 1 + (((week % 5) + 5) % 5)], [1 + (((week % 5) + 5 + 1) % 5), 1 + (((week % 5) + 5 + 4) % 5)], [1 + (((week % 5) + 5 + 2) % 5), 1 + (((week % 5) + 5 + 3) % 5)]]);
     assert.deepEqual([...new Set(pairs.flat())].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5]);
     assert.ok(pairs.every(pair => pair.length === 2 && pair[0] !== pair[1]));
   }

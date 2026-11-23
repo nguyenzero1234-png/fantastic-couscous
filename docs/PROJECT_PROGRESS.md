@@ -160,4 +160,4 @@
 - [x] Chuyển thuật toán ghép 6 tông thành 3 cặp theo tuần và dữ liệu lời dẫn trận đấu sang `www/js/sect-war.js` (`window.GameSectWar`).
 - [x] `game.js` giữ alias `warPairs` và `warFlavor`; không đổi cách tính điểm, lịch tuần hay phần thưởng chiến tông.
 - [x] Bổ sung kiểm thử lịch ghép ở tuần âm/dương, bảo đảm đủ 6 tông không trùng cặp và kiểm tra lời dẫn.
-- [ ] Chờ CI xác nhận kiểm thử và build APK cho module chiến tông.
+- [x] CI #121 chạy 18/19 test đạt; assertion mảng từ VM cần chuẩn hóa về mảng Node trước khi so sánh. Đã sửa ở commit kế tiếp, chờ CI xác nhận.
