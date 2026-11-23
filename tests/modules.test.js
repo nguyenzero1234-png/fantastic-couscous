@@ -15,9 +15,10 @@ const document = { documentElement: {
 const storageData = new Map();
 const events = [];
 let failWrites = false;
+let failBackupWrites = false;
 const localStorage = {
   getItem(key) { return storageData.has(key) ? storageData.get(key) : null; },
-  setItem(key, value) { if (failWrites) throw new Error("quota exceeded"); storageData.set(key, String(value)); },
+  setItem(key, value) { if (failWrites || (failBackupWrites && key.endsWith(".backup"))) throw new Error("quota exceeded"); storageData.set(key, String(value)); },
   removeItem(key) { storageData.delete(key); },
   clear() { storageData.clear(); }
 };
@@ -172,6 +173,32 @@ test("storage sao lưu bản trước và báo lỗi khi không ghi được", (
   assert.equal(window.GameStorage.save("save", { quests: [], points: 30 }), false);
   assert.ok(events.includes("game-save-error"));
   failWrites = false;
+});
+
+test("storage dùng mặc định khi cả save và backup đều không tồn tại", () => {
+  storageData.clear();
+  const defaults = { quests: [], points: 0, theme: "jade" };
+  const state = window.GameStorage.load("new-save", defaults);
+  assert.deepEqual(JSON.parse(JSON.stringify(state)), defaults);
+});
+
+test("storage không nạp backup sai schema và giữ trạng thái mặc định", () => {
+  storageData.clear(); events.length = 0;
+  storageData.set("invalid", JSON.stringify({ quests: "not-an-array", points: 90 }));
+  storageData.set("invalid.backup", JSON.stringify({ quests: [], points: "not-a-number" }));
+  const state = window.GameStorage.load("invalid", { quests: [], points: 0 });
+  assert.equal(state.points, 0);
+  assert.deepEqual(state.quests, []);
+  assert.equal(events.includes("game-save-recovered"), false);
+});
+
+test("storage vẫn lưu save chính khi không ghi được backup", () => {
+  storageData.clear(); failWrites = false; failBackupWrites = true;
+  storageData.set("backup-fail", JSON.stringify({ quests: [], points: 5 }));
+  assert.equal(window.GameStorage.save("backup-fail", { quests: [], points: 9 }), true);
+  assert.equal(JSON.parse(storageData.get("backup-fail")).points, 9);
+  assert.equal(storageData.has("backup-fail.backup"), false);
+  failBackupWrites = false;
 });
 
 test("timer đếm phiên và focus theo thời gian giả lập", () => {
