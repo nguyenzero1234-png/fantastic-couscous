@@ -1487,3 +1487,19 @@ test("GameTribulationUI render các màn hình kiếp và lịch sử luân hồ
  M.renderKiep();M.renderRb();M.renderRbs();M.showThd({n:1,name:"Kiếp thử",txt:["Một dòng ký ức"]},false);
  assert.match(nodes.kiep.innerHTML,/Nhật Kiếp/);assert.match(nodes.kiep.innerHTML,/Tuần Kiếp/);assert.match(nodes.tmb.innerHTML,/Kiếp thứ 1/);assert.match(nodes.rbs.innerHTML,/Các Kiếp Trước/);assert.equal(nodes.thd.hidden,false);assert.match(nodes.thd.innerHTML,/Một dòng ký ức/);
 });
+
+
+test("GameOnboardingUI nhập đạo, lọc tên và lưu lựa chọn hình thể",()=>{
+ const buttons=["nam","nu"].map(g=>({dataset:{g},classList:{toggle(){}},querySelector:()=>({style:{}})}));
+ const nodes={nmo:{innerHTML:"",hidden:true,querySelectorAll:()=>buttons},nmi:{value:"Tố< Tuyết",focus(){},onkeydown:null},nmk:{onclick:null}};
+ const S={gender:"nam",name:"",tutDone:true};let saved=0,rendered=0,said="";
+ const M=window.GameOnboardingUI.create({S,AV_NAM:"nam.png",AV_NU:"nu.png",$:id=>nodes[id],save:()=>saved++,render:()=>rendered++,say:x=>said=x,showTutorial:()=>{},schedule:()=>{}});
+ M.askName();buttons[1].onclick();nodes.nmk.onclick();
+ assert.equal(S.name,"Tố Tuyết");assert.equal(S.gender,"nu");assert.equal(saved,1);assert.equal(rendered,1);assert.match(said,/Tố Tuyết/);assert.equal(nodes.nmo.hidden,true);
+});
+
+test("GameLeaderboardUI render dự báo giữ thứ hạng",()=>{
+ const nodes={fd:{value:"7"},fout:{innerHTML:""}};
+ const M=window.GameLeaderboardUI.create({S:{points:100,perHour:100,streak:{last:"2026-11-24",n:3},tm:false},B:[{n:"NPC",p:0}],sc:()=>100,lbInit:()=>{},BAL_RANK:40,BAL_MULT:1.25,SECTS:[],SO:[],rname:x=>"Cảnh giới "+x,uxp:()=>100,bxp:()=>100,spark:()=>"spark",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:()=>false,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1,myRank:()=>1,today:()=>"2026-11-24",dayStr:n=>"2026-11-"+String(24-n).padStart(2,"0")});
+ M.renderForecast();assert.match(nodes.fout.innerHTML,/Giữ hạng 1\/2/);assert.match(nodes.fout.innerHTML,/Tu vi các tu sĩ sau 7 ngày/);
+});

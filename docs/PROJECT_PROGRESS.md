@@ -1008,3 +1008,11 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ callback luân hồi, thông báo, dữ liệu mệnh/cảnh giới và DOM qua dependency injection.
 - [x] `game.js` giữ wrapper `renderKiep`, `renderRb`, `renderRbs`, `showThd` cho các call-site cũ.
 - [x] Bổ sung test các màn hình thiên kiếp và lịch sử.
+
+
+## Tách onboarding và dự báo thứ hạng khỏi game.js (2026-11-24)
+
+- [x] Chuyển màn hình nhập đạo/chọn hình thể sang `ui/onboarding.js`; giữ callback lưu, render, thông báo và hướng dẫn qua dependency injection.
+- [x] Chuyển màn hình Thiên Diễn dự báo giữ thứ hạng sang `ui/leaderboard.js` cùng các màn hình leaderboard.
+- [x] Giữ wrapper `askName` và `thienDien` để không đổi luồng khởi tạo và nút diễn toán.
+- [x] Bổ sung test nhập đạo, lọc tên và dự báo thứ hạng.

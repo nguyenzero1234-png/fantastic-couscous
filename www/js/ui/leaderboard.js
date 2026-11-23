@@ -4,7 +4,7 @@
  function create(deps){
   const {S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml,today}=deps;
   const esc=deps.escapeHtml,portrait=deps.portrait,isTK=deps.isTopCultivator,renderProf=deps.renderProfile;
-  const getKAge=deps.getKAge,getCurStreak=deps.getCurStreak;
+  const getKAge=deps.getKAge,getCurStreak=deps.getCurStreak,myRank=deps.myRank,today=deps.today,dayStr=deps.dayStr;
   let showAll=false,PV={};
   function render(){
   lbInit();
@@ -41,9 +41,19 @@ const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
   h+=spStatsHtml();
   $("van").innerHTML=h;
 }
+  function renderForecast(){
+  const X=Math.min(90,Math.max(1,parseInt($("fd").value)||7)),now=Date.now(),T=now+X*864e5;$("fd").value=X;
+  const rows=B.map((b,i)=>({n:b.n,x0:bxp(i,now),x1:bxp(i,T),s1:sc(i,T)})),srt=rows.slice().sort((a,b)=>b.s1-a.s1);
+  const r=myRk(),edge=r<=srt.length?srt[r-1].s1:0,need=Math.max(0,Math.ceil(edge-S.points));
+  const sn=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
+  const em=(1+Math.min(.5,.05*Math.max(0,sn-1)))*(S.tm?.8:1);
+  const hr=need/X/(S.perHour*em),rk=h=>1+rows.filter(z=>z.s1>S.points+h*S.perHour*em*X).length;
+  const verdict=need<=0?"Không cần tu thêm, hạng của bạn vẫn giữ nguyên.":hr>24?"Cần hơn 24 giờ mỗi ngày, không thể giữ hạng này.":"Cần tu luyện khoảng "+hr.toFixed(1)+" giờ mỗi ngày ("+Math.ceil(need/X)+" linh lực mỗi ngày).";
+  $("fout").innerHTML=`<div class="box" style="margin-top:14px"><h2>Giữ hạng ${r}/${B.length+1}</h2><p style="margin:6px 0">${verdict}</p><small>Tính theo ${S.perHour} linh lực mỗi giờ nhân hệ số thưởng hiện tại ×${em.toFixed(2)}. Chưa tính linh lực cố định và linh lực bạn tiêu cho nhàn hạ. Bot đứng cuối mỗi tuần mất 20% nên kết quả có thể lệch nhẹ.</small></div><div class="box" style="margin-top:14px"><h2>Hạng của bạn sau ${X} ngày</h2><ul>${[0,1,2,3,4,6,8].map(h=>`<li><div class="nm">${h} giờ mỗi ngày</div><b>hạng ${rk(h)}</b></li>`).join("")}</ul></div><div class="box" style="margin-top:14px"><h2>Tu vi các tu sĩ sau ${X} ngày</h2><ul>${rows.slice().sort((a,b)=>b.x1-a.x1).slice(0,15).map(z=>`<li><div class="nm">${z.n}<small>${rname(z.x0)} → ${rname(z.x1)}</small></div><b>${Math.round(z.x1)}</b></li>`).join("")}</ul><small>Hiện 15 tu sĩ mạnh nhất sau ${X} ngày, đơn vị linh lực.</small></div>`;
+}
   function toggleAll(){showAll=!showAll;$("lball").textContent=showAll?"Chỉ hiện top 20":"Hiện tất cả";render()}
   function reset(){PV={};showAll=false}
-  return Object.freeze({render,renderTimeline,toggleAll,reset,settings:()=>({showAll})});
+  return Object.freeze({render,renderTimeline,renderForecast,toggleAll,reset,settings:()=>({showAll})});
  }
  root.GameLeaderboardUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

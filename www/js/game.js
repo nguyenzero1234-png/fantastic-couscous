@@ -245,7 +245,7 @@ function showExModal(e){
 }
 const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt});
 function renderExams(){TribulationUI.render()}
-const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),today});
+const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),today});
 function renderLb(){LeaderboardUI.render()}
 const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
 const qm=()=>QM[$("nq").value]||1;
@@ -1148,61 +1148,14 @@ function doRebirth(){TribulationSystem.doRebirth()}
 const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){TribulationUI.renderRbs()}
 $("rbs").onclick=e=>{const b=e.target.closest("[data-vi]");if(b&&S.rbh&&S.rbh[+b.dataset.vi])showThd(S.rbh[+b.dataset.vi])};
-function askName(){
-  const o=$("nmo");
-  const g=S.gender==="nu"?"nu":"nam";
-  o.innerHTML=`<div class="box"><h2>Nhập đạo · Chọn hình thể</h2>
-    <small>Thiên Đạo cần biết đạo hiệu và hình thể của ngươi. Avatar theo nam hoặc nữ.</small>
-    <div class="row" style="margin-top:10px;justify-content:center;gap:16px;flex-wrap:wrap">
-      <button type="button" class="btn alt gender-pick${g==="nam"?" on":""}" data-g="nam" style="padding:8px;min-width:120px">
-        <img src="${AV_NAM}" alt="Nam" width="88" height="88" style="border-radius:50%;object-fit:cover;border:3px solid ${g==="nam"?"var(--gold)":"var(--line)"};display:block;margin:0 auto 6px">
-        <span>Nam tu</span>
-      </button>
-      <button type="button" class="btn alt gender-pick${g==="nu"?" on":""}" data-g="nu" style="padding:8px;min-width:120px">
-        <img src="${AV_NU}" alt="Nữ" width="88" height="88" style="border-radius:50%;object-fit:cover;border:3px solid ${g==="nu"?"var(--gold)":"var(--line)"};display:block;margin:0 auto 6px">
-        <span>Nữ tu</span>
-      </button>
-    </div>
-    <div class="row" style="margin-top:12px"><input type="text" id="nmi" maxlength="20" placeholder="Ví dụ: Lăng Vân / Tố Tuyết" value="${S.name||""}"><button class="btn" id="nmk" style="margin-left:0">Nhập đạo</button></div>
-  </div>`;
-  o.hidden=false;
-  let pick=g;
-  o.querySelectorAll(".gender-pick").forEach(btn=>{
-    btn.onclick=()=>{
-      pick=btn.dataset.g;
-      o.querySelectorAll(".gender-pick").forEach(b=>{
-        const on=b.dataset.g===pick;
-        b.classList.toggle("on",on);
-        const img=b.querySelector("img");
-        if(img)img.style.borderColor=on?"var(--gold)":"var(--line)";
-      });
-    };
-  });
-  const done=()=>{
-    const v=$("nmi").value.replace(/[<>&"'`]/g,"").trim().slice(0,20);
-    if(!v){$("nmi").focus();return}
-    S.name=v;S.gender=pick||"nam";
-    save();o.hidden=true;render();
-    say("Chào mừng "+(S.gender==="nu"?"nữ tu":"đạo hữu")+" "+v+".");
-    if(!S.tutDone)setTimeout(showTut,300);
-  };
-  $("nmk").onclick=done;$("nmi").onkeydown=e=>{if(e.key==="Enter")done()};
-}
+const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,$,save,render,say,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
+function askName(){OnboardingUI.askName()}
 if(!S.name||!S.gender)askName();
 else if(!S.tutDone)setTimeout(showTut,400);
 
 /* Thiên diễn */
 $("f").innerHTML=`<div class="box"><h2>Thiên Diễn</h2><small>Suy diễn tu vi các tu sĩ sau số ngày bạn nhập, rồi tính bạn cần tu luyện thế nào để giữ hạng hiện tại. Tối đa 90 ngày.</small><div class="row"><label>Sau <input type="number" id="fd" min="1" max="90" value="7"> ngày</label><button class="btn" id="fgo">Diễn toán</button></div></div><div id="fout"></div>`;
-function thienDien(){
-  const X=Math.min(90,Math.max(1,parseInt($("fd").value)||7)),now=Date.now(),T=now+X*864e5;$("fd").value=X;
-  const rows=B.map((b,i)=>({n:b.n,x0:bxp(i,now),x1:bxp(i,T),s1:sc(i,T)})),srt=rows.slice().sort((a,b)=>b.s1-a.s1);
-  const r=myRk(),edge=r<=srt.length?srt[r-1].s1:0,need=Math.max(0,Math.ceil(edge-S.points));
-  const sn=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
-  const em=(1+Math.min(.5,.05*Math.max(0,sn-1)))*(S.tm?.8:1);
-  const hr=need/X/(S.perHour*em),rk=h=>1+rows.filter(z=>z.s1>S.points+h*S.perHour*em*X).length;
-  const verdict=need<=0?"Không cần tu thêm, hạng của bạn vẫn giữ nguyên.":hr>24?"Cần hơn 24 giờ mỗi ngày, không thể giữ hạng này.":"Cần tu luyện khoảng "+hr.toFixed(1)+" giờ mỗi ngày ("+Math.ceil(need/X)+" linh lực mỗi ngày).";
-  $("fout").innerHTML=`<div class="box" style="margin-top:14px"><h2>Giữ hạng ${r}/${B.length+1}</h2><p style="margin:6px 0">${verdict}</p><small>Tính theo ${S.perHour} linh lực mỗi giờ nhân hệ số thưởng hiện tại ×${em.toFixed(2)}. Chưa tính linh lực cố định và linh lực bạn tiêu cho nhàn hạ. Bot đứng cuối mỗi tuần mất 20% nên kết quả có thể lệch nhẹ.</small></div><div class="box" style="margin-top:14px"><h2>Hạng của bạn sau ${X} ngày</h2><ul>${[0,1,2,3,4,6,8].map(h=>`<li><div class="nm">${h} giờ mỗi ngày</div><b>hạng ${rk(h)}</b></li>`).join("")}</ul></div><div class="box" style="margin-top:14px"><h2>Tu vi các tu sĩ sau ${X} ngày</h2><ul>${rows.slice().sort((a,b)=>b.x1-a.x1).slice(0,15).map(z=>`<li><div class="nm">${z.n}<small>${rname(z.x0)} → ${rname(z.x1)}</small></div><b>${Math.round(z.x1)}</b></li>`).join("")}</ul><small>Hiện 15 tu sĩ mạnh nhất sau ${X} ngày, đơn vị linh lực.</small></div>`;
-}
+function thienDien(){LeaderboardUI.renderForecast()}
 $("fgo").onclick=thienDien;
 drawNav();
 
