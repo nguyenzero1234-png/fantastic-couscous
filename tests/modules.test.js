@@ -1163,9 +1163,10 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
   assert.equal(items[0].id, "ca");
   assert.equal(items[0].tot, 200);
   assert.match(items[0].d, /2 nhiệm vụ/);
-  assert.equal(items[19].id, "the");
-  assert.equal(items[19].q, undefined);
-  assert.equal(items[19].d, undefined);
+  assert.equal(items[19].id, "cl");
+  assert.equal(items[20].id, "the");
+  assert.equal(items[20].q, undefined);
+  assert.equal(items[20].d, undefined);
   items[0].q[0] = 999;
   assert.equal(window.GameItemData.catalog()[0].q[0], 2);
   assert.deepEqual(JSON.parse(JSON.stringify(window.GameItemData.describe({ id: "x", c: 100, q: [2, 60, "q"] }))), {
