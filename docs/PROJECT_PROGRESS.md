@@ -975,3 +975,10 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển reset cache `PV` và trạng thái top 20 vào `LeaderboardUI.reset()`.
 - [x] `doRebirth` gọi reset UI leaderboard cùng mô phỏng; bỏ biến cache trùng còn sót ở `game.js`.
 - [x] Bổ sung test reset bộ lọc bảng.
+
+
+## Tách luân hồi và reset kiếp sang systems/tribulation.js (2026-11-24)
+
+- [x] Chuyển điều phối luân hồi, reset state kiếp, reset cache mô phỏng/bảng, giữ cờ xuyên kiếp và thông báo kết quả sang `GameTribulationSystem.doRebirth()`.
+- [x] Truyền builder hồ sơ kiếp, state, save/render, UI và callback reset qua dependency injection; giữ wrapper `doRebirth`.
+- [x] Bổ sung test reset state, ân xá, xuất sắc và tiến độ xuyên kiếp.

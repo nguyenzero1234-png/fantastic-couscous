@@ -4,6 +4,7 @@
  function create(deps){
   const {S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save}=deps;
   const hs=deps.hash,getSalt=deps.getSalt,showTdLenh=deps.showTdLenh,showExModal=deps.showExModal,schedule=deps.schedule;
+  const buildRecord=deps.buildRecord,vlog=deps.vlog,burst=deps.burst,sfx=deps.sfx,KS=deps.KS,setSalt=deps.setSalt,weekStart=deps.weekStart,LeaderboardSimulation=deps.LeaderboardSimulation,LeaderboardUI=deps.LeaderboardUI,setProfileIndex=deps.setProfileIndex,chkLegacy=deps.chkLegacy,save=deps.save,render=deps.render,showThd=deps.showThd;
   function resolveEx(){
   if(!S.sem)S.sem={res:{}};
   const now=Date.now();let ch=0,pending=null;
@@ -56,7 +57,27 @@
   // Bắt buộc xem bảng thiên kiếp trước khi chơi tiếp
   if(pending&&!S.exLock){S.exLock=pending.id;schedule(()=>showExModal(pending),300)}
 }
-  return Object.freeze({resolveEx});
+  function doRebirth(){
+  const rec=buildRec();(S.rbh||(S.rbh=[])).push(rec);
+  if(rec.anXa){S.tdPenalty=false;S.tdStacks=0;S.failStreak=0;S.life=S.life||{};S.life.anXa=1;vlog("Thiên Đạo Ân Xá: Trừng Phạt và chuỗi fail đã được xóa bỏ.");burst();sfx(880)}
+  if(rec.grade==="Viên Mãn Xuất Chúng"||rec.grade==="Xuất Sắc"){S.life=S.life||{};S.life.excel=1}
+  if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}
+  // legacy + life + ui + name + god + tut + diary prefs keep
+  S.rb=(S.rb||0)+1;
+  S.storyLog=[];S.storyFlags={};S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
+  S.menh=100;S.failStreak=0;
+  setSalt(S.rb*7919);S.thdAsk=0;S.sem=null;S.exLock=null;S.fx=[];S.buff={n:0,m:1};S.xb=null;S.tb=null;S.sh=null;S.sl=0;S.lt=0;S.ln=null;S.kd=null;S.eb=0;S.pw=0;S.master=null;
+  S.inv={};S.pets={};S.act=null;S.tt={};S.title=null;S.nw=null;S.sect=null;S.gameSec=0;S.streak={n:0,last:""};
+  S.quests=[];S.chains=[];S.claimed={};S.sched={};S.ev={w:{h:10,r:100},m:{h:40,r:500}};S.sm=null;
+  if(S.lb){S.lb.t0=Date.now();S.lb.adj=Array(50).fill(0);S.lb.bal=Array(50).fill(0);S.lb.week=weekStart();S.lb.log="";S.lb.sp={};S.lb.spx={};S.lb.spl=[];S.lb.gb=[];S.lb.dv=[];S.lb.hh=[];S.lb.td=[]}
+  S.bal=0
+  S.sp=null;
+  LeaderboardSimulation.reset();LeaderboardUI.reset();setProfileIndex();
+  vlog("Luân hồi lần "+S.rb+". Mọi thứ của kiếp trước đã trở về hư không.");
+  chkLegacy();
+  save();render();showThd(rec);sfx(392);schedule(()=>sfx(659),150);
+}
+  return Object.freeze({resolveEx,doRebirth});
  }
  root.GameTribulationSystem=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

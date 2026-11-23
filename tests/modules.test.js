@@ -1444,3 +1444,13 @@ test("GameTribulationSystem chấm kiếp, cập nhật Mệnh và khóa xem k�
  assert.equal(saved,1);
  assert.equal(shown,1);
 });
+
+
+test("GameTribulationSystem luân hồi reset state và giữ tiến độ xuyên kiếp",()=>{
+ const S={rb:0,sect:0,tdPenalty:true,tdStacks:2,failStreak:3,life:{},lb:{},hist:{},cnt:{},stl:[],kc:{},inv:{},pets:{},tt:{},quests:[],chains:[],claimed:{},sched:{},ev:{},streak:{},storyLog:[],storyFlags:{}};
+ const calls=[];let salt=0;
+ const M=window.GameTribulationSystem.create({S,EX:[],exD:()=>new Date(0),KD:1,KS:()=>({pk:100,skx:0}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>0,immuneTaiHu:()=>false,vlog:x=>calls.push(x),bxp:()=>0,spKn:()=>-1,kh:()=>0,khNpc:()=>0,spE:e=>e,streakAt:()=>0,SPQ:[{f:1},{f:1},{f:1}],ri:()=>0,gr:()=>"Yếu",daoTam:()=>0,spRetire:()=>{},save:()=>calls.push("save"),hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>{},schedule:()=>{},buildRecord:()=>({n:1,grade:"Xuất Sắc",anXa:true,pk:100}),burst:()=>calls.push("burst"),sfx:()=>{},KS:()=>({}),setSalt:v=>salt=v,weekStart:()=>"2026-11-23",LeaderboardSimulation:{reset:()=>calls.push("sim-reset")},LeaderboardUI:{reset:()=>calls.push("ui-reset")},setProfileIndex:()=>calls.push("profile-reset"),chkLegacy:()=>calls.push("legacy"),render:()=>calls.push("render"),showThd:()=>calls.push("show")});
+ M.doRebirth();
+ assert.equal(S.rb,1);assert.equal(S.tdPenalty,false);assert.equal(S.menh,100);assert.equal(S.sect,null);assert.equal(S.life.anXa,1);assert.equal(S.life.excel,1);assert.equal(S.life.sectN,1);assert.equal(salt,7919);
+ assert.ok(calls.includes("sim-reset")&&calls.includes("ui-reset")&&calls.includes("profile-reset")&&calls.includes("legacy")&&calls.includes("save")&&calls.includes("render"));
+});
