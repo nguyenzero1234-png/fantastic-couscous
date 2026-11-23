@@ -29,7 +29,7 @@ jobs:
       - name: Báo cáo lỗ hổng dependency
         run: |
           npm audit --json > audit-report.json || true
-          node -e 'const a=require("./audit-report.json"); console.log("Dependency vulnerabilities:", JSON.stringify(a.metadata?.vulnerabilities || {})); for (const [name, v] of Object.entries(a.vulnerabilities || {})) console.log(`${name}: ${v.severity}; fix=${JSON.stringify(v.fixAvailable)}`)'
+          node -e 'const a=require("./audit-report.json"); const v=a.metadata?.vulnerabilities || {}; console.log("Dependency vulnerabilities:", JSON.stringify(v)); for (const [name, x] of Object.entries(a.vulnerabilities || {})) console.log(`${name}: ${x.severity}; fix=${JSON.stringify(x.fixAvailable)}`); if ((v.high || 0) + (v.critical || 0) > 0) process.exit(1)'
           rm audit-report.json
       - run: npx cap add android
 
