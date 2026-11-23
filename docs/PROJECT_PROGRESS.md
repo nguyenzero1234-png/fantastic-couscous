@@ -991,3 +991,11 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển kiểm tra trạng thái, hiệu chuẩn mô phỏng và toàn bộ lệnh quản trị/kiểm thử sang `systems/god-mode.js`.
 - [x] Truyền state, systems, storage, navigation, timers và UI callbacks qua dependency injection; giữ wrapper `calib`, `selfCheck`, `runGod` cho event handler hiện tại.
 - [x] Bổ sung test lệnh tăng linh lực và callback lịch sử.
+
+
+## Tách nghiệp vụ xếp hạng tuần và cơ duyên vào systems/leaderboard.js (2026-11-24)
+
+- [x] Chuyển hiệu ứng NPC Bất Diệt Kim Thân/Đạo Vận/Hồng Nhan/Thái Dương, cơ duyên đặc biệt, xếp hạng, cân bằng tuần và settlement vào `GameLeaderboardSystem` cùng nhóm với lõi mô phỏng.
+- [x] Dùng `GameLeaderboardSimulation` làm lõi; inject dữ liệu NPC, dữ liệu xếp hạng, lịch, save và chiến tông môn.
+- [x] Giữ API wrapper ở `game.js` để UI, thiên kiếp và lệnh Thiên Đạo không đổi call-site.
+- [x] Bổ sung test bảng, cân bằng tuần và cơ duyên.

@@ -1463,3 +1463,18 @@ test("GameGodModeSystem chạy lệnh cộng linh lực qua dependency",()=>{
  assert.equal(S.points,1005);
  assert.equal(added,1000);
 });
+
+
+test("GameLeaderboardSystem tạo bảng, cân bằng tuần và cơ duyên",()=>{
+ const S={points:10,name:"Đạo hữu",lb:{t0:0,week:"2026-11-16",adj:[0],bal:[0],sp:{},spx:{},spl:[],gb:[],dv:[],hh:[],td:[],log:""},sem:{res:{}}};
+ const sim={SP:60000,htExtra:()=>0,cum:()=>0,CD:[],EC:[],FL:[],RK:[],SO:[0],computeSO:()=>{},invalidateAt:()=>{}};
+ const M=window.GameLeaderboardSystem.create({S,B:[{n:"NPC",p:0}],hash:()=>1,KS:()=>({start:0}),save:()=>{},vlog:()=>{},simulation:sim,leaderboardData:{rankRows:r=>r.sort((a,b)=>b.s-a.s).map((x,i)=>({...x,rank:i+1})),rollSpecial:()=>[],sparkline:()=>[]},npcData:{isImmuneTaiHu:()=>false},getSalt:()=>0,exams:[{id:"e",day:0}],days:120,examDate:()=>new Date(Date.now()+86400000),playerXpAt:()=>0,weekStart:()=>"2026-11-23",myRank:()=>50,warReward:()=>" chiến tông",bxpAt:()=>0});
+ assert.equal(M.sc(0,0),0);
+ assert.equal(M.lbRows().length,2);
+ assert.equal(M.playerBalanced(),true);
+ assert.deepEqual(JSON.parse(JSON.stringify(M.spRoll(M.lbRows(),1))),[]);
+ M.settle();
+ assert.equal(S.lb.week,"2026-11-23");
+ assert.match(S.lb.log,/Chốt bảng tuần/);
+ assert.match(S.lb.log,/chiến tông/);
+});
