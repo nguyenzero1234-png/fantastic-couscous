@@ -17,6 +17,12 @@ jobs:
       - run: npm install
       - name: Kiểm thử JavaScript modules
         run: npm test
+      - name: Lưu package-lock đã đồng bộ
+        uses: actions/upload-artifact@v4
+        with:
+          name: capacitor7-package-lock
+          path: package-lock.json
+          if-no-files-found: error
       - name: Báo cáo lỗ hổng dependency
         run: |
           npm audit --json > audit-report.json || true
