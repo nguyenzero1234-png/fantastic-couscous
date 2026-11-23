@@ -252,5 +252,5 @@ test("text utilities escape HTML như helper cũ", () => {
   assert.equal(E("không có ký tự đặc biệt"), "không có ký tự đặc biệt");
   assert.equal(E("&lt;"), "&amp;lt;");
   assert.equal(E(""), "");
-  assert.throws(() => E(null), TypeError);
+  assert.throws(() => E(null), /replace/);
 });

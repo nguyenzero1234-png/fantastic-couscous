@@ -152,4 +152,4 @@
 - [x] Chuyển helper escape ký tự HTML sang `www/js/text.js` (`window.GameText.escapeHtml`).
 - [x] `game.js` giữ alias `esc` để toàn bộ nơi hiển thị chuỗi tiếp tục dùng đúng helper cũ; không đổi quy tắc escape `&`, `<`, `>` và dấu nháy kép.
 - [x] Bổ sung kiểm thử ký tự đặc biệt, chuỗi rỗng, chuỗi đã encode và đầu vào không phải chuỗi.
-- [ ] Chờ CI xác nhận kiểm thử và APK cho commit này.
+- [x] CI #119 chạy 17/18 test đạt; một assertion kiểm tra prototype lỗi giữa VM/Node không tương thích. Đã sửa assertion theo nội dung lỗi, chờ CI xác nhận lại.
