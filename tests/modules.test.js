@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "progression-data.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "progression-data.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
@@ -183,4 +183,21 @@ test("time format giữ nguyên cách hiển thị thời lượng và giờ", (
   assert.equal(T.toClock(455), "07:35");
   assert.equal(T.toClock(1440), "24:00");
   assert.match(T.currentClock(), /^\d{2}:\d{2}$/);
+});
+
+
+test("progression data giữ nguyên xếp loại, điểm thiên kiếp và tiến độ đạo tâm", () => {
+  const P = window.GameProgressData;
+  assert.deepEqual([49, 50, 64, 65, 79, 80, 89, 90, 100].map(P.grade),
+    ["Yếu", "Trung bình", "Trung bình", "Khá", "Khá", "Giỏi", "Giỏi", "Xuất sắc", "Xuất sắc"]);
+  const exam = { chuan: 100, a: 0.8, bm: 12, ls: 10 };
+  const ratio = (1 - Math.exp(-1.6)) / (1 - Math.exp(-1.6));
+  assert.equal(P.normalizedExamProgress(100, exam), ratio);
+  assert.equal(P.examScore(100, exam, 2), 92);
+  assert.equal(P.examScore(0, exam, -2), 0);
+  assert.equal(P.npcExamScore(100, exam), 100);
+  assert.equal(P.npcExamScore(0, exam), 0);
+  assert.equal(P.taoTamProgress(-5, exam), 0);
+  assert.equal(P.taoTamProgress(5, exam), 0.5);
+  assert.equal(P.taoTamProgress(20, exam), 1);
 });
