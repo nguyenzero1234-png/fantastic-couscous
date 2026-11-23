@@ -202,6 +202,21 @@ test("progression data giữ nguyên xếp loại, điểm thiên kiếp và ti�
   assert.equal(P.taoTamProgress(20, exam), 1);
 });
 
+test("progression data tính cảnh giới và tầng tu vi đúng các mốc", () => {
+  const P = window.GameProgressData;
+  const realms = [["Luyện Khí", 0], ["Trúc Cơ", 20000], ["Kim Đan", 42000], ["Chân Tiên", 200000]];
+  assert.equal(P.realmIndex(0, realms), 0);
+  assert.equal(P.realmIndex(19999, realms), 0);
+  assert.equal(P.realmIndex(20000, realms), 1);
+  assert.equal(P.realmIndex(42000, realms), 2);
+  assert.equal(P.realmIndex(199999, realms), 2);
+  assert.equal(P.realmIndex(200000, realms), 3);
+  assert.equal(P.realmName(0, realms), "Luyện Khí tầng 1");
+  assert.equal(P.realmName(20000, realms), "Trúc Cơ tầng 1");
+  assert.equal(P.realmName(41999, realms), "Trúc Cơ tầng 9");
+  assert.equal(P.realmName(200000, realms), "Chân Tiên");
+});
+
 test("date data giữ nguyên ngày địa phương, bù ngày và đầu tuần thứ Hai", () => {
   const D = window.GameDateData;
   const base = new Date(2026, 10, 23, 12, 0, 0, 0).getTime(); // Thứ Hai

@@ -123,11 +123,18 @@
 - [x] Tạo `www/js/progression-data.js` (`window.GameProgressData`) cho xếp loại điểm, hàm chuẩn hóa tiến độ, tính điểm thiên kiếp của người chơi/NPC và tiến độ đạo tâm.
 - [x] Thay bốn công thức tương ứng trong `game.js` bằng lời gọi module; giữ nguyên dữ liệu đầu vào, thứ tự tính và các giới hạn min/max.
 - [x] Nạp module trước `game.js` và bổ sung test ranh giới xếp loại, điểm 0/100, tiến độ âm/vượt ngưỡng.
-- [ ] Chờ CI xác nhận `npm test` và APK sau thay đổi.
+- [x] GitHub Actions run #114 xác nhận `npm test` và build APK thành công cho module tiến độ.
 
 
 ## Tách module ngày tháng (2026-11-23)
 - [x] Tạo `www/js/date-data.js` (`window.GameDateData`) cho ngày hiện tại theo độ lệch game, lùi ngày và xác định đầu tuần thứ Hai.
 - [x] Thay ba helper trong `game.js` bằng wrapper gọi module; giữ nguyên độ lệch `S.dOff`, local time và định dạng ngày.
 - [x] Bổ sung test với thời điểm cố định cho ngày hiện tại, ngày trước/sau và ranh giới đầu tuần.
-- [ ] Chờ CI xác nhận `npm test` và APK sau thay đổi.
+- [x] GitHub Actions run #116 xác nhận `npm test` và build APK thành công; artifact APK được tạo.
+
+
+## Tách công thức cảnh giới (2026-11-23)
+- [x] Chuyển phép xác định cảnh giới theo ngưỡng linh lực và định dạng tên tầng tu vi sang `GameProgressData.realmIndex()` và `GameProgressData.realmName()`.
+- [x] `game.js` giữ nguyên bảng ngưỡng `RL` và gọi module mới qua hai wrapper, không đổi dữ liệu hay cách hiển thị.
+- [x] Bổ sung test cho các ngưỡng cảnh giới, ranh giới tầng 1/tầng 9 và cảnh giới cuối không chia tầng.
+- [ ] Chờ CI xác nhận kiểm thử và APK cho commit tách công thức cảnh giới.

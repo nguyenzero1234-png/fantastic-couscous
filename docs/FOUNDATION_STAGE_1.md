@@ -71,3 +71,9 @@ www/js/
 ## Module ngày tháng
 - `www/js/date-data.js` cung cấp các hàm có thể kiểm thử với thời điểm đầu vào: ngày hiện tại theo độ lệch ngày trong game, lùi số ngày và ngày đầu tuần (thứ Hai).
 - `game.js` chỉ giữ các wrapper gắn với trạng thái `S.dOff`; phép tính ngày được chuyển sang module độc lập, vẫn dùng local time và định dạng `sv` như trước.
+
+
+## Công thức cảnh giới
+- `GameProgressData.realmIndex(xp, realms)`: tìm cảnh giới có ngưỡng linh lực cao nhất không vượt quá XP.
+- `GameProgressData.realmName(xp, realms)`: định dạng tên cảnh giới và tầng 1–9; cảnh giới cuối không chia tầng.
+- `game.js` tiếp tục sở hữu bảng ngưỡng `RL`, chỉ chuyển phép tính thuần sang module; không thay đổi save schema hoặc luật chơi.

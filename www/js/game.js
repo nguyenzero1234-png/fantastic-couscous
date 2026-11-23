@@ -762,8 +762,8 @@ let PV={};
 const xr=()=>S.sem?Object.values(S.sem.res).filter(r=>r.claimed):[];
 const RL=[["Luyện Khí",0],["Trúc Cơ",20000],["Kim Đan",42000],["Nguyên Anh",66000],["Hóa Thần",92000],["Luyện Hư",118000],["Hợp Thể",145000],["Đại Thừa",172000],["Chân Tiên",200000]];
 const END=200000,KD=119;/* END = ngưỡng vào Chân Tiên (không có trần: linh lực tăng đến hết kiếp). Kiếp chỉ kết thúc khi hết KD ngày */
-const ri=x=>{let k=0;RL.forEach((r,i)=>{if(x>=r[1])k=i});return k};
-const rname=x=>{const k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1;if(!RL[k+1])return RL[k][0];return RL[k][0]+" tầng "+Math.min(9,Math.floor((x-lo)/(hi-lo)*9)+1)};
+const ri=x=>GameProgressData.realmIndex(x,RL);
+const rname=x=>GameProgressData.realmName(x,RL);
 // Thiên kiếp gắn với ngày trong kiếp (0..KD-1), không phụ thuộc học kỳ
 const EX=[
  {id:"tl",n:"Trúc Cơ Lôi Kiếp",kind:"Lôi kiếp khai môn · viên mãn Luyện Khí, thăng Trúc Cơ",day:13,need:0,chuan:20000,w:0.5,a:.98,bm:2,ls:5,desc:"Tầng mây đầu tiên nổ sấm. Luyện Khí viên mãn thì lôi quang tẩy thể, dựng nền Trúc Cơ; ai chưa vững sẽ bị lôi đánh tan đạo tâm."},
