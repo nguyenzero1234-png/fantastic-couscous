@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -125,4 +125,27 @@ test("storage sao lưu bản trước và báo lỗi khi không ghi được", (
   assert.equal(window.GameStorage.save("save", { quests: [], points: 30 }), false);
   assert.ok(events.includes("game-save-error"));
   failWrites = false;
+});
+
+test("timer đếm phiên và focus theo thời gian giả lập", () => {
+  const NativeDate = Date;
+  let now = 100000;
+  class MockDate extends NativeDate { static now() { return now; } }
+  context.Date = MockDate;
+  const T = window.GameTimer;
+  assert.equal(T.togglePlay(10), true);
+  assert.equal(T.isPlaying(), true);
+  now += 2500;
+  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay(10))), { elapsed: 2, remaining: 8, ended: false });
+  now += 8000;
+  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay(8))), { elapsed: 8, remaining: 0, ended: true });
+  assert.equal(T.isPlaying(), false);
+  assert.equal(T.togglePlay(0), false);
+  assert.equal(T.startFocus("quest-1", 5000), true);
+  assert.equal(T.startFocus("quest-2", 5000), false);
+  now += 1001;
+  assert.equal(T.focusRemaining(), 4);
+  T.cancelFocus();
+  assert.equal(T.activeFocus(), null);
+  context.Date = NativeDate;
 });
