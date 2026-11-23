@@ -716,3 +716,14 @@ Sau mỗi đợt thay đổi:
 4. Ghi lỗi còn tồn tại và bước tiếp theo cụ thể.
 5. Luôn đọc mục này trước khi tiếp tục ở chat mới; đây là nguồn chuẩn về kiến trúc và quyết định đã thống nhất.
 
+
+
+## Khôi phục CI test-only và sửa hồi quy catalog (2026-11-24)
+
+- [x] Điều tra GitHub Actions run #282 trên commit `a8937f5917cb5f48dda261b7f46a3b750c7bcb1a`: `npm ci` đạt; `npm test` có 79/80 test đạt và 1 test thất bại tại `tests/modules.test.js:1169`.
+- [x] Nguyên nhân: test cũ kỳ vọng `catalog()[20].d` là `undefined`, nhưng dữ liệu vật phẩm Tục Mệnh Phù đã có mô tả tĩnh; `GameItemData.catalog()` giữ mô tả này vì `describe()` trả object rỗng khi item không có `q`. Đây là fixture/assertion lỗi, không phải lỗi gameplay.
+- [x] Sửa assertion để xác nhận mô tả thực tế của Tục Mệnh Phù; không thay đổi dữ liệu hoặc công thức gameplay.
+- [x] Tách CI kiểm thử JavaScript khỏi workflow build APK: workflow build chỉ chạy thủ công bằng `workflow_dispatch`; thêm workflow kiểm thử tự động riêng cho push/PR và chỉ chạy `npm ci` + `npm test`.
+- [ ] Chờ workflow test-only xác nhận commit sửa lỗi; không chạy build, sync, kiểm tra hay ký Android trong giai đoạn 1–6.
+- [ ] Sau khi CI xanh, tiếp tục khảo sát và tách dữ liệu nhiệm vụ (PLAN/preset/prompt AI) khỏi `game.js` vào `data/quest-data.js`, rồi rà thứ tự nạp theo kiến trúc core → data → systems → ui → game.js.
+

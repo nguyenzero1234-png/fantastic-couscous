@@ -1,0 +1,32 @@
+name: JavaScript Tests
+on:
+  push:
+    paths:
+      - "tests/**"
+      - "www/js/**"
+      - "www/index.html"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/test.yml"
+  pull_request:
+    paths:
+      - "tests/**"
+      - "www/js/**"
+      - "www/index.html"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/test.yml"
+concurrency:
+  group: js-tests-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Kiểm thử JavaScript modules
+        run: npm test
