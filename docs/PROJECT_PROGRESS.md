@@ -725,6 +725,8 @@ Sau mỗi đợt thay đổi:
 - [x] Sửa assertion để xác nhận mô tả thực tế của Tục Mệnh Phù; không thay đổi dữ liệu hoặc công thức gameplay.
 - [x] Tách CI kiểm thử JavaScript khỏi workflow build APK: workflow build chỉ chạy thủ công bằng `workflow_dispatch`; thêm workflow kiểm thử tự động riêng cho push/PR và chỉ chạy `npm ci` + `npm test`.
 - [x] Workflow test-only run #1 phát hiện assertion thứ hai trong cùng test catalog: kỳ vọng mô tả tỉ lệ giá không khớp nhánh `ratio < 2` của `GameItemData.describe()`; sửa expected theo hành vi thực tế, không đổi code gameplay.
-- [ ] Chờ workflow test-only xác nhận bản sửa cuối; không chạy build, sync, kiểm tra hay ký Android trong giai đoạn 1–6.
+- [x] GitHub Actions JavaScript Tests run #2 (run ID `45231245430`) cho commit `2311a6ccdab347dff26f361e34bd1273bea1b831` hoàn tất thành công: `npm ci` và `npm test` đều pass; 80/80 test đạt, 0 thất bại.
+- [x] Xác nhận workflow build APK không tự chạy theo push; CI của giai đoạn 1–6 hiện chỉ thực thi kiểm thử JavaScript. Workflow build được giữ ở chế độ thủ công để dành cho giai đoạn 7.
+- [ ] Không chạy build, sync, kiểm tra hay ký Android trong giai đoạn 1–6.
 - [ ] Sau khi CI xanh, tiếp tục khảo sát và tách dữ liệu nhiệm vụ (PLAN/preset/prompt AI) khỏi `game.js` vào `data/quest-data.js`, rồi rà thứ tự nạp theo kiến trúc core → data → systems → ui → game.js.
 
