@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-23
-> Mốc mới: mở rộng `rewards.js` với công thức thưởng nhiệm vụ, chuỗi nhiệm vụ và liên hoàn ngày học.  
+> Mốc mới: tách công thức thưởng nhiệm vụ/chuỗi và hệ số liên hoàn ngày học; kiểm thử hồi quy 898 tình huống.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -30,7 +30,8 @@
 - [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `ui.js`, `timer.js`, `game.js`, `notify.js`, `schedule.js`.
 - [x] GitHub Actions build APK cho commit `8a7da3cd94b7aab9d3333a04f28b9863c35dae04` thành công: [Build run #23](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45169198792).
 - [x] Sau khi tách `rewards.js` bước đầu: parse cú pháp, thứ tự nạp script và 188 ca kiểm tra runtime cho công thức thưởng linh lực đạt.
-- [ ] Sau khi mở rộng `rewards.js` với thưởng nhiệm vụ/chuỗi/liên hoàn: chạy kiểm thử hồi quy đối chiếu công thức cũ và mới; chưa xác nhận build APK mới hoặc kiểm thử Android thật.
+- [x] Sau khi mở rộng `rewards.js`: parse cú pháp, kiểm tra thứ tự nạp script và 898 tình huống hồi quy đối chiếu công thức cũ/mới cho thưởng nhiệm vụ, hiệu ứng vật phẩm, thưởng chuỗi và hệ số liên hoàn ngày học đều đạt.
+- [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
 
 ## Đang thực hiện
 - [ ] Chưa có hạng mục đang thực hiện được xác nhận tại thời điểm cập nhật.
