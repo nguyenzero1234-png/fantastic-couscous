@@ -246,3 +246,5 @@ www/js/
 - Tách định dạng mô tả chín loại hiệu ứng cơ duyên sang `GameLeaderboardData.eventEffectText(event, npc, buff)`; hàm nhận dữ liệu tường minh, không đọc state hoặc DOM.
 - `game.js` giữ wrapper tương thích `efTxt`; chuỗi tiếng Việt, công thức và quy tắc cộng/trừ được giữ nguyên.
 - Bổ sung test ranh giới ngưỡng hash 0,2 / 0,4 / 0,6 và kiểm tra đủ chín mô tả, bao gồm nhánh hiệu ứng trừ linh lực.
+
+- CI #166 xác nhận 47/48 test đạt; lỗi chỉ nằm ở fixture kiểm thử nhánh trừ linh lực thiếu trường dữ liệu sự kiện `dh`. Đã bổ sung dữ liệu fixture, chờ CI chạy lại.

@@ -319,3 +319,5 @@
 - [x] CI #165 thành công cho commit `de58b0b`; test JavaScript, Gradle APK debug và upload artifact đều thành công. Artifact `TuTienHocDao-apk` đã được tạo.
 - [x] Tách định dạng mô tả chín hiệu ứng cơ duyên thành hàm thuần `GameLeaderboardData.eventEffectText`; wrapper `efTxt` trong `game.js` giữ nguyên giao diện nội bộ.
 - [x] Bổ sung kiểm thử ngưỡng hash và các nhánh mô tả hiệu ứng; chờ CI của commit mới xác nhận.
+
+- [x] CI #166 phát hiện test nhánh trừ linh lực truyền thiếu trường `dh`; do formatter tạo toàn bộ mảng mô tả trước khi chọn phần tử, test đã được sửa để cung cấp đầy đủ dữ liệu sự kiện. Không thay đổi logic game.

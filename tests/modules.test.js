@@ -702,5 +702,5 @@ test("cơ duyên bảng xếp hạng giữ nguyên ngưỡng hash và mô tả �
   assert.match(descriptions[0], /\+2\.0 giờ học\/ngày/);
   assert.match(descriptions[1], /hiệu suất/);
   assert.match(descriptions[8], /700 linh lực cố định/);
-  assert.match(L.eventEffectText({ k: 2, c: 0.5 }, b, { bm: 2, neg: 1 }), /trừ thẳng/);
+  assert.match(L.eventEffectText({ k: 2, c: 0.5, dh: 2, flat: 700 }, b, { bm: 2, neg: 1 }), /trừ thẳng/);
 });
