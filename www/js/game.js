@@ -77,12 +77,7 @@ const ITEMS=[
  {id:"cl",n:"Thiên Cơ Lệnh",c:2100,q:[5,420,""],u:"+50% linh lực cho 4 lần nhận thưởng sự kiện kế tiếp",use:1},
  {id:"the",n:"Tục Mệnh Phù",c:2400,d:"Tự dùng khi lỡ 1 ngày, giữ nguyên chuỗi ngày học",use:1}
 ];
-ITEMS.forEach(i=>{
-  if(!i.q)return;
-  const [n,v,t]=i.q;i.tot=n*v+(i.ex||0);
-  const cond=t==="q"?" nhanh":t==="l"?" từ 60 phút":"",r=i.tot/i.c,rt=Number.isInteger(r)?String(r):r.toFixed(1).replace(".",",");
-  i.d="Dùng: "+(i.u?i.u+"; ":"")+(i.ex?"thêm ":"")+n+" nhiệm vụ"+cond+" kế tiếp, mỗi nhiệm vụ +"+v+" linh lực cố định (tổng +"+i.tot+(r>=2?", gấp "+rt+" lần giá":", hoàn lại đủ giá cộng tác dụng riêng")+")";
-});
+ITEMS.forEach(i=>Object.assign(i,GameItemData.describe(i)));
 const PN={en:"Tiếng Anh học kì",code:"Lập trình học kì",nckh:"NCKH học kì"};
 const PLAN={
  en:["Kiểm tra trình độ, đặt mục tiêu IELTS hoặc TOEIC|60","Nghe: shadowing 1 bài TED-Ed|60","Từ vựng học thuật: 50 từ và đặt câu|60","Đọc 2 bài báo công nghệ, tóm tắt 5 câu|75","Viết đoạn văn 150 từ về chủ đề CS|75","Nói: ghi âm tự giới thiệu 2 phút|60","Ngữ pháp: các thì và câu điều kiện, 30 câu|60","Ôn giữa kì: tự làm mini test|90","Nghe podcast công nghệ, ghi ý chính|60","Viết email học thuật và CV tiếng Anh|75","Đọc 1 bài báo khoa học, tóm tắt abstract|90","Nói: thuyết trình 5 phút về một dự án|90","Viết bài luận 250 từ|90","Mock test đủ 4 kỹ năng|120","Tổng kết: sửa lỗi sai, viết nhật ký tiến bộ|60"],

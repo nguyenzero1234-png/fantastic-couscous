@@ -321,3 +321,12 @@
 - [x] Bổ sung kiểm thử ngưỡng hash và các nhánh mô tả hiệu ứng; chờ CI của commit mới xác nhận.
 
 - [x] CI #166 phát hiện test nhánh trừ linh lực truyền thiếu trường `dh`; do formatter tạo toàn bộ mảng mô tả trước khi chọn phần tử, test đã được sửa để cung cấp đầy đủ dữ liệu sự kiện. Không thay đổi logic game.
+
+
+## Tách bộ mô tả vật phẩm (2026-11-23)
+- [x] Thêm `www/js/item-data.js` với `GameItemData.describe(item)` để tính tổng linh lực và chuỗi hướng dẫn dùng vật phẩm từ cấu hình đầu vào.
+- [x] `game.js` giữ nguyên danh sách `ITEMS` và chỉ ghép kết quả mô tả vào từng item; helper không sửa đối tượng đầu vào.
+- [x] Giữ nguyên cách tính `ex`, điều kiện nhiệm vụ nhanh/từ 60 phút, định dạng số thập phân tiếng Việt và câu mô tả theo tỷ lệ giá.
+- [x] Bổ sung test cho vật phẩm thường, vật phẩm có hiệu ứng riêng, điều kiện nhiệm vụ, phần thưởng cộng thêm và đầu vào không có cấu hình thưởng.
+- [x] CI #167 xác nhận 48/48 test, Gradle APK debug và upload artifact `TuTienHocDao-apk` thành công cho commit `95ca233`.
+- [ ] Chờ CI xác nhận module mô tả vật phẩm mới; chưa có kiểm thử thao tác trên thiết bị Android thật.

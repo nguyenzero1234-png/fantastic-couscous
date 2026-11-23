@@ -248,3 +248,10 @@ www/js/
 - Bổ sung test ranh giới ngưỡng hash 0,2 / 0,4 / 0,6 và kiểm tra đủ chín mô tả, bao gồm nhánh hiệu ứng trừ linh lực.
 
 - CI #166 xác nhận 47/48 test đạt; lỗi chỉ nằm ở fixture kiểm thử nhánh trừ linh lực thiếu trường dữ liệu sự kiện `dh`. Đã bổ sung dữ liệu fixture, chờ CI chạy lại.
+
+
+## Module mô tả vật phẩm
+- `www/js/item-data.js` cung cấp `GameItemData.describe(item)`, hàm thuần trả về tổng linh lực `tot` và mô tả `d`; không sửa cấu hình đầu vào.
+- `game.js` vẫn giữ danh sách vật phẩm, chỉ ghép kết quả helper vào từng mục khi khởi tạo.
+- Giữ nguyên công thức phần thưởng, điều kiện nhiệm vụ nhanh/từ 60 phút, phần cộng thêm và định dạng chuỗi tiếng Việt.
+- CI #167 đã xác nhận commit trước đó build APK thành công và artifact còn hiệu lực; CI của module mới cần xác nhận lại.
