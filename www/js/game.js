@@ -1010,7 +1010,7 @@ function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p
 // Trừng Phạt xếp chồng: mỗi lần hết Mệnh +1 stack, −5% mỗi stack (tối đa −30%)
 function tdMult(){return S.tdPenalty?Math.max(0.7,1-0.05*Math.max(1,S.tdStacks||1)):1}
 function balMult(){return playerBalanced()?BAL_MULT:1}
-function rewardFactors(){return{td:tdMult(),balance:balMult(),status:(S.tm?.8:1)*(S.tma?.65:1)*(S.cbUntil>Date.now()?1.1:1)}}
+function rewardFactors(){return GameRewards.rewardFactors({tdPenalty:S.tdPenalty,tdStacks:S.tdStacks,balanced:playerBalanced(),balMult:BAL_MULT,tm:S.tm,tma:S.tma,cbUntil:S.cbUntil},Date.now())}
 function modGain(n){return GameRewards.modGain(n,rewardFactors())}
 function eventGain(n){const r=GameRewards.eventGain(n,S.tcCharges,rewardFactors());S.tcCharges=r.charges;if(r.exhausted)extra+=" Thiên Cơ Lệnh đã dùng hết 4 lần.";return r.gain}
 function addPts(n,mins,day){

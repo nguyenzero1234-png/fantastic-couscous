@@ -303,3 +303,9 @@ www/js/
 - `game.js` giữ wrapper `exCond`; phép lặp dò số ngày tối thiểu, ngưỡng điểm, nội dung tiếng Việt và cách hiển thị chế độ God được giữ nguyên.
 - Test kiểm tra số lần gọi callback, ngưỡng ngày tối thiểu và trường hợp không thể đạt 100; helper không đọc state, thời gian hoặc DOM.
 - Không thay đổi save schema, công thức điểm thiên kiếp hay tiến trình người chơi.
+
+
+## Helper hệ số thưởng
+- GameRewards.rewardFactors(state, now) nhận trạng thái đã chuẩn hóa và timestamp từ caller, trả {td, balance, status} mà không đọc state toàn cục hoặc đồng hồ hệ thống.
+- game.js giữ wrapper để lấy trạng thái hiện hành; công thức trừng phạt tối thiểu 0,7, cân bằng và buff trạng thái được giữ nguyên.
+- Kiểm thử bao phủ ngưỡng trừng phạt, hiệu lực buff theo timestamp và giá trị mặc định.

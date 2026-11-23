@@ -380,3 +380,10 @@
 - `game.js` giữ wrapper `exCond`; phép lặp dò số ngày tối thiểu, ngưỡng điểm, nội dung tiếng Việt và cách hiển thị chế độ God được giữ nguyên.
 - Test kiểm tra số lần gọi callback, ngưỡng ngày tối thiểu và trường hợp không thể đạt 100; helper không đọc state, thời gian hoặc DOM.
 - Không thay đổi save schema, công thức điểm thiên kiếp hay tiến trình người chơi.
+
+
+## Tách phép tính hệ số thưởng (2026-11-23)
+- [x] GameRewards.rewardFactors(state, now) tính hệ số trừng phạt, cân bằng và trạng thái từ dữ liệu tường minh.
+- [x] game.js chỉ gom trạng thái runtime và thời điểm hiện tại rồi gọi helper; giữ nguyên công thức và thứ tự nhân.
+- [x] Thêm test cho trừng phạt nhiều tầng, hệ số cân bằng, tâm ma, hiệu ứng còn hạn/hết hạn và mặc định.
+- [ ] Chờ CI xác nhận test và APK; chưa kiểm thử trên thiết bị Android thật.

@@ -1,6 +1,13 @@
 /* Quy tắc tính linh lực cơ bản và thưởng sự kiện. Không phụ thuộc DOM hoặc lưu trữ. */
 (function(global){
   "use strict";
+  function rewardFactors(state,now){
+    const s=state||{},time=Number(now)||0;
+    const td=s.tdPenalty?Math.max(0.7,1-0.05*Math.max(1,s.tdStacks||1)):1;
+    const balance=s.balanced?s.balMult:1;
+    const status=(s.tm?0.8:1)*(s.tma?0.65:1)*(s.cbUntil>time?1.1:1);
+    return {td,balance,status};
+  }
   function modGain(amount,factors){
     const f=factors||{};
     const rounded=Math.round(Number(amount)||0);
@@ -29,5 +36,5 @@
   function chainCompletionReward(totalQuestGain,bonusTitle,factors){
     return modGain(Math.round((Number(totalQuestGain)||0)*0.25)+(bonusTitle?120:0),factors);
   }
-  global.GameRewards=Object.freeze({modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward});
+  global.GameRewards=Object.freeze({rewardFactors,modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward});
 })(window);
