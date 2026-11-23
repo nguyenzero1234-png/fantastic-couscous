@@ -913,3 +913,12 @@ Sau mỗi đợt thay đổi:
 - [x] `game.js` giữ wrapper `renderSettings` để không đổi call-site.
 - [x] Bổ sung test các nhóm tùy chọn và nút backup.
 - [ ] Tiếp tục tách các renderer và logic nghiệp vụ còn lại.
+
+
+## Gom nhật ký cơ duyên vào ui/leaderboard.js (2026-11-24)
+
+- [x] Chuyển renderer nhật ký cơ duyên, sự kiện đang diễn ra, top 10 và thống kê chiến tông sang API `renderTimeline()` của module leaderboard.
+- [x] Giữ dữ liệu mô phỏng, tính điểm, thứ hạng và thống kê ở systems/bootstrap; UI module chỉ dựng markup từ dependency được tiêm.
+- [x] `game.js` giữ wrapper `renderVan` để không đổi điểm điều phối.
+- [x] Khôi phục helper `rn` ở bootstrap vì lịch học vẫn dùng nó; không để helper lịch bị chuyển nhầm sang UI leaderboard.
+- [x] Bổ sung test render khi chưa có sự kiện mô phỏng.

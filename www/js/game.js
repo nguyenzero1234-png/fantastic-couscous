@@ -168,18 +168,7 @@ function recentEv(){
   for(let i=0;i<B.length;i++)for(let m=n0-72;m<=n0;m++){const e=evAt(i,m);if(e)L.push(e)}
   return L.filter(e=>S.lb.t0+(e.m+e.ph)*36e5<=Date.now()).sort((a,b)=>(b.m+b.ph)-(a.m+a.ph));
 }
-function renderVan(){
-  lbInit();
-  const now=Date.now(),H=36e5,t0=S.lb.t0,L=recentEv(),n0=Math.floor((now-t0)/H),end=e=>t0+(e.m+e.ph+e.dur)*H,act=L.filter(e=>end(e)>now);
-  let h=`<div class="box"><h2>Nhật ký của bạn</h2><ul>${(S.vlog||[]).slice(0,8).map(x=>`<li><div class="nm">${esc(x.t)}<small>${fmtT(x.ts)}</small></div></li>`).join("")||`<li class="empty" style="display:block">Chưa có hoạt động. Hoàn thành nhiệm vụ để ghi vào đây.</li>`}</ul></div>`;
-  h+=`<div class="box"><h2>Đang diễn ra</h2>${act.length?`<ul>${act.map(e=>`<li><div class="nm">${B[e.i].n}: ${e.name}<small>${efTxt(e)}, còn ${Math.ceil((end(e)-now)/H)} giờ</small></div><b>${hrs(e.i,n0).toFixed(1)}h</b></li>`).join("")}</ul>`:`<small>Chưa có cơ duyên nào.</small>`}</div>`;
-  h+=`<div class="box"><h2>Top 10 hiện tại</h2><ul><li class="now"><div class="nm">Bạn<small>${rname(uxp())}, Hạng ${myRk()} trên Thiên Kiêu Bảng</small></div><b>${((S.hist[today()]||{m:0}).m/60).toFixed(1)} giờ hôm nay</b></li>${B.map((b,i)=>({b,i})).sort((x,y)=>sc(y.i,now)-sc(x.i,now)).slice(0,10).map(({b,i})=>`<li><div class="nm">${b.n}<small>${rname(bxp(i,now))}, Hạng ${rkNow(i)} trên Thiên Kiêu Bảng</small></div><b>${hrs(i,n0).toFixed(1)} giờ/ngày</b></li>`).join("")}</ul></div>`;
-  h+=`<div class="box"><h2>Dòng sự kiện (3 ngày gần nhất)</h2><ul>${L.slice(0,25).map(e=>{
-    const st=t0+(e.m+e.ph)*H,en=end(e),af=Math.min(now,en),r0=rkAt(e.i,st),r1=rkAt(e.i,af),dr=r0-r1;
-    return `<li><div class="nm">${B[e.i].n}: ${e.name}<small>${fmtT(st)}, ${efTxt(e)}, trong ${Math.round(e.dur)} giờ${en>now?" (đang diễn ra)":""}</small><small>Giờ học ${hrAt(e.i,e.m+e.ph-0.01).toFixed(1)} → ${hrAt(e.i,e.m+e.ph+0.01).toFixed(1)} giờ/ngày. Tu vi ${rname(bxp(e.i,st))} → ${rname(bxp(e.i,af))} (+${Math.round(bxp(e.i,af)-bxp(e.i,st))} linh lực). Hạng ${r0} → ${r1}${dr?(dr>0?" ▲"+dr:" ▼"+(-dr)):""}</small></div></li>`}).join("")}</ul></div>`;
-  h+=spStatsHtml();
-  $("van").innerHTML=h;
-}
+function renderVan(){LeaderboardUI.renderTimeline()}
 const CDE=["+giờ học/ngày trong thời gian cơ duyên","hiệu suất ×1,25 đến ×1,60","cộng thẳng linh lực (60×(1+hệ số)×2 đến 6)","biến động còn 35%, +0,5× giờ học","cộng thẳng khoảng 2% linh lực (tối thiểu 150)","+giờ học/ngày, kéo dài gấp đôi","hiệu suất ×1,30 và +1 giờ học/ngày","hiệu suất ×1,40 nhưng biến động ×2,5","cộng thẳng 500 đến 3.000 linh lực"];
 let SPC=null;
 function spStatsHtml(){
@@ -515,8 +504,9 @@ function showExModal(e){
 }
 const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$});
 function renderExams(){TribulationUI.render()}
-const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak()});
+const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),today});
 function renderLb(){LeaderboardUI.render()}
+const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
 function renderLich(){
   const now=nowHM(),day=(S.sched[today()]||[]).slice().sort((a,b)=>a.s<b.s?-1:1);
   const v=$("lq").value;

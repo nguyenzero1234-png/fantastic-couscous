@@ -1382,3 +1382,13 @@ test("GameSettingsUI render tùy chọn giao diện và sao lưu",()=>{
  assert.match(host.innerHTML,/data-bk="ex"/);
  assert.match(host.innerHTML,/data-bk="god"/);
 });
+
+
+test("GameLeaderboardUI render nhật ký cơ duyên và đóng góp bảng",()=>{
+ const nodes={van:{innerHTML:""}},S={lb:{t0:0},vlog:[],hist:{},name:"Đạo hữu",points:10};
+ const M=window.GameLeaderboardUI.create({S,B:[],sc:()=>0,lbInit:()=>{},BAL_RANK:40,BAL_MULT:1.25,SECTS:[],SO:[],rname:()=>"Luyện Khí",uxp:()=>10,bxp:()=>0,spark:()=>"spark",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:()=>false,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1,recentEv:()=>[],efTxt:()=>"hiệu ứng",hrs:()=>0,myRk:()=>1,rkNow:()=>1,fmtT:()=>"hôm nay",hrAt:()=>0,rkAt:()=>1,spStatsHtml:()=>"thống kê",today:()=>"2026-11-24"});
+ M.renderTimeline();
+ assert.match(nodes.van.innerHTML,/Nhật ký của bạn/);
+ assert.match(nodes.van.innerHTML,/Top 10 hiện tại/);
+ assert.match(nodes.van.innerHTML,/Dòng sự kiện/);
+});
