@@ -71,6 +71,7 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
     ["data/rebirth-data.js", "rebirth-data.js"],
     ["data/cultivation-display-data.js", "cultivation-display-data.js"],
     ["data/story-data.js", "story-data.js"],
+    ["systems/quests.js", "quest-data.js"],
     ["systems/rewards.js", "rewards.js"],
     ["systems/streak.js", "streak.js"],
     ["systems/analytics.js", "analytics.js"],

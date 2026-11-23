@@ -815,3 +815,12 @@ Sau mỗi đợt thay đổi:
 - [x] Rà soát lại danh sách script và loại thẻ nạp cũ còn sót của `systems/sect-missions.js`; chỉ giữ một implementation tông môn.
 - [x] Cập nhật test thứ tự nạp để hai compatibility entry point cùng phụ thuộc vào module nghiệp vụ duy nhất.
 - [ ] Cần xác nhận CI sau hợp nhất và tiếp tục gom/tách các nghiệp vụ còn nằm trong `game.js`.
+
+
+## Đưa parser và quy tắc nhiệm vụ vào systems/quests.js (2026-11-24)
+
+- [x] Chuyển parser dòng nhiệm vụ, chuẩn hóa độ khó, hạn chót và quy tắc hoàn thành/mở khóa chuỗi từ `quest-data.js` sang `systems/quests.js`.
+- [x] Giữ nguyên API `GameQuestData` và giữ `data/quest-data.js` riêng cho preset, kế hoạch và prompt AI.
+- [x] Giữ root `quest-data.js` làm compatibility guard; implementation nạp trước dữ liệu mẫu và các consumer.
+- [x] Bổ sung assertion thứ tự nạp implementation/compatibility.
+- [ ] Tiếp tục tách nghiệp vụ còn trong `game.js` theo dependency đã audit.
