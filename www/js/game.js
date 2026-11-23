@@ -776,7 +776,7 @@ const EX=[
  {id:"pt",n:"Phi Thăng Kiếp",kind:"Thiên kiếp phi thăng · viên mãn Đại Thừa, thăng Chân Tiên",day:100,need:7,chuan:200000,w:2.5,a:.9,bm:10,ls:85,desc:"Chín mươi chín đạo thiên lôi, ba nghìn hỏa tai, tâm ma hiện hình cùng lúc. Chỉ Đại Thừa viên mãn với đạo tâm bất đoạn suốt cả kiếp mới bước qua được cổng trời thành Chân Tiên."}
 ];
 const RW={"Xuất sắc":200,"Giỏi":140,"Khá":90,"Trung bình":40,"Yếu":0};
-const gr=s=>s>=90?"Xuất sắc":s>=80?"Giỏi":s>=65?"Khá":s>=50?"Trung bình":"Yếu";
+const gr=s=>GameProgressData.grade(s);
 const exD=e=>{const d=new Date(KS().start);d.setHours(12,0,0,0);d.setDate(d.getDate()+e.day);return d};
 const uxp=ds=>{if(!ds)return S.points;let t=0;for(const k in S.hist)if(!ds||k<=ds)t+=S.hist[k].p;return t};
 const bxX=(i,x)=>{const k=Math.floor(x);if(k<0)return B[i].p;cum(i,k+1);const f=x-k,d=CD[i];return B[i].p+d[k]*(1-f)+d[k+1]*f};
@@ -784,10 +784,10 @@ const bxX=(i,x)=>{const k=Math.floor(x);if(k<0)return B[i].p;cum(i,k+1);const f=
 const bxp=(i,ms)=>sc(i,ms);
 // Điểm = A·L + bm·D  (A = 100 − bm). L (0..1): phần linh lực, đầy khi linh lực ≥ chuan; D (0..1): đạo tâm = số ngày học/14.
 // Đạo tâm cộng tối đa bm điểm (2 → 10, tăng dần theo độ khó của thiên kiếp, không quá 10).
-const kh=(xp,e,D)=>{const r=xp/e.chuan,Lx=Math.min(1,(1-Math.exp(-1.6*r))/(1-Math.exp(-1.6)));return Math.min(100,Math.round(e.a*100*Lx+e.bm*Math.min(1,Math.max(0,D))))};
+const kh=(xp,e,D)=>GameProgressData.examScore(xp,e,D);
 // Điểm NPC (hàm riêng, không dùng chung với người chơi): chỉ dựa vào linh lực, thang 0..100.
 // Cùng đường cong L như kh() nhưng nhân 100 thay vì A, nên NPC đạt 100 khi linh lực ≥ mốc viên mãn (chuan).
-const khNpc=(xp,e)=>{const r=xp/e.chuan,Lx=Math.min(1,(1-Math.exp(-1.6*r))/(1-Math.exp(-1.6)));return Math.min(100,Math.round(100*Lx))};
+const khNpc=(xp,e)=>GameProgressData.npcExamScore(xp,e);
 // Chỉ hiện ở chế độ god: điều kiện để đạt 100 điểm
 function exCond(e){
   let d=0;while(d<=e.ls&&kh(e.chuan*10,e,d/e.ls)<100)d++;
@@ -823,7 +823,7 @@ function streakAt(d,cur){
   return n;
 }
 // Đạo tâm 0..1 = chuỗi / chuỗi yêu cầu của kiếp (chuỗi càng dài, kiếp càng cuối càng đòi hỏi nhiều)
-const daoTam=(st,e)=>Math.min(1,Math.max(0,st/e.ls));
+const daoTam=(st,e)=>GameProgressData.taoTamProgress(st,e);
 const EXOPEN={};
 function resolveEx(){
   if(!S.sem)S.sem={res:{}};
