@@ -998,7 +998,7 @@ function renderEvents(){
   ];
   const ea=x=>esc(String(x)).replace(/"/g,"&quot;"),God=!!S.god,so=S.kso||{};
   const rng=p=>p==="m"?mo+"-01":ws;
-  const stN=(p,f)=>{let n=0;(S.stl||[]).forEach(x=>{const dt=new Date(x[0]),d=dt.toLocaleDateString("sv");if(d>=rng(p)&&d<=T&&f(dt.getHours()))n++});return n};
+  const stN=(p,f)=>GameAnalytics.countStudyLogEntries(S.stl||[],rng(p),T,f);
   const KM={c:["nhiệm vụ hoàn thành",p=>{let n=0;for(const k in S.cnt||{})if(k>=rng(p)&&k<=T)n+=S.cnt[k];return n}],m:["phút học",p=>evCur(p)],s:["ngày chuỗi học",()=>(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0],n:["nhiệm vụ đêm (22h-5h)",p=>stN(p,h=>h>=22||h<5)],d:["nhiệm vụ trước 7h",p=>stN(p,h=>h<7)]};
   h+=`<div class="box"><h2>Kỳ Sự Cửu Châu</h2><small>Các kỳ sự mở theo điều kiện. Mỗi kỳ sự chỉ nhận một lần trong tuần hoặc tháng tương ứng.${God?" Thiên Đạo: có thể thêm, sửa và xóa kỳ sự.":""}</small></div>`;
   if(God){const k=KSD;
