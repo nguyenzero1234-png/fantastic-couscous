@@ -24,6 +24,16 @@
   for(const key in history)if(predicate(key))total+=history[key].m;
   return total;
  }
+ function sumPointsBetween(history,startKey,endKey){
+  let total=0;
+  for(const key in history)if(key>=startKey&&key<endKey)total+=history[key].p;
+  return total;
+ }
+ function pointsThrough(history,dateKey){
+  let total=0;
+  for(const key in history)if(key<=dateKey)total+=history[key].p;
+  return total;
+ }
  function questProgress(history,counts,task,todayKey,weekStartKey){
   const H=history||{},C=counts||{},T=todayKey;
   const matches=task.per==="d"?k=>k===T:task.per==="w"?k=>k>=weekStartKey&&k<=T:k=>k.slice(0,7)===T.slice(0,7);
@@ -38,5 +48,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough});
 })(window);

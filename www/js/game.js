@@ -353,7 +353,7 @@ function portrait(seed,opts){
 }
 const avatar=name=>`<span class="av">${portrait(name)}</span>`;
 function sectStats(now){const A=SECTS.map(()=>({xp:0,n:0}));B.forEach((b,i)=>{A[SO[i]].xp+=bxp(i,now);A[SO[i]].n++});if(S.sect!=null){A[S.sect].xp+=uxp();A[S.sect].n++}return A}
-const ugain=(d1,d2)=>{let t=0;for(const k in S.hist)if(k>=d1&&k<d2)t+=S.hist[k].p;return t};
+const ugain=(d1,d2)=>GameAnalytics.sumPointsBetween(S.hist,d1,d2);
 function warScores(t1,t2,d1,d2){
   // t1,t2 tính theo lịch ảo (có dOff); NPC chạy theo đồng hồ thật nên phải quy đổi, nếu không cửa sổ tuần nằm ở tương lai và NPC luôn 0 điểm
   const sh=(S.dOff||0)*864e5;t1-=sh;t2-=sh;
@@ -769,7 +769,7 @@ const EX=[
 const RW={"Xuất sắc":200,"Giỏi":140,"Khá":90,"Trung bình":40,"Yếu":0};
 const gr=s=>GameProgressData.grade(s);
 const exD=e=>GameDateData.examDate(KS().start,e.day);
-const uxp=ds=>{if(!ds)return S.points;let t=0;for(const k in S.hist)if(!ds||k<=ds)t+=S.hist[k].p;return t};
+const uxp=ds=>ds?GameAnalytics.pointsThrough(S.hist,ds):S.points;
 const bxX=(i,x)=>{const k=Math.floor(x);if(k<0)return B[i].p;cum(i,k+1);const f=x-k,d=CD[i];return B[i].p+d[k]*(1-f)+d[k+1]*f};
 /* Tu vi của NPC = đúng điểm hiện trên bảng xếp hạng (sc), để cảnh giới và linh lực luôn khớp nhau */
 const bxp=(i,ms)=>sc(i,ms);

@@ -457,3 +457,30 @@ test("progression data chọn kiếp có linh lực cao nhất, giữ quy tắc 
   assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep([], 0, 125, 1))), { n: 1, pk: 125, cur: 1 });
   assert.deepEqual(JSON.parse(JSON.stringify(P.bestKiep([{ n: 1, pk: 400 }, { n: 2, pk: 400 }], 0, 0, 3))), { n: 1, pk: 400 });
 });
+
+
+test("analytics cộng linh lực trong khoảng ngày có đầu bao gồm, cuối loại trừ", () => {
+  const A = window.GameAnalytics;
+  const H = {
+    "2026-11-20": { p: 10 }, "2026-11-21": { p: 20 },
+    "2026-11-22": { p: 0 }, "2026-11-23": { p: 40 },
+    "2026-11-24": { p: 80 }
+  };
+  assert.equal(A.sumPointsBetween(H, "2026-11-21", "2026-11-24"), 60);
+  assert.equal(A.sumPointsBetween(H, "2026-11-20", "2026-11-21"), 10);
+  assert.equal(A.sumPointsBetween(H, "2026-11-24", "2026-11-24"), 0);
+  assert.equal(A.sumPointsBetween({}, "2026-11-20", "2026-11-24"), 0);
+});
+
+test("analytics cộng linh lực đến hết ngày được chọn", () => {
+  const A = window.GameAnalytics;
+  const H = {
+    "2026-11-20": { p: 10 }, "2026-11-21": { p: 20 },
+    "2026-11-22": { p: 0 }, "2026-11-23": { p: 40 },
+    "2026-11-24": { p: 80 }
+  };
+  assert.equal(A.pointsThrough(H, "2026-11-22"), 30);
+  assert.equal(A.pointsThrough(H, "2026-11-24"), 150);
+  assert.equal(A.pointsThrough(H, "2026-11-19"), 0);
+  assert.equal(A.pointsThrough({}, "2026-11-24"), 0);
+});
