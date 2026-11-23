@@ -886,3 +886,12 @@ Sau mỗi đợt thay đổi:
 - [x] Bổ sung test render trạng thái Mệnh và danh sách thiên kiếp.
 - [x] Sửa dependency alias trong `ui/map.js`: renderer sử dụng đúng escape, rank, navigate và callback render do bootstrap truyền vào.
 - [ ] Tiếp tục tách UI leaderboard và logic thiên kiếp còn lại khỏi `game.js`.
+
+
+## Tách UI Thiên Kiêu Bảng sang ui/leaderboard.js (2026-11-24)
+
+- [x] Chuyển renderer bảng xếp hạng, vùng Thiên Đạo Cân Bằng và thông tin hạng người chơi/NPC sang `ui/leaderboard.js`.
+- [x] Chuyển state bật/tắt top 20 vào UI module; giữ profile click và wrapper `renderLb` ở bootstrap.
+- [x] Truyền dữ liệu mô phỏng, rank, profile, streak và DOM accessor qua dependency injection.
+- [x] Bổ sung test render bảng và chuyển chế độ hiển thị.
+- [ ] Tiếp tục tách các nghiệp vụ xếp hạng tuần và các màn hình khác khỏi `game.js`.

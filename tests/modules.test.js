@@ -1348,3 +1348,16 @@ test("GameTribulationUI render màn hình Mệnh và thiên kiếp",()=>{
  assert.match(host.innerHTML,/Tu vi của bạn/);
  assert.match(host.innerHTML,/Mệnh/);
 });
+
+
+test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển thị",()=>{
+ const nodes={lbhead:{},lb:{},lbgod:{},lbgodi:{},lball:{}};
+ const M=window.GameLeaderboardUI.create({S:{name:"Đạo hữu",points:120,sect:null,lb:{log:""},god:false},B:[],sc:()=>0,lbInit:()=>{},BAL_RANK:40,BAL_MULT:1.25,SECTS:[],SO:[],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"spark",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:()=>false,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
+ M.render();
+ assert.match(nodes.lbhead.innerHTML,/Thứ hạng của bạn/);
+ assert.match(nodes.lb.innerHTML,/Đạo hữu/);
+ assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{showAll:false});
+ M.toggleAll();
+ assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{showAll:true});
+ assert.equal(nodes.lball.textContent,"Chỉ hiện top 20");
+});
