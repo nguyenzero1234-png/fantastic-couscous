@@ -1347,29 +1347,7 @@ document.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
 setInterval(()=>{if(!$("b").hidden)renderLb()},1000);
 setInterval(()=>{if(!$("v").hidden)renderVan()},3000);
 setInterval(()=>{if(!$("z").hidden)renderSect()},3000);
-const RC=["#7fb8a4","#4fc48a","#e0b341","#6aa3ff","#b07cff","#ff6fae","#ff8a4c","#f4e7b0","#fff3c4"];
-const QT=[
-  "「Người tôn kính không phải kẻ mạnh, mà là kẻ dám làm mọi thứ vì mục tiêu.」— Phương Nguyên · Cổ Chân Nhân",
-  "「Ta vì thành tiên, không vì cứu thế.」— Phương Nguyên · Cổ Chân Nhân",
-  "「Thiên địa bất nhân, vạn vật vi sô cẩu.」— Đạo Đức Kinh (phong vị)",
-  "「Đạo tâm không vững, tu vi chỉ là cát bụi.」— phong vị cầu đạo",
-  "「Một bước sai, vạn kiếp không quay đầu.」— phong vị tu tiên",
-  "「Kiếp này không xong, còn có kiếp sau — miễn là còn thở.」— phong vị luân hồi",
-  "「Ngồi xuống một canh giờ cũng là đạo. Không cần ai chứng kiến.」— phong vị khổ tu",
-  "「Linh lực không nhớ tên ngươi. Chỉ nhớ ngươi có ngồi hay không.」— Thiên Đạo ký lục",
-  "「Tông môn cho chỗ đứng. Đạo tâm thì phải tự dựng.」— lời sư phụ vô danh",
-  "「Chuỗi ngày không phải huy chương. Chỉ là bằng chứng ngươi chưa bỏ.」— Nhật ký đạo hữu",
-  "「Thiên kiếp không hỏi ngươi mệt chưa. Nó chỉ hỏi ngươi còn đứng không.」— Lôi kiếp cổ thư",
-  "「Linh thú không nói. Nhưng nó nhớ từng lần ngươi quay lại.」— Sổ Càn Khôn",
-  "「Danh hiệu là cái bóng. Người đi trước mới là xương sống.」— Thiên Kiêu Bảng chú",
-  "「Sợ chết thì đừng cầu trường sinh.」— phong vị Cầu Ma",
-  "「Cơ duyên không đến tìm ta; ta đi gặp cơ duyên.」— phong vị hành giả",
-  "「Trang nhật ký trắng không phải thất bại. Chỉ là chưa viết.」— Thiên Thư",
-  "「Hôm nay ít. Ngày mai có thể nhiều. Đạo không tính theo một trang.」— Lão giả bên án thư",
-  "「Mệnh mỏng thì đi chậm. Đi chậm vẫn là đi.」— lời độ kiếp",
-  "「Khi kiếp khép, Thiên Đạo gập trang. Phần còn lại là của ngươi.」— Luân hồi chí",
-  "「Không thành ma, không thành tiên — thành người biết ngồi xuống.」— biến tấu Cầu Ma"
-];
+const RC=GameCultivationDisplayData.realmColors, QT=GameCultivationDisplayData.quotes;
 function renderHero(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(1,(x-lo)/(hi-lo)),C=2*Math.PI*52;
   const dn=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5),ttl=TITLES.find(t=>t.id===S.title&&tok(t));
@@ -1379,16 +1357,7 @@ function renderHero(){
   if(myRk()<=10){S.life=S.life||{};S.life.top10=1}
   $("hero").innerHTML=`<div class="hero"><div class="av">${portrait(S.name,{player:1,w:56,h:56})}</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="rb" cx="60" cy="60" r="52"/><circle class="rf" cx="60" cy="60" r="52" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-p)).toFixed(1)}"/></svg><div class="hc"><div class="rn">${RL[k][0]}</div><div class="rt">${RL[k+1]?"tầng "+Math.min(9,Math.floor(p*9)+1):"vô cực"}</div></div></div><div class="hi"><b style="font-size:18px">${esc(S.name||"Đệ tử")}</b><br><small>${rname(x)} · Kiếp ${(S.rb||0)+1}${ttl?" · "+ttl.n:""}</small><br><small>Ngày ${Math.min(KD,Math.floor(kAge())+1)}/${KD} của kiếp · Mệnh ${menh}/100${S.tdPenalty?` · <span style="color:var(--red)">Trừng Phạt −${Math.min(30,5*Math.max(1,S.tdStacks||1))}%</span>`:""}${(S.failStreak||0)>1?` · fail×${S.failStreak}`:""}</small><br><small>${S.sect!=null?SECTS[S.sect].n:"Chưa vào tông môn"}, Hạng ${myRk()} trên Thiên Kiêu Bảng</small><br><small>Linh lực ${x}${RL[k+1]?" / "+hi:""}</small>${mem?`<small style="display:block;margin-top:4px;opacity:.85;font-style:italic">${mem}</small>`:""}<div class="qt">${QT[Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/36e5)%QT.length]}</div></div></div>`;
 }
-const KT0=Date.parse("2026-01-01T00:00:00");
-const KN=[
-  ["Thiên Cơ Hiện Thế","Thiên cơ lộ ra trong khoảnh khắc, ai nắm bắt được sẽ nhận phúc lớn.",1.5],
-  ["Tiên Nhân Khảo Nghiệm","Một vị tiên nhân vô danh ra đề khảo nghiệm.",1],
-  ["Linh Mạch Bùng Phát","Linh mạch dưới chân đột ngột tuôn trào.",1],
-  ["Bí Cảnh Mở Cửa","Một bí cảnh chỉ mở trong chốc lát.",1],
-  ["Cố Nhân Tương Ngộ","Cố nhân xuất hiện, trao một cơ duyên.",1],
-  ["Linh Thú Xuất Thế","Trong sương mù hiện ra bóng dáng linh thú — cơ duyên ngàn năm có một.",1.2]
-];
-const KX=["linh lực thưởng ×1,5","+1 Tỉnh Thần Linh Trà","hiệu ứng ×1,3 cho 3 nhiệm vụ kế tiếp","+1 Tích Cốc Đan","+80 linh lực","cơ hội nhận linh thú"];
+const KT0=GameFortuneData.epoch, KN=GameFortuneData.events, KX=GameFortuneData.effects;
 function knAt(h){
   if(!S.seed)S.seed=1+Math.floor(Math.random()*1e9);
   return GameKiepNanData.create(S.seed,h,KT0,KN,hs);
