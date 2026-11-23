@@ -503,3 +503,18 @@ test("analytics đếm nhật ký theo khoảng ngày và điều kiện giờ l
   assert.equal(A.countStudyLogEntries(log, start, end, h => h === 7), 1);
   assert.equal(A.countStudyLogEntries([], start, end, () => true), 0);
 });
+
+
+test("analytics cộng số nhiệm vụ theo khoảng ngày với cả hai đầu bao gồm", () => {
+  const A = window.GameAnalytics;
+  const C = {
+    "2026-11-20": 2, "2026-11-21": 0,
+    "2026-11-22": 3, "2026-11-23": 4,
+    "2026-11-24": 5
+  };
+  assert.equal(A.sumCountsBetween(C, "2026-11-21", "2026-11-23"), 7);
+  assert.equal(A.sumCountsBetween(C, "2026-11-20", "2026-11-20"), 2);
+  assert.equal(A.sumCountsBetween(C, "2026-11-24", "2026-11-24"), 5);
+  assert.equal(A.sumCountsBetween(C, "2026-11-25", "2026-11-30"), 0);
+  assert.equal(A.sumCountsBetween({}, "2026-11-20", "2026-11-24"), 0);
+});

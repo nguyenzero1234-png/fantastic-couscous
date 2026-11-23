@@ -19,6 +19,12 @@
   const l=L.filter(x=>D.includes(new Date(x[0]).toLocaleDateString("sv"))).reduce((a,x)=>Math.max(a,x[1]),0);
   return {m,n,d,l};
  }
+ function sumCountsBetween(counts,startKey,endKey){
+  let total=0;
+  const C=counts||{};
+  for(const key in C)if(key>=startKey&&key<=endKey)total+=C[key];
+  return total;
+ }
  function countStudyLogEntries(studyLog,startKey,endKey,hourPredicate){
   let total=0;
   (studyLog||[]).forEach(entry=>{
@@ -56,5 +62,5 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween});
 })(window);

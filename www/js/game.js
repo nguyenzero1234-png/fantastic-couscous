@@ -979,7 +979,7 @@ function renderEvents(){
       <button class="btn" data-a="ec" data-k="${ck}" data-p="${p}" ${got||!ok?"disabled":""}>${got?"Đã nhận":"Nhận thưởng"}</button></div></div>`;
   }).join("");
   const T=today(),ws=weekStart(),mo=T.slice(0,7);
-  const weekQuests=()=>{let n=0;for(const k in S.cnt||{})if(k>=ws&&k<=T)n+=S.cnt[k];return n};
+  const weekQuests=()=>GameAnalytics.sumCountsBetween(S.cnt,ws,T);
   const weekNight=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h>=22||h<5);
   const weekDawn=()=>GameAnalytics.countStudyLogEntries(S.stl,ws,T,h=>h<7);
   const wDs=()=>Object.keys(S.hist||{}).filter(k=>k>=ws&&k<=T),wDays=()=>wDs().filter(k=>S.hist[k].m>0).length,wBest=()=>Math.max(0,...wDs().map(k=>S.hist[k].m||0)),cs=(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0;
