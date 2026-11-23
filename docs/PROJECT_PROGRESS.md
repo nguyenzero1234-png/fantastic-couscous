@@ -259,3 +259,10 @@
 - [x] Thay `wDs`, `wDays`, `wBest` bằng wrapper lấy dữ liệu từ helper; giữ nguyên khoảng ngày bao gồm hai đầu và quy tắc phút tối đa.
 - [x] Bổ sung kiểm thử cho khoảng nhiều ngày, ngày đơn, ngày không học và lịch sử rỗng.
 - [x] CI #148: 39/39 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và APK artifact đã được tải lên.
+
+
+## Tách tổng phút học theo khoảng timestamp (2026-11-23)
+- [x] Chuyển phép cộng phút học trong danh sách phiên học sang `GameAnalytics.sumStudyMinutesBetween(studyLog, startTimestamp, endTimestamp)`.
+- [x] Thay helper `kmins` trong `game.js` bằng wrapper truyền `S.stl` và mốc bắt đầu/kết thúc; giữ nguyên hai đầu khoảng bao gồm.
+- [x] Bổ sung kiểm thử cho khoảng timestamp, mốc đơn, danh sách rỗng và trường hợp không có bản ghi phù hợp.
+- [x] CI #151 xác nhận 40/40 kiểm thử JavaScript đạt; Gradle `assembleDebug` thành công và artifact APK `TuTienHocDao-apk` đã được tải lên.

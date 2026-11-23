@@ -174,3 +174,9 @@ www/js/
 - Giữ nguyên thứ tự khóa của `Object.keys(history)`, khoảng ngày bao gồm cả đầu/cuối, điều kiện `m > 0` và giá trị tối thiểu 0 cho số phút tốt nhất.
 - Wrapper `wDs`, `wDays`, `wBest` trong `game.js` vẫn là giao diện dùng bởi nhiệm vụ tuần.
 - CI #148 xác nhận 39/39 kiểm thử JavaScript, build APK và tải artifact thành công.
+
+
+## Helper cộng phút học theo timestamp
+- `GameAnalytics.sumStudyMinutesBetween(studyLog, startTimestamp, endTimestamp)` cộng phút của các phiên có timestamp nằm trong khoảng bao gồm cả hai đầu.
+- Wrapper `kmins` trong `game.js` tiếp tục cung cấp `S.stl` và thời gian của kỳ ngộ; không thay đổi cách xác định thời gian hoặc thưởng kỳ ngộ.
+- CI #151 xác nhận 40/40 kiểm thử JavaScript, build APK Android thành công và tải artifact `TuTienHocDao-apk`.
