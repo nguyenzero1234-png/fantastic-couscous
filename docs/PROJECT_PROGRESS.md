@@ -517,3 +517,11 @@
 - [x] `GameNpcRoster.create(hash, value)` nhận hàm noise tường minh và trả lại các mảng/dịch vụ tương thích; các phép mô phỏng tiếp tục chạy trong `game.js` trên đúng các mảng mutable này.
 - [x] Bổ sung test số lượng NPC, cấu hình mô phỏng, giới tính, tiểu sử và dữ liệu cảnh giới.
 - [ ] Tiếp tục tách các subsystem gameplay; chưa kiểm thử/ký Android.
+
+
+## Tách hệ thống Sứ mệnh xuyên kiếp (2026-11-24)
+- [x] Chuyển 8 định nghĩa thành tựu và điều kiện đạt sang `www/js/legacy-missions.js`.
+- [x] Đóng gói khởi tạo tiến trình, kiểm tra/mở khóa một lần, lưu trạng thái, thông báo và dựng HTML trong `GameLegacyMissions.create`.
+- [x] `game.js` giữ wrapper tương thích cho `lifeTrack`, `chkLegacy`, `renderAch`.
+- [x] Bổ sung test cho điều kiện mở khóa, chống mở khóa lặp, lưu/thông báo và render.
+- [ ] Tiếp tục tách subsystem gameplay; Android chưa kiểm tra/ký theo yêu cầu.
