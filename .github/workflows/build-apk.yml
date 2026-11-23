@@ -5,8 +5,6 @@ concurrency:
 on:
   push:
   workflow_dispatch:
-permissions:
-  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,14 +17,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - run: npm install
-      - name: Rebase generated lockfile onto latest branch
-        run: git pull --rebase origin "${GITHUB_REF_NAME}"
-      - name: Commit regenerated package lock
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "build: commit synchronized package lock"
-          file_pattern: package-lock.json
+      - run: npm ci
       - name: Kiểm thử JavaScript modules
         run: npm test
       - name: Lưu package-lock đã đồng bộ
