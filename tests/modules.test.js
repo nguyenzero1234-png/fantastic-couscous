@@ -6,13 +6,22 @@ const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 const jsDir = path.join(root, "www", "js");
-const window = {};
-const context = vm.createContext({ window, Date, Math, Object, Array, Number, String, RegExp, JSON });
+const window = { dispatchEvent(event) { events.push(event.type); } };
+const storageData = new Map();
+const events = [];
+let failWrites = false;
+const localStorage = {
+  getItem(key) { return storageData.has(key) ? storageData.get(key) : null; },
+  setItem(key, value) { if (failWrites) throw new Error("quota exceeded"); storageData.set(key, String(value)); },
+  removeItem(key) { storageData.delete(key); },
+  clear() { storageData.clear(); }
+};
+const context = vm.createContext({ window, localStorage, Event: class Event { constructor(type) { this.type = type; } }, console: { warn() {}, error() {}, info() {} }, Date, Math, Object, Array, Number, String, RegExp, JSON });
 function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -83,4 +92,37 @@ test("schedule parser từ chối giờ sai và khung trùng", () => {
   assert.equal(P.parseLine("19:00-19:45 | Ôn bài", [{ s: "19:30", e: "20:00" }]), null);
   assert.equal(P.parseLine("20:00-19:00 | Sai giờ", []), null);
   assert.equal(P.parseLine("08:00-09:00 | ", []), null);
+});
+
+test("storage xác thực dữ liệu và nạp save hợp lệ", () => {
+  const G = window.GameStorage;
+  assert.equal(G.validSave({ quests: [], points: 0 }), true);
+  assert.equal(G.validSave({ quests: {}, points: 0 }), false);
+  assert.equal(G.validSave({ quests: [], points: NaN }), false);
+  storageData.clear();
+  storageData.set("test-save", JSON.stringify({ quests: [{ id: "q1" }], points: 12 }));
+  const state = G.load("test-save", { quests: [], points: 0, setting: true });
+  assert.equal(state.points, 12);
+  assert.equal(state.setting, true);
+});
+
+test("storage khôi phục backup khi save chính hỏng", () => {
+  storageData.clear(); events.length = 0;
+  storageData.set("broken", "{bad json");
+  storageData.set("broken.backup", JSON.stringify({ quests: [], points: 77 }));
+  const state = window.GameStorage.load("broken", { quests: [], points: 0 });
+  assert.equal(state.points, 77);
+  assert.ok(events.includes("game-save-recovered"));
+});
+
+test("storage sao lưu bản trước và báo lỗi khi không ghi được", () => {
+  storageData.clear(); events.length = 0; failWrites = false;
+  storageData.set("save", JSON.stringify({ quests: [], points: 10 }));
+  assert.equal(window.GameStorage.save("save", { quests: [], points: 20 }), true);
+  assert.equal(JSON.parse(storageData.get("save.backup")).points, 10);
+  assert.equal(JSON.parse(storageData.get("save")).points, 20);
+  failWrites = true;
+  assert.equal(window.GameStorage.save("save", { quests: [], points: 30 }), false);
+  assert.ok(events.includes("game-save-error"));
+  failWrites = false;
 });
