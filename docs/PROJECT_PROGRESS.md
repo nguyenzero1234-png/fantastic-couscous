@@ -24,7 +24,7 @@
 - [x] Bổ sung tài liệu kiến trúc và tiến độ tại `docs/FOUNDATION_STAGE_1.md`.
 
 ### Kiểm tra
-- [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `game.js`, `notify.js`, `schedule.js`.
+- [x] Kiểm tra cú pháp JavaScript bằng parse cho `storage.js`, `ui.js`, `game.js`, `notify.js`, `schedule.js`.
 - [x] GitHub Actions build APK cho commit `8a7da3cd94b7aab9d3333a04f28b9863c35dae04` thành công: [Build run #23](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45169198792).
 
 ## Đang thực hiện
