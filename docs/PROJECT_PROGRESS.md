@@ -895,3 +895,11 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền dữ liệu mô phỏng, rank, profile, streak và DOM accessor qua dependency injection.
 - [x] Bổ sung test render bảng và chuyển chế độ hiển thị.
 - [ ] Tiếp tục tách các nghiệp vụ xếp hạng tuần và các màn hình khác khỏi `game.js`.
+
+
+## Tách UI nhật ký tu tiên sang ui/diary.js (2026-11-24)
+
+- [x] Chuyển renderer nhật ký 14 ngày và Đạo Văn sang `ui/diary.js`.
+- [x] Tiêm state, ngày hiện tại, sinh nhật ký và kiểm tra mốc truyện qua dependency injection; giữ wrapper `renderDiary`.
+- [x] Bổ sung test số ngày hiển thị và trạng thái Đạo Văn trống.
+- [ ] Tiếp tục rà soát các màn hình và hệ thống còn lại.

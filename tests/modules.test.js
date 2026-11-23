@@ -1361,3 +1361,13 @@ test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển
  assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{showAll:true});
  assert.equal(nodes.lball.textContent,"Chỉ hiện top 20");
 });
+
+
+test("GameDiaryUI render nhật ký ngày và Đạo Văn",()=>{
+ const host={innerHTML:""},days=[];
+ const M=window.GameDiaryUI.create({S:{storyLog:[]},dayStr:i=>"2026-11-"+String(24-i).padStart(2,"0"),today:()=>"2026-11-24",generateDiary:d=>{days.push(d);return ["Một ngày tu luyện."]},checkStoryFlags:()=>{},$:()=>host});
+ M.render();
+ assert.match(host.innerHTML,/Nhật ký đạo hữu/);
+ assert.match(host.innerHTML,/Đạo Văn · Ký lục/);
+ assert.equal(days.length,14);
+});
