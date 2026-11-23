@@ -350,46 +350,19 @@ const avatar=name=>`<span class="av">${portrait(name)}</span>`;
 function sectStats(now){return GameSectWar.stats(SECTS.length,B.map((b,i)=>({sect:SO[i],xp:bxp(i,now)})),S.sect,uxp())}
 const ugain=(d1,d2)=>GameAnalytics.sumPointsBetween(S.hist,d1,d2);
 function warScores(t1,t2,d1,d2){
-  // t1,t2 tính theo lịch ảo (có dOff); NPC chạy theo đồng hồ thật nên phải quy đổi, nếu không cửa sổ tuần nằm ở tương lai và NPC luôn 0 điểm
   const sh=(S.dOff||0)*864e5;t1-=sh;t2-=sh;
-  const g=SECTS.map(()=>0);
-  B.forEach((b,i)=>{g[SO[i]]+=Math.max(0,bxp(i,t2)-bxp(i,t1))});
-  if(S.sect!=null)g[S.sect]+=Math.max(0,ugain(d1,d2));
-  return g.map((v,s)=>{const n=SN[s]+(S.sect===s?1:0);return n>0?v/n:0});
+  const npc=B.map((b,i)=>({sect:SO[i],gain:Math.max(0,bxp(i,t2)-bxp(i,t1))}));
+  const userGain=S.sect!=null?Math.max(0,ugain(d1,d2)):0;
+  return GameSectWar.score(SECTS.length,npc,S.sect,userGain,SN);
 }
 const warPairs=GameSectWar.pairs;
 const warFlavor=GameSectWar.flavor;
-function warReward(){
-  if(S.sect==null)return "";
-  const s0=new Date(S.lb.week+"T00:00:00").getTime(),s1=s0+7*864e5,w=Math.round((s0-EP)/6048e5);
-  const sc2=warScores(s0,s1,S.lb.week,new Date(s1).toLocaleDateString("sv"));
-  const p=warPairs(w).find(q=>q.includes(S.sect));
-  if(!p)return "";
-  const o=p[0]===S.sect?p[1]:p[0],sa=sc2[S.sect],sb=sc2[o],diff=sa-sb;
-  const fl=warFlavor(S.sect,o);
-  if(diff>0){
-    // Thắng: thưởng theo biên độ thắng, tối thiểu 150, tối đa ~320 + danh hiệu
-    let base=modGain(150+Math.min(150,Math.round(diff*0.35))+(eqT("n15")?100:0));
-    const bonus=diff>80&&Math.random()<0.35?1:0; // thắng lớn có cơ hội thêm vật phẩm
-    S.points+=base;hAdd(today(),base,0);LS().sw=(LS().sw||0)+1;
-    let msg=" Tông môn chiến: "+SECTS[S.sect].n+" đại thắng "+SECTS[o].n+" (+"+base+" linh lực)";
-    if(bonus){S.inv.ca=(S.inv.ca||0)+1;msg+=" · nhận thêm 1 Tỉnh Thần Linh Trà nhờ công trạng lớn."}
-    vlog("Tông môn chiến: "+SECTS[S.sect].n+" thắng "+SECTS[o].n+" ("+fl[0]+"), +"+base+" linh lực"+(bonus?" +Tỉnh Thần Linh Trà":""));
-    return msg+".";
-  }
-  // Thua: an ủi nhỏ + lời khích lệ
-  const consol=modGain(Math.min(40,Math.round(Math.abs(diff)*0.08)+15));
-  S.points+=consol;hAdd(today(),consol,0);
-  vlog("Tông môn chiến: "+SECTS[S.sect].n+" thua "+SECTS[o].n+" ("+fl[0]+"), nhận "+consol+" linh lực an ủi");
-  return " Tông môn chiến: "+SECTS[S.sect].n+" thua "+SECTS[o].n+". Thiên Đạo ban "+consol+" linh lực an ủi — thất bại cũng là tu luyện.";
-}
-function miles(i){
-  const out=[];
-  if(i<0){let c=0,k=0;Object.keys(S.hist).sort().forEach(d=>{c+=S.hist[d].p;while(k<RL.length&&c>=RL[k][1]){out.push([k,new Date(d+"T12:00:00").getTime()]);k++}});return out}
-  const now=Date.now(),H=36e5,cur=ri(sc(i,now));let r=0;
-  for(let t=S.lb.t0;r<=cur&&r<RL.length;t+=H){const tt=Math.min(t,now);while(r<=cur&&r<RL.length&&sc(i,tt)>=RL[r][1]){out.push([r,tt]);r++}if(tt>=now)break}
-  return out;
-}
+function warReward(){return GameSectWar.reward({
+  state:S,sects:SECTS,weekEnd:EP,modGain,hasTitle:()=>eqT("n15"),
+  today,addHistory:(day,points,mins)=>hAdd(day,points,mins),log:vlog,
+  random:Math.random
+});}
+
 function renderProf(){
   const el=$("prof");if(PI==null){el.innerHTML="";return}
   const u=PI<0,i=PI,now=Date.now(),n0=Math.floor((now-S.lb.t0)/36e5),b=u?null:B[i],xp=u?uxp():bxp(i,now),k=ri(xp);

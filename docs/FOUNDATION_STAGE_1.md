@@ -359,3 +359,11 @@ www/js/
 - [x] CI #45219185468 passed 59/60 tests; the final assertion compared a cross-realm state object.
 - [x] Normalize the state object through JSON in the test.
 - [ ] Await CI.
+
+ 
+## Sect war scoring and settlement extraction
+- [x] Moved weekly per-member war scoring into `GameSectWar.score`.
+- [x] Moved win/loss settlement, title bonus, item bonus, history and logging into `GameSectWar.reward`.
+- [x] Kept compatibility wrappers in game.js and injected dependencies explicitly.
+- [x] Added tests for scoring, victory, defeat and no-sect behavior.
+- [ ] Await CI and APK build.

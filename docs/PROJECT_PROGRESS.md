@@ -438,3 +438,11 @@
 - [x] CI #45219185468 xác nhận logic 59/60 test; assertion còn lại so sánh object tạo trong VM khác realm.
 - [x] Chuẩn hóa object trạng thái qua JSON trong test.
 - [ ] Chờ CI xác nhận.
+
+ 
+## Mở rộng module tông môn chiến
+- [x] Chuyển tính điểm chiến tuần (bình quân đóng góp NPC/người chơi) sang `GameSectWar.score`.
+- [x] Chuyển xử lý thưởng thắng/thua, danh hiệu, vật phẩm thưởng và ghi lịch sử sang `GameSectWar.reward`.
+- [x] Giữ wrapper tương thích trong `game.js`, truyền phụ thuộc tường minh.
+- [x] Bổ sung test tính điểm, thưởng thắng, thưởng thua và trạng thái chưa gia nhập tông.
+- [ ] Chờ CI kiểm tra và build APK.
