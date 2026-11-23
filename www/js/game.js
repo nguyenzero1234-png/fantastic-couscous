@@ -2232,39 +2232,11 @@ function renderDiary(){
 function sectMissions(){return GameSectMissions.list(S,{weekStart,sumMins,Date});}
 function claimSectM(id){return GameSectMissions.claim(S,id,{weekStart,sumMins,Date,say,addPts,vlog,save,render});}
 
-/* ===== Sứ mệnh / thành tựu xuyên kiếp (chỉ danh hiệu) ===== */
-const LEGACY=[
-  {id:"L1",n:"Sơ Nhập Đạo Đồ",d:"Hoàn thành hướng dẫn lần đầu",ok:()=>!!S.tutDone},
-  {id:"L2",n:"Bách Nhiệm Chi Nhân",d:"Tổng ≥100 nhiệm vụ (mọi kiếp)",ok:()=>(S.life&&S.life.q||0)>=100},
-  {id:"L3",n:"Thiên Kiêu Cựu Nhân",d:"Từng đứng top 10",ok:()=>!!(S.life&&S.life.top10)},
-  {id:"L4",n:"Độ Kiếp Giả",d:"Vượt ≥5 thiên kiếp (mọi kiếp, từ Khá)",ok:()=>(S.life&&S.life.exOk||0)>=5},
-  {id:"L5",n:"Luân Hồi Khách",d:"Trải ≥2 kiếp",ok:()=>(S.rb||0)>=2},
-  {id:"L6",n:"Tông Môn Tín Đồ",d:"Gia nhập tông ≥3 lần (đếm kiếp có tông)",ok:()=>(S.life&&S.life.sectN||0)>=3},
-  {id:"L7",n:"Viên Mãn Đạo Hữu",d:"Từng đạt phán quyết Viên Mãn hoặc Xuất Sắc",ok:()=>!!(S.life&&S.life.excel)},
-  {id:"L8",n:"Mệnh Cứng Như Sắt",d:"Từng ân xá Trừng Phạt",ok:()=>!!(S.life&&S.life.anXa)}
-];
-function lifeTrack(){
-  S.life=S.life||{q:0,top10:0,exOk:0,sectN:0,excel:0,anXa:0};
-  S.life.q=(S.life.q||0); // updated on finish
-}
-function chkLegacy(){
-  lifeTrack();
-  const got=S.legacy||(S.legacy={});
-  const nw=[];
-  LEGACY.forEach(L=>{if(!got[L.id]&&L.ok()){got[L.id]=Date.now();nw.push(L.n)}});
-  if(nw.length){save();setTimeout(()=>say("Sứ mệnh hoàn thành: "+nw.join(", ")+"! (danh hiệu vĩnh viễn)"),250)}
-}
-function renderAch(){
-  const el=$("ach");if(!el)return;
-  lifeTrack();
-  const got=S.legacy||{};
-  el.innerHTML=`<div class="box"><h2>Sứ mệnh xuyên kiếp</h2>
-    <small>Hoàn thành một lần là mãi mãi. <b>Không buff linh lực</b> — chỉ danh hiệu và ký ức trên Thiên Thư. Không mất khi luân hồi.</small></div>`+
-    LEGACY.map(L=>`<div class="box"><div class="row" style="margin:0"><b style="flex:1">${L.n}</b><span class="pb">${got[L.id]?"Đã khắc":"Chưa"}</span></div>
-      <small style="display:block;margin-top:4px">${L.d}</small>
-      ${got[L.id]?`<small style="color:var(--jade)">Khắc vào đạo quả · ${new Date(got[L.id]).toLocaleDateString("vi-VN")}</small>`:""}
-    </div>`).join("");
-}
+const LegacyMissions=GameLegacyMissions.create({S,save,say});
+const LEGACY=LegacyMissions.definitions;
+function lifeTrack(){return LegacyMissions.lifeTrack()}
+function chkLegacy(){return LegacyMissions.check()}
+function renderAch(){const el=$("ach");if(el)el.innerHTML=LegacyMissions.render()}
 
 /* ===== Ký ức kiếp trước ===== */
 function prevMemory(){return GameRebirthData.previousMemory(S.rbh||[]);}
