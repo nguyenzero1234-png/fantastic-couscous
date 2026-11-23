@@ -922,3 +922,11 @@ Sau mỗi đợt thay đổi:
 - [x] `game.js` giữ wrapper `renderVan` để không đổi điểm điều phối.
 - [x] Khôi phục helper `rn` ở bootstrap vì lịch học vẫn dùng nó; không để helper lịch bị chuyển nhầm sang UI leaderboard.
 - [x] Bổ sung test render khi chưa có sự kiện mô phỏng.
+
+
+## Tách UI sự kiện và Kỳ Sự Cửu Châu sang ui/events.js (2026-11-24)
+
+- [x] Chuyển renderer tiến độ tuần/tháng, nhiệm vụ điều kiện và Kỳ Sự Cửu Châu sang `ui/events.js`.
+- [x] Giữ state kỳ sự `KSD` dùng chung với event handlers; module nhận analytics, lịch tuần và callback DOM qua dependency injection.
+- [x] `game.js` giữ wrapper `renderEvents` để bảo toàn thứ tự điều phối.
+- [x] Bổ sung test render với trạng thái tiến độ rỗng.

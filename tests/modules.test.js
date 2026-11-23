@@ -1392,3 +1392,14 @@ test("GameLeaderboardUI render nhật ký cơ duyên và đóng góp bảng",()=
  assert.match(nodes.van.innerHTML,/Top 10 hiện tại/);
  assert.match(nodes.van.innerHTML,/Dòng sự kiện/);
 });
+
+
+test("GameEventsUI render sự kiện tuần/tháng và Kỳ Sự Cửu Châu",()=>{
+ const host={innerHTML:""},S={ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},god:false,streak:{last:"",n:0},pets:{},act:null,sect:null,cnt:{},stl:[],hist:{},ks:[],kso:{}};
+ const GameAnalytics={sumCountsBetween:()=>0,countStudyLogEntries:()=>0,studyWindowStats:()=>({days:7,daysWithStudy:0,bestMinutes:0})};
+ const M=window.GameEventsUI.create({S,evCur:()=>0,ugain:()=>0,GameAnalytics,dayStr:i=>"2026-11-"+String(24-i).padStart(2,"0"),today:()=>"2026-11-24",KSD:{},weekStart:()=>"2026-11-23",escapeHtml:x=>String(x),$:()=>host});
+ M.render();
+ assert.match(host.innerHTML,/Tuần Luyện/);
+ assert.match(host.innerHTML,/Nguyệt Luyện/);
+ assert.match(host.innerHTML,/Kỳ Sự Cửu Châu/);
+});
