@@ -53,6 +53,10 @@ const save=()=>{
         console.warn("[Tu Tiên Học Đạo] Bỏ qua việc sao lưu vì bản lưu hiện tại không hợp lệ.",backupError);
       }
     }
+  }catch(backupError){
+    console.warn("[Tu Tiên Học Đạo] Không thể tạo bản sao lưu tự động.",backupError);
+  }
+  try{
     localStorage.setItem(KEY,JSON.stringify(S));
   }catch(e){
     console.error("[Tu Tiên Học Đạo] Lưu thất bại. Hãy xuất bản sao lưu và kiểm tra dung lượng bộ nhớ.",e);
