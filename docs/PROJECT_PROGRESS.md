@@ -532,3 +532,11 @@
 - [x] Chuyển epoch, 6 sự kiện cơ duyên và 6 mô tả hiệu ứng sang module dữ liệu; `game.js` đọc qua API dữ liệu, thuật toán lịch cơ duyên vẫn giữ nguyên.
 - [x] Bổ sung test số lượng, phần tử đầu/cuối và mốc epoch.
 - [ ] Tiếp tục tách logic gameplay; Android vẫn để sau.
+
+
+## Tách catalog vật phẩm (2026-11-24)
+- [x] Chuyển cấu hình 20 vật phẩm khỏi `game.js` vào `GameItemData.catalog()` trong module `item-data.js` hiện có.
+- [x] Catalog trả bản sao độc lập cho từng lần khởi tạo, sao chép cả mảng điều kiện `q`; mô tả/tổng linh lực tiếp tục dùng chung hàm `describe`.
+- [x] `game.js` chỉ lấy catalog qua API module; các điểm mua/bán/tra cứu và kiểm tra cân bằng vẫn sử dụng cùng cấu trúc item.
+- [x] Bổ sung test số lượng, item biên, mô tả, và tính độc lập của catalog.
+- [ ] Tiếp tục tách subsystem; Android vẫn để sau.
