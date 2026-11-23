@@ -1,0 +1,38 @@
+/* Quy tắc chuỗi ngày học và tâm ma. Không phụ thuộc DOM, storage hoặc trạng thái global. */
+(function(global){
+  "use strict";
+  function completeDay(input){
+    const x=input||{},prevN=Number(x.streak)||0;
+    let continued=x.last===x.yesterday,consumeLifeCharm=false,consumeHeartCharm=false,triggerDemon=false,extra="",log="";
+    if(!continued&&x.last===x.twoDaysAgo&&(Number(x.lifeCharm)||0)>0){continued=true;consumeLifeCharm=true;extra=" Đã dùng Tục Mệnh Phù — chuỗi được giữ."}
+    if(!continued&&prevN>=2){
+      if(x.heartCharm){consumeHeartCharm=true;extra+=" Hộ Tâm Phù đã chặn tâm ma."}
+      else if((Number(x.random)||0)<0.5)triggerDemon=true;
+      extra=(extra?extra+" ":"")+"Chuỗi "+prevN+" ngày đứt — "+(x.heartCharm?"Hộ Tâm Phù đã chặn tâm ma.":triggerDemon?"tâm ma xâm nhập đạo tâm!":"may mắn không phát sinh tâm ma.");
+      log="Mất chuỗi học ("+prevN+" ngày)"+(triggerDemon?" → tâm ma":" → không phát sinh tâm ma");
+    }
+    return {streak:{n:continued?prevN+1:1,last:x.today},consumeLifeCharm,consumeHeartCharm,triggerDemon,extra,log};
+  }
+  function checkBreak(input){
+    const x=input||{},last=x.last,n=Number(x.streak)||0;
+    if(!last||n<2||last===x.today||last===x.yesterday)return null;
+    if(last===x.twoDaysAgo&&(Number(x.lifeCharm)||0)>0)return null;
+    const blocked=!!x.heartCharm,triggerDemon=!blocked&&(Number(x.random)||0)<0.5;
+    return {
+      consumeHeartCharm:blocked,triggerDemon,
+      log:"Mất chuỗi học ("+n+" ngày, bỏ phiên)"+(blocked?" — Hộ Tâm Phù chặn tâm ma":triggerDemon?" → tâm ma":" — không phát sinh tâm ma"),
+      message:"Chuỗi "+n+" ngày đã đứt."+(blocked?" Hộ Tâm Phù đã chặn tâm ma.":triggerDemon?" Tâm ma xuất hiện, cần 2 nhiệm vụ ≥25 phút để trấn áp.":" May mắn không phát sinh tâm ma lần này.")
+    };
+  }
+  function progressCurses(input){
+    const x=input||{},minutes=Number(x.minutes)||0;
+    let tm=!!x.tm,tmTasks=Number(x.tmTasks)||0,tma=!!x.tma,tmaTasks=Number(x.tmaTasks)||0;
+    let clearedSelf=false,clearedHeavenly=false,taskBonus=0;
+    if(minutes>=25){
+      if(tm){tmTasks++;if(tmTasks>=2){tm=false;tmTasks=0;clearedSelf=true;taskBonus=x.calmTitle?40:0}}
+      if(tma&&minutes>=45){tmaTasks++;if(tmaTasks>=3){tma=false;tmaTasks=0;clearedHeavenly=true}}
+    }
+    return {tm,tmTasks,tma,tmaTasks,clearedSelf,clearedHeavenly,taskBonus};
+  }
+  global.GameStreak=Object.freeze({completeDay,checkBreak,progressCurses});
+})(window);
