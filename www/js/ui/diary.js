@@ -2,7 +2,8 @@
 (function(root){
  "use strict";
  function create(deps){
-  const {S,dayStr,today,generateDiary,checkStoryFlags,$}=deps;
+  const {S,dayStr,today,$}=deps;
+  const genDiary=deps.generateDiary,chkStoryFlags=deps.checkStoryFlags;
   function render(){
   const el=$("diary");if(!el)return;
   try{chkStoryFlags();}catch(e){}

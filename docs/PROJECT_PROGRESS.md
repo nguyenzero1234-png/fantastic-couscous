@@ -902,6 +902,7 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển renderer nhật ký 14 ngày và Đạo Văn sang `ui/diary.js`.
 - [x] Tiêm state, ngày hiện tại, sinh nhật ký và kiểm tra mốc truyện qua dependency injection; giữ wrapper `renderDiary`.
 - [x] Bổ sung test số ngày hiển thị và trạng thái Đạo Văn trống.
+- [x] Chuẩn hóa alias dependency `generateDiary`/`checkStoryFlags` theo tên hàm gốc mà renderer đang gọi.
 - [ ] Tiếp tục rà soát các màn hình và hệ thống còn lại.
 
 
