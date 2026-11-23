@@ -961,3 +961,10 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền dữ liệu, mô phỏng bảng, streak, buff, công thức điểm, save và callback UI qua dependency injection; giữ wrapper `resolveEx`.
 - [x] Giữ modal và nội dung trình bày ở `ui/heavenly-tribulation.js`/`ui/exam-modal.js`.
 - [x] Bổ sung test thành công, cập nhật life flag và khóa xem kết quả.
+
+
+## Khôi phục helper lịch/nhiệm vụ và chuẩn hóa StorySystem (2026-11-24)
+
+- [x] Giữ các helper nghiệp vụ `qm`, `rem`, `expired`, `weekStart`, `sumMins`, `evCur`, `unlocked` và `stepRow` ở bootstrap; chỉ renderer được chuyển sang `ui/activities.js`.
+- [x] Cấp alias cảnh giới `ri` cho `systems/story.js` từ dependency `realmIndex`.
+- [ ] Chờ CI xác nhận lại sau khi khôi phục các helper.

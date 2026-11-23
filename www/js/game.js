@@ -457,6 +457,14 @@ function renderExams(){TribulationUI.render()}
 const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),today});
 function renderLb(){LeaderboardUI.render()}
 const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
+const qm=()=>QM[$("nq").value]||1;
+const rem=t=>GameTimeFormat.remaining(t,Date.now());
+const expired=q=>GameQuestData.isExpired(q,isDone,Date.now());
+const weekStart=()=>GameDateData.weekStart(S.dOff||0);
+const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
+const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
+const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
+const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),$});
 function renderLich(){ActivityUI.renderSchedule()}
 function renderShop(){ActivityUI.renderShop()}

@@ -3,7 +3,7 @@
  "use strict";
  function create(deps){
   const {S,GameStoryData,GameDiaryData,today,realmIndex,SECTS,PS,TITLES,say,QT}=deps;
-  const prevMemory=deps.previousMemory,tok=deps.isTitleUnlocked,REALM_STORY=GameStoryData.realmStory;
+  const prevMemory=deps.previousMemory,tok=deps.isTitleUnlocked,ri=realmIndex,REALM_STORY=GameStoryData.realmStory;
   function storyLog(){return S.storyLog||(S.storyLog=[])}
 function storyFlags(){return S.storyFlags||(S.storyFlags={})}
 function pushStory(id,title,lines,meta){
