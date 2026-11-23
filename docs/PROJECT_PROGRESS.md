@@ -278,5 +278,6 @@
 ## Kiểm thử tích hợp module và giao diện (2026-11-23)
 - [x] CI #154 xác nhận toàn bộ test JavaScript hiện tại, dependency audit, Capacitor sync, Gradle `assembleDebug` và tải APK artifact thành công cho commit `8c00f6d`.
 - [x] Kiểm thử tự động phát hiện module JavaScript chưa được khai báo, script trùng lặp và sai thứ tự nạp quanh `game.js`.
-- [ ] Bổ sung kiểm tra mọi đường dẫn script trong `index.html` tồn tại và kiểm thử hành vi áp dụng/reset tùy chọn giao diện; chờ CI.
+- [x] Bổ sung kiểm tra mọi đường dẫn script trong `index.html` tồn tại và kiểm thử hành vi áp dụng/reset tùy chọn giao diện.
+- [x] CI #155 phát hiện lỗi test ở đường dẫn kiểm tra (thiếu thư mục `www`); đã sửa test dùng đúng gốc tài nguyên, không phải lỗi ứng dụng. Chờ CI xác nhận lại.
 - [ ] Tiếp tục rà soát luồng gameplay và các helper thuần còn nằm trong `game.js`.
