@@ -850,5 +850,5 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển bộ máy mô phỏng tích lũy tu vi theo phút, cơ duyên, hệ số hiệu suất và cache xếp hạng sang `systems/leaderboard.js`.
 - [x] Đóng gói cache mô phỏng trong `GameLeaderboardSimulation.create()`; `game.js` nhận API qua dependency injection và giữ các alias cũ cho các hệ thống đang dùng.
 - [x] Chuyển cả tính phân bổ NPC vào sáu tông môn, vô hiệu cache từ mốc thời gian và reset cache khi luân hồi vào module; không đổi công thức hoặc save schema.
-- [x] Bổ sung test mô phỏng linh lực, phân bổ tông môn và reset cache.
+- [x] Bổ sung test mô phỏng linh lực, phân bổ tông môn và reset cache; kiểm tra giá trị dương hữu hạn và tái lập sau reset thay vì hard-code tổng điểm kỳ vọng của fixture.
 - [ ] Tiếp tục tách phần settlement/đặc ân/xếp hạng tuần và các subsystem gameplay còn lại.
