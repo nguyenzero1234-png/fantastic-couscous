@@ -525,3 +525,10 @@
 - [x] `game.js` giữ wrapper tương thích cho `lifeTrack`, `chkLegacy`, `renderAch`.
 - [x] Bổ sung test cho điều kiện mở khóa, chống mở khóa lặp, lưu/thông báo và render.
 - [ ] Tiếp tục tách subsystem gameplay; Android chưa kiểm tra/ký theo yêu cầu.
+
+
+## Tách dữ liệu hiển thị đạo đồ và cơ duyên (2026-11-24)
+- [x] Chuyển bảng màu 9 cảnh giới và 20 câu dẫn hiển thị sang `www/js/cultivation-display-data.js`.
+- [x] Chuyển epoch, 6 sự kiện cơ duyên và 6 mô tả hiệu ứng sang module dữ liệu; `game.js` đọc qua API dữ liệu, thuật toán lịch cơ duyên vẫn giữ nguyên.
+- [x] Bổ sung test số lượng, phần tử đầu/cuối và mốc epoch.
+- [ ] Tiếp tục tách logic gameplay; Android vẫn để sau.
