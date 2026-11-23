@@ -14,11 +14,11 @@
   function streakMultiplier(streakDays,cap){
     return 1+Math.min(Number(cap)||0,0.05*((Number(streakDays)||0)-1));
   }
-  function questCompletionReward(basePoints,multiplier,flatBonus,taskBonus,fx,factors){
+  function questCompletionReward(basePoints,multiplier,flatBonus,taskBonus,fx,factors,isEligible){
     let gain=modGain(Math.round((Number(basePoints)||0)*(Number(multiplier)||0)+(Number(flatBonus)||0)+(Number(taskBonus)||0)),factors);
     const remaining=[];
     (Array.isArray(fx)?fx:[]).forEach(e=>{
-      if(e&&e.n>0){
+      if(e&&e.n>0&&(!isEligible||isEligible(e))){
         gain+=modGain(e.v,factors);
         e.n--;
       }
