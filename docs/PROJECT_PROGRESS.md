@@ -10,12 +10,15 @@
 - [x] Cập nhật GitHub Actions dùng JDK 21 cho Capacitor 7.
 - [x] CI sau khi nâng cấp xác nhận `npm test`, `npx cap add android` và `npx cap sync android` đều thành công; `npm audit` báo 0 lỗ hổng (run #83).
 - [x] Build APK debug thành công trên JDK 21 ở run #84: [GitHub Actions #84](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173957884). Run #83 là lượt chạy trung gian dùng JDK 17 nên lỗi `invalid source release: 21`; workflow đã được sửa và run #84 xác nhận đúng cấu hình.
-- [ ] Đồng bộ và commit lại `package-lock.json` sau khi hoàn tất nâng cấp; workflow hiện dùng `npm install` để tái tạo lock trong môi trường CI.
+- [x] Tạo `package-lock.json` tương thích Capacitor 7 trong CI run #86 (artifact `capacitor7-package-lock`, 39 KB).
+- [ ] Commit `package-lock.json` tự động bằng workflow; sau khi file đã có trên nhánh, chuyển CI từ `npm install` sang `npm ci` để cài đặt tái lập.
 
 ## Ghi nhận CI mới nhất (2026-11-23)
+- [x] Run #84, #85 và #86 build APK debug thành công trên JDK 21; run #86 có thêm artifact lockfile.
+- [x] Run #86 xác nhận `npm audit` = 0 vulnerabilities.
 - [x] Điều tra hai lần build lỗi #74 và #75: cả hai cùng thất bại tại test `schedule parser từ chối giờ sai và khung trùng`; nguyên nhân là kỳ vọng của test chưa khớp hành vi parser hiện tại. Đã điều chỉnh test để giữ tương thích hành vi cũ.
 - [x] Xác nhận các lần build #76–#81 đều thành công; run #81 là trạng thái mới nhất đã kiểm tra: [GitHub Actions #81](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45173280916).
-- [ ] Xử lý cảnh báo dependency: npm audit ghi nhận 5 lỗ hổng (3 moderate, 1 high, 1 critical) ở `@capacitor/cli`, `glob`, `minimatch`, `rimraf`, `tar`. Audit đề xuất nâng `@capacitor/cli` lên 7.6.10, đây là nâng major so với nhánh Capacitor 6 hiện tại; cần lập kế hoạch nâng đồng bộ Capacitor và kiểm tra tương thích trước khi áp dụng, không dùng `npm audit fix --force` một cách mù quáng.
+- [x] Đã xử lý cảnh báo dependency cũ: sau nâng đồng bộ Capacitor 7.6.10, `npm audit` ở run #86 báo 0 lỗ hổng (không còn 3 moderate, 1 high, 1 critical đã ghi ở giai đoạn trước).
 
 ## Đã hoàn thành
 
