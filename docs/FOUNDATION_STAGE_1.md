@@ -10,6 +10,8 @@ Phạm vi của nhánh `stage-1/foundation`: giảm rủi ro mất dữ liệu v
 - Lỗi tạo bản sao lưu không chặn lần lưu chính; bản sao lưu chỉ chứa một phiên bản gần nhất, không thay thế chức năng xuất dữ liệu thủ công.
 - Tắt `android.allowMixedContent`; ứng dụng không nên cho phép tải nội dung HTTP không an toàn trong WebView khi các tài nguyên hiện tại dùng HTTPS/local.
 - Giữ nguyên khóa lưu `quest-study-v1` và định dạng dữ liệu hiện tại để tránh làm mất tương thích với tiến trình cũ.
+- Tách toàn bộ phần đọc/ghi `localStorage`, kiểm tra save và backup/restore sang `www/js/storage.js` (`window.GameStorage`). `game.js` gọi `GameStorage.load()` khi khởi tạo và `GameStorage.save()` khi lưu.
+- Nạp `storage.js` trước `game.js` trong `index.html`. Các script vẫn dùng classic script và API toàn cục nhỏ để không phá tương thích với `notify.js` và `schedule.js`.
 
 ## Kiến trúc mục tiêu
 
@@ -31,7 +33,7 @@ www/js/
   game.js          # điểm vào/điều phối tạm thời
 ```
 
-Chưa chuyển các hàm ra khỏi `game.js` trong commit này vì file đang chứa nhiều hàm dùng chung toàn cục và thứ tự nạp script có ý nghĩa. Tách hàng loạt khi chưa có kiểm thử hồi quy sẽ có nguy cơ làm hỏng tiến trình hiện tại.
+Đây là bước tách module đầu tiên, tập trung vào ranh giới lưu trữ có ít phụ thuộc nhất. Phần gameplay vẫn ở `game.js` (~242 KB); chưa chuyển hàng loạt các hàm vì file đang chứa nhiều hàm dùng chung toàn cục và thứ tự nạp script có ý nghĩa. Tiếp theo nên tách từng miền chức năng sau khi có kiểm thử hồi quy.
 
 ## Kiểm thử cần chạy trước khi nhập nhánh
 
@@ -43,4 +45,4 @@ Chưa chuyển các hàm ra khỏi `game.js` trong commit này vì file đang ch
 
 ## Giới hạn
 
-Đây là hardening bước đầu, chưa phải hệ thống backup tự động. Lưu trữ vẫn nằm trên thiết bị/trình duyệt; xóa dữ liệu ứng dụng vẫn có thể làm mất tiến trình. Chưa chạy được build APK hoặc kiểm thử thiết bị trong môi trường chỉnh sửa này.
+Đây là hardening bước đầu, chưa phải hệ thống backup tự động. Lưu trữ vẫn nằm trên thiết bị/trình duyệt; xóa dữ liệu ứng dụng vẫn có thể làm mất tiến trình. Build APK trên commit trước của nhánh đã thành công qua GitHub Actions. Commit tách module này sẽ kích hoạt build mới; build thành công cũng chưa thay thế kiểm thử thao tác trên thiết bị thật.
