@@ -432,3 +432,9 @@
 - [x] CI #45219024764 xác nhận 59/60 test; test cuối kỳ vọng sai rằng bộ nhiệm vụ đổi theo tuần.
 - [x] Giữ nguyên hành vi cũ: danh sách nhiệm vụ được chọn theo chỉ số tông môn; sang tuần chỉ reset trạng thái nhận thưởng.
 - [ ] Chờ CI xác nhận.
+
+ 
+## Chuẩn hóa assertion trạng thái nhiệm vụ tông
+- [x] CI #45219185468 xác nhận logic 59/60 test; assertion còn lại so sánh object tạo trong VM khác realm.
+- [x] Chuẩn hóa object trạng thái qua JSON trong test.
+- [ ] Chờ CI xác nhận.

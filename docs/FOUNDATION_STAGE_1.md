@@ -353,3 +353,9 @@ www/js/
 - [x] CI #45219024764 passed 59/60 tests; the remaining assertion incorrectly expected mission IDs to rotate by week.
 - [x] Preserve existing behavior: mission selection is sect-based; week changes reset claim state without changing that sect's selected IDs.
 - [ ] Await CI.
+
+ 
+## Sect mission state assertion
+- [x] CI #45219185468 passed 59/60 tests; the final assertion compared a cross-realm state object.
+- [x] Normalize the state object through JSON in the test.
+- [ ] Await CI.
