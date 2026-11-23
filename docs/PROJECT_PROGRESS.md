@@ -852,3 +852,11 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển cả tính phân bổ NPC vào sáu tông môn, vô hiệu cache từ mốc thời gian và reset cache khi luân hồi vào module; không đổi công thức hoặc save schema.
 - [x] Bổ sung test mô phỏng linh lực, phân bổ tông môn và reset cache; kiểm tra giá trị dương hữu hạn và tái lập sau reset thay vì hard-code tổng điểm kỳ vọng của fixture.
 - [ ] Tiếp tục tách phần settlement/đặc ân/xếp hạng tuần và các subsystem gameplay còn lại.
+
+
+## Tách màn hình tông môn sang ui/sect.js (2026-11-24)
+
+- [x] Chuyển renderer tổng quan tông môn, xếp hạng, bái sư và chiến tông môn sang `ui/sect.js`.
+- [x] Truyền state, dữ liệu tông môn, điểm chiến, lịch tuần và nhiệm vụ qua dependency injection; `game.js` giữ wrapper `renderSect` để giữ nguyên điều phối hiện tại.
+- [x] Bổ sung test render với trạng thái chưa gia nhập tông môn.
+- [ ] Tiếp tục tách các màn hình leaderboard/thiên kiếp/bản đồ và logic còn trong `game.js`.

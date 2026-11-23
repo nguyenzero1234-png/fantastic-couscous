@@ -1308,3 +1308,13 @@ test("GameLeaderboardSimulation mô phỏng linh lực và reset cache ổn đ�
  M.reset();
  assert.equal(M.cum(0,60),first);
 });
+
+
+test("GameSectUI render màn hình tông môn từ dependency được tiêm",()=>{
+ const host={innerHTML:""},sects=Array.from({length:6},(_,i)=>({n:"Tông "+i,d:"Mô tả "+i,lore:"Truyền thừa "+i}));
+ const M=window.GameSectUI.create({S:{sect:null,dOff:0},sectStats:()=>Array.from({length:6},()=>({xp:10,n:1})),warScores:()=>[6,5,4,3,2,1],ugain:()=>0,warPairs:()=>[[0,1],[2,3],[4,5]],warFlavor:()=>["Giao phong","Mô tả trận"],SECTS:sects,MASTERS:[],sectMissions:()=>[],weekStart:()=>"2026-11-23",weekEnd:Date.parse("2026-01-05T00:00:00"),$:()=>host});
+ M.render();
+ assert.match(host.innerHTML,/Bạn chưa có tông môn/);
+ assert.match(host.innerHTML,/Tông môn chiến tuần này/);
+ assert.match(host.innerHTML,/Tuần trước/);
+});
