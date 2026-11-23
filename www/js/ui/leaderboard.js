@@ -4,7 +4,7 @@
  function create(deps){
   const {S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml,today}=deps;
   const esc=deps.escapeHtml,portrait=deps.portrait,isTK=deps.isTopCultivator,renderProf=deps.renderProfile;
-  const getKAge=deps.getKAge,getCurStreak=deps.getCurStreak,myRank=deps.myRank,today=deps.today,dayStr=deps.dayStr;
+  const getKAge=deps.getKAge,getCurStreak=deps.getCurStreak,myRank=deps.myRank,dayStr=deps.dayStr;
   let showAll=false,PV={};
   function render(){
   lbInit();

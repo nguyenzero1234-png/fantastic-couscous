@@ -1017,3 +1017,4 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ wrapper `askName` và `thienDien` để không đổi luồng khởi tạo và nút diễn toán.
 - [x] Bổ sung test nhập đạo, lọc tên và dự báo thứ hạng.
 - [x] Sửa dấu đóng callback scheduler trong onboarding module trước khi nghiệm thu CI.
+- [x] Loại bỏ khai báo trùng `+"`today`"+` trong leaderboard UI factory; dùng giá trị đã destructure từ dependency.
