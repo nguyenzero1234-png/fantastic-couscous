@@ -26,6 +26,7 @@ const context = vm.createContext({ window, document, localStorage, Event: class 
 function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
+  Object.assign(context, window);
 }
 const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
 const scriptNames = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
@@ -1114,13 +1115,13 @@ test("GameLegacyMissions khởi tạo tiến trình xuyên kiếp và mở khóa
   assert.equal(M.definitions.length, 8);
   assert.equal(M.lifeTrack().q, 0);
   const newly = M.check();
-  assert.deepEqual(newly, ["Sơ Nhập Đạo Đồ"]);
+  assert.deepEqual(JSON.parse(JSON.stringify(newly)), ["Sơ Nhập Đạo Đồ"]);
   assert.equal(S.legacy.L1, 123456);
   assert.equal(saved.length, 1);
   assert.equal(timers[0].delay, 250);
   timers[0].fn();
   assert.match(notices[0], /Sơ Nhập Đạo Đồ/);
-  assert.deepEqual(M.check(), []);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.check())), []);
   assert.equal(saved.length, 1);
   S.life.q = 100;
   S.life.top10 = 1;
@@ -1158,7 +1159,7 @@ test("GameFortuneData cung cấp đủ dữ liệu cơ duyên theo giờ", () =>
 
 test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập và có mô tả giá trị", () => {
   const items = window.GameItemData.catalog();
-  assert.equal(items.length, 20);
+  assert.equal(items.length, 21);
   assert.equal(items[0].id, "ca");
   assert.equal(items[0].tot, 200);
   assert.match(items[0].d, /2 nhiệm vụ/);
@@ -1227,7 +1228,7 @@ test("GameState tạo state mặc định, migration dữ liệu cũ và lưu đ
   assert.deepEqual(JSON.parse(JSON.stringify(M.state.lb.bal)),Array(50).fill(0));
   assert.deepEqual(JSON.parse(JSON.stringify(M.state.fx)),[{n:2,v:5,t:""}]);
   assert.equal(M.state.fb,undefined);
-  assert.deepEqual(JSON.parse(JSON.stringify(ui)),[old]);
+  assert.deepEqual(JSON.parse(JSON.stringify(ui)),[JSON.parse(JSON.stringify(old))]);
   M.save();
   assert.equal(calls[1][0],"save");
   assert.equal(calls[1][1],"quest-study-v1");
