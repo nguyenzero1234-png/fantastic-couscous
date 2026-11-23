@@ -869,3 +869,11 @@ Sau mỗi đợt thay đổi:
 - [x] `game.js` giữ wrapper `renderMap` và module UI không tự phụ thuộc vào bootstrap global ngoài các dependency đã nhận.
 - [x] Bổ sung test render bản đồ và chọn địa điểm.
 - [ ] Tiếp tục tách UI leaderboard, thiên kiếp, nhật ký và logic còn lại.
+
+
+## Tách trang Thiên Cơ Lục sang ui/lore.js (2026-11-24)
+
+- [x] Chuyển toàn bộ renderer nội dung thế giới, cảnh giới, tông môn, thiên kiếp và luân hồi sang `ui/lore.js`.
+- [x] Truyền danh sách tông môn và DOM accessor qua dependency injection; giữ wrapper `renderLore` trong `game.js`.
+- [x] Bổ sung test kiểm tra nội dung chính và dữ liệu tông môn.
+- [ ] Tiếp tục tách leaderboard, thiên kiếp và các màn hình còn lại.

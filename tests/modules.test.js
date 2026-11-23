@@ -1329,3 +1329,13 @@ test("GameMapUI render bản đồ và xử lý chọn địa điểm",()=>{
  host.onclick({target:{closest:()=>({dataset:{map:"0"}})}});
  assert.match(info.innerHTML,/Cửu Châu/);
 });
+
+
+test("GameLoreUI dựng Thiên Cơ Lục từ dữ liệu tông môn",()=>{
+ const host={innerHTML:""},sects=Array.from({length:6},(_,i)=>({n:"Tông "+i,lore:"Truyền thừa "+i}));
+ const M=window.GameLoreUI.create({SECTS:sects,$:()=>host});
+ M.render();
+ assert.match(host.innerHTML,/Thiên Cơ Lục/);
+ assert.match(host.innerHTML,/Nguyên Lưu Chi Chủ/);
+ assert.match(host.innerHTML,/Tông 5/);
+});
