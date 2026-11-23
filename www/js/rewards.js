@@ -3,8 +3,8 @@
   "use strict";
   function modGain(amount,factors){
     const f=factors||{};
-    const multiplier=(Number(f.td)||0)*(Number(f.balance)||0)*(Number(f.status)||0);
-    return Math.max(0,Math.floor(Math.round(Number(amount)||0)*multiplier));
+    const rounded=Math.round(Number(amount)||0);
+    return Math.max(0,Math.floor(rounded*(Number(f.td)||0)*(Number(f.balance)||0)*(Number(f.status)||0)));
   }
   function eventGain(amount,charges,factors){
     let value=Number(amount)||0,remaining=Math.max(0,Math.floor(Number(charges)||0));
