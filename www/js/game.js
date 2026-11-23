@@ -1681,10 +1681,10 @@ $("events").onclick=e=>{
 setInterval(()=>{const a=document.activeElement;if(!a||!a.matches("input,select,textarea"))render()},30000);
 $("ph").oninput=()=>{const v=parseInt($("ph").value);if(v>=1){S.perHour=Math.min(1000,v);save();renderMore()}};
 /* ===== Bản 2: gộp tab, kiếp nạn, linh sủng, Thiên Đạo, sao lưu, âm thanh ===== */
-let AC;
-function sfx(f){if(S.snd===0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.14,t);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g);g.connect(AC.destination);o.start();o.stop(t+.6)}catch(e){}}
-function clk(){if(S.snd===0)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();const n=Math.floor(AC.sampleRate*0.035),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(let k=0;k<n;k++)d[k]=(Math.random()*2-1)*Math.pow(1-k/n,5);const o=AC.createBufferSource();o.buffer=b;const f=AC.createBiquadFilter();f.type="bandpass";f.frequency.value=2400;f.Q.value=0.8;const g=AC.createGain();g.gain.value=.45;o.connect(f);f.connect(g);g.connect(AC.destination);o.start()}catch(e){}}
-document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest("button,summary,select,.tick");if(t&&!t.disabled)clk()},true);
+const AudioUI=GameAudio.create(()=>S.snd===0,window);
+const sfx=AudioUI.sfx;
+const clk=AudioUI.clk;
+AudioUI.bind(document);
 const GR=[
  {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"]]},
  {id:"t",n:"Thiên Kiêu",s:[["b","Bảng"],["f","Thiên diễn"],["v","Vạn Sự Điện"],["z","Tông môn",1],["p","Bản đồ",1]]},
