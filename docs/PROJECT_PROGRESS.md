@@ -938,3 +938,11 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ state, helper nhiệm vụ, catalog vật phẩm, buff và DOM accessor qua dependency injection; event handlers tiếp tục ở bootstrap.
 - [x] `game.js` giữ ba wrapper render để không đổi vòng lặp điều phối.
 - [x] Bổ sung test cho trạng thái lịch rỗng, catalog cửa hàng và chuỗi trống.
+
+
+## Tách hệ thống truyện và ký lục sang systems/story.js (2026-11-24)
+
+- [x] Chuyển quản lý story flags, ghi mốc đột phá/tông môn/linh thú/danh hiệu/luân hồi và sinh nhật ký ngày sang `systems/story.js`.
+- [x] Truyền state, dữ liệu truyện/nhật ký, cảnh giới, tông môn, linh thú, danh hiệu và callback thông báo qua dependency injection.
+- [x] `game.js` giữ API wrapper cũ để các luồng luân hồi và UI nhật ký không đổi call-site.
+- [x] Bổ sung test cho các mốc truyện và dữ liệu nhật ký.

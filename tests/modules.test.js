@@ -1414,3 +1414,19 @@ test("GameActivityUI render lịch học, bảo khố và chuỗi nhiệm vụ",
  assert.match(nodes.shop.innerHTML,/Tâm Đan/);
  assert.match(nodes.chains.innerHTML,/Chưa có chuỗi/);
 });
+
+
+test("GameStorySystem ghi mốc truyện và tạo nhật ký qua dependency",()=>{
+ const S={points:20000,sect:0,act:"fox",title:"t",rb:1,storyLog:[],storyFlags:{},hist:{},cnt:{},streak:{n:3},tm:0,menh:90};
+ const messages=[];
+ const GameStoryData={realmStory:[null,{t:"Trúc Cơ",lines:["Đột phá"]}],append:(state,id,title,lines,meta,at,day)=>{if(state.storyLog.some(x=>x.id===id))return false;state.storyLog.push({id,title,lines,day,at});return true}};
+ const M=window.GameStorySystem.create({S,GameStoryData,GameDiaryData:{generate:(day,stats,ctx)=>[day,stats.n+" nhiệm vụ"]},today:()=>"2026-11-24",realmIndex:()=>1,SECTS:[{n:"Thanh Vân"}],PS:[{id:"fox",n:"Hồ Ly"}],TITLES:[{id:"t",n:"Thiên Kiêu"}],isTitleUnlocked:()=>true,say:x=>messages.push(x),QT:["giờ Tý"],previousMemory:()=>"Ký ức kiếp trước"});
+ M.checkFlags();
+ assert.equal(S.storyFlags.realmBF,1);
+ assert.ok(S.storyLog.some(x=>x.id==="realm:1"));
+ assert.ok(S.storyLog.some(x=>x.id==="sect:0"));
+ assert.ok(S.storyLog.some(x=>x.id==="pet:fox"));
+ assert.ok(S.storyLog.some(x=>x.id==="title:t"));
+ assert.ok(S.storyLog.some(x=>x.id==="rb:1"));
+ assert.match(M.generateDiary("2026-11-24").join(" "),/2026-11-24/);
+});
