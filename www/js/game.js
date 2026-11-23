@@ -347,7 +347,7 @@ function portrait(seed,opts){
   return ""; // NPC thường không có avatar
 }
 const avatar=name=>`<span class="av">${portrait(name)}</span>`;
-function sectStats(now){const A=SECTS.map(()=>({xp:0,n:0}));B.forEach((b,i)=>{A[SO[i]].xp+=bxp(i,now);A[SO[i]].n++});if(S.sect!=null){A[S.sect].xp+=uxp();A[S.sect].n++}return A}
+function sectStats(now){return GameSectWar.stats(SECTS.length,B.map((b,i)=>({sect:SO[i],xp:bxp(i,now)})),S.sect,uxp())}
 const ugain=(d1,d2)=>GameAnalytics.sumPointsBetween(S.hist,d1,d2);
 function warScores(t1,t2,d1,d2){
   // t1,t2 tính theo lịch ảo (có dOff); NPC chạy theo đồng hồ thật nên phải quy đổi, nếu không cửa sổ tuần nằm ở tương lai và NPC luôn 0 điểm

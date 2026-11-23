@@ -785,3 +785,21 @@ test("rebirth previousMemory định dạng ký ức kiếp trước và xử l�
   assert.equal(R.previousMemory([{ grade: "" }, { pk: 500 }]),
     "Ký ức kiếp trước: đỉnh 500 linh lực.");
 });
+
+test("sect-war stats tổng hợp linh lực và số tu sĩ theo tông môn", () => {
+  const W = window.GameSectWar;
+  assert.deepEqual(JSON.parse(JSON.stringify(W.stats(3, [
+    { sect: 0, xp: 10 }, { sect: 1, xp: 20 }, { sect: 0, xp: 5 },
+    { sect: 2, xp: 7 }
+  ], 1, 12))), [
+    { xp: 15, n: 2 }, { xp: 32, n: 2 }, { xp: 7, n: 1 }
+  ]);
+  assert.deepEqual(JSON.parse(JSON.stringify(W.stats(2, [], null, 999))), [
+    { xp: 0, n: 0 }, { xp: 0, n: 0 }
+  ]);
+  assert.deepEqual(JSON.parse(JSON.stringify(W.stats(2, [
+    { sect: 0, xp: 4 }, { sect: 9, xp: 100 }, null
+  ], 8, 50))), [
+    { xp: 4, n: 1 }, { xp: 0, n: 0 }
+  ]);
+});

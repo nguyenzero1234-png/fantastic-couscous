@@ -18,5 +18,19 @@
 
   const flavor = (a, b) => FLAVORS[(a * 7 + b * 13) % FLAVORS.length];
 
-  root.GameSectWar = Object.freeze({ pairs, flavor });
+  const stats = (sectCount, npcRows, userSect, userXp) => {
+    const result = Array.from({ length: sectCount }, () => ({ xp: 0, n: 0 }));
+    (npcRows || []).forEach(row => {
+      if (!row || !Number.isInteger(row.sect) || !result[row.sect]) return;
+      result[row.sect].xp += row.xp;
+      result[row.sect].n++;
+    });
+    if (userSect != null && result[userSect]) {
+      result[userSect].xp += userXp;
+      result[userSect].n++;
+    }
+    return result;
+  };
+
+  root.GameSectWar = Object.freeze({ pairs, flavor, stats });
 })(typeof window !== "undefined" ? window : globalThis);

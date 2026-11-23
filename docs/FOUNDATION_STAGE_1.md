@@ -289,3 +289,10 @@ www/js/
 - Wrapper `prevMemory` trong `game.js` tiếp tục cung cấp `S.rbh`; giữ nguyên điều kiện bỏ qua giá trị falsy và chuỗi tiếng Việt.
 - Có kiểm thử cho dữ liệu rỗng, thiếu trường, giá trị falsy và bản ghi đủ thông tin.
 - Không thay đổi save schema, dữ liệu lịch sử hoặc điều kiện luân hồi.
+
+
+## Helper thống kê tông môn
+- `GameSectWar.stats(sectCount, npcRows, userSect, userXp)` tạo bảng tổng linh lực (`xp`) và số thành viên (`n`) theo từng tông.
+- Logic tính điểm vẫn nằm ở `game.js`; helper nhận các điểm đã tính sẵn, không đọc state, thời gian hay DOM.
+- Có test cho thành viên NPC, người chơi, tông rỗng và dữ liệu chỉ số không hợp lệ.
+- Không thay đổi công thức điểm, lịch chiến tông hoặc dữ liệu lưu.

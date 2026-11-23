@@ -365,3 +365,11 @@
 - [x] Bổ sung test cho danh sách rỗng, bản ghi thiếu trường, giá trị falsy và bản ghi đầy đủ.
 - [x] CI #173 xác nhận commit `982edd25` thành công, có artifact `TuTienHocDao-apk` (5,799,890 bytes).
 - [ ] Chờ CI xác nhận thay đổi helper ký ức mới; chưa kiểm thử trên thiết bị Android thật.
+
+
+## Tổng hợp thống kê tông môn (2026-11-23)
+- [x] CI #174 xác nhận commit `bc67dc1` thành công và tạo artifact `TuTienHocDao-apk` (5,799,987 bytes).
+- [x] Tách phép cộng tổng linh lực và số thành viên theo tông môn thành `GameSectWar.stats(sectCount, npcRows, userSect, userXp)`.
+- [x] `game.js` vẫn tính linh lực NPC/người chơi từ state; module chỉ nhận dữ liệu đã tính và tổng hợp thống kê.
+- [x] Bổ sung test cho nhiều NPC cùng tông, người chơi thuộc tông, tông rỗng và chỉ số tông không hợp lệ.
+- [ ] Chờ CI xác nhận thay đổi; chưa kiểm thử trên thiết bị Android thật.
