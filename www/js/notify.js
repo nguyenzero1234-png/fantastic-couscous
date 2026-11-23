@@ -1,7 +1,8 @@
-/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2 (khung) + Phần 3 (nhắc học) + Phần 4 (thưởng, thiên kiếp, kỳ ngộ) =====
+/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2–4 + cải tiến =====
    - Chỉ hoạt động trong app Capacitor (APK); trên trình duyệt thường sẽ tự bỏ qua.
    - Mỗi nhóm thông báo có dải id riêng: study 1000-1999, reward 2000-2999, ex 3000-3999, user 4000-4999.
-   - Các hàm trong BLD trả về danh sách {id (0-999), title, body, at: Date}. Phần 3, 4, 5 sẽ điền vào đây. */
+   - Các hàm trong BLD trả về danh sách {id (0-999), title, body, at: Date}.
+   - Cải tiến: tự hủy + lên lịch lại ngay khi Thiên Đạo tua ngày; hiển thị trạng thái rõ ràng. */
 (function(){
   const CAP=window.Capacitor;
   const native=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
@@ -55,7 +56,7 @@
         if(!fut(at))return;
         out.push({id:100+i,title:"Nhiệm vụ nhanh sắp hết hạn",body:"«"+String(q.name).slice(0,40)+"» "+lead+". Học ngay để nhận thưởng nhanh!",at});
       });
-      // 400-429: khung giờ trong Nhật trình (hôm nay và ngày mai)
+      // 400-429: khung giờ trong Nhật trình (hôm nay và ngày mai) — tắt khi Thiên Đạo đang tua
       if(!S.dOff){
         let k=0;
         [today(),dayStr(-1)].forEach(key=>{
@@ -85,7 +86,7 @@
           else petFull=true;
         }
       }catch(e){}
-      // 10-11: sắp hết tuần/tháng mà event còn thiếu giờ (chỉ khi thiếu không quá 5 giờ)
+      // 10-11: sắp hết tuần/tháng mà event còn thiếu giờ (chỉ khi thiếu không quá 5 giờ) — tắt khi Thiên Đạo
       if(!S.dOff){
         try{
           const ws=weekStart(),sun=new Date(ws+"T00:00:00");sun.setDate(sun.getDate()+6);sun.setHours(18,0,0,0);
@@ -108,7 +109,7 @@
         }
         let f={};try{f=nwCompute()}catch(e){}
         const L=S.god?99:Math.max(ri(uxp()),S.pk||0),names=[];
-        f.y=nwHas('#lenh button[data-a="lc"]:not([disabled]),#lenh button[data-a="kc"]:not([disabled])');   // Lệnh bài: bỏ nút Điểm danh (đã xử lý riêng ở trên) và kỳ ngộ chưa xem
+        f.y=nwHas('#lenh button[data-a="lc"]:not([disabled]),#lenh button[data-a="kc"]:not([disabled])');
         activeGR().forEach(g=>g.s.forEach(x=>{if(["j","e","y","x"].includes(x[0])&&f[x[0]]&&(x[2]||0)<=L)names.push(x[1])}));
         if(names.length)parts.push("Chưa nhận thưởng ở: "+names.join(", "));
         if(petFull)parts.push("Cửu Vĩ Hồ đã đầy");
@@ -176,7 +177,7 @@
   }
 
   // Hủy thông báo cũ rồi hẹn lại; bỏ qua nếu danh sách không đổi
-  let busy=false,again=false,sig=null,tm=0;
+  let busy=false,again=false,sig=null,tm=0,lastDOff=S.dOff||0;
   async function run(force){
     if(!LN)return;
     if(busy){again=true;return}
@@ -193,8 +194,9 @@
     }catch(e){console.warn("NT run",e);sig=null}
     finally{busy=false;if(again){again=false;run(false)}}
   }
-  // save() gọi hàm này; chờ 5 giây cho đỡ gọi dồn
+  // save() gọi hàm này; chờ 5 giây cho đỡ gọi dồn. Khi Thiên Đạo tua ngày thì force ngay.
   window.NTsave=()=>{if(!LN)return;clearTimeout(tm);tm=setTimeout(()=>run(false),5000)};
+  window.NTforce=()=>{if(!LN)return;clearTimeout(tm);run(true)};
 
   // ----- Giao diện trong Thiên Thư > Thống kê -----
   const box=document.createElement("div");box.style.display="contents";box.id="ntbox";
@@ -205,7 +207,8 @@
       const p=await perm(false);
       st=p==="granted"?"Đã được cấp quyền thông báo.":p==="denied"?"Quyền thông báo đang bị tắt. Vào Cài đặt điện thoại, mở mục Ứng dụng, chọn game rồi bật Thông báo.":"Chưa cấp quyền thông báo.";
     }
-    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small>
+    const dOffNote=S.dOff?`<div style="margin-top:6px;padding:6px 8px;background:rgba(180,80,40,.12);border-radius:6px;font-size:12px;color:var(--red,#b45309)">⚠ Thiên Đạo đang tua ngày (dOff=${S.dOff}). Thông báo lịch (Tuần/Nguyệt Luyện, khung giờ học) tạm tắt để tránh lệch thời gian.</div>`:"";
+    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small>${dOffNote}
 <div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
 <div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div></details>`;
   }
@@ -244,6 +247,16 @@
     setInterval(()=>run(false),600000);                   // mỗi 10 phút khi đang mở
     let lf="";                                            // phiên học bắt đầu/hủy không gọi save(), nên theo dõi riêng
     setInterval(()=>{let k="";try{k=fq?fq.id+":"+fEnd:""}catch(e){}if(k!==lf){lf=k;window.NTsave()}},2000);
+    // Theo dõi Thiên Đạo tua ngày → hủy ngay thông báo lịch cũ và lên lịch lại
+    setInterval(()=>{
+      const cur=S.dOff||0;
+      if(cur!==lastDOff){
+        lastDOff=cur;
+        sig=null;           // buộc rebuild
+        run(true);
+        paint();            // cập nhật ghi chú trên UI
+      }
+    },1500);
   }
-  window.NT={BLD,build,nextAt,run,RANGE,cfg};
+  window.NT={BLD,build,nextAt,run,RANGE,cfg,force:()=>run(true)};
 })();
