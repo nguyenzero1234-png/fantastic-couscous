@@ -124,3 +124,10 @@
 - [x] Thay bốn công thức tương ứng trong `game.js` bằng lời gọi module; giữ nguyên dữ liệu đầu vào, thứ tự tính và các giới hạn min/max.
 - [x] Nạp module trước `game.js` và bổ sung test ranh giới xếp loại, điểm 0/100, tiến độ âm/vượt ngưỡng.
 - [ ] Chờ CI xác nhận `npm test` và APK sau thay đổi.
+
+
+## Tách module ngày tháng (2026-11-23)
+- [x] Tạo `www/js/date-data.js` (`window.GameDateData`) cho ngày hiện tại theo độ lệch game, lùi ngày và xác định đầu tuần thứ Hai.
+- [x] Thay ba helper trong `game.js` bằng wrapper gọi module; giữ nguyên độ lệch `S.dOff`, local time và định dạng ngày.
+- [x] Bổ sung test với thời điểm cố định cho ngày hiện tại, ngày trước/sau và ranh giới đầu tuần.
+- [ ] Chờ CI xác nhận `npm test` và APK sau thay đổi.

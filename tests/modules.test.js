@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "progression-data.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "progression-data.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
@@ -200,4 +200,18 @@ test("progression data giữ nguyên xếp loại, điểm thiên kiếp và ti�
   assert.equal(P.taoTamProgress(-5, exam), 0);
   assert.equal(P.taoTamProgress(5, exam), 0.5);
   assert.equal(P.taoTamProgress(20, exam), 1);
+});
+
+test("date data giữ nguyên ngày địa phương, bù ngày và đầu tuần thứ Hai", () => {
+  const D = window.GameDateData;
+  const base = new Date(2026, 10, 23, 12, 0, 0, 0).getTime(); // Thứ Hai
+  const day = new Date(base).toLocaleDateString("sv");
+  const yesterday = new Date(base - 864e5).toLocaleDateString("sv");
+  assert.equal(D.today(0, base), day);
+  assert.equal(D.today(1, base), new Date(base + 864e5).toLocaleDateString("sv"));
+  assert.equal(D.dayOffset(0, 1, base), yesterday);
+  assert.equal(D.dayOffset(0, 0, base), day);
+  assert.equal(D.weekStart(0, base), day);
+  assert.equal(D.weekStart(0, base + 2 * 864e5), day);
+  assert.equal(D.weekStart(0, base - 864e5), new Date(base - 864e5).toLocaleDateString("sv"));
 });

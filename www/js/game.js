@@ -8,7 +8,7 @@ GameUI.apply(S);
 if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let KSALT=(S.rb||0)*7919;
 const save=()=>GameStorage.save(KEY,S);
 const $=id=>document.getElementById(id);
-const today=()=>new Date(Date.now()+(S.dOff||0)*864e5).toLocaleDateString("sv");
+const today=()=>GameDateData.today(S.dOff||0);
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===today());
 const pad=GameTimeFormat.pad;
@@ -975,7 +975,7 @@ function renderShop(){
 const qm=()=>QM[$("nq").value]||1;
 const rem=t=>{const m=Math.max(0,Math.ceil((t-Date.now())/60000));return m>=60?Math.floor(m/60)+" giờ "+m%60+" phút":m+" phút"};
 const expired=q=>!!q.due&&!isDone(q)&&Date.now()>q.due;
-const weekStart=()=>{const d=new Date(Date.now()+(S.dOff||0)*864e5);d.setDate(d.getDate()-(d.getDay()+6)%7);return d.toLocaleDateString("sv")};
+const weekStart=()=>GameDateData.weekStart(S.dOff||0);
 const sumMins=f=>{let t=0;for(const k in S.hist)if(f(k))t+=S.hist[k].m;return t};
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>{const st=S.quests.filter(x=>x.chain===q.chain);return st.slice(0,st.indexOf(q)).every(isDone)};
@@ -1081,7 +1081,7 @@ function showTdLenh(){
   $("thd").hidden=false;
   $("thx").onclick=()=>{$("thd").hidden=true};
 }
-const dayStr=o=>{const d=new Date(Date.now()+(S.dOff||0)*864e5);d.setDate(d.getDate()-o);return d.toLocaleDateString("sv")};
+const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
 const calc=()=>Math.max(1,Math.round(dur()/60*S.perHour*parseFloat($("nl").value)*qm()));
 function finish(q){

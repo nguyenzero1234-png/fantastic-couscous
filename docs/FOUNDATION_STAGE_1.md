@@ -66,3 +66,8 @@ www/js/
 
 ## Module tiến độ
 - `www/js/progression-data.js` chứa các phép tính thuần: xếp loại điểm, chuẩn hóa tiến độ thiên kiếp, điểm người chơi/NPC và tiến độ đạo tâm. Module không đọc/ghi trạng thái game hoặc thao tác DOM.
+
+
+## Module ngày tháng
+- `www/js/date-data.js` cung cấp các hàm có thể kiểm thử với thời điểm đầu vào: ngày hiện tại theo độ lệch ngày trong game, lùi số ngày và ngày đầu tuần (thứ Hai).
+- `game.js` chỉ giữ các wrapper gắn với trạng thái `S.dOff`; phép tính ngày được chuyển sang module độc lập, vẫn dùng local time và định dạng `sv` như trước.
