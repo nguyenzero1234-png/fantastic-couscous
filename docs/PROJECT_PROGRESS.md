@@ -168,3 +168,10 @@
 - [x] `game.js` giữ wrapper `isDone` và tiếp tục lấy ngày từ lịch game; nhiệm vụ lặp vẫn chỉ được xem là hoàn thành trong đúng ngày.
 - [x] Bổ sung kiểm thử cho nhiệm vụ thường, nhiệm vụ lặp, ngày trùng/khác và trạng thái chưa hoàn thành.
 - [ ] Chờ CI xác nhận kiểm thử và build APK.
+
+
+## Tách predicate thiên phú NPC (2026-11-23)
+- [x] Tạo `www/js/npc-data.js` (`window.GameNpcData`) cho quy tắc xác định NPC có thiên phú độc nhất: NPC ở chỉ số 9 luôn có, hoặc NPC có cờ `tk`.
+- [x] `game.js` giữ alias `isTK` và chuyển việc kiểm tra sang module thuần; danh sách NPC và dữ liệu thiên phú không thay đổi.
+- [x] Bổ sung test cho chỉ số đặc biệt, cờ `tk`, NPC thường, chỉ số âm và ngoài phạm vi.
+- [ ] Chờ CI xác nhận kiểm thử và build APK.

@@ -21,7 +21,7 @@ function load(name) {
   const source = fs.readFileSync(path.join(jsDir, name), "utf8");
   new vm.Script(source, { filename: name }).runInContext(context);
 }
-["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "timer.js"].forEach(load);
+["storage.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "npc-data.js", "timer.js"].forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of fs.readdirSync(jsDir).filter(x => x.endsWith(".js"))) {
@@ -32,7 +32,7 @@ test("tất cả script JavaScript trong www/js parse được", () => {
 test("thứ tự module phụ thuộc được nạp trước game.js", () => {
   const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
   const names = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
-  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "game.js"]) {
+  for (const name of ["storage.js", "ui.js", "timer.js", "rewards.js", "streak.js", "analytics.js", "quest-data.js", "schedule-data.js", "pet-data.js", "time-format.js", "date-data.js", "progression-data.js", "noise.js", "text.js", "sect-war.js", "npc-data.js", "game.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) < names.indexOf("game.js") || name === "game.js", name + " phải nạp trước game.js");
   }
@@ -278,4 +278,16 @@ test("quest data xác định hoàn thành một lần và nhiệm vụ lặp th
   assert.equal(done({ doneOn: "2026-11-22", repeat: true }, "2026-11-23"), false);
   assert.equal(done({ doneOn: "2026-11-23", repeat: true }, "2026-11-23"), true);
   assert.equal(done({ doneOn: "", repeat: true }, "2026-11-23"), false);
+});
+
+
+test("npc data xác định thiên phú độc nhất theo chỉ số và dữ liệu NPC", () => {
+  const N = window.GameNpcData;
+  const npcs = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { tk: 1 }, { tk: false }];
+  assert.equal(N.isUniqueTalent(9, npcs), true);
+  assert.equal(N.isUniqueTalent(10, npcs), true);
+  assert.equal(N.isUniqueTalent(11, npcs), false);
+  assert.equal(N.isUniqueTalent(8, npcs), false);
+  assert.equal(N.isUniqueTalent(-1, npcs), false);
+  assert.equal(N.isUniqueTalent(99, npcs), false);
 });

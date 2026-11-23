@@ -98,3 +98,9 @@ www/js/
 ## Quy tắc hoàn thành nhiệm vụ
 - `GameQuestData.isDone(quest, today)` là hàm thuần xác định trạng thái hoàn thành dựa trên `doneOn`, `repeat` và ngày hiện tại được tiêm vào.
 - `game.js` giữ wrapper gọi ngày lịch game hiện tại; không thay đổi cấu trúc lưu nhiệm vụ hoặc hành vi nhiệm vụ lặp.
+
+
+## Module dữ liệu NPC
+- `www/js/npc-data.js` cung cấp `GameNpcData.isUniqueTalent(index, npcs)` để xác định NPC có thiên phú độc nhất.
+- Quy tắc cũ được giữ nguyên: NPC ở chỉ số 9 luôn được đánh dấu; các NPC khác dựa vào cờ `tk` trong dữ liệu.
+- `game.js` giữ wrapper `isTK`; dữ liệu NPC, nội dung thiên phú và cách hiển thị vẫn ở game.

@@ -130,7 +130,7 @@ N10.forEach(([n,t,d,o])=>{B.push({n,t,b:.5,r:0,v:100,p:60,d,tk:1});BH.push(Objec
 // Giới tính từng NPC theo thứ tự B (n = nam, u = nữ). 37 nam, 13 nữ.
 const GD="nnnnnnnnnnnnununnnunnnnuunuunnnnnunnunuunnunnnunnn";
 B.forEach((b,i)=>{b.g=GD[i]==="u"?"nu":"nam"});
-const isTK=i=>i===9||!!(B[i]&&B[i].tk);
+const isTK=i=>GameNpcData.isUniqueTalent(i,B);
 const BIO10=[
 "Miêu Miên Tử vốn là đệ tử ngoại môn của một tiểu tông bên sông. Mỗi trưa vẫn nằm dưới gốc linh thụ già, nửa mơ nửa tỉnh, miệng vẫn lẩm bẩm «mai sẽ khổ luyện». Ba năm trôi qua, đồng môn đã phá bình cảnh, hắn mới vừa vững Luyện Khí. Thế mà mỗi khi tỉnh giấc thật sự, linh lực lại bùng lên một đợt ngắn ngủi khiến cả tông kinh ngạc — rồi lại ngủ tiếp.",
 "Diên Thời Tử nổi danh trong giới tu sĩ trẻ với «bí kíp sát kỳ hạn». Cả tháng không động đến kinh thư, đến ba ngày cuối mới đốt đèn suốt canh. Kỳ lạ thay, hắn chưa từng một lần bỏ lỡ thiên kiếp hay hạn cuối của tông môn. Người ta nói đạo tâm của hắn chỉ thức tỉnh khi áp lực đủ lớn.",
