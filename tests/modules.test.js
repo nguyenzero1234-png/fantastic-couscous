@@ -31,6 +31,8 @@ const html = fs.readFileSync(path.join(root, "www", "index.html"), "utf8");
 const scriptNames = [...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x => x[1]);
 const moduleFiles = fs.readdirSync(jsDir)
   .filter(file => file.endsWith(".js") && !["game.js", "notify.js", "schedule.js"].includes(file));
+load("core/storage.js");
+load("core/state.js");
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
@@ -51,6 +53,8 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
     assert.ok(names.includes(file), file + " phải được khai báo trong index.html");
     assert.ok(names.indexOf(file) < gameIndex, file + " phải nạp trước game.js");
   }
+  assert.ok(names.indexOf("core/storage.js") < names.indexOf("core/state.js"));
+  assert.ok(names.indexOf("core/state.js") < gameIndex);
   for (const name of ["notify.js", "schedule.js"]) {
     assert.ok(names.includes(name), name + " phải được khai báo");
     assert.ok(names.indexOf(name) > gameIndex, name + " phải nạp sau game.js");
