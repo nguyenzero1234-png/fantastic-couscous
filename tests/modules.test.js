@@ -372,3 +372,21 @@ test("time format giữ nguyên định dạng ngày giờ sự kiện tiếng V
     }));
   }
 });
+
+
+test("date data tạo khóa ngày/tuần/tháng cho nhiệm vụ định kỳ", () => {
+  const D = window.GameDateData;
+  assert.equal(D.periodKey("d", "2026-11-23", "2026-11-23"), "2026-11-23");
+  assert.equal(D.periodKey("w", "2026-11-23", "2026-11-23"), "2026-11-23");
+  assert.equal(D.periodKey("m", "2026-11-23", "2026-11-23"), "2026-11");
+  assert.equal(D.periodKey("unknown", "2026-01-02", "2025-12-29"), "2026-01");
+});
+
+test("time format định dạng số giờ từ phút với một chữ số thập phân", () => {
+  const T = window.GameTimeFormat;
+  assert.equal(T.hoursLabel(0), "0.0 giờ");
+  assert.equal(T.hoursLabel(30), "0.5 giờ");
+  assert.equal(T.hoursLabel(60), "1.0 giờ");
+  assert.equal(T.hoursLabel(125), "2.1 giờ");
+  assert.equal(T.hoursLabel(-30), "-0.5 giờ");
+});

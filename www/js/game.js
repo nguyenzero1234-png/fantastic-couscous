@@ -1642,7 +1642,7 @@ function renderStats(){
   const T=today(),days=n=>Array.from({length:n},(_,k)=>dayStr(n-1-k)),H=S.hist,C=S.cnt||{};
   const d7=days(7),d30=days(30),analytics=GameAnalytics.summarize(H,C,{today:T,days7:d7,days30:d30,streak:(S.streak.last===T||S.streak.last===dayStr(1))?(S.streak.n||0):0});
   const {g,sm,sn,mo,mA,pA,bp,bd,ls}=analytics;
-  const hr=m=>(m/60).toFixed(1)+" giờ";
+  const hr=m=>GameTimeFormat.hoursLabel(m);
   const cards=[["Hôm nay",hr(g(T,"m")),g(T,"p")+" linh lực, "+(C[T]||0)+" nhiệm vụ"],["7 ngày qua",hr(sm(d7,"m")),sm(d7,"p")+" linh lực, "+sn(d7)+" nhiệm vụ"],["30 ngày qua",hr(sm(d30,"m")),sm(d30,"p")+" linh lực, "+sn(d30)+" nhiệm vụ"],["Tháng này",hr(mo.reduce((t,k)=>t+H[k].m,0)),mo.reduce((t,k)=>t+H[k].p,0)+" linh lực"],["Tổng cộng",hr(mA),pA+" linh lực"],["Trung bình 30 ngày",(sm(d30,"m")/1800).toFixed(1)+" giờ/ngày",Math.round(sm(d30,"p")/30)+" linh lực/ngày"],["Ngày tốt nhất",bp+" linh lực",bd||"chưa có"],["Chuỗi ngày học",((S.streak.last===T||S.streak.last===dayStr(1))?S.streak.n:0)+" ngày","kỷ lục "+ls+" ngày"],["Số kiếp",((S.rbh||[]).length)+" đã qua","Đang ở kiếp "+((S.rb||0)+1)+", còn "+Math.max(0,Math.ceil(KD-kAge()))+" ngày"],["Kiếp linh lực cao nhất","Kiếp "+bk().n+": "+bk().pk,bk().cur?"kiếp hiện tại đang dẫn đầu":"đã qua"]];
   const arr=days(SPD).map(d=>({d,v:g(d,SMT==="p"?"p":"m")})),mx=Math.max(1,...arr.map(x=>x.v));
   const bars=arr.map((x,i)=>`<div><span>${SPD===7?(SMT==="p"?x.v:Math.round(x.v/6)/10):""}</span><i style="height:${Math.round(x.v/mx*80)}px"></i><span>${SPD===7||i%5===0?x.d.slice(8):""}</span></div>`).join("");
@@ -1671,7 +1671,7 @@ const LQ=[
  {id:"m3",n:"Bách Chiến Bách Thắng",per:"m",met:"c",tg:60,r:300,desc:"Hoàn thành 60 nhiệm vụ trong tháng"}
 ];
 const LP={d:["Nhật khóa","Làm mới mỗi ngày"],w:["Tuần khóa","Làm mới mỗi thứ Hai"],m:["Nguyệt khóa","Làm mới mỗi tháng"]};
-const lpk=p=>p==="d"?today():p==="w"?weekStart():today().slice(0,7);
+const lpk=p=>GameDateData.periodKey(p,today(),weekStart());
 function lval(t){
   const T=today(),f=t.per==="d"?k=>k===T:t.per==="w"?k=>k>=weekStart()&&k<=T:k=>k.slice(0,7)===T.slice(0,7);
   let v=0;new Set([...Object.keys(S.hist),...Object.keys(S.cnt||{})]).forEach(k=>{if(!f(k))return;const h=S.hist[k]||{p:0,m:0};if(t.met==="m")v+=h.m;else if(t.met==="p")v+=h.p;else if(t.met==="c")v+=(S.cnt||{})[k]||0;else if(h.m>=30)v++});

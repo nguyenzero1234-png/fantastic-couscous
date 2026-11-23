@@ -123,3 +123,9 @@ www/js/
 - `GameDateData.examDate(start, dayOffset)` clone ngày bắt đầu, đặt về 12 giờ local rồi cộng độ lệch ngày lịch; không làm thay đổi đối tượng đầu vào.
 - `GameTimeFormat.eventTimestamp(timestamp)` định dạng ngày/giờ sự kiện theo locale `vi-VN`.
 - Các wrapper trong `game.js` tiếp tục lấy dữ liệu kỳ thi và timestamp từ state runtime.
+
+
+## Helper khóa chu kỳ và định dạng giờ học
+- `GameDateData.periodKey(period, todayKey, weekStartKey)` trả về khóa ngày, tuần hoặc tháng theo quy tắc nhiệm vụ định kỳ hiện có.
+- `GameTimeFormat.hoursLabel(minutes)` định dạng số phút thành giờ với một chữ số thập phân và hậu tố tiếng Việt.
+- Hai helper nhận dữ liệu từ caller, không đọc state toàn cục.

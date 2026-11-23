@@ -197,4 +197,12 @@
 - [x] Chuyển định dạng ngày/giờ sự kiện tiếng Việt sang `GameTimeFormat.eventTimestamp()`.
 - [x] `game.js` giữ wrapper, dữ liệu kỳ thi và nguồn timestamp vẫn do luồng hiện tại cung cấp.
 - [x] Bổ sung test kiểm tra không mutate ngày bắt đầu, cộng/lùi ngày và định dạng locale.
+- [x] CI #131 xác nhận kiểm thử và build APK thành công; artifact APK đã được tạo.
+
+
+## Tách helper khóa chu kỳ và định dạng giờ học (2026-11-23)
+- [x] Chuyển tạo khóa ngày/tuần/tháng cho nhiệm vụ định kỳ sang `GameDateData.periodKey()`; caller tiếp tục truyền ngày và đầu tuần theo lịch game.
+- [x] Chuyển định dạng tổng số phút thành nhãn giờ một chữ số thập phân sang `GameTimeFormat.hoursLabel()`.
+- [x] Giữ nguyên quy tắc mặc định cho chu kỳ không phải ngày/tuần (khóa tháng) và định dạng số giờ.
+- [x] Bổ sung test cho ngày, tuần, tháng, giá trị chu kỳ lạ, số phút âm/0 và làm tròn thập phân.
 - [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt này.
