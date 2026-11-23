@@ -37,7 +37,8 @@
 - [x] Sau khi tách `schedule-data.js`: parse cú pháp, thứ tự nạp script và 1.039 ca hồi quy cho định dạng giờ, khoảng thời gian, trùng lịch và dữ liệu biên đều đạt.
 - [x] Thêm `tests/modules.test.js` và lệnh `npm test` dùng Node.js built-in test runner; chưa đánh dấu chạy đạt cho tới khi thực thi trên CI.
 - [x] `npm test` chạy thành công trên GitHub Actions run #78, bao gồm cú pháp, thứ tự script, storage/backup/recovery, timer, thưởng, streak/tâm ma, analytics và parser.
-- [ ] Chưa xác nhận build APK sau thay đổi mới hoặc kiểm thử Android thật.
+- [x] GitHub Actions run #78 build APK debug thành công sau khi thêm test timer; artifact `TuTienHocDao-apk` đã được tạo.
+- [ ] Chưa kiểm thử thao tác trên thiết bị Android thật.
 
 ## Đang thực hiện
 - [x] Tách logic quyết định giữ/đứt chuỗi, dùng phù bảo hộ và tiến độ trấn áp tâm ma sang `www/js/streak.js`.
