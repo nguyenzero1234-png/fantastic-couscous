@@ -37,8 +37,15 @@
     return realms[index][0] + " tầng " + Math.min(9, Math.floor((xp - lower) / (upper - lower) * 9) + 1);
   };
 
+  const playerXpAt = (history, points, dateKey) => {
+    let total = 0, upto = 0;
+    for (const key in history) { const value = history[key].p || 0; total += value; if (key <= dateKey) upto += value; }
+    if (upto >= total) return points;
+    return upto + Math.max(0, points - total);
+  };
+
   root.GameProgressData = Object.freeze({
     grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress,
-    realmIndex, realmName
+    realmIndex, realmName, playerXpAt
   });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -798,12 +798,7 @@ const actDays=(d,cur)=>{
   return n};
 // Linh lực người chơi tại ngày dv: lịch sử đến ngày đó + phần linh lực không có trong nhật ký (đặt tay).
 // Nếu lịch sử đã được tính hết (độ kiếp đúng hạn / hạn đã qua so với dữ liệu) thì dùng đúng linh lực hiện có.
-function playerXpAt(dv){
-  const ds=dv.toLocaleDateString("sv");let tot=0,upto=0;
-  for(const k in S.hist){const p=S.hist[k].p||0;tot+=p;if(k<=ds)upto+=p}
-  if(upto>=tot)return S.points;
-  return upto+Math.max(0,S.points-tot);
-}
+function playerXpAt(dv){return GameProgressData.playerXpAt(S.hist,S.points,dv.toLocaleDateString("sv"))}
 // Chuỗi học liên tục (số ngày liên tiếp có học) tính đến ngày d. cur: đang độ kiếp đúng hạn/bị tua → tính đến hôm nay và gộp chuỗi hiện tại (kể cả được Tục Mệnh Phù giữ).
 function streakAt(d,cur){
   const td=new Date(today()+"T12:00:00");d=new Date(cur||d>td?td:d);
@@ -964,12 +959,12 @@ function renderShop(){
   $("titles").innerHTML=TITLES.map(t=>{const ok=tok(t);return `<li class="${ok?"":"lock"}"><div class="nm">${t.n}${nwS().t[t.id]?'<span class="nd" title="Mới"></span>':""}<small>${t.d}</small><small style="color:var(--gold)">Buff: ${t.b}</small></div>${ok?`<button class="btn ${S.title===t.id?"":"alt"}" data-a="eq" data-id="${t.id}">${S.title===t.id?"Đang đeo":"Đeo"}</button>`:"🔒"}</li>`}).join("");
 }
 const qm=()=>QM[$("nq").value]||1;
-const rem=t=>{const m=Math.max(0,Math.ceil((t-Date.now())/60000));return m>=60?Math.floor(m/60)+" giờ "+m%60+" phút":m+" phút"};
-const expired=q=>!!q.due&&!isDone(q)&&Date.now()>q.due;
+const rem=t=>GameTimeFormat.remaining(t,Date.now());
+const expired=q=>GameQuestData.isExpired(q,isDone,Date.now());
 const weekStart=()=>GameDateData.weekStart(S.dOff||0);
 const sumMins=f=>{let t=0;for(const k in S.hist)if(f(k))t+=S.hist[k].m;return t};
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
-const unlocked=q=>{const st=S.quests.filter(x=>x.chain===q.chain);return st.slice(0,st.indexOf(q)).every(isDone)};
+const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
 const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
 function renderChains(){
   $("chains").innerHTML=S.chains.length?S.chains.map(c=>{

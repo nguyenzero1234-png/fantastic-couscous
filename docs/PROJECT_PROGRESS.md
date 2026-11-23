@@ -167,7 +167,7 @@
 - [x] Chuyển phép xác định nhiệm vụ đã hoàn thành sang `GameQuestData.isDone(quest, today)`; truyền ngày hiện tại vào để giữ hàm thuần, dễ kiểm thử.
 - [x] `game.js` giữ wrapper `isDone` và tiếp tục lấy ngày từ lịch game; nhiệm vụ lặp vẫn chỉ được xem là hoàn thành trong đúng ngày.
 - [x] Bổ sung kiểm thử cho nhiệm vụ thường, nhiệm vụ lặp, ngày trùng/khác và trạng thái chưa hoàn thành.
-- [ ] Chờ CI xác nhận kiểm thử và build APK.
+- [x] GitHub Actions run #124 xác nhận `npm test` và build APK thành công; artifact APK đã được tạo.
 
 
 ## Tách predicate thiên phú NPC (2026-11-23)
@@ -175,3 +175,11 @@
 - [x] `game.js` giữ alias `isTK` và chuyển việc kiểm tra sang module thuần; danh sách NPC và dữ liệu thiên phú không thay đổi.
 - [x] Bổ sung test cho chỉ số đặc biệt, cờ `tk`, NPC thường, chỉ số âm và ngoài phạm vi.
 - [ ] Chờ CI xác nhận kiểm thử và build APK.
+
+
+## Đợt tách helper thuần theo lô (2026-11-23)
+- [x] Chuyển định dạng thời gian còn lại sang `GameTimeFormat.remaining(timestamp, now)`; wrapper trong `game.js` vẫn lấy `Date.now()` tại đúng thời điểm gọi.
+- [x] Chuyển kiểm tra hạn chót và mở khóa chuỗi sang `GameQuestData.isExpired()` / `isUnlocked()`; giữ nguyên điều kiện, thứ tự lọc và cả hành vi biên của `slice(0, indexOf())`.
+- [x] Chuyển phép tính linh lực tại mốc ngày sang `GameProgressData.playerXpAt(history, points, dateKey)`; wrapper vẫn tạo khóa ngày bằng local locale `sv`.
+- [x] Bổ sung test cho làm tròn phút, hạn chót đúng/sau thời điểm, chuỗi nhiệm vụ và dữ liệu lịch sử.
+- [ ] Chờ CI xác nhận kiểm thử và build APK cho đợt refactor helper này.

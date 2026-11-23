@@ -10,10 +10,14 @@
   };
   const toMinutes = value => +value.slice(0, 2) * 60 + +value.slice(3);
   const toClock = minutes => pad(Math.floor(minutes / 60)) + ":" + pad(minutes % 60);
+  const remaining = (timestamp, now) => {
+    const minutes = Math.max(0, Math.ceil((timestamp - now) / 60000));
+    return minutes >= 60 ? Math.floor(minutes / 60) + " giờ " + minutes % 60 + " phút" : minutes + " phút";
+  };
   const currentClock = () => {
     const date = new Date();
     return pad(date.getHours()) + ":" + pad(date.getMinutes());
   };
 
-  root.GameTimeFormat = Object.freeze({ pad, formatDuration, toMinutes, toClock, currentClock });
+  root.GameTimeFormat = Object.freeze({ pad, formatDuration, toMinutes, toClock, currentClock, remaining });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -104,3 +104,10 @@ www/js/
 - `www/js/npc-data.js` cung cấp `GameNpcData.isUniqueTalent(index, npcs)` để xác định NPC có thiên phú độc nhất.
 - Quy tắc cũ được giữ nguyên: NPC ở chỉ số 9 luôn được đánh dấu; các NPC khác dựa vào cờ `tk` trong dữ liệu.
 - `game.js` giữ wrapper `isTK`; dữ liệu NPC, nội dung thiên phú và cách hiển thị vẫn ở game.
+
+
+## Bổ sung helper thuần theo lô (2026-11-23)
+- `GameTimeFormat.remaining(timestamp, now)`: định dạng thời gian còn lại theo phút/giờ, nhận thời điểm hiện tại từ caller để kiểm thử xác định.
+- `GameQuestData.isExpired(quest, isDone, now)` và `isUnlocked(quests, quest, isDone)`: tách quy tắc hạn chót và mở khóa bước trong chuỗi; trạng thái nhiệm vụ và thời gian vẫn do `game.js` cung cấp.
+- `GameProgressData.playerXpAt(history, points, dateKey)`: tính linh lực tích lũy đến một ngày từ lịch sử; không đọc state toàn cục.
+- Các wrapper trong `game.js` giữ nguyên nguồn thời gian, lịch sử và trạng thái hiện có; không đổi save schema.

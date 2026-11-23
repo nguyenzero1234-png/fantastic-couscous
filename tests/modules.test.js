@@ -291,3 +291,41 @@ test("npc data xác định thiên phú độc nhất theo chỉ số và dữ l
   assert.equal(N.isUniqueTalent(-1, npcs), false);
   assert.equal(N.isUniqueTalent(99, npcs), false);
 });
+
+
+test("time format giữ nguyên cách làm tròn thời gian còn lại", () => {
+  const T = window.GameTimeFormat;
+  assert.equal(T.remaining(60000, 0), "1 phút");
+  assert.equal(T.remaining(3600000, 0), "1 giờ 0 phút");
+  assert.equal(T.remaining(3660000, 0), "1 giờ 1 phút");
+  assert.equal(T.remaining(1, 60000), "0 phút");
+  assert.equal(T.remaining(60001, 0), "2 phút");
+});
+
+test("quest data xác định hạn chót và khóa chuỗi đúng thứ tự cũ", () => {
+  const Q = window.GameQuestData;
+  const done = q => !!q.done;
+  assert.equal(Q.isExpired({ due: 100 }, done, 101), true);
+  assert.equal(Q.isExpired({ due: 100 }, done, 100), false);
+  assert.equal(Q.isExpired({ due: 100, done: true }, done, 101), false);
+  assert.equal(Q.isExpired({ due: 0 }, done, 101), false);
+  const first = { chain: "a", done: true }, second = { chain: "a" }, other = { chain: "b" };
+  assert.equal(Q.isUnlocked([first, second, other], second, done), true);
+  assert.equal(Q.isUnlocked([first, second, other], other, done), true);
+  first.done = false;
+  assert.equal(Q.isUnlocked([first, second], second, done), false);
+  assert.equal(Q.isUnlocked([first, second], { chain: "a" }, done), false);
+  assert.equal(Q.isUnlocked([first, second], { chain: "missing" }, done), true);
+});
+
+test("progression data tính linh lực tại mốc ngày như helper cũ", () => {
+  const P = window.GameProgressData;
+  const history = {
+    "2026-11-20": { p: 100 }, "2026-11-22": { p: 200 },
+    "2026-11-23": { p: 300 }, "2026-11-24": { p: 400 }
+  };
+  assert.equal(P.playerXpAt(history, 1200, "2026-11-21"), 700);
+  assert.equal(P.playerXpAt(history, 1200, "2026-11-23"), 1200);
+  assert.equal(P.playerXpAt(history, 500, "2026-11-24"), 500);
+  assert.equal(P.playerXpAt({ "2026-11-20": { p: 0 } }, 42, "2026-11-20"), 42);
+});

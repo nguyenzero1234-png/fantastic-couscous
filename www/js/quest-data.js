@@ -8,6 +8,13 @@
   return 1;
  }
  function isDone(quest,today){return !!quest.doneOn&&(!quest.repeat||quest.doneOn===today)}
+ function isExpired(quest,isDoneFn,now){
+  return !!quest.due&&!isDoneFn(quest)&&now>quest.due;
+ }
+ function isUnlocked(quests,quest,isDoneFn){
+  const chain=quests.filter(x=>x.chain===quest.chain);
+  return chain.slice(0,chain.indexOf(quest)).every(isDoneFn);
+ }
  function parseBulkLine(line,options){
   const o=options||{},clock=typeof o.now==="function"?o.now:()=>o.now==null?Date.now():o.now,random=o.random||Math.random;
   const parts=String(line||"").split("|").map(x=>x.trim());
@@ -21,5 +28,5 @@
   const pts=Math.max(1,Math.round(mins/60*(o.perHour||200)*diff));
   return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
  }
- global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone});
+ global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked});
 })(window);
