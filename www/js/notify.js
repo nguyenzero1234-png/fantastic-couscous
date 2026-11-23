@@ -1,31 +1,60 @@
-/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2–4 + cải tiến =====
+/* ===== Thông báo nhắc nhở (Capacitor Local Notifications) — Phần 2–5 =====
    - Chỉ hoạt động trong app Capacitor (APK); trên trình duyệt thường sẽ tự bỏ qua.
    - Mỗi nhóm thông báo có dải id riêng: study 1000-1999, reward 2000-2999, ex 3000-3999, user 4000-4999.
-   - Các hàm trong BLD trả về danh sách {id (0-999), title, body, at: Date}.
+   - user: người chơi tự tạo nhắc nhở (lưu trong S.nt.u).
    - Cải tiến: tự hủy + lên lịch lại ngay khi Thiên Đạo tua ngày; hiển thị trạng thái rõ ràng. */
 (function(){
   const CAP=window.Capacitor;
   const native=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
   const LN=native&&CAP.Plugins?CAP.Plugins.LocalNotifications:null;
-  const CH="nhacnho",TEST_ID=9001,MAXN=60;           // iOS chỉ cho tối đa 64 thông báo đang chờ
+  const CH="nhacnho",TEST_ID=9001,MAXN=60;
   const RANGE={study:1000,reward:2000,ex:3000,user:4000};
-  const cfg=()=>{const n=S.nt||(S.nt={});if(n.on==null)n.on=false;if(!n.t)n.t="20:00";if(!n.g)n.g={study:1,reward:1,ex:1,user:1};return n};
+  const cfg=()=>{
+    const n=S.nt||(S.nt={});
+    if(n.on==null)n.on=false;
+    if(!n.t)n.t="20:00";
+    if(!n.g)n.g={study:1,reward:1,ex:1,user:1};
+    if(!Array.isArray(n.u))n.u=[];
+    return n;
+  };
   const nextAt=(h,m)=>{const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()+60000)d.setDate(d.getDate()+1);return d};
 
-  const quiet=d=>{const x=new Date(d);if(x.getHours()<8)x.setHours(8,0,0,0);else if(x.getHours()>=22){x.setDate(x.getDate()+1);x.setHours(8,0,0,0)}return x};   // không báo ban đêm (22h-8h)
+  const quiet=d=>{const x=new Date(d);if(x.getHours()<8)x.setHours(8,0,0,0);else if(x.getHours()>=22){x.setDate(x.getDate()+1);x.setHours(8,0,0,0)}return x};
   const fmtHM=mi=>{const h=Math.floor(mi/60),r=mi%60,p=[];if(h)p.push(h+" giờ");if(r||!h)p.push(r+" phút");return p.join(" ")};
-  const full=()=>!(S.ui&&S.ui.studyOnly);                                                   // chế độ Chỉ học ẩn các tab thưởng
+  const full=()=>!(S.ui&&S.ui.studyOnly);
   const APP="Tu Tiên Học Đạo";
   const GEN=["Đến giờ tu luyện rồi! Làm một nhiệm vụ nhỏ để tích linh lực.","Linh lực đang chờ bạn. Chỉ cần 25 phút thôi!","Đạo tâm cần được rèn mỗi ngày. Vào học một chút nhé.","Đừng để lâu quá, Thiên Kiêu Bảng đang chạy đua đó!"];
   const hm=()=>{const x=/^(\d\d):(\d\d)$/.exec(cfg().t||"20:00");return x?[+x[1],+x[2]]:[20,0]};
   const dayAt=(d,h,mi)=>{const x=new Date();x.setDate(x.getDate()+d);x.setHours(h,mi,0,0);return x};
   const fut=t=>t.getTime()>Date.now()+60000;
-  // Các nhóm thông báo. study = Phần 3, reward và ex = Phần 4 (đều xong); user = Phần 5
+
+  function nextUserId(){
+    const used=new Set((cfg().u||[]).map(x=>x.id|0));
+    for(let i=1;i<900;i++)if(!used.has(i))return i;
+    return Date.now()%900+1;
+  }
+  function addUserReminder(title,body,h,m){
+    const c=cfg();
+    if((c.u||[]).length>=20){say("Tối đa 20 nhắc nhở tùy chỉnh.");return false}
+    title=(title||"").trim().slice(0,40);
+    body=(body||"").trim().slice(0,80);
+    if(!title){say("Nhập tiêu đề nhắc nhở.");return false}
+    h=+h;m=+m;
+    if(isNaN(h)||h<0||h>23||isNaN(m)||m<0||m>59){say("Giờ không hợp lệ.");return false}
+    const id=nextUserId();
+    c.u.push({id,title,body:body||title,h,m});
+    save();run(true);return true;
+  }
+  function delUserReminder(id){
+    const c=cfg();
+    c.u=(c.u||[]).filter(x=>(x.id|0)!==(id|0));
+    save();run(true);
+  }
+
   const BLD={
     study:()=>{
       const out=[],now=Date.now(),[h,mi]=hm(),st=S.streak||{last:"",n:0},n=st.n||0,done=st.last===today();
-      const atRisk=n>=2&&st.last===dayStr(1);                 // hôm qua có học, hôm nay chưa: chuỗi sẽ đứt lúc nửa đêm
-      // 0-3: nhắc học hằng ngày (hôm nay nếu chưa học, cộng 3 ngày tới)
+      const atRisk=n>=2&&st.last===dayStr(1);
       for(let d=0;d<=3;d++){
         if(d===0&&done)continue;
         const at=dayAt(d,h,mi);if(!fut(at))continue;
@@ -36,18 +65,16 @@
         else body=GEN[d%GEN.length];
         out.push({id:d,title:APP,body,at});
       }
-      // 10-11: chuỗi sắp đứt (21:30, hoặc 23:00 nếu đã quá 21:30)
       if(n>=2){
         let k=-1,at=null;
         if(st.last===dayStr(1)){k=0;at=dayAt(0,21,30);if(!fut(at))at=dayAt(0,23,0)}
         else if(done){k=1;at=dayAt(1,21,30)}
         if(at&&fut(at)){
           const dd=dayAt(k,h,mi);
-          if(!(fut(dd)&&Math.abs(dd-at)<45*60000))           // trùng giờ nhắc hằng ngày thì bỏ
+          if(!(fut(dd)&&Math.abs(dd-at)<45*60000))
             out.push({id:10+k,title:"Chuỗi sắp đứt!",body:"Chuỗi "+n+" ngày sắp đứt. Học trước nửa đêm để tránh tâm ma.",at});
         }
       }
-      // 100-129: nhiệm vụ nhanh sắp hết hạn
       (S.quests||[]).filter(q=>q.due&&q.due>now+60000&&!isDone(q)).sort((a,b)=>a.due-b.due).slice(0,30).forEach((q,i)=>{
         const dd=new Date(q.due),eod=dd.getHours()===23&&dd.getMinutes()===59;
         let at,lead;
@@ -56,7 +83,6 @@
         if(!fut(at))return;
         out.push({id:100+i,title:"Nhiệm vụ nhanh sắp hết hạn",body:"«"+String(q.name).slice(0,40)+"» "+lead+". Học ngay để nhận thưởng nhanh!",at});
       });
-      // 400-429: khung giờ trong Nhật trình (hôm nay và ngày mai) — tắt khi Thiên Đạo đang tua
       if(!S.dOff){
         let k=0;
         [today(),dayStr(-1)].forEach(key=>{
@@ -69,14 +95,12 @@
           });
         });
       }
-      // 700: hết phiên học tập trung
       try{if(fq&&fEnd>now+3000)out.push({id:700,title:"Học xong rồi!",body:"«"+String(fq.name).slice(0,40)+"» đã đủ "+fq.mins+" phút. Vào nhận linh lực nhé!",at:new Date(fEnd)})}catch(e){}
       return out;
     },
     reward:()=>{
       const out=[],now=Date.now();
       if(!full())return out;
-      // 0: Cửu Vĩ Hồ thu đầy linh lực (tối đa 8 giờ)
       let petFull=false;
       try{
         const a=S.pets&&S.pets.hl;
@@ -86,7 +110,6 @@
           else petFull=true;
         }
       }catch(e){}
-      // 10-11: sắp hết tuần/tháng mà event còn thiếu giờ (chỉ khi thiếu không quá 5 giờ) — tắt khi Thiên Đạo
       if(!S.dOff){
         try{
           const ws=weekStart(),sun=new Date(ws+"T00:00:00");sun.setDate(sun.getDate()+6);sun.setHours(18,0,0,0);
@@ -99,7 +122,6 @@
           if(!S.claimed["m:"+mo]&&rem>0&&rem<=300&&fut(last))out.push({id:11,title:"Sắp hết tháng!",body:"Nguyệt Luyện còn thiếu "+fmtHM(rem)+" nữa là nhận +"+ev.r+" linh lực. Hôm nay là ngày cuối tháng.",at:last});
         }catch(e){}
       }
-      // 1: phần thưởng đang chờ (một thông báo duy nhất, vào 12:00 kế tiếp)
       try{
         const at=nextAt(12,0),isToday=at.toDateString()===new Date().toDateString(),parts=[];
         const c=S.ci;
@@ -119,7 +141,6 @@
     },
     ex:()=>{
       const out=[],now=Date.now();
-      // 0-1: thiên kiếp kế tiếp (báo trước 24 giờ, hoặc 3 giờ nếu đã quá; và đúng giờ giáng)
       try{
         const nx=S.kst?nextEx():null;
         if(nx){
@@ -131,7 +152,6 @@
           if(fut(T))out.push({id:1,title:"Thiên kiếp đã giáng!",body:nx.n+" đã đến. Vào xem kết quả độ kiếp.",at:T});
         }
       }catch(e){}
-      // 100-102: kỳ ngộ bất ngờ trong 2 ngày tới (tối đa 1 thông báo mỗi ngày, chỉ báo ban ngày)
       if(full()){
         try{
           const h0=Math.floor((now-KT0)/36e5),seen={};let k=0;
@@ -146,7 +166,17 @@
       }
       return out;
     },
-    user:()=>[]
+    user:()=>{
+      const out=[],list=cfg().u||[];
+      list.forEach((u)=>{
+        const h=u.h|0,m=u.m|0;
+        [0,1].forEach(d=>{
+          const at=dayAt(d,h,m);
+          if(fut(at))out.push({id:(u.id|0)+d*200,title:u.title||"Nhắc nhở",body:u.body||u.title||"",at});
+        });
+      });
+      return out.slice(0,40);
+    }
   };
   function build(){
     const c=cfg(),out=[];
@@ -176,7 +206,6 @@
     }catch(e){}
   }
 
-  // Hủy thông báo cũ rồi hẹn lại; bỏ qua nếu danh sách không đổi
   let busy=false,again=false,sig=null,tm=0,lastDOff=S.dOff||0;
   async function run(force){
     if(!LN)return;
@@ -194,11 +223,9 @@
     }catch(e){console.warn("NT run",e);sig=null}
     finally{busy=false;if(again){again=false;run(false)}}
   }
-  // save() gọi hàm này; chờ 5 giây cho đỡ gọi dồn. Khi Thiên Đạo tua ngày thì force ngay.
   window.NTsave=()=>{if(!LN)return;clearTimeout(tm);tm=setTimeout(()=>run(false),5000)};
   window.NTforce=()=>{if(!LN)return;clearTimeout(tm);run(true)};
 
-  // ----- Giao diện trong Thiên Thư > Thống kê -----
   const box=document.createElement("div");box.style.display="contents";box.id="ntbox";
   async function paint(){
     const c=cfg();let st;
@@ -208,13 +235,56 @@
       st=p==="granted"?"Đã được cấp quyền thông báo.":p==="denied"?"Quyền thông báo đang bị tắt. Vào Cài đặt điện thoại, mở mục Ứng dụng, chọn game rồi bật Thông báo.":"Chưa cấp quyền thông báo.";
     }
     const dOffNote=S.dOff?`<div style="margin-top:6px;padding:6px 8px;background:rgba(180,80,40,.12);border-radius:6px;font-size:12px;color:var(--red,#b45309)">⚠ Thiên Đạo đang tua ngày (dOff=${S.dOff}). Thông báo lịch (Tuần/Nguyệt Luyện, khung giờ học) tạm tắt để tránh lệch thời gian.</div>`:"";
+
+    const list=c.u||[];
+    let userHtml=`<div style="margin-top:12px;border-top:1px solid var(--bd,#ddd);padding-top:10px">
+      <div class="lbl" style="margin-bottom:6px">Nhắc nhở tùy chỉnh <small>(tối đa 20)</small></div>`;
+    if(list.length){
+      userHtml+=`<ul style="list-style:none;padding:0;margin:0 0 8px">`+list.map(u=>{
+        const hh=String(u.h|0).padStart(2,"0"),mm=String(u.m|0).padStart(2,"0");
+        return `<li style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06)">
+          <div style="flex:1;min-width:0"><b>${esc(u.title||"Nhắc")}</b> <small>${hh}:${mm}</small>
+          ${u.body&&u.body!==u.title?`<br><small style="opacity:.75">${esc(u.body)}</small>`:""}</div>
+          <button class="btn alt" data-nt="udel" data-id="${u.id}" style="padding:2px 8px;font-size:12px">Xóa</button>
+        </li>`;
+      }).join("")+`</ul>`;
+    }else{
+      userHtml+=`<small style="display:block;margin-bottom:8px;opacity:.7">Chưa có nhắc nhở nào. Thêm bên dưới.</small>`;
+    }
+    userHtml+=`<div class="row" style="flex-wrap:wrap;gap:6px">
+      <input type="text" id="ntut" placeholder="Tiêu đề (vd: Uống nước)" maxlength="40" style="flex:1;min-width:120px">
+      <input type="text" id="ntub" placeholder="Nội dung (tùy chọn)" maxlength="80" style="flex:1;min-width:120px">
+      <input type="time" id="ntuh" value="09:00" style="width:auto">
+      <button class="btn" data-nt="uadd">Thêm</button>
+    </div></div>`;
+
     box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small>${dOffNote}
 <div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
-<div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div></details>`;
+<div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div>
+${userHtml}
+</details>`;
   }
   box.onclick=async e=>{
     const b=e.target.closest("button[data-nt]");if(!b)return;
     const a=b.dataset.nt,c=cfg();
+    if(a==="udel"){
+      delUserReminder(+b.dataset.id);
+      say("Đã xóa nhắc nhở.");
+      paint();
+      return;
+    }
+    if(a==="uadd"){
+      const title=($("ntut")&&$("ntut").value)||"";
+      const body=($("ntub")&&$("ntub").value)||"";
+      const tv=($("ntuh")&&$("ntuh").value)||"09:00";
+      const m=/^(\d\d):(\d\d)$/.exec(tv);
+      if(!m){say("Chọn giờ hợp lệ.");return}
+      if(addUserReminder(title,body,+m[1],+m[2])){
+        say("Đã thêm nhắc nhở hàng ngày lúc "+tv+".");
+        paint();
+      }
+      return;
+    }
     if(!native){say("Chỉ dùng được trong app cài trên điện thoại.");return}
     if(a==="tg"){
       if(!c.on){
@@ -242,21 +312,20 @@
 
   if(native){
     channel();
-    setTimeout(()=>run(true),3000);                       // lúc mở app
-    document.addEventListener("visibilitychange",()=>{if(document.hidden)run(false);else paint()}); // lúc thoát app
-    setInterval(()=>run(false),600000);                   // mỗi 10 phút khi đang mở
-    let lf="";                                            // phiên học bắt đầu/hủy không gọi save(), nên theo dõi riêng
+    setTimeout(()=>run(true),3000);
+    document.addEventListener("visibilitychange",()=>{if(document.hidden)run(false);else paint()});
+    setInterval(()=>run(false),600000);
+    let lf="";
     setInterval(()=>{let k="";try{k=fq?fq.id+":"+fEnd:""}catch(e){}if(k!==lf){lf=k;window.NTsave()}},2000);
-    // Theo dõi Thiên Đạo tua ngày → hủy ngay thông báo lịch cũ và lên lịch lại
     setInterval(()=>{
       const cur=S.dOff||0;
       if(cur!==lastDOff){
         lastDOff=cur;
-        sig=null;           // buộc rebuild
+        sig=null;
         run(true);
-        paint();            // cập nhật ghi chú trên UI
+        paint();
       }
     },1500);
   }
-  window.NT={BLD,build,nextAt,run,RANGE,cfg,force:()=>run(true)};
+  window.NT={BLD,build,nextAt,run,RANGE,cfg,force:()=>run(true),addUserReminder,delUserReminder};
 })();
