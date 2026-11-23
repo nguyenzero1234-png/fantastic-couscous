@@ -740,7 +740,7 @@ function settle(){
   S.lb.log+=warReward();
   S.lb.week=weekStart();save();
 }
-const spark=(i,t0)=>{const v=[];for(let j=39;j>=0;j--)v.push(sc(i,t0-j*90000));const mn=Math.min(...v),d=(Math.max(...v)-mn)||1;return `<svg viewBox="0 0 80 22" width="80" height="22" style="color:var(--mute);flex:none"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="${v.map((y,x)=>(x*2+.5)+","+(20-(y-mn)/d*18).toFixed(1)).join(" ")}"/></svg>`};
+const spark=(i,t0)=>GameLeaderboardData.sparkline(Array.from({length:40},(_,j)=>sc(i,t0-(39-j)*90000)));
 let PV={};
 const xr=()=>S.sem?Object.values(S.sem.res).filter(r=>r.claimed):[];
 const RL=[["Luyện Khí",0],["Trúc Cơ",20000],["Kim Đan",42000],["Nguyên Anh",66000],["Hóa Thần",92000],["Luyện Hư",118000],["Hợp Thể",145000],["Đại Thừa",172000],["Chân Tiên",200000]];

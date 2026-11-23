@@ -255,3 +255,10 @@ www/js/
 - `game.js` vẫn giữ danh sách vật phẩm, chỉ ghép kết quả helper vào từng mục khi khởi tạo.
 - Giữ nguyên công thức phần thưởng, điều kiện nhiệm vụ nhanh/từ 60 phút, phần cộng thêm và định dạng chuỗi tiếng Việt.
 - CI #167 đã xác nhận commit trước đó build APK thành công và artifact còn hiệu lực; CI của module mới cần xác nhận lại.
+
+
+## Module sparkline bảng xếp hạng
+- `GameLeaderboardData.sparkline(values)` nhận chuỗi điểm và trả SVG sparkline; không đọc hoặc sửa trạng thái game.
+- `game.js` giữ nguyên trách nhiệm lấy 40 mẫu điểm cách nhau 90 giây, helper chỉ đảm nhiệm chuẩn hóa và dựng SVG.
+- Giữ nguyên markup SVG/CSS để không đổi giao diện; có kiểm thử các đầu vào biên và dữ liệu âm.
+- CI #169 xác nhận commit trước đã build APK và tải artifact thành công; chờ CI của thay đổi này.

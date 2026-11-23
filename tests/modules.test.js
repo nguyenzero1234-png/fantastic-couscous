@@ -722,3 +722,13 @@ test("item data tạo tổng linh lực và mô tả vật phẩm mà không s�
   assert.deepEqual(JSON.parse(JSON.stringify(I.describe({ id: "the", d: "Tự dùng" }))), {});
   assert.deepEqual(JSON.parse(JSON.stringify(I.describe(null))), {});
 });
+
+
+test("leaderboard sparkline tạo SVG ổn định, chuẩn hóa dữ liệu và xử lý chuỗi phẳng", () => {
+  const L = window.GameLeaderboardData;
+  assert.equal(L.sparkline([]), "");
+  assert.equal(L.sparkline([5]), '<svg viewBox="0 0 80 22" width="80" height="22" style="color:var(--mute);flex:none"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0.5,20.0"/></svg>');
+  assert.equal(L.sparkline([0, 5, 10]), '<svg viewBox="0 0 80 22" width="80" height="22" style="color:var(--mute);flex:none"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0.5,20.0 2.5,11.0 4.5,2.0"/></svg>');
+  assert.match(L.sparkline([8, 8, 8]), /points="0.5,20.0 2.5,20.0 4.5,20.0"/);
+  assert.match(L.sparkline([-10, 0, 10]), /points="0.5,20.0 2.5,11.0 4.5,2.0"/);
+});

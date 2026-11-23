@@ -332,3 +332,10 @@
 - [ ] Chờ CI xác nhận module mô tả vật phẩm mới; chưa có kiểm thử thao tác trên thiết bị Android thật.
 
 - [x] CI #168 chạy 49 test và phát hiện một expected text trong fixture vật phẩm chưa khớp nhánh định dạng khi tỷ lệ hoàn trả dưới 2×; đã sửa expected theo đúng logic cũ, không đổi code module.
+
+
+## Tách bộ dựng sparkline bảng xếp hạng (2026-11-23)
+- [x] Xác nhận CI #169 thành công cho commit `b666005`: 49 test JavaScript, Gradle assembleDebug và upload artifact `TuTienHocDao-apk` (~5,8 MB).
+- [x] Chuyển phần dựng SVG sparkline sang `GameLeaderboardData.sparkline(values)`; `game.js` vẫn tự lấy 40 mẫu điểm theo cùng mốc 90 giây và chuyển mảng cho module.
+- [x] Giữ nguyên kích thước SVG, màu qua CSS variable, polyline, độ dày nét và công thức chuẩn hóa; thêm test cho mảng rỗng, một phần tử, chuỗi phẳng, tăng đều và số âm.
+- [ ] Chờ CI kiểm tra module sparkline mới; chưa thử trên thiết bị Android thật.
