@@ -330,3 +330,5 @@
 - [x] Bổ sung test cho vật phẩm thường, vật phẩm có hiệu ứng riêng, điều kiện nhiệm vụ, phần thưởng cộng thêm và đầu vào không có cấu hình thưởng.
 - [x] CI #167 xác nhận 48/48 test, Gradle APK debug và upload artifact `TuTienHocDao-apk` thành công cho commit `95ca233`.
 - [ ] Chờ CI xác nhận module mô tả vật phẩm mới; chưa có kiểm thử thao tác trên thiết bị Android thật.
+
+- [x] CI #168 chạy 49 test và phát hiện một expected text trong fixture vật phẩm chưa khớp nhánh định dạng khi tỷ lệ hoàn trả dưới 2×; đã sửa expected theo đúng logic cũ, không đổi code module.

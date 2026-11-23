@@ -711,7 +711,7 @@ test("item data tạo tổng linh lực và mô tả vật phẩm mà không s�
   const cases = [
     [{ id: "ca", c: 100, q: [2, 100, ""] }, { tot: 200, d: "Dùng: 2 nhiệm vụ kế tiếp, mỗi nhiệm vụ +100 linh lực cố định (tổng +200, gấp 2 lần giá)" }],
     [{ id: "fast", c: 800, q: [4, 200, "q"], u: "Tăng tốc" }, { tot: 800, d: "Dùng: Tăng tốc; 4 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +200 linh lực cố định (tổng +800, hoàn lại đủ giá cộng tác dụng riêng)" }],
-    [{ id: "long", c: 900, q: [3, 300, "l"], ex: 100, u: "Bảo hộ" }, { tot: 1000, d: "Dùng: Bảo hộ; thêm 3 nhiệm vụ từ 60 phút kế tiếp, mỗi nhiệm vụ +300 linh lực cố định (tổng +1000, gấp 1,1 lần giá)" }],
+    [{ id: "long", c: 900, q: [3, 300, "l"], ex: 100, u: "Bảo hộ" }, { tot: 1000, d: "Dùng: Bảo hộ; thêm 3 nhiệm vụ từ 60 phút kế tiếp, mỗi nhiệm vụ +300 linh lực cố định (tổng +1000, hoàn lại đủ giá cộng tác dụng riêng)" }],
     [{ id: "utility", c: 1000, q: [4, 250, ""], u: "Giảm giá" }, { tot: 1000, d: "Dùng: Giảm giá; 4 nhiệm vụ kế tiếp, mỗi nhiệm vụ +250 linh lực cố định (tổng +1000, hoàn lại đủ giá cộng tác dụng riêng)" }]
   ];
   for (const [item, expected] of cases) {
