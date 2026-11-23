@@ -182,5 +182,5 @@ test("time format giữ nguyên cách hiển thị thời lượng và giờ", (
   assert.equal(T.toClock(0), "00:00");
   assert.equal(T.toClock(455), "07:35");
   assert.equal(T.toClock(1440), "24:00");
-  assert.match(T.currentClock(), /^\\d{2}:\\d{2}$/);
+  assert.match(T.currentClock(), /^\d{2}:\d{2}$/);
 });
