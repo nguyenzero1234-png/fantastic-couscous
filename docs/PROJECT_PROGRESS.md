@@ -540,3 +540,11 @@
 - [x] `game.js` chỉ lấy catalog qua API module; các điểm mua/bán/tra cứu và kiểm tra cân bằng vẫn sử dụng cùng cấu trúc item.
 - [x] Bổ sung test số lượng, item biên, mô tả, và tính độc lập của catalog.
 - [ ] Tiếp tục tách subsystem; Android vẫn để sau.
+
+
+## Bắt đầu tổ chức module theo chức năng (2026-11-24)
+- [x] Tạo khu vực `www/js/systems/` cho logic gameplay; module đầu tiên là `sect-system.js`, đóng gói cấu hình 6 tông môn, 6 sư phụ, điều kiện bái sư và buff.
+- [x] Chuyển toàn bộ khai báo `SECTS`, `MASTERS`, `masterBuff` khỏi `game.js`; file chính chỉ khởi tạo hệ thống với dependency injection và giữ alias tương thích.
+- [x] Nạp module trước `game.js` và thêm kiểm thử cho điều kiện/buff của cả 6 sư phụ.
+- [ ] Tiếp tục phân loại module hiện hữu vào `core/`, `data/`, `systems/`, `ui/`; di chuyển có kiểm soát và cập nhật đường dẫn script/test, không tạo thêm module rời rạc.
+- [ ] Tiếp tục tách các hệ thống gameplay lớn còn nằm trong `game.js`; Android vẫn để sau theo yêu cầu.
