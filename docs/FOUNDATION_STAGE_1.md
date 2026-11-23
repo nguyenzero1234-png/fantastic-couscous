@@ -54,3 +54,11 @@ www/js/
 - `window.GamePetData.rank(pet, level)`: chọn danh hiệu theo cấp linh thú, giữ nguyên quy tắc chặn cấp và tên dự phòng.
 - `window.GamePetData.buff(pets, active)`: tính buff thuần cho 12 loại linh thú; `game.js` vẫn giữ trạng thái và side effects.
 - Script được nạp trước `game.js`; bộ test Node kiểm tra thứ hạng, đủ 12 loại buff và trường hợp không có linh thú.
+
+
+## Module `time-format.js`
+- `window.GameTimeFormat.pad(n)`: đệm số về ít nhất hai chữ số.
+- `formatDuration(seconds)`: giữ định dạng thời lượng `MM:SS` hoặc `H:MM:SS`.
+- `toMinutes(value)` và `toClock(minutes)`: chuyển đổi chuỗi giờ `HH:MM` và tổng phút.
+- `currentClock()`: đọc giờ/phút hiện tại theo local time.
+- `game.js` giữ nguyên tên helper cũ qua alias để không phải sửa các call-site.
