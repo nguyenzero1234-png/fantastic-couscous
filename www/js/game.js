@@ -1,15 +1,27 @@
 const KEY="quest-study-v1";
 let S={quests:[],points:0,gameSec:0,rate:2,perHour:200,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null,menh:100,tdPenalty:false,failStreak:0,tdStacks:0,dailyBought:{},tmTasks:0,tmaTasks:0,tcCharges:0,petReveal:null,petEvolution:null};
+const BACKUP_KEY=KEY+".backup";
+const validSave=o=>!!o&&typeof o==="object"&&!Array.isArray(o)&&Array.isArray(o.quests)&&typeof o.points==="number"&&Number.isFinite(o.points);
 try{
   const raw=localStorage.getItem(KEY);
   if(raw){
-    const parsed=JSON.parse(raw);
-    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))throw new Error("Save data must be an object");
-    if(!Array.isArray(parsed.quests)||typeof parsed.points!=="number")throw new Error("Save data is missing required fields");
-    S=Object.assign(S,parsed);
+    try{
+      const parsed=JSON.parse(raw);
+      if(!validSave(parsed))throw new Error("Save data is invalid");
+      S=Object.assign(S,parsed);
+    }catch(primaryError){
+      console.error("[Tu Tiên Học Đạo] Bản lưu chính bị lỗi; đang thử bản sao lưu.",primaryError);
+      const backupRaw=localStorage.getItem(BACKUP_KEY);
+      if(!backupRaw)throw primaryError;
+      const backup=JSON.parse(backupRaw);
+      if(!validSave(backup))throw new Error("Backup data is invalid");
+      S=Object.assign(S,backup);
+      console.warn("[Tu Tiên Học Đạo] Đã khôi phục từ bản sao lưu gần nhất.");
+      try{window.dispatchEvent(new Event("game-save-recovered"))}catch(_){}
+    }
   }
 }catch(e){
-  console.error("[Tu Tiên Học Đạo] Không thể đọc dữ liệu đã lưu; giữ trạng thái mặc định để tránh nạp dữ liệu lỗi.",e);
+  console.error("[Tu Tiên Học Đạo] Không thể đọc dữ liệu đã lưu hoặc bản sao lưu. Giữ trạng thái mặc định để tránh nạp dữ liệu lỗi.",e);
 }if(!S.ph200){S.perHour=200;S.ph200=1}
 if(S.menh==null)S.menh=100;if(S.tdPenalty==null)S.tdPenalty=false;if(S.failStreak==null)S.failStreak=0;if(S.tdStacks==null)S.tdStacks=0;if(!S.dailyBought)S.dailyBought={};if(S.tmTasks==null)S.tmTasks=0;if(S.tmaTasks==null)S.tmaTasks=0;if(S.tcCharges==null)S.tcCharges=0;
 if(S._balCleared==null){if(S.lb&&S.lb.bal)S.lb.bal=Array(50).fill(0);S.bal=0;S._balCleared=1;}
@@ -31,6 +43,16 @@ applyUi();
 if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});delete S.fb;let KSALT=(S.rb||0)*7919;
 const save=()=>{
   try{
+    const current=localStorage.getItem(KEY);
+    if(current){
+      try{
+        const parsed=JSON.parse(current);
+        if(validSave(parsed)&&localStorage.getItem(BACKUP_KEY)!==current)
+          localStorage.setItem(BACKUP_KEY,current);
+      }catch(backupError){
+        console.warn("[Tu Tiên Học Đạo] Bỏ qua việc sao lưu vì bản lưu hiện tại không hợp lệ.",backupError);
+      }
+    }
     localStorage.setItem(KEY,JSON.stringify(S));
   }catch(e){
     console.error("[Tu Tiên Học Đạo] Lưu thất bại. Hãy xuất bản sao lưu và kiểm tra dung lượng bộ nhớ.",e);
