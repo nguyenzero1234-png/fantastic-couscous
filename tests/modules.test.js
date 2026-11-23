@@ -1144,3 +1144,21 @@ test("GameFortuneData cung cấp đủ dữ liệu cơ duyên theo giờ", () =>
   assert.equal(D.events[0][0], "Thiên Cơ Hiện Thế");
   assert.equal(D.effects[5], "cơ hội nhận linh thú");
 });
+
+
+test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập và có mô tả giá trị", () => {
+  const items = window.GameItemData.catalog();
+  assert.equal(items.length, 20);
+  assert.equal(items[0].id, "ca");
+  assert.equal(items[0].tot, 200);
+  assert.match(items[0].d, /2 nhiệm vụ/);
+  assert.equal(items[19].id, "the");
+  assert.equal(items[19].q, undefined);
+  assert.equal(items[19].d, undefined);
+  items[0].q[0] = 999;
+  assert.equal(window.GameItemData.catalog()[0].q[0], 2);
+  assert.deepEqual(JSON.parse(JSON.stringify(window.GameItemData.describe({ id: "x", c: 100, q: [2, 60, "q"] }))), {
+    tot: 120,
+    d: "Dùng: 2 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +60 linh lực cố định (tổng +120, gấp 1,2 lần giá)"
+  });
+});
