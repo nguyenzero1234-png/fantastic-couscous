@@ -503,3 +503,10 @@
 - [x] Tách thao tác ghi nhật ký, chống trùng ID và giới hạn 40 bản ghi thành `GameStoryData.append`; `game.js` giữ wrapper tương thích và vẫn quản lý state/ngày hiện tại.
 - [x] Bổ sung test dữ liệu cảnh giới, chống ghi trùng, sao chép mảng dòng và giới hạn lịch sử.
 - [ ] Tiếp tục tách các subsystem gameplay còn lại; chưa làm kiểm thử hoặc ký Android theo yêu cầu hiện tại.
+
+
+## Tách âm thanh giao diện (2026-11-24)
+- [x] Chuyển tạo tiếng hiệu ứng, tiếng click và đăng ký pointer listener sang `www/js/audio.js` (`GameAudio.create`).
+- [x] Âm thanh nhận trạng thái tắt/mở qua callback, không tự đọc save hoặc biến toàn cục gameplay; `game.js` chỉ giữ các alias tương thích `sfx` và `clk`.
+- [x] Bổ sung test cho trạng thái mute, khởi tạo audio context lười và đăng ký listener.
+- [ ] Tiếp tục tách các subsystem còn lại; Android vẫn để sau.
