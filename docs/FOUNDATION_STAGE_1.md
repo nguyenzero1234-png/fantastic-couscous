@@ -262,3 +262,11 @@ www/js/
 - `game.js` giữ nguyên trách nhiệm lấy 40 mẫu điểm cách nhau 90 giây, helper chỉ đảm nhiệm chuẩn hóa và dựng SVG.
 - Giữ nguyên markup SVG/CSS để không đổi giao diện; có kiểm thử các đầu vào biên và dữ liệu âm.
 - CI #169 xác nhận commit trước đã build APK và tải artifact thành công; chờ CI của thay đổi này.
+
+
+## Helper xếp hạng các dòng bảng Thiên Kiêu
+- `GameLeaderboardData.rankRows(rows)` trả về bản sao đã sắp xếp theo điểm giảm dần và gán `rank` từ 1.
+- Giữ thứ tự đầu vào khi hòa điểm nhờ stable sort; không sửa mảng hoặc các object nguồn.
+- `game.js` vẫn chịu trách nhiệm tính điểm từ trạng thái người chơi/NPC; helper chỉ thực hiện phép xếp hạng.
+- Có test cho điểm giảm dần, hòa điểm, mảng rỗng và tính bất biến đầu vào.
+- CI #170 xác nhận commit sparkline trước đó build APK thành công; CI của commit này sẽ xác nhận thay đổi mới.

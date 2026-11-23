@@ -732,3 +732,24 @@ test("leaderboard sparkline tạo SVG ổn định, chuẩn hóa dữ liệu và
   assert.match(L.sparkline([8, 8, 8]), /points="0.5,20.0 2.5,20.0 4.5,20.0"/);
   assert.match(L.sparkline([-10, 0, 10]), /points="0.5,20.0 2.5,11.0 4.5,2.0"/);
 });
+
+
+test("leaderboard rankRows sắp xếp giảm dần, giữ thứ tự hòa điểm và không sửa đầu vào", () => {
+  const L = window.GameLeaderboardData;
+  const rows = [
+    { n: "NPC A", s: 50, i: 0 },
+    { n: "Người chơi", s: 80, u: 1 },
+    { n: "NPC B", s: 50, i: 1 },
+    { n: "NPC C", s: 20, i: 2 }
+  ];
+  const before = JSON.stringify(rows);
+  const ranked = L.rankRows(rows);
+  assert.deepEqual(JSON.parse(JSON.stringify(ranked)), [
+    { n: "Người chơi", s: 80, u: 1, rank: 1 },
+    { n: "NPC A", s: 50, i: 0, rank: 2 },
+    { n: "NPC B", s: 50, i: 1, rank: 3 },
+    { n: "NPC C", s: 20, i: 2, rank: 4 }
+  ]);
+  assert.equal(JSON.stringify(rows), before);
+  assert.deepEqual(JSON.parse(JSON.stringify(L.rankRows([]))), []);
+});

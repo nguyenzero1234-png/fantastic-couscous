@@ -339,3 +339,12 @@
 - [x] Chuyển phần dựng SVG sparkline sang `GameLeaderboardData.sparkline(values)`; `game.js` vẫn tự lấy 40 mẫu điểm theo cùng mốc 90 giây và chuyển mảng cho module.
 - [x] Giữ nguyên kích thước SVG, màu qua CSS variable, polyline, độ dày nét và công thức chuẩn hóa; thêm test cho mảng rỗng, một phần tử, chuỗi phẳng, tăng đều và số âm.
 - [ ] Chờ CI kiểm tra module sparkline mới; chưa thử trên thiết bị Android thật.
+
+
+## Tách bộ xếp hạng dữ liệu bảng Thiên Kiêu (2026-11-23)
+- [x] CI #170 xác nhận commit sparkline `b23ba97`: test JavaScript, dependency audit, Capacitor sync, Gradle APK debug và upload artifact đều thành công.
+- [x] Tách sắp xếp điểm giảm dần và gán thứ hạng thành `GameLeaderboardData.rankRows(rows)`.
+- [x] Giữ thứ tự ban đầu khi hòa điểm (stable sort), gán hạng tuần tự như trước và không sửa mảng đầu vào.
+- [x] `game.js` tiếp tục tính điểm từ state; module chỉ nhận danh sách dòng đã có điểm và trả danh sách đã xếp hạng.
+- [x] Bổ sung test cho thứ tự giảm dần, hòa điểm, mảng rỗng và tính bất biến của đầu vào.
+- [ ] Chờ CI xác nhận commit tách rankRows; chưa kiểm thử giao diện trên Android thật.

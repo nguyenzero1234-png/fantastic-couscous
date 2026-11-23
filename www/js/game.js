@@ -680,7 +680,7 @@ function spExtra(i,ms,fn){
   const x1=Math.min((ms-S.lb.t0)/SP,spUntil(p));if(x1<=p.x0)return 0;
   return p.k===0?SPQ[0].npc*(x1-p.x0)/1440:SPQ[1].mul*(fn(i,x1)-fn(i,p.x0));
 }
-function lbRows(){const t=Date.now(),rows=B.map((b,i)=>({n:b.n,s:Math.max(0,bs(i,t)+(S.lb.adj[i]||0)),i,u:0}));rows.push({n:S.name||"Bạn",s:S.points,u:1});rows.sort((a,b)=>b.s-a.s);rows.forEach((r,k)=>r.rank=k+1);return rows}
+function lbRows(){const t=Date.now(),rows=B.map((b,i)=>({n:b.n,s:Math.max(0,bs(i,t)+(S.lb.adj[i]||0)),i,u:0}));rows.push({n:S.name||"Bạn",s:S.points,u:1});return GameLeaderboardData.rankRows(rows)}
 function spRoll(rows,seed){
   if(!S.lb.sp)S.lb.sp={};if(!S.lb.spl)S.lb.spl=[];
   const nx=nextEx(),got=[];if(!nx)return got;
