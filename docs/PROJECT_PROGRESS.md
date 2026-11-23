@@ -824,3 +824,12 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ root `quest-data.js` làm compatibility guard; implementation nạp trước dữ liệu mẫu và các consumer.
 - [x] Bổ sung assertion thứ tự nạp implementation/compatibility.
 - [ ] Tiếp tục tách nghiệp vụ còn trong `game.js` theo dependency đã audit.
+
+
+## Đưa quy tắc linh thú vào systems/pets.js (2026-11-24)
+
+- [x] Chuyển logic xếp cấp linh thú và tính buff theo linh thú đang theo cùng từ `pet-data.js` sang `systems/pets.js`.
+- [x] Giữ nguyên API `GamePetData` để `game.js` và renderer không phải đổi call-site.
+- [x] Giữ root `pet-data.js` làm compatibility guard và nạp implementation trước consumer.
+- [x] Bổ sung assertion thứ tự nạp.
+- [ ] Tiếp tục tách logic nghiệp vụ linh thú và các hệ thống còn lại khỏi `game.js`.
