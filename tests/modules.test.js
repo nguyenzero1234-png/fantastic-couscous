@@ -44,7 +44,7 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
   assert.notEqual(gameIndex, -1, "game.js phải được khai báo");
   assert.equal(new Set(names).size, names.length, "không được nạp trùng script");
   for (const name of names) {
-    assert.ok(fs.existsSync(path.join(root, "www", name)), name + " phải tồn tại trong www");
+    assert.ok(fs.existsSync(path.join(root, "www", "js", name)), name + " phải tồn tại trong www");
   }
   for (const file of moduleFiles) {
     assert.ok(names.includes(file), file + " phải được khai báo trong index.html");

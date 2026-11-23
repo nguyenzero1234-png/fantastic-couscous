@@ -193,4 +193,4 @@ www/js/
 - Kiểm tra bốn tùy chọn skin, density, font size, theme và việc xóa thuộc tính khi trở về mặc định.
 - Kiểm tra mọi đường dẫn script trong `index.html` trỏ tới tệp hiện có trong `www`.
 - CI #154 đã xác nhận bộ test tích hợp trước đó và build APK thành công.
-- CI #155 phát hiện lỗi trong test path vì kiểm tra từ thư mục gốc repo thay vì `www`; sửa lại đường dẫn kiểm tra. `GameUI.apply` đã đạt cả test áp dụng tùy chọn lẫn reset mặc định trong lần chạy này.
+- CI #155 phát hiện assertion đường dẫn thiếu thư mục con `js/`; đã sửa sang `www/js/`. `GameUI.apply` đạt test áp dụng tùy chọn và reset mặc định. Chờ CI chạy lại.

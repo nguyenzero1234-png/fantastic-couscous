@@ -279,5 +279,5 @@
 - [x] CI #154 xác nhận toàn bộ test JavaScript hiện tại, dependency audit, Capacitor sync, Gradle `assembleDebug` và tải APK artifact thành công cho commit `8c00f6d`.
 - [x] Kiểm thử tự động phát hiện module JavaScript chưa được khai báo, script trùng lặp và sai thứ tự nạp quanh `game.js`.
 - [x] Bổ sung kiểm tra mọi đường dẫn script trong `index.html` tồn tại và kiểm thử hành vi áp dụng/reset tùy chọn giao diện.
-- [x] CI #155 phát hiện lỗi test ở đường dẫn kiểm tra (thiếu thư mục `www`); đã sửa test dùng đúng gốc tài nguyên, không phải lỗi ứng dụng. Chờ CI xác nhận lại.
+- [x] CI #155 phát hiện test kiểm tra sai đường dẫn do `index.html` lưu script dưới `js/`; đã sửa assertion sang `www/js/`. Đây là lỗi của test, không phải lỗi ứng dụng; CI xác nhận lại đang chờ.
 - [ ] Tiếp tục rà soát luồng gameplay và các helper thuần còn nằm trong `game.js`.
