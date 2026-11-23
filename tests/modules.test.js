@@ -622,3 +622,38 @@ test("kiếp nạn data không sửa bảng cấu hình và truyền hash từ c
   assert.ok(calls.length >= 1);
   assert.ok(calls.every(args => args[0] === 77 && args[2] === 4));
 });
+
+
+test("nhật ký tu tiên sinh nội dung xác định từ dữ liệu được truyền vào", () => {
+  const D = window.GameDiaryData;
+  const quotes = ["Đạo tâm bất động — lời chú thích", "Một bước cũng là đường."];
+  const empty = D.generate("2026-11-23", { n: 0, m: 0, p: 0 }, {
+    isToday: true, streak: 4
+  }, quotes);
+  assert.deepEqual(empty, [
+    "Hôm nay không có gì để ghi. Trang để trắng. Không hỏi vì sao.",
+    "Chuỗi đang giữ từ hôm trước. Hôm nay còn chưa viết tiếp.",
+    "Trích: Đạo tâm bất động"
+  ]);
+  const full = D.generate("2026-11-23", { n: 2, m: 125, p: 80.6 }, {
+    isToday: true, streak: 7, tm: true, sectName: "Thanh Vân",
+    menh: 60, petName: "Tiểu Hồ", storyTitles: ["Khai mạch"], prevMemory: null
+  }, quotes);
+  assert.ok(full[0].includes("2 nhiệm vụ, tu luyện 2 giờ 5 phút, thu 81 linh lực."));
+  assert.ok(full.some(x => x.includes("Chuỗi 7 ngày.")));
+  assert.ok(full.some(x => x.includes("Dưới cờ Thanh Vân.")));
+  assert.ok(full.some(x => x.includes("Linh thú Tiểu Hồ")));
+  assert.ok(full.some(x => x.includes("Đạo Văn: Khai mạch.")));
+  assert.equal(full.length, 7);
+});
+
+test("nhật ký tu tiên không sửa dữ liệu đầu vào và giới hạn bảy dòng", () => {
+  const D = window.GameDiaryData;
+  const stats = { n: 1, m: 30, p: 10 };
+  const context = { isToday: false, streak: 20, storyTitles: ["A", "B"] };
+  const before = JSON.stringify([stats, context]);
+  const result = D.generate("2026-11-20", stats, context, ["Một câu."]);
+  assert.equal(JSON.stringify([stats, context]), before);
+  assert.ok(result.length <= 7);
+  assert.ok(result.some(x => x === "Đạo Văn: A · B."));
+});

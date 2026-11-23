@@ -290,3 +290,12 @@
 - [x] Bổ sung kiểm thử kết quả xác định, ngưỡng xuất hiện và không làm thay đổi bảng cấu hình.
 - [x] CI #157 xác nhận test, audit dependency, Capacitor sync, build APK và upload artifact thành công.
 - [ ] Chờ CI của đợt tách module này; chưa thay thế kiểm thử trên thiết bị Android thật.
+
+
+## Tách bộ sinh nội dung nhật ký tu tiên (2026-11-23)
+- [x] Tách nội dung nhật ký thành `GameDiaryData.generate(day, stats, context, quotes)` trong `www/js/diary-data.js`.
+- [x] Chuyển logic chọn câu theo ngày, thời lượng học, chuỗi ngày, tâm ma, tông môn, mệnh cách, linh thú, thứ trong tuần và trích dẫn sang hàm thuần.
+- [x] `game.js` chỉ còn gom dữ liệu từ save và truyền vào helper; lịch sử Đạo Văn và ký ức tiền kiếp vẫn lấy từ state hiện tại.
+- [x] Bổ sung test cho nhật ký ngày trống, ngày có hoạt động, dữ liệu đầu vào bất biến và giới hạn bảy dòng.
+- [x] CI #158 xác nhận kiểm thử, audit, Capacitor sync, build APK và upload artifact thành công.
+- [ ] Chờ CI cho đợt tách nhật ký; chưa có kiểm thử trên thiết bị thật.

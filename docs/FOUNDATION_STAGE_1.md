@@ -200,3 +200,10 @@ www/js/
 - `www/js/kiep-nan-data.js` cung cấp `GameKiepNanData.create(seed, hour, epoch, types, hash)` để sinh dữ liệu kiếp nạn theo seed.
 - Giữ nguyên thuật toán và thứ tự gọi hash; state game vẫn chịu trách nhiệm tạo seed lần đầu, còn bảng `KN` và hàm hash được truyền từ caller.
 - Kết quả vẫn gồm `h`, `k`, `W`, `T`, `st`, `en`, `pts`, `name`, `desc`; không thay đổi save schema.
+
+
+## Module dữ liệu nhật ký tu tiên
+- `www/js/diary-data.js` cung cấp hàm thuần `GameDiaryData.generate(day, stats, context, quotes)`.
+- Nội dung nhật ký được tạo từ dữ liệu thống kê và ngữ cảnh truyền vào; module không đọc save, DOM hay biến toàn cục của game.
+- Wrapper trong `game.js` giữ trách nhiệm đọc lịch sử, chuỗi ngày, tông môn, linh thú, ký ức và Đạo Văn.
+- Không thay đổi cấu trúc save hoặc giới hạn tối đa bảy dòng nhật ký.
