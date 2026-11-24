@@ -142,7 +142,7 @@ function warReward(){return GameSectWar.reward({
   random:Math.random
 });}
 
-const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),getProfileIndex:()=>PI});
+const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),getProfileIndex:()=>PI});
 function renderProf(){ProfileUI.render()}
 const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:EP,$});
 function renderSect(){SectUI.render()}

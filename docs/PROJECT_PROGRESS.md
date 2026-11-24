@@ -1041,3 +1041,4 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển renderer thẻ nhân vật chính (cảnh giới, Mệnh, tông môn, thứ hạng, ký ức kiếp trước) vào cùng module hồ sơ.
 - [x] Giữ cập nhật màu hào quang và cờ top 10; dữ liệu cảnh giới/quotes/DOM được inject.
 - [x] Giữ wrapper `renderHero` và bổ sung test tiêu đề nhân vật.
+- [x] Inject số ngày mỗi kiếp và tuổi kiếp vào renderer; không để UI module đọc biến global `+"`KD`"+`.

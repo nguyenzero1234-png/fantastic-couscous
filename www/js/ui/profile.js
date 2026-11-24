@@ -3,7 +3,7 @@
  "use strict";
  function create(deps){
   const {S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,esc,htCount,htLate,hrs,miles,fmtT,rname}=deps;
-  const RC=deps.realmColors,QT=deps.quotes,document=deps.document,getPrevMemory=deps.prevMemory;
+  const RC=deps.realmColors,QT=deps.quotes,document=deps.document,getPrevMemory=deps.prevMemory,KD=deps.days,kAge=deps.getKAge;
   function renderProf(){
     const PI=deps.getProfileIndex();
   const el=$("prof");if(PI==null){el.innerHTML="";return}
