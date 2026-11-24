@@ -733,18 +733,7 @@ const GMG=[
   ]}
 ];
 // Đặt chuỗi = n ngày tính đến hôm nay (lịch ảo), đồng bộ nhật ký ngày để streakAt/actDays đọc từ lịch sử vẫn khớp
-function setStreak(n){
-  n=Math.max(0,Math.min(400,n|0));
-  const t=today();
-  S.streak={last:n>0?t:"",n:n};
-  for(let i=0;i<420;i++){
-    const d=new Date(Date.now()+(S.dOff||0)*864e5);d.setDate(d.getDate()-i);
-    const k=d.toLocaleDateString("sv"),h=S.hist[k];
-    if(i<n){if(!h)S.hist[k]={p:0,m:1,g:1};else if(!(h.m>0)){h.m=1;h.g=1}}
-    else if(h&&h.g){if(h.p===0&&h.m<=1)delete S.hist[k];else{h.m=Math.max(0,h.m-1);delete h.g}}
-  }
-  LS().ms=Math.max(LS().ms||0,n);KS().ms=Math.max(KS().ms||0,n);
-}
+function setStreak(n){return GameStreak.set(S,n,{today:today(),dayOffset:S.dOff||0,now:Date.now(),lifeStats:()=>LS(),cycleState:()=>KS()})}
 const curStreak=()=>GameStreak.current(S.streak,today(),dayStr(1));
 function godAdvance(n,keep){
   const prev=curStreak();

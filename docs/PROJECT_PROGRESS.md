@@ -1100,3 +1100,10 @@ Sau mỗi đợt thay đổi:
 - [x] Gom cấp linh thú mới, đánh dấu mới, tính linh lực tích lũy và thu hoạch khi đổi linh thú vào `GamePetData`.
 - [x] Giữ callback `grantPet`, `petAcc`, `setAct` ở bootstrap để không đổi các hệ thống thưởng đang gọi.
 - [x] Bổ sung test cấp linh thú, tích lũy, thu hoạch và reset mốc thời gian.
+
+
+## Gom đồng bộ streak và lịch sử vào systems/streak.js (2026-11-24)
+
+- [x] Chuyển thao tác đặt chuỗi, đồng bộ lịch sử học 420 ngày và cập nhật kỷ lục kiếp/tổng đời vào `GameStreak.set`.
+- [x] Giữ wrapper `setStreak` để god mode và các call-site cũ không đổi.
+- [x] Bổ sung test đồng bộ lịch sử, xóa mốc ảo cũ và bảo toàn kỷ lục cao nhất.

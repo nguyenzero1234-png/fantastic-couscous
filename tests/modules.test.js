@@ -1579,3 +1579,13 @@ test("GamePetData cấp linh thú, tích lũy và thu hoạch khi đổi linh th
  const got=P.setActive(S,"other",2*3600000,1);assert.equal(got,8);assert.equal(S.points,8);assert.equal(S.act,"other");
  P.setActive(S,"hl",3*3600000,0);assert.equal(S.pets.hl.t,3*3600000);
 });
+
+
+test("GameStreak.set đồng bộ streak, lịch sử và kỷ lục xuyên kiếp",()=>{
+ const G=window.GameStreak,state={hist:{},dOff:0},life={},cycle={},now=Date.parse("2026-11-24T12:00:00Z");
+ assert.equal(G.set(state,2,{today:"2026-11-24",dayOffset:0,now,lifeStats:()=>life,cycleState:()=>cycle}),2);
+ assert.deepEqual(JSON.parse(JSON.stringify(state.streak)),{last:"2026-11-24",n:2});
+ assert.equal(state.hist["2026-11-24"].g,1);assert.equal(state.hist["2026-11-23"].g,1);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
+ state.hist["2026-11-22"]={p:0,m:1,g:1};G.set(state,1,{today:"2026-11-24",dayOffset:0,now,lifeStats:()=>life,cycleState:()=>cycle});
+ assert.equal(state.hist["2026-11-22"],undefined);assert.equal(state.hist["2026-11-23"].g,undefined);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
+});

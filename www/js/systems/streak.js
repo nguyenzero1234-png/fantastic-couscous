@@ -38,5 +38,21 @@
     }
     return {tm,tmTasks,tma,tmaTasks,clearedSelf,clearedHeavenly,taskBonus};
   }
-  global.GameStreak=Object.freeze({current,completeDay,checkBreak,progressCurses});
+
+  function set(state,n,options){
+    const o=options||{},today=o.today,offset=Number(o.dayOffset)||0,now=o.now==null?Date.now():o.now;
+    n=Math.max(0,Math.min(400,n|0));
+    state.streak={last:n>0?today:"",n};
+    state.hist=state.hist||{};
+    for(let i=0;i<420;i++){
+      const d=new Date(now+offset*864e5);d.setDate(d.getDate()-i);
+      const key=d.toLocaleDateString("sv"),h=state.hist[key];
+      if(i<n){if(!h)state.hist[key]={p:0,m:1,g:1};else if(!(h.m>0)){h.m=1;h.g=1}}
+      else if(h&&h.g){if(h.p===0&&h.m<=1)delete state.hist[key];else{h.m=Math.max(0,h.m-1);delete h.g}}
+    }
+    if(o.lifeStats){const life=o.lifeStats();life.ms=Math.max(life.ms||0,n)}
+    if(o.cycleState){const cycle=o.cycleState();cycle.ms=Math.max(cycle.ms||0,n)}
+    return n;
+  }
+  global.GameStreak=Object.freeze({current,completeDay,checkBreak,progressCurses,set});
 })(window);
