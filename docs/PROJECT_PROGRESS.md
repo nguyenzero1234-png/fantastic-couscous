@@ -1042,3 +1042,11 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ cập nhật màu hào quang và cờ top 10; dữ liệu cảnh giới/quotes/DOM được inject.
 - [x] Giữ wrapper `renderHero` và bổ sung test tiêu đề nhân vật.
 - [x] Inject số ngày mỗi kiếp và tuổi kiếp vào renderer; không để UI module đọc biến global `+"`KD`"+`.
+
+
+## Gom UI kỳ ngộ và điểm danh vào ui/activities.js (2026-11-24)
+
+- [x] Chuyển renderer kỳ ngộ, tiến độ phút học và cảnh báo chuỗi sắp đứt vào `GameActivityUI`.
+- [x] Chuyển khối tóm tắt điểm danh/kỳ ngộ được nhúng trong Lệnh Bảng vào cùng module.
+- [x] Giữ thuật toán tạo kỳ ngộ, tính phút và nhận thưởng trong `game.js`/systems; module UI chỉ nhận dữ liệu qua getter.
+- [x] Bổ sung test kỳ ngộ, hiệu ứng và khối điểm danh.

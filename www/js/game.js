@@ -246,7 +246,7 @@ const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
 const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),lenhTop:()=>lenhTop(),$});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$});
 function renderLich(){ActivityUI.renderSchedule()}
 function renderShop(){ActivityUI.renderShop()}
 function renderChains(){ActivityUI.renderChains()}
@@ -518,14 +518,7 @@ function grantPet(prefer){
   return prize;
 }
 const kmins=o=>GameAnalytics.sumStudyMinutesBetween(S.stl,o.st,o.en);
-function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}
-function renderKn(){
-  const now=Date.now(),L=knList().filter(o=>o.en>now||(kmins(o)>=o.T&&!S.claimed["o:"+o.h]));
-  let h=L.map(o=>{const m=kmins(o),ok=m>=o.T,got=S.claimed["o:"+o.h];
-    return `<div class="kn"><div class="row" style="margin:0"><b style="flex:1;font-family:var(--serif)">Kỳ ngộ: ${o.name}${nwS().k[o.h]?"":'<span class="nd" title="Mới"></span>'}</b><span class="pb">+${o.pts}</span></div><small>${o.desc}</small><div style="margin-top:6px;font-size:14px">Học ${o.T} phút trong ${o.W} giờ ${o.en>now?"(còn "+rem(o.en)+")":"(đã hết hạn)"}. Đã học ${Math.min(m,o.T)}/${o.T} phút. Thêm: ${KX[o.k]}.</div><div class="bar"><i style="width:${Math.min(100,Math.round(m/o.T*100))}%"></i></div><button class="btn" style="margin-left:0" data-a="kc" data-id="${o.h}" ${ok&&!got?"":"disabled"}>${got?"Đã nhận":ok?"Nhận thưởng":"Hoàn thành nhiệm vụ để tích phút"}</button></div>`}).join("");
-  if(S.streak.last===dayStr(1)&&S.streak.n>=2&&new Date().getHours()>=18)h+=`<div class="kn" style="border-color:var(--red)"><b>Chuỗi ${S.streak.n} ngày học sắp đứt!</b><br><small>Học trước nửa đêm để giữ chuỗi. Đứt chuỗi (≥2 ngày) sẽ bị <b>tâm ma</b> xâm nhập.</small></div>`;
-  $("kn").innerHTML=h;
-}
+function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}function renderKn(){ActivityUI.renderFortunes()}
 function claimKn(h){
   const o=knAt(h),ck="o:"+h;if(!o||S.claimed[ck]||kmins(o)<o.T)return;
   S.claimed[ck]=1;const op=eventGain(o.pts);S.points+=op;hAdd(today(),op,0);
@@ -547,14 +540,6 @@ function checkin(){
   let petMsg="";
   if(c.n===7&&Math.random()<0.35){const pet=grantPet();if(pet){petMsg=" · Điểm danh tròn tuần, linh thú theo về: "+pet.n+"!";vlog("Nhận linh thú từ điểm danh: "+pet.n)}}
   vlog("Điểm danh ngày "+c.n+": +"+rr+" linh lực");save();render();say("Điểm danh ngày "+c.n+": +"+rr+" linh lực"+(r[1]?" và 1 "+ITEMS.find(i=>i.id===r[1]).n:"")+petMsg+".");
-}
-function lenhTop(){
-  const T=today(),c=S.ci||{last:"",n:0},act=(c.last===T||c.last===dayStr(1))?c.n:0,done=c.last===T,now=Date.now();
-  let h=`<div class="box"><h2>Điểm danh</h2><small>Điểm danh liên tiếp 7 ngày, ngày thứ 7 thưởng lớn.</small><div class="days7">${CI.map((r,j)=>`<div class="d7 ${j<act?"on":""}"><b>${j+1}</b>+${r[0]}${r[1]?"<br>"+IC[r[1]]:""}</div>`).join("")}</div><button class="btn" style="margin-left:0" data-a="ci" ${done?"disabled":""}>${done?"Đã điểm danh hôm nay":"Điểm danh"}</button></div>`;
-  const L=knList();
-  h+=`<div class="box"><h2>Kỳ ngộ gần đây</h2><small>Cơ duyên xuất hiện bất ngờ, khoảng 1 đến 2 lần mỗi ngày. Học đủ phút trong khung giờ để nhận thưởng.</small><ul>${L.length?L.map(o=>{const m=kmins(o),got=S.claimed["o:"+o.h];
-    return `<li><div class="nm">${o.name}<small>${fmtT(o.st)}: học ${o.T} phút trong ${o.W} giờ, ${Math.min(m,o.T)}/${o.T} phút</small></div><span class="pb">+${o.pts}</span>${got?"<small>Đã nhận</small>":m>=o.T?`<button class="btn" data-a="kc" data-id="${o.h}">Nhận</button>`:o.en>now?"<small>Đang diễn ra</small>":"<small>Bỏ lỡ</small>"}</li>`}).join(""):`<li class="empty" style="display:block">Chưa có kỳ ngộ nào gần đây. Hãy mở app thường xuyên.</li>`}</ul></div>`;
-  return h;
 }
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
 $("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").value=b.dataset.tn;$("nd").value=b.dataset.tm;renderMore()};
