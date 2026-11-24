@@ -1418,7 +1418,7 @@ Tiếp theo theo thứ tự ưu tiên:
 ## Lộ trình Stage 5
 
 - [x] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp (nghiệm thu Android còn chờ).
-- [ ] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức.
+- [x] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức (nghiệm thu Android còn chờ).
 - [ ] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp.
 - [ ] 5C — Mục tiêu, quan hệ và sự kiện NPC.
 - [ ] 5E — Tông môn, sư phụ và truyền thừa.
@@ -1431,4 +1431,14 @@ Tiếp theo theo thứ tự ưu tiên:
 - Benchmark Node 26.13.1, roster thật 50 NPC, salt 7919, ba lượt chạy độc lập có GC giữa mốc. Trung vị thời gian mở rộng mô phỏng 0–7 ngày: 91 → 87 ms; 7–30 ngày: 164 → 150 ms; 30–119 ngày: 523 → 507 ms. Heap tại 119 ngày: 164 → 162 MiB. Kết quả các điểm lấy mẫu, lịch sử, thứ hạng, tính lại sau invalidate và reset khớp tuyệt đối giữa hai phiên bản. Đây là số đo máy phát triển, heap cuối kỳ vẫn cao và cần đo trên Android thật.
 - Edge headless: mở toàn bộ bảng xếp hạng, render trung bình 3 ms (10 lần liên tiếp). Mô phỏng 20 kiếp, mỗi kiếp 119 ngày có 240 phút học/ngày, trực tiếp kích hoạt luân hồi trong hồ sơ thử nghiệm. Save đang hoạt động/sau luân hồi tính theo ký tự JSON: kiếp 1 23.687/3.765; kiếp 5 30.498/9.948; kiếp 10 38.212/17.657; kiếp 20 53.646/33.097. Reload đủ 20 bản ghi, tổng phút của kiếp đầu/cuối chính xác. Không lỗi JS. Dữ liệu mẫu chưa bao gồm ảnh riêng, số lượng lớn môn và nhiệm vụ; giữ đầy đủ sử kiếp, không cần cắt dữ liệu.
 - [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh và UTC; 5/5 kiểm thử leaderboard sau bổ sung hồi quy trùng tên; `git diff --check` đạt.
-- [ ] CI/APK Stage 5A và đo RAM/độ mượt Android thật. Tiếp theo Stage 5B.
+- [x] CI Stage 5A, commit `dae1bdb92a63279cdf961794d9497fc680acecc3`: JavaScript Tests (45376415245) và Build APK (45376415235) đều thành công. Artifact APK ID 14911936112 (6.287.096 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Đo RAM/độ mượt Android thật.
+
+## Stage 5B — Công pháp học tập (2026-11-24)
+
+- Thêm mục thu gọn Công pháp học tập trong Tu Luyện → Vạn Pháp, ở cả hai chế độ. Chọn một trong sáu công pháp miễn phí hoặc không chọn: Tĩnh Tâm Quyết (timer từ 25 phút), Vạn Pháp Kinh (hai môn từ 20 phút/môn), Ôn Cố Quyết (nhiệm vụ lặp từ 20 phút), Trường Sinh Công (chuỗi từ 3 ngày và nhiệm vụ từ 20 phút), Thiên Diễn Quyết (bước liên hoàn từ 30 phút), Khổ Tu Kinh (độ khó từ 1,3 và 30 phút). Đây là điều kiện theo hành vi được ghi nhận, không đo trực tiếp chất lượng học.
+- Mỗi ngày chỉ kích hoạt một lần, chung cho cả sáu công pháp, cộng 12 linh lực vào thưởng cộng trước các hệ số hiện hành. Tối đa 1.428 linh lực cơ bản trong 119 ngày, tương đương 0,714% ngưỡng Chân Tiên 200.000, chưa tính hệ số và thưởng liên hoàn. Chỉ hoàn thành từ 05:00 đến trước 22:00, không thưởng nhiệm vụ quá hạn. Phiên timer đối soát muộn chỉ nhận nếu cả giờ kết thúc lẫn giờ đối soát nằm trong khung và cùng ngày game. Giữ công thức thưởng/phạt và hệ số chuỗi hiện tại.
+- Biên nhận ghi riêng phần công pháp nằm trong thưởng cộng; hoàn tác/khôi phục giữ thưởng gốc, không mở lại lượt vận công. Số ngày vận công tính số lần kích hoạt, kể cả đã hoàn tác. Save cũ mặc định không chọn; lưu lựa chọn qua reload, giữ lựa chọn khi luân hồi và lưu số ngày theo từng công pháp vào sử kiếp. Không cộng dồn buff xuyên kiếp.
+- [x] Edge headless trên profile thử nghiệm độc lập: 390, 320, 280 px không tràn ngang; chọn công pháp, nhận thưởng, đổi công pháp trong ngày, chế độ Chỉ học, reload, luân hồi đều đạt, không lỗi JS. Đã tạo ảnh kiểm tra nhưng chưa xác nhận trực quan qua ảnh.
+- [x] 150/150 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt. Ba kiểm thử mới bao gồm sáu điều kiện, ngày hợp lệ, giới hạn ngày, biên nhận, hoàn tác, timer, lưu và luân hồi.
+- [ ] CI/APK và nghiệm thu Android thật. Tiếp theo Stage 5D.

@@ -70,7 +70,9 @@
       if(S.buff.n>0){const charge=GameRewards.chargeUse(S.buff.n,mins);m*=1+(S.buff.m-1)*(mins>0?charge.used/mins:0);S.buff.n=charge.remaining}
       if(S.tb&&Date.now()<S.tb)m*=1.2;
       m*=tf.mult;
-      const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&mins>=60),mins);
+      const technique=root.GameTechniques?.quote(S,q,t,h,d.completedAt);
+      const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat+(technique?.bonus||0),tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&mins>=60),mins);
+      if(technique)questReward.breakdown.technique=technique.bonus;
       q.got=questReward.gain;S.fx=questReward.effects;
       const stats={q:1,m:mins,ni:h>=22||h<5?1:0,da:h>=5&&h<7?1:0,ru:q.due?1:0,lg:mins>=120?1:0};
       {const ks=KS();ls.ms=Math.max(ls.ms||0,S.streak.n);ks.ms=Math.max(ks.ms||0,S.streak.n);
@@ -78,6 +80,7 @@
       const r0=myRk();
       const at=Date.now();
       applyReceipt(q,{day:t,gain:q.got,mins,stats,at,undone:false,breakdown:questReward.breakdown,tracked:!!S.studyReport,subjectId:root.GameSubjects?.find(S,q.subjectId)?.id||null,deadlineResult:q.due?((d.completedAt??at)<=q.due?"onTime":"late"):"none"},d,1);
+      if(technique){root.GameTechniques.claim(S,t,technique.id);extra+=" "+root.GameTechniques.find(technique.id).name+" đã vận chuyển."}
       ls.top=ls.top||(myRk()<=10?1:0);if(myRk()<=1)ls.t1=1;ls.mc=Math.max(ls.mc||0,S.cnt[t]);
       vlog("Hoàn thành "+q.name+": +"+q.got+" linh lực"+(S.tdPenalty?" (Trừng Phạt −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"%)":"")+", giờ học hôm nay "+(((S.hist[t]||{}).m||0)/60).toFixed(1)+" giờ, tu vi "+rname(uxp())+", hạng "+r0+" → "+myRk());
       const c=q.chain&&S.chains.find(x=>x.id===q.chain);

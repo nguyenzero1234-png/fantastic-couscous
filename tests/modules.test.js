@@ -40,6 +40,40 @@ function listJsFiles(dir, prefix = "") {
 const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "runtime/notify.js", "runtime/schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
+test("5B: điều kiện công pháp, giới hạn ngày và dữ liệu hợp lệ",()=>{
+  const T=window.GameTechniques,S={streak:{n:3}},day="2026-11-24";
+  window.GameSubjects.init(S);T.init(S);
+  const at=new Date(2026,10,24,12).getTime();
+  const quote=(id,q,h=12,end)=>{T.select(S,id);return T.quote(S,q,day,h,end)?.bonus||0};
+  assert.equal(quote("focus",{mins:25}),0);
+  assert.equal(quote("focus",{mins:24},12,at),0);
+  assert.equal(quote("focus",{mins:25},12,at),12);
+  assert.equal(quote("focus",{mins:25},12,new Date(2026,10,24,4).getTime()),0);
+  assert.equal(quote("focus",{mins:25},12,at-864e5),0);
+  S.subjects.days[day]={none:60,math:20};
+  assert.equal(quote("variety",{mins:20,subjectId:"math"}),0);
+  assert.equal(quote("variety",{mins:20}),0);
+  assert.equal(quote("variety",{mins:19,subjectId:"code"}),0);
+  assert.equal(quote("variety",{mins:20,subjectId:"code"}),12);
+  assert.equal(quote("review",{mins:20,repeat:true}),12);
+  assert.equal(quote("review",{mins:20}),0);
+  assert.equal(quote("steady",{mins:20}),12);S.streak.n=2;
+  assert.equal(quote("steady",{mins:20}),0);
+  assert.equal(quote("solve",{mins:30,chain:"a"}),12);
+  assert.equal(quote("solve",{mins:29,chain:"a"}),0);
+  assert.equal(quote("hard",{mins:30,diff:1.3}),12);
+  assert.equal(quote("hard",{mins:30,diff:1.15}),0);
+  assert.equal(quote("hard",{mins:30,diff:1.3},4),0);
+  assert.equal(quote("hard",{mins:30,diff:1.3},5),12);
+  assert.equal(quote("hard",{mins:30,diff:1.3},22),0);
+  assert.equal(quote("hard",{mins:30,diff:1.3,due:at-1},12,at),0);
+  T.claim(S,day,"hard");assert.equal(quote("review",{mins:20,repeat:true}),0);
+  T.claim(S,day,"review");assert.equal(T.archive(S)[0].id,"hard");
+  assert.equal(T.valid(S.technique),true);
+  for(const invalid of [null,[],{active:"unknown",days:{}},{active:"",days:[]},{active:"",days:{"2026-02-30":"hard"}},{active:"",days:{[day]:"bad"}}])assert.equal(T.valid(invalid),false);
+  T.reset(S);assert.equal(S.technique.active,"review");assert.equal(T.archive(S).length,0);
+});
+
 test("Stage 2C: hiệu ứng theo phút và thưởng cơ bản không nhân lên khi chia phiên", () => {
   const R=window.GameRewards,Q=window.GameQuestData;
   const factors={td:1,balance:1,status:1};

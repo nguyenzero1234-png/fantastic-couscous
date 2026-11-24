@@ -104,6 +104,7 @@
   </section>
   <section id="subjects" hidden>
     <div class="stack"><h2>Vạn Pháp</h2><small id="subject-coverage"></small>
+      <details class="fold"><summary>Công pháp học tập</summary><label for="technique-select">Công pháp đang tu</label><select id="technique-select" aria-label="Công pháp đang tu"></select><small id="technique-info"></small><small id="technique-status"></small></details>
       <details class="fold"><summary>Thêm môn học</summary><input id="subject-name" maxlength="60" placeholder="Tên môn" aria-label="Tên môn"><div class="quest-fields"><label>Phút/ngày<input id="subject-daily" type="number" min="0" max="1440" value="0"></label><label>Phút/tuần<input id="subject-weekly" type="number" min="0" max="10080" value="0"></label></div><button class="btn" id="subject-add">Thêm môn</button></details>
       <div class="stack" id="subject-list"></div></div>
   </section>
@@ -219,6 +220,7 @@
 <script src="js/systems/streak.js" charset="utf-8"></script>
 <script src="js/systems/analytics.js" charset="utf-8"></script>
 <script src="js/systems/subjects.js" charset="utf-8"></script>
+<script src="js/systems/techniques.js" charset="utf-8"></script>
 <script src="js/systems/quests.js" charset="utf-8"></script>
 <script src="js/systems/pets.js" charset="utf-8"></script>
 <script src="js/systems/sect.js" charset="utf-8"></script>

@@ -56,6 +56,12 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Dùng save thử nghiệm gần cuối học kỳ 119 ngày, mở toàn bộ Thiên Kiêu Bảng, dự báo và hồ sơ NPC; ghi RAM, thời gian mở màn hình, độ mượt và lỗi WebView nếu có.
 - [ ] Thử save nhiều kiếp có ảnh cá nhân, môn học và nhiệm vụ; xuất/nhập backup, đóng/mở và luân hồi; kiểm tra đủ sử kiếp và không phát sinh cảnh báo lưu.
 
+## Bổ sung nghiệm thu Stage 5B
+
+- [ ] Mở Vạn Pháp ở cả hai chế độ, chọn công pháp, hoàn thành nhiệm vụ đủ điều kiện, xem biên nhận và trạng thái vận công; kiểm tra giao diện màn hình hẹp.
+- [ ] Đổi công pháp sau khi đã nhận thưởng; hoàn tác và khôi phục nhiệm vụ, xác nhận không nhận thêm lượt trong ngày. Kiểm tra phiên timer ban đêm, đối soát qua ngày, và nhiệm vụ quá hạn.
+- [ ] Đóng/mở, xuất/nhập backup và luân hồi trên save thử nghiệm; xác nhận lựa chọn, ngày vận công và sử công pháp được giữ đúng.
+
 ## Tiêu chí đạt
 
 

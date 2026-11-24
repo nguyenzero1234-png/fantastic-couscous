@@ -577,6 +577,43 @@ test("3B: nhập môn chính xác, giữ dòng lỗi, xuất và chuỗi tương
  assert.equal(f.run("GameStorage.validSave(S)"),false);
 });
 
+test("5B: công pháp, thưởng qua biên nhận, hoàn tác, reload và luân hồi",()=>{
+ const f=timerFixture();f.advance(10*3600000);
+ assert.equal(f.saved().technique.active,"");
+ f.run("delete S.technique;GameState.migrate(S);save()");
+ assert.equal(f.saved().technique.active,"");
+ getNode("sn").onclick({target:{closest:()=>({dataset:{s:"subjects"}})}});
+ const select=id=>{getNode("technique-select").value=id;getNode("technique-select").onchange()};
+ select("review");assert.equal(f.saved().technique.active,"review");
+ f.run('S.quests.push({id:"a",name:"Ôn bài",mins:20,pts:100,repeat:true},{id:"b",name:"Khó",mins:30,pts:100,diff:1.3});S.tdPenalty=true;S.tdStacks=2;save()');
+ f.click("t","a");const first=f.saved().quests[0].completion,b=first.breakdown;
+ assert.equal(b.technique,12);assert.equal(b.td,0.9);
+ assert.equal(b.subtotal,Math.round(b.base*b.multiplier+b.flat+b.taskBonus));
+ assert.match(getNode("list").innerHTML,/Trong thưởng cộng: công pháp \+12/);
+ f.click("t","a");select("hard");f.click("t","b");
+ assert.equal(f.saved().quests[1].completion.breakdown.technique,undefined);
+ f.click("t","a");assert.deepEqual(f.saved().quests[0].completion,first);
+ f.reload();assert.equal(f.saved().technique.active,"hard");
+ getNode("sn").onclick({target:{closest:()=>({dataset:{s:"subjects"}})}});
+ f.run("S.ui.studyOnly=true;drawNav()");assert.equal(getNode("subjects").hidden,false);
+ assert.match(getNode("technique-status").textContent,/Hôm nay đã vận công/);
+ assert.equal(f.run("GameStorage.validSave(S)"),true);
+ assert.equal(f.run("GameStorage.validSave({...S,technique:{active:'bad',days:{}}})"),false);
+ f.run("doRebirth()");assert.deepEqual(f.saved().rbh.at(-1).techniques,[{id:"review",days:1}]);
+ assert.deepEqual(f.saved().technique,{active:"hard",days:{}});
+});
+
+test("5B: Tĩnh Tâm Quyết chỉ thưởng timer đủ thời lượng vào ban ngày",()=>{
+ const f=timerFixture();
+ f.run('GameTechniques.select(S,"focus");S.quests.push({id:"night",name:"Đêm",mins:25,pts:100},{id:"manual",name:"Tự ghi",mins:25,pts:100},{id:"day",name:"Ban ngày",mins:25,pts:100});save()');
+ f.click("p","night");f.advance(10*3600000);f.reload();
+ assert.equal(f.saved().quests[0].completion.breakdown.technique,undefined);
+ f.click("t","manual");assert.equal(f.saved().quests[1].completion.breakdown.technique,undefined);
+ f.click("p","day");f.advance(25*60000);f.flush();
+ assert.equal(f.saved().quests[2].completion.breakdown.technique,12);
+ assert.equal(Object.keys(f.saved().technique.days).length,1);
+});
+
 test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong văn theo kiếp",()=>{
  const f=timerFixture();
  const openNpc=i=>getNode("lb").onclick({target:{closest:()=>({dataset:{pi:String(i)}})}});

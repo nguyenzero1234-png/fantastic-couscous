@@ -73,7 +73,7 @@
   if(pending&&!S.exLock){S.exLock=pending.id;schedule(()=>showExModal(pending),300)}
 }
   function doRebirth(){
-  const rec=buildRec();if(S.studyReport)rec.studyReport=root.GameAnalytics.archiveReport(S);if(S.subjects)rec.subjects=root.GameSubjects.archive(S);(S.rbh||(S.rbh=[])).push(rec);
+  const rec=buildRec();if(S.studyReport)rec.studyReport=root.GameAnalytics.archiveReport(S);if(S.subjects)rec.subjects=root.GameSubjects.archive(S);if(S.technique)rec.techniques=root.GameTechniques.archive(S);(S.rbh||(S.rbh=[])).push(rec);
   if(rec.anXa){S.tdPenalty=false;S.tdStacks=0;S.failStreak=0;S.life=S.life||{};S.life.anXa=1;vlog("Thiên Đạo Ân Xá: Trừng Phạt và chuỗi fail đã được xóa bỏ.");burst();sfx(880)}
   if(rec.grade==="Viên Mãn Xuất Chúng"||rec.grade==="Xuất Sắc"){S.life=S.life||{};S.life.excel=1}
   if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}
@@ -83,6 +83,7 @@
   deps.applyNextCycle?.();
   S.studyReport=root.GameAnalytics.newReport(S);
   root.GameSubjects.reset(S);
+  root.GameTechniques.reset(S);
   S.menh=100;S.failStreak=0;S.menhRecovery=null;S.nightStudy={};
   setSalt(S.rb*7919);S.thdAsk=0;S.sem=null;S.exLock=null;S.fx=[];S.buff={n:0,m:1};S.xb=null;S.tb=null;S.sh=null;S.sl=0;S.lt=0;S.ln=null;S.kd=null;S.eb=0;S.pw=0;S.master=null;
   S.inv={};S.pets={};S.act=null;S.tt={};S.title=null;S.nw=null;S.sect=null;S.gameSec=0;S.timers={focus:null,play:null};S.streak={n:0,last:""};

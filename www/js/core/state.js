@@ -19,6 +19,7 @@
     if(!cycleDays.includes(S.nextCycleDays))S.nextCycleDays=S.cycleDays;
     if(!S.studyReport)S.studyReport=root.GameAnalytics.newReport(S);
     root.GameSubjects.init(S);
+    root.GameTechniques.init(S);
     if(!S.studyReport.sinceDay)S.studyReport.sinceDay=new Date(S.studyReport.since+(S.dOff||0)*864e5).toLocaleDateString("sv");
     if(!S.timers)S.timers={focus:null,play:null};
     if(!S.ph200){S.ph200=1;}

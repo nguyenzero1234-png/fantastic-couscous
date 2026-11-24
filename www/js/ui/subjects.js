@@ -12,6 +12,10 @@
   }
   function render(){
    const data=S.subjects,T=today(),W=weekStart();
+   const techniques=root.GameTechniques,training=techniques.init(S),selected=techniques.find(training.active);
+   if($("technique-select").value!==training.active)$("technique-select").value=training.active;
+   $("technique-info").textContent=selected?selected.description:"Chọn một công pháp phù hợp cách học của đạo hữu.";
+   $("technique-status").textContent=(training.days[T]?"Hôm nay đã vận công.":"Thưởng 12 linh lực cơ bản, một lần/ngày từ 5h đến trước 22h, chịu hệ số hiện tại.")+" · "+Object.keys(training.days).length+" ngày vận công kiếp này.";
    const line=(title,m,g)=>`<small>${title}: ${m}${g?"/"+g:""} phút</small>${g?`<div class="bar"><i style="width:${Math.min(100,m/g*100)}%"></i></div>`:""}`;
    const cards=data.list.map(s=>`<div class="box subject-card"><div class="row"><b>${esc(s.name)}</b>${s.archived?"<small>Đã lưu trữ</small>":""}</div>${line("Hôm nay",api.minutes(S,s.id,T,T),s.daily)}${line("Tuần này",api.minutes(S,s.id,W,T),s.weekly)}<small>Tổng kiếp này: ${api.minutes(S,s.id)} phút</small><div class="chips"><button class="btn alt" data-subject-action="edit" data-id="${esc(s.id)}">Sửa</button><button class="btn alt" data-subject-action="archive" data-id="${esc(s.id)}">${s.archived?"Khôi phục":"Lưu trữ"}</button></div></div>`);
    const archive=(S.rbh||[]).slice(-5).reverse().filter(r=>Array.isArray(r?.subjects?.totals)).map(r=>`<div class="box"><b>Kiếp ${Number(r.n)||0}</b>${r.subjects.totals.filter(s=>s&&typeof s.name==="string"&&Number.isFinite(s.minutes)).map(s=>`<small>${esc(s.name)} · ${s.minutes} phút</small>`).join("")}</div>`).join("");
@@ -22,6 +26,9 @@
    $("subject-coverage").textContent="Ghi nhận theo môn từ "+data.since+".";
   }
   function bind(){
+   const techniques=root.GameTechniques,select=$("technique-select");
+   select.innerHTML='<option value="">Không chọn</option>'+techniques.catalog.map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
+   select.onchange=()=>{const previous=techniques.init(S).active;if(!techniques.select(S,select.value))return;if(!save()){techniques.select(S,previous);render();return}render();say("Đã chọn công pháp học tập.")};
    $("subject-add").onclick=()=>{
     if(!api.update(S,null,{name:$("subject-name").value,daily:Number($("subject-daily").value||0),weekly:Number($("subject-weekly").value||0)})){say("Tên trùng hoặc mục tiêu không hợp lệ.");return}
     $("subject-name").value="";$("subject-daily").value="0";$("subject-weekly").value="0";save();refresh();say("Đã mở môn học.");

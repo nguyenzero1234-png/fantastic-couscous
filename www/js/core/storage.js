@@ -26,6 +26,7 @@
       if(!optional(q.completion,v=>record(v)&&typeof v.day==="string"&&nonnegative(v.gain)&&nonnegative(v.mins)&&nonnegative(v.at)&&record(v.stats)&&Object.values(v.stats).every(nonnegative)&&typeof v.undone==="boolean"))return false;
     }
     if(!optional(value.subjects,v=>global.GameSubjects.valid(v)))return false;
+    if(!optional(value.technique,v=>global.GameTechniques.valid(v)))return false;
     if(value.quests.some(q=>[q.subjectId,q.completion?.subjectId].some(id=>id!==undefined&&id!==null&&(!value.subjects||!global.GameSubjects.find(value,id)))))return false;
     if(value.quests.some(q=>q.completion?.subjectId!==undefined&&!/^\d{4}-\d{2}-\d{2}$/.test(q.completion.day)))return false;
     const maps=["hist","sched","claimed","inv","cnt","ls","life","pets","tt","kc"];
