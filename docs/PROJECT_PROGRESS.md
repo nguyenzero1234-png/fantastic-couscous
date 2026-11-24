@@ -1505,4 +1505,10 @@ Tiếp theo theo thứ tự ưu tiên:
 - Tăng chiều cao tối thiểu thẻ Thiên Kiêu/người chơi từ 84 lên 128 px trên màn hình rộng và 120 px trên điện thoại; chân dung từ 36 lên 56 px, thu về 48/44 px trên màn hình hẹp. Tăng cỡ tên, khoảng đệm, hoa văn góc và khoảng cách giữa các thẻ. Bảng rộng tối đa 760 px trên desktop; từ 420 px trở xuống chuyển linh lực xuống dòng riêng.
 - [x] Edge headless: 900/760/520/390/360/320/280 px, chữ lớn, hai chế độ trang trí, đủ 51 hàng; kích thước khung/chân dung đúng, cột thẳng hàng và không tràn ngang. Kiểm tra hồ sơ, bàn phím và học nhanh đạt.
 - [x] Kiểm thử hồi quy 156/156 tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
-- [ ] CI/APK của bản nới khung và kiểm tra Android thật.
+- [x] CI commit `fb3018e`: JavaScript Tests (45389755457) và Build APK (45389755514) thành công.
+
+#### Stage 6A — Phóng lớn họa tiết rồng Thiên Kiêu (2026-11-24)
+
+- Theo ý kiến làm rõ của chủ dự án, trả kích thước thẻ, chân dung, chữ và bảng về Stage 6A ban đầu. Chỉ tăng kích thước hai rồng góc của khung Thiên Kiêu, sử dụng PNG hiện có; cắt biên sát họa tiết hơn và tăng vùng góc lên 88 × 38 px trên desktop, 72 × 32 px trên điện thoại. Với màn hình tối đa 360 px, chừa thêm khoảng dưới điểm linh lực để rồng không che chữ.
+- [x] Edge headless kiểm tra 7 kích thước 280–900 px, 51 hàng, hai chế độ trang trí; không tràn ngang, các cột thẳng hàng. Kiểm tra ảnh chụp thẻ Cố Thái Hư ở 760/390/280 px và luồng mở hồ sơ, học nhanh đạt. `git diff --check` đạt.
+- [ ] CI/APK bản chỉnh họa tiết rồng và nghiệm thu Android thật.
