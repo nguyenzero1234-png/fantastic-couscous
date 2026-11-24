@@ -30,7 +30,7 @@ function selfCheck(){
   $("gout").textContent=r.join("\n");
 }
 function runGod(a,btn){
-  const t=today(),add=n=>{S.points+=n;hAdd(t,n,0)};
+  const t=today(),add=n=>{S.points+=n;root.GameAnalytics.recordPoints(S,n,true,t);hAdd(t,n,0)};
   if(a==="wp"){
     if(!btn.dataset.arm){btn.dataset.arm=1;btn.textContent="Bấm lần nữa!";schedule(()=>{delete btn.dataset.arm;btn.textContent="Tẩy trắng"},4000);return false}
     try{deps.resetProgress()}catch(error){say("Không thể đặt lại: "+error.message);return false}
@@ -38,7 +38,7 @@ function runGod(a,btn){
   }
   if(a==="pt")add(1000);
   else if(a==="pb")add(10000);
-  else if(a==="sv"){const raw=String($("gv")?.value??"").trim(),value=Number(raw);if(!raw||!Number.isSafeInteger(value)||value<0){say("Nhập linh lực nguyên không âm hợp lệ.");return false}S.points=value;hAdd(t,0,0)}
+  else if(a==="sv"){const raw=String($("gv")?.value??"").trim(),value=Number(raw);if(!raw||!Number.isSafeInteger(value)||value<0){say("Nhập linh lực nguyên không âm hợp lệ.");return false}root.GameAnalytics.recordPoints(S,value-S.points,true,t);S.points=value;hAdd(t,0,0)}
   else if(a==="xp"){const k=ri(S.points);if(RL[k+1])add(RL[k+1][1]-S.points);else say("Đã ở đỉnh cảnh giới.")}
   else if(a==="dt"){const mx=getMaxXp();add(Math.max(0,mx-S.points))}
   else if(a==="rb"){doRebirth();return false}

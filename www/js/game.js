@@ -153,7 +153,7 @@ function eventGain(n){const r=GameRewards.eventGain(n,S.tcCharges,rewardFactors(
 function addPts(n,mins,day){
   const before=ri(S.points||0);
   const g=modGain(n);if(!g&&!mins)return 0;
-  S.points+=g;hAdd(day||today(),g,mins||0);
+  S.points+=g;GameAnalytics.recordPoints(S,g,false,day||today());hAdd(day||today(),g,mins||0);
   const after=ri(S.points||0);
   if(after>before){try{onRealmUp(before,after);}catch(e){}}
   return g;
@@ -162,12 +162,12 @@ function showTdLenh(){TribulationUI.showTdLenh()}
 const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
 const calc=()=>GameQuestData.basePoints(dur(),S.perHour,parseFloat($("nl").value)||1,$("nq").value);
-function finish(q){
+function finish(q,completedAt){
   const before=ri(S.points);
   const completed=GameQuestCompletion.finish(q, {
     S, today, dayStr, GameTimer, GameStreak, KS,
     extraGet:()=>extra, extraSet:value=>{extra=value;}, vlog, TB, LS, petBuff,
-    GameRewards, eqT, rewardFactors, hourNow, ITEMS, myRk, hAdd, rname, uxp, isDone
+    GameRewards, eqT, rewardFactors, hourNow, ITEMS, myRk, hAdd, rname, uxp, isDone, completedAt
   });
   if(completed&&ri(S.points)>before)onRealmUp(before,ri(S.points));
   return completed;
@@ -186,19 +186,11 @@ function renderMap(){MapUI.render()}
 const LoreUI=GameLoreUI.create({SECTS,$});
 function renderLore(){LoreUI.render()}
 function renderMore(){
-  renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderStats();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
-  renderVisibleLeaderboard();
+  renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
+  renderVisibleScreens();
   ActivityUI.renderQuestPreview();
   if(document.activeElement!==$("ph"))$("ph").value=S.perHour;
   const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask){$("fn").textContent=focusTask.name;$("ft").textContent=fmt(GameTimer.focusRemaining())}
-  $("st").textContent=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
-  const th=S.hist[today()]||{p:0,m:0};
-  $("sm").textContent=th.m+" phút";
-  let tot=0;for(const k in S.hist)tot+=S.hist[k].m;
-  $("sa").textContent="Tổng: "+Math.floor(tot/60)+" giờ "+tot%60+" phút";
-  const days=[6,5,4,3,2,1,0].map(o=>{const d=dayStr(o);return {d,p:(S.hist[d]||{p:0}).p}});
-  const mx=Math.max(10,...days.map(x=>x.p));
-  $("bars").innerHTML=days.map(x=>`<div><span>${x.p}</span><i style="height:${Math.round(x.p/mx*80)}px"></i><span>${x.d.slice(8)}</span></div>`).join("");
   nwUpdate();
 }
 
@@ -225,7 +217,7 @@ $("buy").onclick=()=>{
   const m=parseInt($("mins").value)||0;if(m<1){say("Nhập số phút muốn đổi.");return}
   const quote=leisureQuote(m),cost=quote.cost;
   if(S.points<cost){say("Chưa đủ linh lực: cần "+cost+", bạn có "+S.points+". Làm thêm nhiệm vụ nhé.");return}
-  S.points-=cost;const bo=quote.bonusSeconds;S.sl=0;S.lt=0;S.gameSec+=m*60+bo;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+" phút chơi"+(bo?" (thêm "+bo+" giây)":"")+".");
+  S.points-=cost;GameAnalytics.recordLeisureCost(S,today(),cost);const bo=quote.bonusSeconds;S.sl=0;S.lt=0;S.gameSec+=m*60+bo;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+" phút chơi"+(bo?" (thêm "+bo+" giây)":"")+".");
 };
 $("run").onclick=()=>{
   const wasPlaying=GameTimer.isPlaying();reconcileTimers();
@@ -244,7 +236,7 @@ function reconcileTimers(flush=false,refresh=true){
     GameTimer.cancelFocus();transition=true;
   }else if(q&&GameTimer.focusRemaining()===0){
     GameTimer.cancelFocus();transition=true;
-    if(finish(q))say("Học xong "+q.mins+" phút! +"+q.got+" linh lực.");
+    if(finish(q,focus.endAt))say("Học xong "+q.mins+" phút! +"+q.got+" linh lực.");
   }
   timerDirty=timerDirty||transition;
   const now=Date.now();
@@ -286,7 +278,6 @@ const CI=[[10],[15],[20,"ca"],[30],[40,"bm"],[60],[120,"the"]];
 const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,onPointsChanged:before=>{if(ri(S.points)>ri(before))onRealmUp(ri(before),ri(S.points))},hasBonusTitle:()=>eqT("n16"),random:Math.random});
 function checkin(){return RewardClaims.checkin()}
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
-let SPD=7,SMT="p";
 const StatsUI=GameStatisticsUI.create({S,$,today,dayStr,GameAnalytics,GameTimeFormat,fold,uxp,ri,RL,rname,EX,exD,getKD:()=>KD,getKAge:()=>kAge(),bestKiep:()=>bk()});
 function renderStats(){StatsUI.render()}
 $("stats").onclick=e=>StatsUI.handleClick(e);
@@ -311,7 +302,7 @@ $("lenh").onclick=e=>{
   const b=e.target.closest("[data-a=lc]");if(!b||b.disabled)return;
   const t=LQ.find(x=>x.id===b.dataset.id),ck="q:"+t.id+":"+lpk(t.per);
   if(S.claimed[ck]||lval(t)<t.tg)return;
-  S.claimed[ck]=1;const rr=eventGain(evB(t.r));S.eb=0;S.points+=rr;hAdd(today(),rr,0);if(t.it)S.inv[t.it]=(S.inv[t.it]||0)+1;
+  S.claimed[ck]=1;const rr=eventGain(evB(t.r));S.eb=0;S.points+=rr;GameAnalytics.recordPoints(S,rr,false,today());hAdd(today(),rr,0);if(t.it)S.inv[t.it]=(S.inv[t.it]||0)+1;
   save();render();say("Hoàn thành "+t.n+": +"+rr+" linh lực"+(t.it?" và 1 "+ITEMS.find(i=>i.id===t.it).n:"")+".");
 };
 /* Học kỳ bắt đầu đã bị gỡ — thiên kiếp gắn với ngày trong kiếp */
@@ -340,11 +331,12 @@ function activeGR(){return (S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR}
 /* ===== Chấm đỏ thông báo =====
    Hiện chấm đỏ ở tab (nhóm + mục con) và cạnh từng mục khi có: phần thưởng chưa nhận, danh hiệu mới chưa đeo,
    linh thú mới, kỳ ngộ bất ngờ chưa xem. Trạng thái "mới" lưu ở S.nw (t: danh hiệu, p: linh thú, k: kỳ ngộ đã xem, kt: đã báo). */function nwS(){const n=S.nw||(S.nw={});if(!n.t)n.t={};if(!n.p)n.p={};if(!n.k)n.k={};if(!n.kt)n.kt={};return n}
-function renderVisibleLeaderboard(){
+function renderVisibleScreens(){
   if(!$("b").hidden)renderLb();
   if(!$("v").hidden)renderVan();
+  if(!$("s").hidden)renderStats();
 }
-const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,onNavigate:renderVisibleLeaderboard,schedule:(fn,ms)=>setTimeout(fn,ms)});
+const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,onNavigate:renderVisibleScreens,schedule:(fn,ms)=>setTimeout(fn,ms)});
 function nwUpdate(){NavigationUI.update()}
 function nwSeenK(){NavigationUI.seenK()}
 function drawNav(){NavigationUI.drawNav()}
@@ -475,7 +467,7 @@ function renderAch(){const el=$("ach");if(el)el.innerHTML=LegacyMissions.render(
 function prevMemory(){return GameRebirthData.previousMemory(S.rbh||[]);}
 
 function showThd(r,ask){TribulationUI.showThd(r,ask)}
-function doRebirth(){TribulationSystem.doRebirth()}
+function doRebirth(){GameTimer.tickPlay();TribulationSystem.doRebirth()}
 const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){TribulationUI.renderRbs()}
 if(!S.name||!S.gender)askName();

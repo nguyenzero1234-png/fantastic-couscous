@@ -28,7 +28,7 @@
       if(!SECTS[index] || index===S.sect)return;
       if(S.sect!=null){
         if(S.points<100)return {message:"Cần 100 linh lực để chuyển tông môn."};
-        S.points-=100;
+        S.points-=100;root.GameAnalytics.recordPoints(S,-100);
       }
       S.sect=index;
       S.master=null;
@@ -102,7 +102,7 @@
     if (diff > 0) {
       const base = deps.modGain(150 + Math.min(150, Math.round(diff * 0.35)) + (deps.hasTitle() ? 100 : 0));
       const bonus = diff > 80 && deps.random() < 0.35;
-      S.points += base;
+      S.points += base;root.GameAnalytics.recordPoints(S,base,false,deps.today());
       deps.addHistory(deps.today(), base, 0);
       S.lb.sw = (S.lb.sw || 0) + 1;
       let message = " Tông môn chiến: " + deps.sects[S.sect].n + " đại thắng " + deps.sects[opponent].n + " (+" + base + " linh lực)";
@@ -114,7 +114,7 @@
       return message + ".";
     }
     const consolation = deps.modGain(Math.min(40, Math.round(Math.abs(diff) * 0.08) + 15));
-    S.points += consolation;
+    S.points += consolation;root.GameAnalytics.recordPoints(S,consolation,false,deps.today());
     deps.addHistory(deps.today(), consolation, 0);
     deps.log("Tông môn chiến: " + deps.sects[S.sect].n + " thua " + deps.sects[opponent].n + " (" + flavorText[0] + "), nhận " + consolation + " linh lực an ủi");
     return " Tông môn chiến: " + deps.sects[S.sect].n + " thua " + deps.sects[opponent].n + ". Thiên Đạo ban " + consolation + " linh lực an ủi — thất bại cũng là tu luyện.";

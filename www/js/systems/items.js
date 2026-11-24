@@ -33,7 +33,7 @@
     let bonus=0;
     if(hasTitle("n17"))bonus+=15;
     if(masterBuff().itemBonus)bonus+=masterBuff().itemBonus;
-    if(bonus){state.points+=modGain(bonus);addHistory(today(),modGain(bonus),0)}
+    if(bonus){const gain=modGain(bonus);state.points+=gain;root.GameAnalytics.recordPoints(state,gain,false,today());addHistory(today(),gain,0)}
     say("Đã dùng "+item.n+(bonus?" (+"+modGain(bonus)+" linh lực)":"")+".");
     return true;
   }
@@ -81,7 +81,8 @@
       const bought=S.dailyBought[today()]||(S.dailyBought[today()]=[]);
       if(bought.includes(id)){say("Vật phẩm này đã mua hôm nay; ngày mai có thể mua lại.");return false}
       if(S.points<item.c){say("Chưa đủ linh lực.");return false}
-      S.points=S.points-item.c+(petBuff().rf||0);
+      const delta=-item.c+(petBuff().rf||0);
+      S.points+=delta;root.GameAnalytics.recordPoints(S,delta,false,today());
       S.inv[id]=(S.inv[id]||0)+1;
       bought.push(id);
       say("Đã mua "+item.n+".");

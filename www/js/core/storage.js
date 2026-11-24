@@ -15,7 +15,7 @@
     if(!optional(value.schemaVersion,v=>v===1||v===2))return false;
     if(!optional(value.gameSec,v=>Number.isSafeInteger(v)&&v>=0))return false;
     if(!optional(value.timers,v=>record(v)&&
-      (v.play===null||(session(v.play)&&nonnegative(v.play.lastTickAt)))&&
+      (v.play===null||(session(v.play)&&nonnegative(v.play.lastTickAt)&&optional(v.play.reportTracked,x=>typeof x==="boolean")))&&
       (v.focus===null||(session(v.focus)&&typeof v.focus.questId==="string"&&v.focus.questId.length>0&&nonnegative(v.focus.lastSeenAt)&&nonnegative(v.focus.endAt)&&v.focus.endAt>=v.focus.lastSeenAt))))return false;
     if(Object.prototype.hasOwnProperty.call(value,"__proto__"))return false;
     const ids=new Set();
@@ -30,6 +30,7 @@
     if(!optional(value.streak,v=>record(v)&&typeof v.last==="string"&&nonnegative(v.n)))return false;
     if(!optional(value.buff,v=>record(v)&&nonnegative(v.n)&&nonnegative(v.m)))return false;
     if(!optional(value.hist,v=>Object.values(v).every(h=>record(h)&&nonnegative(h.p)&&nonnegative(h.m))))return false;
+    if(!optional(value.studyReport,v=>record(v)&&nonnegative(v.since)&&v.since<=864e13&&optional(v.sinceDay,d=>typeof d==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(d))&&record(v.days)&&Object.entries(v.days).every(([day,h])=>/^\d{4}-\d{2}-\d{2}$/.test(day)&&record(h)&&["play","earned","leisureCost","onTime","late"].every(k=>nonnegative(h[k]))&&["otherEarned","otherCost","debugAdded","debugRemoved"].every(k=>optional(h[k],nonnegative)))))return false;
     if(!optional(value.nightStudy,v=>record(v)&&Object.values(v).every(n=>nonnegative(n)&&n<=120)))return false;
     if(!optional(value.menhRecovery,v=>v===null||(record(v)&&typeof v.start==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v.start)&&typeof v.claimed==="boolean"&&optional(v.days,days=>Array.isArray(days)&&days.every(day=>typeof day==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(day))))))return false;
     if(!optional(value.sched,v=>Object.values(v).every(a=>Array.isArray(a)&&a.every(record))))return false;
@@ -41,6 +42,7 @@
       if(!optional(value[key],Array.isArray))return false;
     }
     if(!optional(value.stl,v=>v.every(row=>Array.isArray(row)&&nonnegative(row[0])&&nonnegative(row[1]))))return false;
+    if(value.quests.some(q=>!optional(q.completion?.tracked,v=>typeof v==="boolean")||!optional(q.completion?.deadlineResult,v=>["none","onTime","late"].includes(v))))return false;
     if(!optional(value.fx,v=>v.every(e=>record(e)&&nonnegative(e.n)&&nonnegative(e.v))))return false;
     return true;
   }

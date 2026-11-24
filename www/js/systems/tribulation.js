@@ -73,13 +73,14 @@
   if(pending&&!S.exLock){S.exLock=pending.id;schedule(()=>showExModal(pending),300)}
 }
   function doRebirth(){
-  const rec=buildRec();(S.rbh||(S.rbh=[])).push(rec);
+  const rec=buildRec();if(S.studyReport)rec.studyReport=root.GameAnalytics.archiveReport(S);(S.rbh||(S.rbh=[])).push(rec);
   if(rec.anXa){S.tdPenalty=false;S.tdStacks=0;S.failStreak=0;S.life=S.life||{};S.life.anXa=1;vlog("Thiên Đạo Ân Xá: Trừng Phạt và chuỗi fail đã được xóa bỏ.");burst();sfx(880)}
   if(rec.grade==="Viên Mãn Xuất Chúng"||rec.grade==="Xuất Sắc"){S.life=S.life||{};S.life.excel=1}
   if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}
   // legacy + life + ui + name + god + tut + diary prefs keep
   S.rb=(S.rb||0)+1;
   S.storyLog=[];S.storyFlags={};S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
+  S.studyReport=root.GameAnalytics.newReport(S);
   S.menh=100;S.failStreak=0;S.menhRecovery=null;S.nightStudy={};
   setSalt(S.rb*7919);S.thdAsk=0;S.sem=null;S.exLock=null;S.fx=[];S.buff={n:0,m:1};S.xb=null;S.tb=null;S.sh=null;S.sl=0;S.lt=0;S.ln=null;S.kd=null;S.eb=0;S.pw=0;S.master=null;
   S.inv={};S.pets={};S.act=null;S.tt={};S.title=null;S.nw=null;S.sect=null;S.gameSec=0;S.timers={focus:null,play:null};S.streak={n:0,last:""};
@@ -121,7 +122,7 @@
     const me=r.rows.find(z=>z.u);
     if(!me||!me.ok||me.g==="Yếu")return;
     const pts=deps.eventGain(deps.RW[me.g]*ex.w);
-    r.claimed=true;S.points+=pts;deps.hAdd(deps.today(),pts,0);
+    r.claimed=true;S.points+=pts;root.GameAnalytics.recordPoints(S,pts,false,deps.today());deps.hAdd(deps.today(),pts,0);
     if(me.g==="Xuất sắc")S.inv.bm=(S.inv.bm||0)+1;
     save();render();
     deps.say("Nhận thưởng "+ex.n+": +"+pts+" linh lực"+(me.g==="Xuất sắc"?" và 1 Tích Cốc Đan":"")+".");
@@ -136,11 +137,11 @@
     const r=trial.reward+(petBuff().kp||0)+(eqT("n14")?25:0)+(S.kd===today()?30:0);
     KC[key]=1;
     const life=lifeStats();life.kn=(life.kn||0)+1;
-    const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);
+    const rr=modGain(r);S.points+=rr;root.GameAnalytics.recordPoints(S,rr,false,today());hAdd(today(),rr,0);
     let message="Vượt kiếp thành công: +"+rr+" linh lực.";
     if([0,1,2].every(index=>KC[pre+index])){
       if(key[0]==="d"){
-        const bonus=modGain(30);S.points+=bonus;hAdd(today(),bonus,0);
+        const bonus=modGain(30);S.points+=bonus;root.GameAnalytics.recordPoints(S,bonus,false,today());hAdd(today(),bonus,0);
         message+=" Vượt đủ ba kiếp, thêm +"+bonus+" linh lực.";
       }else{S.inv.ca=(S.inv.ca||0)+1;message+=" Nhận 1 Tỉnh Thần Linh Trà."}
     }

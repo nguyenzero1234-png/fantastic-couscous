@@ -78,7 +78,7 @@
   }
   function setActive(state,id,now,bonus){
     const collected=accrued(state.pets,state.act,now,bonus);
-    if(collected)state.points+=collected;
+    if(collected){state.points+=collected;root.GameAnalytics.recordPoints(state,collected,false,new Date(now+(state.dOff||0)*864e5).toLocaleDateString("sv"));}
     state.act=id;
     if(id==="hl"&&state.pets&&state.pets.hl)state.pets.hl.t=now;
     return collected;

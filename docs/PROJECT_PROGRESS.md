@@ -1313,3 +1313,20 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Microsoft Edge headless, profile độc lập, CDP mô phỏng điện thoại 390 × 844: nhập đạo bằng nút thật, bỏ qua hướng dẫn đầu game, mở tab Hướng dẫn. Đã xem ảnh ba màn hình; chiều rộng viewport và tài liệu đều 390 px. Thanh tab cuộn ngang. Chưa kiểm thử đầy đủ mọi màn hình hoặc Android thật.
 - [x] Commit Stage 2D `c92cd3f225bec5420c9d27c6a26d80932884b0cf` đã push lên `stage-1/foundation`; xác minh remote đúng SHA. [JavaScript Tests run 45352235135](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45352235135) và [Build APK run 45352235130](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45352235130) đều thành công trên commit này. Artifact [TuTienHocDao-apk](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45352235130/artifacts/14901066611) ID 14901066611 (6.270.602 byte, chưa hết hạn khi kiểm tra). Tag phục hồi Stage 2C đã xác minh trên remote trỏ tới `b0811e31155e1b5c01aa6254f10f1a4928d2f9b4`.
 - [ ] Nghiệm thu Android theo ANDROID_QA_CHECKLIST.md, gồm timer, thông báo, backup, viền PNG và bố cục trên thiết bị thật.
+
+## Stage 3A — Tu Luyện Sử (2026-11-24)
+
+- Thống kê có tổng quan, biểu đồ 7/30 ngày theo phút học hoặc linh lực, so sánh kỳ trước, xem chi tiết ngày, bản đồ chuyên cần 35 ngày và sử 5 kiếp gần nhất. Chỉ render khi mở tab; giữ lựa chọn, nhóm mở và cuộn ngang biểu đồ khi cập nhật.
+- `systems/analytics.js` tổng hợp sử theo ngày, biên nhận nhiệm vụ, thu chi linh lực, giờ chơi thực tế đã trừ, tỷ lệ hoàn thành đúng hạn và phần điều chỉnh trực tiếp bằng Thiên Đạo. Hoàn tác/khôi phục đảo lại biên nhận gốc; nhiệm vụ lặp và xóa không làm mất sử đã ghi. Timer chia thời gian theo ngày game, xử lý reload, hết giờ và đồng hồ lùi.
+- Save cũ được migrate với mốc bắt đầu ghi nhận; giờ học và linh lực lịch sử vẫn lấy từ dữ liệu sẵn có (bao gồm điều chỉnh lịch sử bằng Thiên Đạo). Thu chi, giờ chơi và thời hạn chỉ có dữ liệu kể từ khi bật cơ chế ghi nhận; hiển thị cảnh báo khoảng dữ liệu thiếu. Sử tổng hợp được lưu vào bản ghi khi luân hồi. Giữ nguyên công thức cân bằng Stage 2C.
+- [x] Kiểm thử hồi quy timer và thống kê ở Asia/Ho_Chi_Minh và UTC: 139/139. Kiểm tra biên nhận, thời điểm hoàn thành quá hạn, thời gian chơi qua nửa đêm và lùi đồng hồ, không ghi trùng sau reload.
+- [x] Edge headless, profile độc lập, CDP mô phỏng 390 × 844 và 320 × 844: nhập đạo, bỏ qua hướng dẫn, chuyển Thiên Thư, chọn 30 ngày và phút học, chọn ngày, mở Thu chi. Cả hai kích thước có chiều rộng tài liệu bằng viewport; 30 cột biểu đồ cuộn trong vùng riêng, 35 ô chuyên cần, không phát sinh lỗi JavaScript. Lần chạy trong sandbox hết thời gian; chạy lại được phép với CDP loopback đã thành công. Chưa xác nhận ảnh bằng mắt.
+- [ ] Nghiệm thu Android thật; xác nhận CI/APK Stage 3A.
+
+### Lộ trình tiếp theo
+
+- Stage 3B — Vạn Pháp: môn học tùy chỉnh, mục tiêu phút học theo ngày/tuần, sử môn học theo biên nhận; tương thích nhiệm vụ và save cũ.
+- Stage 3C — Thiên Kiêu: đa dạng tính cách, tương tác và sự kiện thế giới.
+- Stage 3D — Hiệu ứng đột phá cảnh giới, ưu tiên nhẹ và hỗ trợ giảm chuyển động.
+- Stage 3E — Chu kỳ tu luyện tùy chọn, mặc định 119 ngày; thiết kế lại mốc kỳ thi phù hợp từng chu kỳ.
+- Stage 4 — Cá nhân hóa. Nghiệm thu Android theo checklist là điều kiện kiểm chứng thực tế xuyên suốt.

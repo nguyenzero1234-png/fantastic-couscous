@@ -84,14 +84,14 @@ $("events").onclick=e=>{
   if(xs&&!xs.disabled){
     const ck=xs.dataset.ck,r=+xs.dataset.r;
     if(S.claimed[ck])return;
-    S.claimed[ck]=1;const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);
+    S.claimed[ck]=1;const rr=modGain(r);S.points+=rr;root.GameAnalytics.recordPoints(S,rr,false,today());hAdd(today(),rr,0);
     vlog("Kỳ sự: +"+rr+" linh lực");save();refresh();say("Kỳ sự hoàn thành: +"+rr+" linh lực.");return;
   }
   const b=e.target.closest("[data-a]");if(!b||b.disabled||b.dataset.a!=="ec")return;
   const p=b.dataset.p,k=b.dataset.k;
   if(S.claimed[k]||evCur(p)<S.ev[p].h*60)return;
   const had=new Set(TITLES.filter(t=>tok(t)).map(t=>t.id));
-  const er=modGain(evB(S.ev[p].r));S.eb=0;S.claimed[k]=1;S.points+=er;hAdd(today(),er,0);
+  const er=modGain(evB(S.ev[p].r));S.eb=0;S.claimed[k]=1;S.points+=er;root.GameAnalytics.recordPoints(S,er,false,today());hAdd(today(),er,0);
   const drop=p==="w"?"ca":"the";S.inv[drop]=(S.inv[drop]||0)+1;
   let petMsg="";
   const petChance=p==="m"?0.45:0.22;

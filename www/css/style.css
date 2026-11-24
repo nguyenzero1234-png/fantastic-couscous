@@ -368,7 +368,18 @@ summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:n
 #settings-version{display:block;margin:-6px 0 12px}
 #settings-version[hidden]{display:none}
 @media(max-width:360px){#setpanel .fold{padding:10px 12px}#setpanel .setting-actions{grid-template-columns:1fr}}
-#stats{gap:10px!important}
+#stats{gap:10px!important;grid-template-columns:minmax(0,1fr)}
+#stats .fold,#stats .box{min-width:0}
+.stats-compare,.stats-life{display:grid;gap:4px;padding:10px 0;border-bottom:1px solid var(--line)}
+.stats-chart{display:grid;grid-template-columns:repeat(var(--days),minmax(28px,1fr));gap:4px;overflow-x:auto;align-items:end;margin:10px 0;min-width:0;max-width:100%}
+.stats-bar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:118px;min-width:0;padding:3px 2px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--mute);font-size:11px}
+.stats-bar i{display:block;width:100%;background:var(--jade);border-radius:4px 4px 0 0}
+.stats-bar[aria-pressed="true"],.stats-heatmap button[aria-pressed="true"]{border-color:var(--ink)}
+.stats-heatmap{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:8px 0}
+.stats-heatmap button{position:relative;isolation:isolate;aspect-ratio:1;min-width:0;padding:0;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:5px;font-size:12px}
+.stats-heatmap button::before{content:"";position:absolute;inset:0;background:var(--jade);opacity:var(--heat);z-index:-1;border-radius:inherit}
+.stats-day{padding:8px 0;overflow-wrap:anywhere;font-size:13px}
+#stats .num{overflow-wrap:anywhere}
 /* Lịch tuần */
 .d7{cursor:pointer;font:inherit;font-size:11px;padding:6px 2px;color:var(--mute)}
 .d7 span{display:block;min-height:14px;font-size:11px}

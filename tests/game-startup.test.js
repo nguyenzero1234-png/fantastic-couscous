@@ -389,12 +389,19 @@ test("B: focus và giờ chơi khôi phục qua reload, deadline và nửa đêm
  assert.equal(q.doneOn,"2026-11-25");
  assert.equal(settled.hist[q.doneOn].m,5);
  assert.ok(q.got>0);
+ assert.equal(q.completion.deadlineResult,"late");
+ assert.equal(settled.studyReport.days["2026-11-24"].play,120);
+ assert.equal(settled.studyReport.days["2026-11-25"].play,210);
+ assert.equal(settled.studyReport.days[q.doneOn].earned,q.got);
+ assert.equal(settled.studyReport.days[q.doneOn].late,1);
  f.reload();f.flush();
  assert.equal(f.saved().points,settled.points);
  assert.equal(f.saved().hist[q.doneOn].m,5);
+ assert.deepEqual(f.saved().studyReport,settled.studyReport);
  f.advance(1000000);f.reload();
  assert.equal(f.saved().gameSec,0);
  assert.equal(f.saved().timers.play,null);
+ assert.equal(Object.values(f.saved().studyReport.days).reduce((sum,row)=>sum+row.play,0),600);
 });
 
 test("B: hoàn thành thủ công, hủy, xóa chuỗi, sửa/tạo lại và nhiệm vụ khóa",()=>{
@@ -437,6 +444,8 @@ test("B: play pause, mua thêm giờ, rollback đồng hồ và focus orphan",()
  getNode("mins").value="1";getNode("buy").onclick();
  assert.equal(f.saved().timers.play,null);
  assert.equal(f.saved().gameSec,60);
+ assert.equal(Object.values(f.saved().studyReport.days).reduce((sum,row)=>sum+row.play,0),120);
+ assert.ok(Object.values(f.saved().studyReport.days).some(row=>row.leisureCost>0));
  f.run("S.quests=[];save()");f.reload();
  assert.equal(f.saved().timers.focus,null);
 });

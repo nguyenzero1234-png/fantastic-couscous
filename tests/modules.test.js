@@ -1494,11 +1494,34 @@ test("GameQuestTemplates chứa dữ liệu nhiệm vụ, kế hoạch và promp
 
 test("GameStatisticsUI giữ bộ lọc biểu đồ trong module UI",()=>{
  const host={innerHTML:""};
- const M=window.GameStatisticsUI.create({S:{hist:{},cnt:{},streak:{},rbh:[],rb:0,sem:null},$:()=>host,today:()=>"2026-11-24",dayStr:()=>"2026-11-23",GameAnalytics:{summarize:()=>({g:()=>0,sm:()=>0,sn:()=>0,mo:[],mA:0,pA:0,bp:0,bd:"",ls:0})},GameTimeFormat:{hoursLabel:()=>"0 giờ"},fold:()=>"section",uxp:()=>0,ri:()=>0,RL:[["Phàm",0]],rname:()=>"Phàm",EX:[],exD:()=>0,getKD:()=>10,getKAge:()=>0,bestKiep:()=>({n:1,pk:0,cur:true})});
- assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{days:7,metric:"p"});
- M.handleClick({target:{closest:()=>({dataset:{sp:"30",sm:"m"}})}});
- assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{days:30,metric:"m"});
+ const M=window.GameStatisticsUI.create({S:{hist:{},cnt:{},streak:{},rbh:[],rb:0,sem:null},$:()=>host,today:()=>"2026-11-24",dayStr:()=>"2026-11-23",GameAnalytics:window.GameAnalytics,GameTimeFormat:{hoursLabel:()=>"0 giờ"},fold:()=>"section",uxp:()=>0,ri:()=>0,RL:[["Phàm",0]],rname:()=>"Phàm",EX:[],exD:()=>0,getKD:()=>10,getKAge:()=>0,bestKiep:()=>({n:1,pk:0,cur:true})});
+ assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{days:7,metric:"m"});
+ M.handleClick({target:{closest:()=>({dataset:{sp:"30",sm:"p"}})}});
+ assert.deepEqual(JSON.parse(JSON.stringify(M.settings())),{days:30,metric:"p"});
  assert.equal(typeof host.innerHTML,"string");
+});
+
+test("Stage 3A: thu chi, hoàn tác, giờ chơi qua ngày và sử luân hồi",()=>{
+ const A=window.GameAnalytics, start=new Date(2026,10,23,23,59,50).getTime();
+ const S={points:100,quests:[],hist:{},cnt:{},studyReport:A.newReport({},start)};
+ const first="2026-11-23",next="2026-11-24";
+ const receipt={tracked:true,day:first,gain:50,deadlineResult:"onTime"};
+ A.recordCompletion(S,receipt,1);
+ A.recordCompletion(S,receipt,-1);
+ A.recordCompletion(S,receipt,1);
+ A.recordCompletion(S,{day:first,gain:99},-1);
+ A.recordPoints(S,30,false,first);
+ A.recordPoints(S,-20,false,first);
+ A.recordPoints(S,100,true,next);
+ A.recordLeisureCost(S,next,15);
+ A.recordPlay(S,start-5000,25);
+ const a=A.reportPeriod(S,[first]),b=A.reportPeriod(S,[next]);
+ assert.equal(a.earned,50);assert.equal(a.onTime,1);assert.equal(a.otherEarned,30);assert.equal(a.otherCost,20);
+ assert.equal(a.play,10);assert.equal(b.play,10);assert.equal(b.leisureCost,15);assert.equal(b.debugAdded,100);
+ assert.equal(A.archiveReport(S).totals.play,20);
+ assert.equal(window.GameStorage.validSave(S),true);
+ S.studyReport.days[first].otherCost=-1;
+ assert.equal(window.GameStorage.validSave(S),false);
 });
 
 

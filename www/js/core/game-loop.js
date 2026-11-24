@@ -12,6 +12,9 @@
       const rollback = now < play.lastTickAt;
       if (rollback) play.lastTickAt = now;
       const elapsed = Math.min(state.gameSec, Math.floor((now - play.lastTickAt) / 1000));
+      global.GameAnalytics?.recordPlay(state,play.lastTickAt,elapsed,!play.reportTracked);
+      const trackingStarted=!!state.studyReport&&!play.reportTracked;
+      if(trackingStarted&&(elapsed>0||rollback))play.reportTracked=true;
       state.gameSec = Math.max(0, state.gameSec - elapsed);
       play.lastTickAt += elapsed * 1000;
       const ended = state.gameSec === 0;
@@ -26,7 +29,7 @@
       }
       if (state.gameSec <= 0) return false;
       const now = clock();
-      sessions().play = { id: sessionId(now), startedAt: now, lastTickAt: now };
+      sessions().play = { id: sessionId(now), startedAt: now, lastTickAt: now, reportTracked:!!state.studyReport };
       return true;
     }
     function focusSession() { return sessions().focus; }

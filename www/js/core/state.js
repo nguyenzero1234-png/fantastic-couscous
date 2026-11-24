@@ -14,6 +14,8 @@
   function migrate(state){
     const S=state;
     S.schemaVersion=2;
+    if(!S.studyReport)S.studyReport=root.GameAnalytics.newReport(S);
+    if(!S.studyReport.sinceDay)S.studyReport.sinceDay=new Date(S.studyReport.since+(S.dOff||0)*864e5).toLocaleDateString("sv");
     if(!S.timers)S.timers={focus:null,play:null};
     if(!S.ph200){S.ph200=1;}
     // Only migrate the previous default; custom study rates remain user-controlled.

@@ -78,5 +78,63 @@
   });
   return value;
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween});
+ const reportFields=["play","earned","leisureCost","onTime","late","otherEarned","otherCost","debugAdded","debugRemoved"];
+ function newReport(state,now=Date.now()){
+  return {since:now,sinceDay:new Date(now+(state.dOff||0)*864e5).toLocaleDateString("sv"),days:{}};
+ }
+ function reportDay(state,day){
+  if(!state.studyReport)return null;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
+  return state.studyReport.days[day]||(state.studyReport.days[day]=Object.fromEntries(reportFields.map(key=>[key,0])));
+ }
+ function recordCompletion(state,receipt,direction){
+  if(!receipt.tracked)return;
+  const row=reportDay(state,receipt.day);
+  if(!row)return;
+  row.earned=Math.max(0,row.earned+direction*receipt.gain);
+  if(receipt.deadlineResult!=="none"&&receipt.deadlineResult)row[receipt.deadlineResult]=Math.max(0,row[receipt.deadlineResult]+direction);
+ }
+ function recordPlay(state,start,seconds,clipToSince=true){
+  if(!state.studyReport||!Number.isFinite(start)||!Number.isFinite(seconds)||seconds<=0)return;
+  const end=start+seconds*1000;
+  if(!Number.isFinite(end))return;
+  let cursor=clipToSince?Math.max(start,state.studyReport.since):start;
+  const offset=(state.dOff||0)*864e5;
+  // An imported timer can span an unrealistic number of days. Bound the
+  // processing window and retain the remaining duration on its last day.
+  for(let i=0;cursor<end&&i<3660;i++){
+   const date=new Date(cursor+offset),day=date.toLocaleDateString("sv");
+   date.setHours(24,0,0,0);
+   const next=Math.min(end,date.getTime()-offset);
+   if(!Number.isFinite(next)||next<=cursor)break;
+   const row=reportDay(state,day);if(!row)break;
+   row.play+=(next-cursor)/1000;
+   cursor=next;
+  }
+  if(cursor<end){const row=reportDay(state,new Date(end-1+offset).toLocaleDateString("sv"));if(row)row.play+=(end-cursor)/1000;}
+ }
+ function recordLeisureCost(state,day,cost){const row=reportDay(state,day);if(row)row.leisureCost+=cost;}
+ function recordPoints(state,delta,debug=false,day=new Date(Date.now()+(state.dOff||0)*864e5).toLocaleDateString("sv")){
+  if(!Number.isFinite(delta)||!delta)return;
+  const row=reportDay(state,day);if(!row)return;
+  const key=debug?(delta>0?"debugAdded":"debugRemoved"):(delta>0?"otherEarned":"otherCost");
+  row[key]=(row[key]||0)+Math.abs(delta);
+ }
+ function reportPeriod(state,days){
+  const totals={minutes:0,tasks:0,activeDays:0,historyPoints:0,...Object.fromEntries(reportFields.map(key=>[key,0]))};
+  for(const day of days){
+   const h=state.hist?.[day];
+   totals.minutes+=h?.m||0;totals.historyPoints+=h?.p||0;totals.tasks+=state.cnt?.[day]||0;
+   if(h?.m>0)totals.activeDays++;
+   const tracked=state.studyReport?.days[day];
+   if(tracked)for(const key of reportFields)totals[key]+=tracked[key]||0;
+  }
+  return totals;
+ }
+ function archiveReport(state){
+  if(!state.studyReport)return null;
+  const days=new Set([...Object.keys(state.hist||{}),...Object.keys(state.cnt||{}),...Object.keys(state.studyReport.days)]);
+  return {since:state.studyReport.since,sinceDay:state.studyReport.sinceDay,totals:reportPeriod(state,days)};
+ }
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween,newReport,recordCompletion,recordPlay,recordLeisureCost,recordPoints,reportPeriod,archiveReport});
 })(window);

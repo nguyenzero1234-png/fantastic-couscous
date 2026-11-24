@@ -39,8 +39,8 @@
     if(a==="accept"){S.petReveal=null;S.petEvolution=null;save();render();return}
     if(a==="hatch"){say("Linh thú không thể ấp bằng linh lực. Hãy tìm qua Kỳ ngộ hoặc Sự kiện.");return}
     else if(a==="act"&&o){setAct(id);say("Đã cho "+petRank(p,o.lv)+" theo cùng.")}
-    else if(a==="up"&&o&&o.lv<5){const c=150*o.lv;if(S.points<c){say("Chưa đủ linh lực: cần "+c+".");return}const oldRank=petRank(p,o.lv);S.points-=c;o.lv++;S.petEvolution={id:p.id,n:p.n,oldRank,newRank:petRank(p,o.lv),lv:o.lv,e:p.e(o.lv)}}
-    else if(a==="get"&&P.hl){const g=modGain(petAcc());P.hl.t=Date.now();S.points+=g;hAdd(today(),g,0);say("Linh thú thu hoạch được +"+g+" linh lực.")}
+    else if(a==="up"&&o&&o.lv<5){const c=150*o.lv;if(S.points<c){say("Chưa đủ linh lực: cần "+c+".");return}const oldRank=petRank(p,o.lv);S.points-=c;root.GameAnalytics.recordPoints(S,-c,false,today());o.lv++;S.petEvolution={id:p.id,n:p.n,oldRank,newRank:petRank(p,o.lv),lv:o.lv,e:p.e(o.lv)}}
+    else if(a==="get"&&P.hl){const g=modGain(petAcc());P.hl.t=Date.now();S.points+=g;root.GameAnalytics.recordPoints(S,g,false,today());hAdd(today(),g,0);say("Linh thú thu hoạch được +"+g+" linh lực.")}
     save();render();
  }
  root.GamePetUI={render,handleClick};
