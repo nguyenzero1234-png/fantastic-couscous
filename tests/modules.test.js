@@ -1775,11 +1775,11 @@ test("GameTribulationUI render các màn hình kiếp và lịch sử luân hồ
 
 
 test("GameOnboardingUI nhập đạo, lọc tên và lưu lựa chọn hình thể",()=>{
- const buttons=["nam","nu"].map(g=>({dataset:{g},classList:{toggle(){}},querySelector:()=>({style:{}})}));
+ const buttons=["nam","nu"].map(g=>({dataset:{g},classList:{toggle(){}},setAttribute(k,v){this[k]=v}}));
  const nodes={nmo:{innerHTML:"",hidden:true,querySelectorAll:()=>buttons},nmi:{value:"Tố< Tuyết",focus(){},onkeydown:null},nmk:{onclick:null}};
  const S={gender:"nam",name:"",tutDone:true};let saved=0,rendered=0,said="";
  const M=window.GameOnboardingUI.create({S,AV_NAM:"nam.png",AV_NU:"nu.png",$:id=>nodes[id],save:()=>saved++,render:()=>rendered++,say:x=>said=x,showTutorial:()=>{},schedule:()=>{}});
- M.askName();buttons[1].onclick();nodes.nmk.onclick();
+ M.askName();assert.match(nodes.nmo.innerHTML,/class="gender-grid"/);buttons[1].onclick();assert.equal(buttons[0]["aria-pressed"],"false");assert.equal(buttons[1]["aria-pressed"],"true");nodes.nmk.onclick();
  assert.equal(S.name,"Tố Tuyết");assert.equal(S.gender,"nu");assert.equal(saved,1);assert.equal(rendered,1);assert.match(said,/Tố Tuyết/);assert.equal(nodes.nmo.hidden,true);
 });
 

@@ -10,13 +10,13 @@ const o=$("nmo");
 const g=S.gender==="nu"?"nu":"nam",chooseCycle=deps.canChooseFirstCycle?.();
 o.innerHTML=`<div class="box"><h2>Nhập đạo · Chọn hình thể</h2>
   <small>Thiên Đạo cần biết đạo hiệu và hình thể của ngươi. Avatar theo nam hoặc nữ.</small>
-  <div class="row" style="margin-top:10px;justify-content:center;gap:16px;flex-wrap:wrap">
-    <button type="button" class="btn alt gender-pick${g==="nam"?" on":""}" data-g="nam" style="padding:8px;min-width:120px">
-      <img src="${AV_NAM}" alt="Nam" width="88" height="88" style="border-radius:50%;object-fit:cover;border:3px solid ${g==="nam"?"var(--gold)":"var(--line)"};display:block;margin:0 auto 6px">
+  <div class="gender-grid" role="group" aria-label="Hình thể">
+    <button type="button" class="btn alt gender-pick${g==="nam"?" on":""}" data-g="nam" aria-pressed="${g==="nam"}">
+      <img src="${AV_NAM}" alt="" width="88" height="88">
       <span>Nam tu</span>
     </button>
-    <button type="button" class="btn alt gender-pick${g==="nu"?" on":""}" data-g="nu" style="padding:8px;min-width:120px">
-      <img src="${AV_NU}" alt="Nữ" width="88" height="88" style="border-radius:50%;object-fit:cover;border:3px solid ${g==="nu"?"var(--gold)":"var(--line)"};display:block;margin:0 auto 6px">
+    <button type="button" class="btn alt gender-pick${g==="nu"?" on":""}" data-g="nu" aria-pressed="${g==="nu"}">
+      <img src="${AV_NU}" alt="" width="88" height="88">
       <span>Nữ tu</span>
     </button>
   </div>
@@ -31,8 +31,7 @@ o.querySelectorAll(".gender-pick").forEach(btn=>{
     o.querySelectorAll(".gender-pick").forEach(b=>{
       const on=b.dataset.g===pick;
       b.classList.toggle("on",on);
-      const img=b.querySelector("img");
-      if(img)img.style.borderColor=on?"var(--gold)":"var(--line)";
+      b.setAttribute("aria-pressed",String(on));
     });
   };
 });

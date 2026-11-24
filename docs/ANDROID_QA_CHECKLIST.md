@@ -45,6 +45,8 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 
 ## Bổ sung nghiệm thu Stage 3E và Stage 4
 
+- [ ] Mở bản cài mới, kiểm tra hai ảnh Nam tu/Nữ tu căn đều ở màn hình hẹp, chuyển lựa chọn, nhập đạo với từng giới tính trên dữ liệu thử nghiệm và mở lại app.
+
 - [ ] Chọn kiếp 30 ngày lúc nhập đạo, đổi kiếp sau sang 60 ngày, reload và luân hồi; kiểm tra thời lượng hiện tại, sử kiếp và các mốc thiên kiếp.
 - [ ] Chọn ảnh chân dung JPG, PNG, WebP từ bộ chọn ảnh Android; kiểm tra ảnh cắt vuông hiển thị trên tiêu đề, hồ sơ và bảng xếp hạng. Thử ảnh lỗi và ảnh vượt giới hạn.
 - [ ] Đổi trang trí, đóng/mở app, luân hồi, xuất và khôi phục JSON trên bản thử nghiệm; kiểm tra chân dung và lựa chọn trang trí được giữ. Reset về mặc định.

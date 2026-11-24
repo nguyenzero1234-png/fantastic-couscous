@@ -1406,3 +1406,18 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Edge headless trên hồ sơ riêng tại 390 × 844 và 320 × 844: chọn ảnh thật qua file input, giải mã JPEG 192 × 192 (15.319 ký tự với ảnh mẫu), từ chối file HTML, kiểm tra tiêu đề, hồ sơ, bảng xếp hạng, NPC trùng tên, tối giản, reload, luân hồi trực tiếp và reset. Không lỗi JS hoặc tràn ngang. Đã xem ảnh chụp cài đặt ở 320 px.
 - [ ] Xác nhận CI/APK Stage 4 sau push và nghiệm thu Android thật, đặc biệt bộ chọn ảnh và nhập/xuất backup có ảnh.
 - Tiếp theo: nghiệm thu Android theo checklist, rà soát hiệu năng, ổn định và cân bằng bằng dữ liệu sử dụng thực tế trước khi mở rộng gameplay.
+
+## Sửa giao diện nhập đạo (2026-11-24)
+
+- Thay hàng flex dùng chung bằng lưới hai cột cân đối dành riêng cho chọn Nam tu/Nữ tu; ảnh vuông 88 px, căn giữa, viền lựa chọn và trạng thái aria-pressed đồng bộ. Nguyên nhân lệch là margin-left tự động và kích thước tối thiểu của nút trong hàng flex cũ.
+- [x] Edge headless tại 390, 320 và 280 px: hai nút/ảnh cùng cao độ và kích thước, không tràn ngang; chọn nữ/nam, nhập đạo, ảnh tiêu đề và lưu giới tính qua reload đều đạt. Đã xem ảnh chụp 280 px. Nghiệm thu Android thật còn chờ.
+- [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh.
+
+## Lộ trình Stage 5
+
+- [ ] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp.
+- [ ] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức.
+- [ ] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp.
+- [ ] 5C — Mục tiêu, quan hệ và sự kiện NPC.
+- [ ] 5E — Tông môn, sư phụ và truyền thừa.
+- [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
