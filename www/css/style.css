@@ -298,6 +298,10 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--sat);ba
 #prof .prof-bio{margin-top:10px}
 #prof .prof-copy,#prof .prof-rank-note{font-size:14px;line-height:1.7;margin:0 0 8px}
 #prof .prof-rank-note{color:var(--mute)}
+#prof .prof-dialogue{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+#prof .prof-dialogue .btn{margin:4px 0 0;max-width:100%;white-space:normal}
+#prof .prof-dialogue .btn:disabled{opacity:.65;cursor:default}
+.world-news li .nm{min-width:0;overflow-wrap:anywhere}
 #prof .prof-talent{margin:12px 0;padding:13px 15px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));border-left:3px solid var(--gold);border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--goldbg) 55%,var(--card)),var(--card))}
 #prof .prof-talent-tag{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold)}
 #prof .prof-talent h3{font-size:17px;line-height:1.35;margin:5px 0;color:var(--ink);overflow-wrap:anywhere}

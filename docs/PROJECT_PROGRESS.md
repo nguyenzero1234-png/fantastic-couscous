@@ -1345,3 +1345,16 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Edge headless profile riêng, 390 × 844 và 320 × 844: tạo môn, lập nhiệm vụ 30 phút, chọn môn, hoàn thành, xác nhận 30/45 phút hôm nay và 30/180 phút tuần này. Chiều rộng tài liệu bằng viewport, không lỗi JS. Có ảnh chụp QA nhưng chưa kiểm tra bằng mắt.
 - [ ] Nghiệm thu Android thật. CI/APK Stage 3B cần xác nhận sau push.
 - Tiếp theo Stage 3C — tính cách và sự kiện Thiên Kiêu, rồi 3D, 3E và Stage 4.
+
+### Xác nhận CI Stage 3B
+
+- [x] Commit `615ec0d0f50d211c6180a718cfd7b75fe5f31804`: JavaScript Tests (45366567520) và Build APK (45366567491) đều completed/success. Artifact APK ID 14906524264 (6.279.745 byte, chưa hết hạn lúc kiểm tra).
+
+## Stage 3C — Thiên Kiêu (2026-11-24)
+
+- Module `systems/npc-world.js` quản lý tính cách 50 NPC, lời vấn đạo theo việc học trong ngày và Phong văn theo chu kỳ 3 ngày. Các sự kiện thay đổi theo kiếp, giữ nguyên thiên phú, mô phỏng NPC, thứ hạng và luật thưởng/phạt Stage 2C.
+- Hồ sơ Thiên Kiêu thêm Vấn đạo, ghi vào Đạo Văn tối đa một lần/ngày trên toàn bộ NPC, giữ giới hạn qua reload và khởi tạo lại khi luân hồi. Nếu lưu thất bại thì hoàn tác ký lục. Vạn Sự Điện hiển thị tối đa ba kỳ Phong văn; bảng xếp hạng dùng nhãn tính cách ngắn cho NPC thường và giữ tên thiên phú của NPC đặc biệt.
+- [x] 142/142 kiểm thử ở Asia/Ho_Chi_Minh và UTC; bao gồm tương tác, reload, luân hồi, không thay đổi điểm khi vấn đạo.
+- [x] Edge headless, profile riêng, 390 × 844 và 320 × 844: kiểm tra ghi vấn đạo, giới hạn ngày, Phong văn, không lỗi JS hay tràn ngang. Đã xem ảnh chụp Vấn đạo ở cả hai kích thước và Phong văn ở 320 px sau khi toast biến mất.
+- [ ] Xác nhận CI/APK của commit Stage 3C và nghiệm thu Android thật.
+- Tiếp theo Stage 3D — hiệu ứng đột phá, Stage 3E — chu kỳ tùy chọn, Stage 4 — cá nhân hóa.
