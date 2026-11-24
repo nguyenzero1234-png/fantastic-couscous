@@ -55,7 +55,11 @@
       if(q&&!d&&!expired(q))h+=`<div class="row"><button class="btn" data-a="t" data-id="${q.id}">Hoàn thành</button>${q.mins?`<button class="btn alt" data-a="p" data-id="${q.id}" style="margin-left:0">Học</button>`:""}</div>`;
     }else h+=`<h2 style="font-size:20px;margin:4px 0">Không có việc trong khung giờ này</h2><small>${nxt?"Kế tiếp "+nxt.s+": "+esc(rn(nxt)):"Hôm nay chưa có lịch phía sau"}</small>`;
     updateMarkup("now",h);
-    $("nowbar").hidden=!cur;if(cur)$("nowbar").textContent="Bây giờ ("+cur.s+" - "+cur.e+"): "+rn(cur);
+    $("nowbar").hidden=!cur;
+    if(cur){
+      const q=qOf(cur),canStudy=q&&!isDone(q)&&!expired(q)&&(!q.chain||unlocked(q))&&Number.isFinite(q.mins)&&q.mins>0&&!GameTimer.activeFocus();
+      updateMarkup("nowbar",`<div class="nm"><small>Bây giờ · ${cur.s} – ${cur.e}</small><b>${esc(rn(cur))}</b></div>${canStudy?`<button class="btn alt" data-a="p" data-id="${esc(q.id)}">Học ngay</button>`:""}`);
+    }
     updateMarkup("slots",day.length?day.map(x=>{
       const q=qOf(x),d=q&&isDone(q);
       return `<li class="${isT?(now>=x.e?"past":now>=x.s?"now":""):""}${d?" done":""}">${q&&!d&&!expired(q)&&isT?`<button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành"></button>`:d?`<button class="tick" disabled>✓</button>`:""}<div class="nm">${esc(rn(x))}<small>${x.s} - ${x.e}${x.rep?" · lặp hàng tuần":""}</small></div><button class="del" data-a="ld" data-id="${x.id}" aria-label="Xóa khỏi lịch">×</button></li>`;
@@ -132,6 +136,12 @@
     if(old)old(e);
   };
   $("slots").onclick=$("now").onclick=$("lrep").onclick=onClick;
+  $("nowbar").onclick=e=>{
+    const b=e.target.closest("button[data-a=p]");if(!b)return;
+    const now=nowHM(),cur=slotsOf(today()).find(x=>now>=x.s&&now<x.e),q=cur&&qOf(cur);
+    if(!q||q.id!==b.dataset.id){renderLich();return}
+    onClick(e);
+  };
   $("ladd").onclick=addSlot;
   $("lauto").onclick=autoSlots;
   $("lin").onclick=importSched;

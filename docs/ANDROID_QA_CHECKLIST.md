@@ -82,8 +82,13 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Mở Thiên Thư → Sứ mệnh, hoàn thành rồi hoàn tác nhiệm vụ, đối chiếu tiến độ đạo lộ; luân hồi trên dữ liệu thử nghiệm, kiểm tra ba đạo lộ lần lượt thay đổi.
 - [ ] Kiểm tra danh hiệu xuyên kiếp, sử kiếp, xuất phán quyết, reload và backup cũ/mới; không tăng linh lực khi hoàn thành đạo lộ hoặc sứ mệnh.
 
-## Tiêu chí đạt
+## Bổ sung nghiệm thu Stage 6A
 
+- [ ] Kiểm tra Thiên Kiêu Bảng ở chữ mặc định/chữ lớn, hai chế độ trang trí, cuộn danh sách và mở hồ sơ bằng chạm. So sánh thẻ thường, Thiên Kiêu, người chơi; mô tả thiên phú dài nằm trong hồ sơ.
+- [ ] Mở Cách tính xếp hạng, chờ bảng cập nhật, xác nhận mục vẫn mở và chữ không tràn ngang.
+- [ ] Tạo nhiệm vụ gắn với khung Nhật trình hiện tại; nút Học ngay khởi động đúng phiên, biến mất trong phiên và trở lại sau khi hủy. Kiểm tra nhiệm vụ hoàn thành, hết hạn, chưa mở khóa, khung giờ đã qua.
+
+## Tiêu chí đạt
 
 - Không crash trong các luồng chính.
 - Dữ liệu lưu bền qua đóng/mở app và khởi động lại thiết bị.

@@ -1480,3 +1480,21 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
 - [x] CI Stage 5F, commit `fc385d34bbad5ef894c68f5ed6c5ee41d3a6de21`: JavaScript Tests (45382899426) và Build APK (45382899282) thành công. Artifact APK ID 14914503464 (6.294.162 byte, chưa hết hạn lúc kiểm tra).
 - [ ] Nghiệm thu Android thật.
+
+## Stage 6 — Hoàn thiện trải nghiệm học tập
+
+- 6A: tinh chỉnh giao diện và thao tác học nhanh.
+- 6B: mô phỏng nhiều kiếp để đánh giá cân bằng linh lực, đạo tâm, nhiệm vụ và nhàn hạ trước khi điều chỉnh.
+- 6C: lập kế hoạch học thông minh dựa trên lịch và hạn nhiệm vụ.
+- 6D: phát triển chiều sâu thế giới và nhân vật.
+- 6E: tùy chọn độ khó qua luân hồi.
+- 6F: nghiệm thu Android và chuẩn bị phát hành.
+
+### Stage 6A — Tinh chỉnh giao diện (2026-11-24)
+
+- Thiên Kiêu Bảng dùng lưới cột đồng nhất cho thứ hạng, chân dung, thông tin, biểu đồ và linh lực. NPC thường dùng chữ cái đầu tên; Thiên Kiêu và người chơi giữ chân dung cùng viền cổ phong. Màn hình nhỏ ẩn biểu đồ, dưới 361 px đưa điểm xuống dòng riêng. Thẻ hiển thị tên thiên phú; hồ sơ giữ mô tả đầy đủ. Có thể mở hồ sơ bằng Enter/Space và giữ focus qua cập nhật bảng.
+- Rút gọn trạng thái Thiên Đạo Cân Bằng, gấp công thức trong mục Cách tính xếp hạng. Cập nhật nhãn phiên bản Stage 6A.
+- Nhật trình hiện tại có nút Học ngay cho nhiệm vụ hợp lệ trong khung giờ; dùng bộ xử lý học hiện hành, kiểm tra lại khung giờ lúc bấm. Ẩn nút khi đã hoàn thành, hết hạn, khóa hoặc đang học. Không đổi kinh tế, dữ liệu save hay cơ chế thưởng/phạt.
+- [x] Edge headless profile tạm riêng: 760/390/320/280 px, chữ lớn, hai chế độ trang trí, cột thẳng hàng, không tràn ngang, mở hồ sơ bằng bàn phím, mô tả thiên phú đầy đủ, học nhanh, hủy phiên, nhiệm vụ hoàn thành/hết hạn; không lỗi JS.
+- [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [ ] CI và APK mới, nghiệm thu Android thật.

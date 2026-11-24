@@ -1765,6 +1765,9 @@ test("GameLeaderboardUI chỉ hiện tên thiên phú trên thẻ Thiên Kiêu",
  assert.doesNotMatch(nodes.lb.innerHTML,/Mô tả hiệu ứng dài/);
  assert.match(nodes.lb.innerHTML,/Tu luyện đều đặn/);
  assert.match(nodes.lb.innerHTML,/class="lb-score"/);
+ assert.equal((nodes.lb.innerHTML.match(/class="lb-avatar"/g)||[]).length,3);
+ assert.equal((nodes.lb.innerHTML.match(/class="lb-spark"/g)||[]).length,3);
+ assert.equal((nodes.lb.innerHTML.match(/role="button" tabindex="0"/g)||[]).length,3);
  M.render();
  assert.doesNotMatch(nodes.lb.innerHTML,/[▲▼]/);
 });

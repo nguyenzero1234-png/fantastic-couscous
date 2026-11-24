@@ -41,6 +41,13 @@
       renderProf();
       $("prof").scrollIntoView({behavior:"smooth",block:"nearest"});
     };
+    $("lb").onkeydown=event=>{
+      if(event.key!=="Enter"&&event.key!==" ")return;
+      const row=event.target.closest("li[data-pi]");
+      if(!row)return;
+      event.preventDefault();
+      row.click();
+    };
     $("prof").onclick=event=>{
       if(event.target.closest("[data-a=pc]")){
         resetSelection();
