@@ -24,7 +24,7 @@
   list.innerHTML=rows.map((r,k)=>{if(!showAll&&k>=20&&!r.u)return "";const b=B[r.i],key=r.u?-1:r.i,p=PV[key],d=p==null?0:r.s-p;PV[key]=r.s;
     const ar=Math.abs(d)<.05?"":`<small style="display:block;color:${d>0?"var(--jade)":"var(--red)"}">${d>0?"▲":"▼"} ${Math.abs(d).toFixed(1)}</small>`;
     const balMark=!r.u&&k+1>=BAL_RANK?` · <span style="color:var(--jade)">Cân Bằng</span>`:(r.u&&balOn?` · <span style="color:var(--jade)">Cân Bằng ×${playerMult}</span>`:"");
-    const avHtml=`<span class="lb-avatar" aria-hidden="true">${r.u?portrait(S.name,{player:1,w:36,h:36}):AVATARS[r.n]?portrait(r.n,{npc:1,w:36,h:36}):esc(r.n.trim().charAt(0))}</span>`;
+    const avHtml=`<span class="lb-avatar" aria-hidden="true">${r.u?portrait(S.name,{player:1,w:56,h:56}):AVATARS[r.n]?portrait(r.n,{npc:1,w:56,h:56}):esc(r.n.trim().charAt(0))}</span>`;
     const talent=!r.u&&isTK(r.i);
     const detail=r.u?"":talent?`<small class="lb-talent">${esc(b.d.split(" — ")[0])}</small>`:`<small>${esc(deps.world?deps.world.personality(r.i):b.d)}</small>`;
     return `<li data-pi="${r.u?-1:r.i}" role="button" tabindex="0" aria-label="Hạng ${k+1}, ${esc(r.n)}, xem hồ sơ" class="${r.u?"now":talent?"tkf":""}"><b class="lb-rank">${k+1}</b>${avHtml}<div class="nm">${esc(r.n)}<small>${r.u?"Linh lực hiện có":b.t+", +"+Math.round(b.b*100)+"% tốc độ"}${balMark}</small><small>${r.u?(S.sect!=null?SECTS[S.sect].n:"Chưa có tông môn"):SECTS[SO[r.i]].n}, ${rname(r.u?uxp():bxp(r.i,t))}</small>${detail}</div><span class="lb-spark" aria-hidden="true">${r.u?"":spark(r.i,t)}</span><div class="lb-score"><b>${r.u?r.s:r.s.toFixed(1)}</b>${ar}</div></li>`}).join("");

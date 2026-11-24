@@ -1497,4 +1497,12 @@ Tiếp theo theo thứ tự ưu tiên:
 - Nhật trình hiện tại có nút Học ngay cho nhiệm vụ hợp lệ trong khung giờ; dùng bộ xử lý học hiện hành, kiểm tra lại khung giờ lúc bấm. Ẩn nút khi đã hoàn thành, hết hạn, khóa hoặc đang học. Không đổi kinh tế, dữ liệu save hay cơ chế thưởng/phạt.
 - [x] Edge headless profile tạm riêng: 760/390/320/280 px, chữ lớn, hai chế độ trang trí, cột thẳng hàng, không tràn ngang, mở hồ sơ bằng bàn phím, mô tả thiên phú đầy đủ, học nhanh, hủy phiên, nhiệm vụ hoàn thành/hết hạn; không lỗi JS.
 - [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
-- [ ] CI và APK mới, nghiệm thu Android thật.
+- [x] CI commit `a2e9e58`: JavaScript Tests (45388220933) và Build APK (45388220928) thành công.
+- [ ] Nghiệm thu Android thật.
+
+#### Stage 6A — Nới khung Thiên Kiêu (2026-11-24)
+
+- Tăng chiều cao tối thiểu thẻ Thiên Kiêu/người chơi từ 84 lên 128 px trên màn hình rộng và 120 px trên điện thoại; chân dung từ 36 lên 56 px, thu về 48/44 px trên màn hình hẹp. Tăng cỡ tên, khoảng đệm, hoa văn góc và khoảng cách giữa các thẻ. Bảng rộng tối đa 760 px trên desktop; từ 420 px trở xuống chuyển linh lực xuống dòng riêng.
+- [x] Edge headless: 900/760/520/390/360/320/280 px, chữ lớn, hai chế độ trang trí, đủ 51 hàng; kích thước khung/chân dung đúng, cột thẳng hàng và không tràn ngang. Kiểm tra hồ sơ, bàn phím và học nhanh đạt.
+- [x] Kiểm thử hồi quy 156/156 tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [ ] CI/APK của bản nới khung và kiểm tra Android thật.

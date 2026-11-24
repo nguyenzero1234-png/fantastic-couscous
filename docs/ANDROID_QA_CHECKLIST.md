@@ -85,6 +85,7 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 ## Bổ sung nghiệm thu Stage 6A
 
 - [ ] Kiểm tra Thiên Kiêu Bảng ở chữ mặc định/chữ lớn, hai chế độ trang trí, cuộn danh sách và mở hồ sơ bằng chạm. So sánh thẻ thường, Thiên Kiêu, người chơi; mô tả thiên phú dài nằm trong hồ sơ.
+- [ ] Kiểm tra khung Thiên Kiêu/người chơi đã nới rộng, chân dung rõ hơn, hoa văn không đè chữ; trên màn hình từ 420 px trở xuống linh lực chuyển xuống dòng riêng. Không tràn ngang khi bật chữ lớn.
 - [ ] Mở Cách tính xếp hạng, chờ bảng cập nhật, xác nhận mục vẫn mở và chữ không tràn ngang.
 - [ ] Tạo nhiệm vụ gắn với khung Nhật trình hiện tại; nút Học ngay khởi động đúng phiên, biến mất trong phiên và trở lại sau khi hủy. Kiểm tra nhiệm vụ hoàn thành, hết hạn, chưa mở khóa, khung giờ đã qua.
 
