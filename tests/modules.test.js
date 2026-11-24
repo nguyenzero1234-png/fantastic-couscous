@@ -1607,9 +1607,9 @@ test("GameRewardClaims nhận kỳ ngộ và điểm danh qua dependency",()=>{
 });
 
 
-test("game.js delays feature factories until all lexical dependencies are initialized",()=>{
- const source=fs.readFileSync(path.join(root,"www","js","game.js"),"utf8"),init=source.indexOf("/* Dependency-injected feature modules are created only after their full dependency set is initialized. */");
+test("game.js defers injected feature factories until dependencies are initialized",()=>{
+ const source=fs.readFileSync(path.join(jsDir,"game.js"),"utf8"),init=source.indexOf("/* Dependency-injected feature modules are created only after their full dependency set is initialized. */");
  assert.ok(init>0);
- for(const dep of ["const KS=","const KX=","const tok=","const weekStart=","const curStreak=","const kAge=","const LQ=","const LP="])assert.ok(source.indexOf(dep)<init,"dependency must precede module initialization: "+dep);
+ for(const dep of ["const KS=","const KX=","const tok=","const weekStart=","const curStreak=","const kAge=","const LQ=","const LP="])assert.ok(source.indexOf(dep)<init,"dependency must precede initialization: "+dep);
  for(const factory of ["GameLeaderboardSystem.create","GameProfileUI.create","GameSectUI.create","GameLeaderboardUI.create","GameTribulationUI.create","GameTribulationSystem.create","GameActivityUI.create","GameGodModeSystem.create"])assert.ok(source.indexOf(factory)>init,"factory must be deferred: "+factory);
 });
