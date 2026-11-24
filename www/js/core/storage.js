@@ -26,6 +26,7 @@
       if(!optional(q.completion,v=>record(v)&&typeof v.day==="string"&&nonnegative(v.gain)&&nonnegative(v.mins)&&nonnegative(v.at)&&record(v.stats)&&Object.values(v.stats).every(nonnegative)&&typeof v.undone==="boolean"))return false;
     }
     if(!optional(value.subjects,v=>global.GameSubjects.valid(v)))return false;
+    if(!optional(value.reviewCards,v=>global.GameReviewCards.valid(v)))return false;
     if(!optional(value.technique,v=>global.GameTechniques.valid(v)))return false;
     if(!optional(value.npcAffinity,v=>record(v)&&Object.entries(v).every(([i,count])=>/^(?:[0-9]|[1-4][0-9])$/.test(i)&&Number.isInteger(count)&&count>=1&&count<=119)))return false;
     const validTransmissions=v=>Array.isArray(v)&&v.length<=6&&new Set(v).size===v.length&&v.every(id=>Number.isInteger(id)&&id>=0&&id<6);

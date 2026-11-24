@@ -41,7 +41,7 @@ const realmStory=[
   {t:"Chân Tiên",lines:[
     "Không có sấm. Không có hoa rơi. Chỉ có một khoảng lặng đủ dài để nghe nhịp thở.",
     "Chân Tiên không phải hết đường. Là hết cái tên cũ của đường.",
-    "Thiên Đạo mở trang luân hồi, rồi khép lại — vì lần này, có thể không cần."
+    "Thiên Đạo ghi tên ngươi vào tiên lục. Khi kiếp này khép lại, con đường luân hồi vẫn chờ phía trước."
   ]}
 ];;
 function append(state,id,title,lines,meta,now,day){

@@ -7,7 +7,7 @@
   function buffTxt(){
     const a=[];
     if(S.buff.n>0)a.push("×"+S.buff.m+" linh lực cho "+Math.round(S.buff.n*60)+" phút học");
-    (S.fx||[]).forEach(e=>a.push("+"+e.v+" linh lực mỗi giờ, còn "+Math.round(e.n*60)+" phút học"+(e.t==="q"?" có hạn giờ":e.t==="l"?" trong phiên từ 60 phút":"")));
+    (S.fx||[]).forEach(e=>a.push("+"+e.v+" linh lực mỗi giờ, còn "+Math.round(e.n*60)+" phút học"+(e.t==="q"?" đúng hạn":e.t==="l"?" trong phiên từ 60 phút":"")));
     if(S.xb&&Date.now()<S.xb.u)a.push("+"+S.xb.v+" linh lực mỗi giờ, còn "+remaining(S.xb.u));
     if(S.tb&&Date.now()<S.tb)a.push("+20% linh lực trong "+Math.ceil((S.tb-Date.now())/36e5)+" giờ");
     if(S.sl)a.push("lần đổi nhàn hạ tới giảm 30% cho tối đa 120 phút");if(S.lt)a.push("lần đổi nhàn hạ tới tặng thêm "+S.lt+" phút");

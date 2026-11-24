@@ -6,7 +6,7 @@
     if(!item||!item.q)return {};
     const [n,v,t]=item.q;
     const total=n*v+(item.ex||0);
-    const condition=t==="q"?" có hạn giờ":t==="l"?" trong phiên từ 60 phút":"";
+    const condition=t==="q"?" đúng hạn":t==="l"?" trong phiên từ 60 phút":"";
     const ratio=total/item.c;
     const description="Dùng: "+(item.u?item.u+"; ":"")+(item.ex?"thêm ":"")+n+" giờ học"+condition+" kế tiếp, mỗi giờ +"+v+" linh lực (tổng cơ bản +"+total+", "+Math.round(ratio*100)+"% giá mua, trước hệ số thưởng/phạt)";
     return {tot:total,d:description};

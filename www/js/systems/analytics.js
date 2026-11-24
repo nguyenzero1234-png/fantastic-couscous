@@ -156,9 +156,25 @@
   const recorded=reportPeriod(state,days).minutes;
   return {rows,assigned,unassigned,untracked:Math.max(0,recorded-assigned-unassigned),since:data.since,partial:days.some(day=>day<=data.since)};
  }
+ function weeklyReview(state,today,weekStart){
+  const start=Number.isFinite(state.kst?.start)?new Date(state.kst.start+(state.dOff||0)*864e5).toLocaleDateString("sv"):null;
+  const days=[];
+  for(let i=0;i<7;i++){
+   const date=new Date(weekStart+"T00:00:00Z");
+   if(!Number.isFinite(date.getTime()))break;
+   date.setUTCDate(date.getUTCDate()+i);
+   const day=date.toISOString().slice(0,10);
+   if(day>today)break;
+   if(!start||day>=start)days.push(day);
+  }
+  const totals=reportPeriod(state,days),subjects=subjectProgress(state,days,today,weekStart);
+  const focus=subjects?.rows.filter(s=>!s.archived&&s.weekly>0&&s.minutes<s.weekly).sort((a,b)=>(b.weekly-b.minutes)-(a.weekly-a.minutes))[0]||null;
+  const since=state.studyReport?.sinceDay||null;
+  return {days,totals,focus,since,partial:!since||days.some(day=>day<=since),subjectPartial:subjects?.partial||false};
+ }
  function lifePace(minutes,tasks,days){
   const validDays=Number.isFinite(days)&&days>0;
   return {minutesPerDay:validDays&&Number.isFinite(minutes)?minutes/days:null,tasksPerDay:validDays&&Number.isFinite(tasks)?tasks/days:null};
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween,newReport,recordCompletion,recordPlay,recordLeisureCost,recordPoints,reportPeriod,archiveReport,studyTrend,subjectProgress,lifePace});
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween,newReport,recordCompletion,recordPlay,recordLeisureCost,recordPoints,reportPeriod,archiveReport,studyTrend,subjectProgress,weeklyReview,lifePace});
 })(window);

@@ -12,7 +12,7 @@
     ranks:["Hỏa Tước","Chu Tước Linh","Nam Minh Chu Tước","Liệt Diệm Thánh Tước","Thiên Hỏa Chu Tước"]},
     {id:"hg",n:"Huyền Quy",c:600,d:"Thủ hộ nhàn hạ",e:l=>`đổi nhàn hạ giảm ${2+2*l}% chi phí`,
     ranks:["Huyền Quy Ấu","Huyền Quy Linh","Bắc Vũ Huyền Quy","Huyền Thiên Quy Thánh","Thái Cổ Huyền Quy"]},
-    {id:"bh",n:"Bạch Hổ",c:700,d:"Sát phạt tâm ma",e:l=>`học có hạn giờ +${2*l} linh lực/giờ, khi có tâm ma +${2*l}/giờ`,
+    {id:"bh",n:"Bạch Hổ",c:700,d:"Sát phạt tâm ma",e:l=>`học đúng hạn +${2*l} linh lực/giờ, khi có tâm ma +${2*l}/giờ`,
     ranks:["Bạch Hổ Ấu","Bạch Hổ Linh","Tây Phương Bạch Hổ","Sát Phạt Hổ Tôn","Thiên Binh Bạch Hổ"]},
     {id:"tt",n:"Thôn Thiên Thử",c:800,d:"Nhặt bảo vật rơi rớt",e:l=>`${2*l}% mỗi giờ học nhặt được một vật phẩm`,
     ranks:["Linh Thử","Thôn Bảo Thử","Thôn Thiên Thử","Hư Không Thôn Thử","Thôn Nhật Nguyệt Thử"]},

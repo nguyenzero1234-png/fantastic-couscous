@@ -105,9 +105,9 @@ function brk(){
   FeedbackUI.breakthrough(rr);
 }
 const fmtT=ms=>GameTimeFormat.eventTimestamp(ms);
-function recentEv(){
+function recentEv(index){
   const n0=Math.floor((Date.now()-S.lb.t0)/3600000),L=[];
-  for(let i=0;i<B.length;i++)for(let m=n0-72;m<=n0;m++){const e=evAt(i,m);if(e)L.push(e)}
+  for(let i=0;i<B.length;i++){if(index!=null&&i!==index)continue;for(let m=n0-72;m<=n0;m++){const e=evAt(i,m);if(e)L.push(e)}}
   return L.filter(e=>S.lb.t0+(e.m+e.ph)*36e5<=Date.now()).sort((a,b)=>(b.m+b.ph)-(a.m+a.ph));
 }
 function renderVan(){LeaderboardUI.renderTimeline()}
@@ -143,7 +143,7 @@ function streakAt(d,cur){return GameProgressData.streakAt(S.hist,S.streak,d,cur,
 const daoTam=(st,e)=>GameProgressData.taoTamProgress(st,e);
 function resolveEx(){TribulationSystem.resolveEx()}
 function showExModal(e){
-  GameExamModal.show({state:S,realmLabels:RL,exGod,save,go,render,findNext:()=>EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen),document,body:document.body,setTimeout},e);
+  GameExamModal.show({state:S,realmLabels:RL,graceFactor:SPQ[2].f,exGod,save,go,render,findNext:()=>EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen),document,body:document.body,setTimeout},e);
 }
 function renderExams(){TribulationUI.render()}
 function renderLb(){LeaderboardUI.render()}
@@ -201,10 +201,23 @@ function startFocus(q){
 }
 const MapUI=GameMapUI.create({S,SECTS,escapeHtml:esc,rank:()=>myRk(),navigate:(...args)=>go(...args),render:()=>render(),$});
 function renderMap(){MapUI.render()}
-const LoreUI=GameLoreUI.create({SECTS,$});
+const LoreUI=GameLoreUI.create({SECTS,$,chapterStatus:()=>GameWorldChronicle.chapters(S),worldStatus:()=>{
+  const now=Date.now();
+  let leaderIndex=-1,highest=S.points,rank=1;
+  for(let i=0;i<B.length;i++){
+    const points=sc(i,now);
+    if(points>=S.points)rank++;
+    if(points>highest||(points===highest&&leaderIndex===-1)){
+      highest=points;leaderIndex=i;
+    }
+  }
+  const leader=leaderIndex<0?S.name||"Đạo hữu":B[leaderIndex].n;
+  const leaderSect=SECTS[leaderIndex<0?S.sect:SO[leaderIndex]]?.n||"Tán tu";
+  return {name:S.name||"Đạo hữu",realm:rname(uxp()),life:(S.rb||0)+1,day:Math.max(1,Math.min(KD,Math.floor(kAge())+1)),days:KD,rank,leader,leaderSect,exams:Object.keys(S.sem?.res||{}).length,penalty:S.tdPenalty,latest:S.storyLog?.at(-1)?.title};
+}});
 function renderLore(){LoreUI.render()}
 function renderMore(){
-  renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
+  renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderLenh();renderHero();renderKn();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
   renderVisibleScreens();
   SubjectsUI.options();
   ActivityUI.renderQuestPreview();
@@ -225,6 +238,7 @@ function render(){
   const m=Math.max(0,parseInt($("mins").value)||0);
   $("cost").textContent="Cần "+LC(m)+" linh lực, tu vi giảm tương ứng";
   ActivityUI.renderQuests();
+  StudyPlannerUI.render();
   renderMore();
 }
 
@@ -352,10 +366,13 @@ function activeGR(){return (S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR}
    Hiện chấm đỏ ở tab (nhóm + mục con) và cạnh từng mục khi có: phần thưởng chưa nhận, danh hiệu mới chưa đeo,
    linh thú mới, kỳ ngộ bất ngờ chưa xem. Trạng thái "mới" lưu ở S.nw (t: danh hiệu, p: linh thú, k: kỳ ngộ đã xem, kt: đã báo). */function nwS(){const n=S.nw||(S.nw={});if(!n.t)n.t={};if(!n.p)n.p={};if(!n.k)n.k={};if(!n.kt)n.kt={};return n}
 function renderVisibleScreens(){
+  if(!$("o").hidden)renderLore();
+  if(!$("q").hidden)StudyPlannerUI.render();
+  if(!$("l").hidden){renderLich();StudyPlannerUI.render();renderTodayReview()}
   if(!$("b").hidden)renderLb();
   if(!$("v").hidden)renderVan();
   if(!$("s").hidden)renderStats();
-  if(!$("subjects").hidden)SubjectsUI.render();
+  if(!$("subjects").hidden){SubjectsUI.render();ReviewCardsUI.render();KnowledgeTrialUI.render()}
 }
 const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,onNavigate:renderVisibleScreens,schedule:(fn,ms)=>setTimeout(fn,ms)});
 function nwUpdate(){NavigationUI.update()}
@@ -495,7 +512,7 @@ function renderAch(){const el=$("ach");if(el)el.innerHTML=LegacyMissions.render(
 function prevMemory(){return GameRebirthData.previousMemory(S.rbh||[]);}
 
 function showThd(r,ask){TribulationUI.showThd(r,ask)}
-function doRebirth(){GameTimer.tickPlay();TribulationSystem.doRebirth()}
+function doRebirth(){GameTimer.tickPlay();TribulationSystem.doRebirth();KnowledgeTrialUI.reset()}
 const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){TribulationUI.renderRbs()}
 if(!S.name||!S.gender)askName();
@@ -516,17 +533,34 @@ function miles(i){
   return out;
 }
 const NpcWorld=GameNpcWorld.create({S,B,hash:hs,today,getKAge:kAge,days:KD,pushStory,save});
-const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),world:NpcWorld});
+const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),world:NpcWorld,recentEv,efTxt,today});
 const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:sectWarEpoch,membership:SectSystem,claimMission:claimSectM,log:vlog,save,refresh:render,say,$});
-const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),world:NpcWorld});
+const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,ri,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),world:NpcWorld,save});
 const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt,simulateExam:id=>TribulationSystem.simulateExam(id),claimExam:id=>TribulationSystem.claimExam(id),claimTrial:key=>TribulationSystem.claimTrial(key),claimRecovery:()=>TribulationSystem.claimRecovery()});
 const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),applyNextCycle,burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say,kmet});
 const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,rewardFactors,save,refresh:render,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
+const StudyPlannerUI=GameStudyPlannerUI.create({hosts:[$("study-plan"),$("today-study")],plan:()=>GameStudyPlanner.recommend({quests:S.quests,slots:window.GameWeeklySchedule?.slotsOf(today())||S.sched[today()]||[],today:today(),now:Date.now(),active:GameTimer.focusSession()}),startFocus,escapeHtml:esc,say});
 ActivityUI.bindQuestEvents();
 const SubjectsUI=GameSubjectsUI.create({S,$,today,weekStart,escapeHtml:esc,save,refresh:render,say,prompt});
 SubjectsUI.bind();
+const KnowledgeTrialUI=GameKnowledgeTrialUI.create({S,$,today,escapeHtml:esc,confirm:message=>window.confirm(message),saveReview:cards=>ReviewCardsUI.commit(cards),say});
+KnowledgeTrialUI.bind();
+const ReviewCardsUI=GameReviewCardsUI.create({S,$,today,escapeHtml:esc,save,say,confirm:message=>window.confirm(message),onChange:KnowledgeTrialUI.render});
+ReviewCardsUI.bind();
+function renderTodayReview(){
+  const count=GameReviewCards.due(S,today()).length;
+  $("today-review-count").textContent=count?`${count} thẻ đến hạn`:"Không có thẻ đến hạn";
+  $("today-review-open").hidden=!count;
+  return count;
+}
+$("today-review-open").onclick=()=>{
+  if(!renderTodayReview())return;
+  go("u","subjects");
+  $("review-fold").open=true;
+  $("review-current").focus();
+};
 const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
 EventsUI.bindEvents();
 const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),refreshSettings:renderSettings,resetProgress:()=>GameStateHandle.importBackup(JSON.stringify(GameState.DEFAULTS)),confirm:message=>window.confirm(message),getMaxXp:()=>END,$});

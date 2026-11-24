@@ -1,32 +1,26 @@
-/* UI nhật ký và Đạo Văn; dữ liệu ký lục được cấp từ story system. */
+/* UI nhật ký và Đạo Văn, giữ trạng thái mở chương khi dữ liệu đổi. */
 (function(root){
  "use strict";
  function create(deps){
   const {S,dayStr,today,$}=deps;
   const genDiary=deps.generateDiary,chkStoryFlags=deps.checkStoryFlags;
+  const esc=value=>root.GameText.escapeHtml(String(value??""));
+  const prose=lines=>lines.map(x=>`<p>${esc(x)}</p>`).join("");
+  let lastHost=null,lastContent="";
   function render(){
-  const el=$("diary");if(!el)return;
-  try{chkStoryFlags();}catch(e){}
-  const days=[];for(let i=0;i<14;i++)days.push(dayStr(i));
-  const log=(S.storyLog||[]).slice().reverse();
-  let storyHtml="";
-  if(log.length){
-    storyHtml=`<div class="box" style="border-color:var(--gold)"><h2>Đạo Văn · Ký lục</h2>
-      <small>Những trang đột phá, bái tông, vấn đạo, khế ước linh thú và luân hồi. Không buff số liệu — chỉ còn chữ.</small></div>`+
-      log.slice(0,12).map(s=>{
-        const when=s.day||(s.at?new Date(s.at).toLocaleDateString("vi-VN"):"");
-        return `<div class="box"><b>${s.title}</b><small style="display:block;margin:4px 0;opacity:.75">${when}</small>${(s.lines||[]).map(x=>`<p style="margin:6px 0;line-height:1.65;font-size:14px">${x}</p>`).join("")}</div>`;
-      }).join("");
-  }else{
-    storyHtml=`<div class="box"><h2>Đạo Văn · Ký lục</h2><small>Chưa có trang nào. Đột phá cảnh giới, bái tông, nhận linh thú hoặc luân hồi sẽ được Thiên Đạo ghi lại đây.</small></div>`;
+   const el=$("diary");if(!el)return;
+   try{chkStoryFlags();}catch(e){}
+   const openState=new Map(Array.from(el.querySelectorAll?.("details[data-entry]")||[]).map(d=>[d.dataset.entry,d.open]));
+   const entry=(key,title,date,lines,open)=>`<details data-entry="${esc(key)}" class="box lore-chapter"${(openState.get(key)??open)?" open":""}><summary><span><b>${esc(title)}</b><small>${esc(date)}</small></span><span class="lore-chevron" aria-hidden="true">⌄</span></summary><div class="lore-prose">${prose(lines)}</div></details>`;
+   const log=(S.storyLog||[]).slice().reverse().slice(0,12);
+   const storyHtml=`<div class="box lore-cover"><h2>Đạo Văn · Ký lục</h2><p>${log.length?"Những dấu mốc đã xảy ra trên đạo lộ của ngươi.":"Chưa có dấu mốc. Khi đột phá, bái tông hoặc gặp cơ duyên, Thiên Đạo sẽ ghi lại."}</p></div>`+
+     log.map((s,i)=>entry("story:"+s.id,s.title,s.day||(s.at?new Date(s.at).toLocaleDateString("vi-VN"):""),s.lines||[],i===0)).join("");
+   const days=Array.from({length:14},(_,i)=>dayStr(i));
+   const diaryHtml=`<div class="box"><h2>Nhật ký đạo hữu</h2><small>Mười bốn ngày gần nhất, dựa trên quá trình tu luyện thực tế.</small></div>`+
+     days.map(d=>entry("day:"+d,d===today()?"Hôm nay":d,d===today()?d:"Nhật trình",genDiary(d),d===today())).join("");
+   const content=storyHtml+diaryHtml;
+   if(lastHost!==el||lastContent!==content){el.innerHTML=content;lastHost=el;lastContent=content;}
   }
-  el.innerHTML=`<div class="box"><h2>Nhật ký đạo hữu</h2><small>Thiên Đạo ghi vài dòng mỗi ngày dựa trên tu luyện thật. Không ảnh hưởng số liệu, chỉ là ký lục. Kéo xuống xem Đạo Văn (đột phá & dấu mốc).</small></div>`+
-    days.map(d=>{const L=genDiary(d),isT=d===today();
-      return `<div class="box"${isT?` style="border-color:var(--gold)"`:""}><b>${isT?"Hôm nay":d}</b>${L.map(x=>`<p style="margin:6px 0;line-height:1.6;font-size:14px">${x}</p>`).join("")}</div>`;
-    }).join("")+
-    `<div style="margin-top:18px"></div>`+storyHtml;
-}
-
   return Object.freeze({render});
  }
  root.GameDiaryUI=Object.freeze({create});

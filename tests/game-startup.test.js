@@ -1,60 +1,7 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const fs=require("node:fs");
 const path=require("node:path");
-const vm=require("node:vm");
-
-const root=path.resolve(__dirname,".."),jsDir=path.join(root,"www","js");
-function element(id){
- const classes=new Set();
- return {
-  id,innerHTML:"",textContent:"",value:"",checked:false,hidden:false,disabled:false,open:false,
-  dataset:{},style:{cssText:"",setProperty(){},removeProperty(){}},classList:{
-   add(...xs){xs.forEach(x=>classes.add(x))},remove(...xs){xs.forEach(x=>classes.delete(x))},
-   toggle(x,on){if(on===undefined)on=!classes.has(x);if(on)classes.add(x);else classes.delete(x);return on},
-   contains(x){return classes.has(x)}
-  },
-  children:[],files:[],scrollLeft:0,clientWidth:320,offsetLeft:0,offsetWidth:80,
-  appendChild(x){this.children.push(x);return x},append(...xs){this.children.push(...xs)},
-  remove(){},removeChild(x){this.children=this.children.filter(y=>y!==x)},
-  listeners:{},addEventListener(type,fn){this.listeners[type]=fn},removeEventListener(){},setAttribute(){},getAttribute(){return null},removeAttribute(){},
-  querySelector(selector){
-   const id=/^#([\w-]+)$/.exec(selector)?.[1];
-   return id&&this.innerHTML.includes(`id="${id}"`)?getNode(id):null;
-  },querySelectorAll(){return []},closest(){return null},
-  focus(){},select(){},click(){},scrollIntoView(){},insertAdjacentHTML(){},
-  getBoundingClientRect(){return {height:0,width:320,top:0,left:0}},
-  play(){return Promise.resolve()},pause(){},getContext(){return {}}
- };
-}
-const nodes=new Map();
-const getNode=id=>{if(!nodes.has(id))nodes.set(id,element(id));return nodes.get(id)};
-const document={
- title:"Tu Tiên Học Đạo",visibilityState:"visible",
- documentElement:Object.assign(element("html"),{style:{setProperty(){},removeProperty(){}},clientWidth:390}),
- body:element("body"),head:element("head"),
- getElementById:getNode,createElement:tag=>element(tag),createTextNode:text=>({textContent:String(text)}),
- querySelector(){return null},querySelectorAll(){return []},addEventListener(){},removeEventListener(){},
- execCommand(){return true}
-};
-const storage=new Map();
-const localStorage={getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k),clear:()=>storage.clear()};
-const navigator={standalone:false,vibrate(){},clipboard:{writeText:()=>Promise.resolve()}};
-let reloads=0;
-const location={href:"https://example.test/",reload(){reloads++}};
-const URLApi={createObjectURL:()=>"blob:test",revokeObjectURL(){}};
-const timeout=()=>1,matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-const createContext=(overrides={})=>vm.createContext({
- document,localStorage,navigator,location,URL:URLApi,Blob,screen:{height:800,width:390},innerHeight:800,innerWidth:390,devicePixelRatio:1,
- setTimeout:timeout,clearTimeout(){},setInterval:timeout,clearInterval(){},requestAnimationFrame:timeout,cancelAnimationFrame(){},
- dispatchEvent(){},addEventListener(){},removeEventListener(){},matchMedia,confirm:()=>true,prompt:()=>"",console:{log(){},warn(){},error(){},info(){}},
- Date,Math,Object,Array,Number,String,Boolean,RegExp,JSON,Map,Set,Promise,Intl,Error,TypeError,parseInt,parseFloat,isNaN,
- performance:{now:()=>0},...overrides
-});
-const context=createContext();
-vm.runInContext("globalThis.window=globalThis",context);
-const html=fs.readFileSync(path.join(root,"www","index.html"),"utf8");
-const scripts=[...html.matchAll(/<script[^>]+src="js\/([^"]+)"/g)].map(x=>x[1]);
+const {fs,vm,jsDir,context,html,scripts,createContext,nodes,storage,document,getNode,getReloads}=require("./game-fixture.cjs");
 test("game khởi động và xử lý nhiệm vụ, bảo khố, danh hiệu, hồ sơ, tông chiến và thiên kiếp qua UI",()=>{
  for(const name of scripts){
   assert.doesNotThrow(()=>vm.runInContext(fs.readFileSync(path.join(jsDir,name),"utf8"),context,{filename:name}),name);
@@ -226,14 +173,14 @@ test("cài đặt, nhập file backup sau render và tải lại đồng bộ st
  getNode("bk").value="invalid JSON";
  setting({bk:"im"},"button");
  assert.equal(storage.get(key),oldRaw);
- assert.equal(reloads,0);
+ assert.equal(getReloads(),0);
  const imported={...JSON.parse(oldRaw),points:12345,god:true,ui:{skin:"ink",density:"normal",fs:"md",theme:"auto"}};
  const file={id:"bkfile",files:[{text:async()=>JSON.stringify(imported)}],value:"test.json"};
  await box.listeners.change({target:file});
  assert.equal(JSON.parse(getNode("bk").value).points,12345);
  assert.equal(file.value,"");
  setting({bk:"im"},"button");
- assert.equal(reloads,1);
+ assert.equal(getReloads(),1);
  assert.equal(storage.get(key+".backup"),oldRaw);
  assert.equal(JSON.parse(storage.get(key)).points,12345);
  vm.runInContext("S.points=42; save()",context);
@@ -294,6 +241,49 @@ function timerFixture(nativePlugin){
   visibility:hidden=>{doc.hidden=hidden;for(const fn of events.visibilitychange||[])fn()}
  };
 }
+
+test("Stage 6C: gợi ý theo Nhật trình, kiểm tra lại khi bấm và bắt đầu timer thật",()=>{
+ const f=timerFixture();
+ f.advance(8*3600000+2*60000);
+ f.run(`S.quests=[{id:'a',name:'Ôn bài',mins:25,pts:100,due:Date.now()+3600000},{id:'b',name:'Bài tập',mins:20,pts:100}]; S.sched={}; S.rep=[]; render()`);
+ assert.match(getNode("study-plan").innerHTML,/Ôn bài/);
+ const click=id=>getNode("study-plan").onclick({target:{closest:()=>({dataset:{studyId:id}})}});
+ f.run(`S.rep=[{id:'r',d:[(new Date(today()+'T12:00:00').getDay()+6)%7],s:'08:00',e:'08:30',label:'Bài tập'}]`);
+ click('a');
+ assert.equal(f.run("!!GameTimer.focusSession()"),false);
+ assert.match(getNode("study-plan").innerHTML,/Bài tập/);
+ const before=f.run("JSON.stringify({points:S.points,sched:S.sched,rep:S.rep,quests:S.quests})");
+ click('b');
+ assert.equal(f.run("GameTimer.activeFocus().id"),'b');
+ assert.equal(f.run("JSON.stringify({points:S.points,sched:S.sched,rep:S.rep,quests:S.quests})"),before);
+ assert.match(getNode("study-plan").innerHTML,/Đang trong phiên học/);
+});
+
+test("Stage 6H: Nhật trình gom lịch, gợi ý học và điều hướng đến thẻ đến hạn",()=>{
+ const f=timerFixture();
+ f.advance(8*3600000+2*60000);
+ f.run(`S.quests=[{id:'a',name:'Ôn bài',mins:25,pts:100}];
+   S.sched={}; S.rep=[];
+   S.sched[today()]=[{id:'s',s:'09:00',e:'10:00',label:'Đọc & ghi chú'}];
+   S.reviewCards=GameReviewCards.upsert(S,null,{question:'Câu hỏi',answer:'Đáp án'},today());
+   go('u','l')`);
+ assert.match(getNode("now").innerHTML,/09:00.*Đọc &amp; ghi chú/);
+ assert.match(getNode("today-study").innerHTML,/Ôn bài/);
+ assert.equal(getNode("today-review-count").textContent,"1 thẻ đến hạn");
+ assert.equal(getNode("today-review-open").hidden,false);
+ getNode("today-review-open").onclick();
+ assert.equal(getNode("subjects").hidden,false);
+ assert.equal(getNode("review-fold").open,true);
+ assert.match(getNode("review-current").innerHTML,/Câu hỏi/);
+ assert.doesNotMatch(getNode("review-current").innerHTML,/Đáp án/);
+ f.run(`S.reviewCards=[]; go('u','l')`);
+ assert.equal(getNode("today-review-open").hidden,true);
+ getNode("today-review-open").onclick();
+ assert.equal(getNode("l").hidden,false);
+ getNode("today-study").onclick({target:{closest:()=>({dataset:{studyId:"a"}})}});
+ assert.equal(f.run("GameTimer.activeFocus().id"),"a");
+ assert.match(getNode("today-study").innerHTML,/Đang trong phiên học/);
+});
 
 test("D: tạo nhiệm vụ và học ngay, giữ bản nháp khi đang học",()=>{
  const f=timerFixture();
@@ -402,6 +392,26 @@ test("B: focus và giờ chơi khôi phục qua reload, deadline và nửa đêm
  assert.equal(f.saved().gameSec,0);
  assert.equal(f.saved().timers.play,null);
  assert.equal(Object.values(f.saved().studyReport.days).reduce((sum,row)=>sum+row.play,0),600);
+});
+
+test("6B: timer đúng hạn, quá hạn và khôi phục biên nhận gốc",()=>{
+ for(const late of [false,true]){
+  const f=timerFixture();
+  f.run(`S.quests.push({id:"q",name:"Học",mins:5,pts:125,basePts:100,deadlineKind:"1",due:Date.now()+${late?299999:300000}});S.fx=[{v:60,n:1,t:"q"}];save()`);
+  f.click("p","q");
+  f.run("S.perHour=500;save()");
+  f.advance(360000);f.reload();
+  const settled=f.saved(),receipt=settled.quests[0].completion;
+  assert.equal(receipt.deadlineResult,late?"late":"onTime");
+  assert.equal(receipt.breakdown.base,late?100:125);
+  assert.equal(receipt.stats.ru,late?0:1);
+  assert.equal(receipt.breakdown.itemGain>0,!late);
+  assert.equal(settled.fx[0].n===1,late);
+  f.click("t","q");assert.equal(f.saved().quests[0].completion.undone,true);
+  f.click("t","q");assert.deepEqual(f.saved().quests[0].completion,receipt);
+  assert.equal(f.saved().points,settled.points);
+  assert.deepEqual(f.saved().fx,settled.fx);
+ }
 });
 
 test("B: hoàn thành thủ công, hủy, xóa chuỗi, sửa/tạo lại và nhiệm vụ khóa",()=>{
@@ -781,4 +791,76 @@ test("Stage 4: cá nhân hóa tồn tại qua reload và luân hồi, trả lạ
  assert.equal(f.saved().ui.portrait,undefined);
  assert.equal(f.saved().ui.ornament,undefined);
  assert.match(getNode("hero").innerHTML,/assets\/avatars\/nam\.jpg/);
+});
+
+test("Stage 6E: thẻ ôn giữ qua reload và luân hồi, không tăng linh lực",()=>{
+ const f=timerFixture();
+ getNode("nmi").value="Kiểm thử";getNode("nmk").onclick();
+ const points=f.run("S.points");
+ getNode("review-question").value="Định nghĩa?";
+ getNode("review-answer").value="Một đáp án";
+ getNode("review-save").onclick();
+ assert.equal(f.saved().reviewCards.length,1);
+ const id=f.saved().reviewCards[0].id;
+ f.reload();f.run("ReviewCardsUI.render()");
+ assert.match(getNode("review-current").innerHTML,/Định nghĩa/);
+ assert.doesNotMatch(getNode("review-current").innerHTML,/Một đáp án/);
+ const click=review=>getNode("review-current").onclick({target:{closest:()=>({dataset:{review,id}})}});
+ click("reveal");click("remember");
+ assert.equal(f.saved().reviewCards[0].stage,1);
+ assert.equal(f.saved().points,points);
+ const cards=f.saved().reviewCards;
+ f.run("doRebirth()");
+ assert.deepEqual(f.saved().reviewCards,cards);
+ f.reload();assert.deepEqual(f.saved().reviewCards,cards);
+});
+
+test("Stage 6F: thí luyện dùng thẻ thật, giữ lịch ôn và kết thúc khi luân hồi",()=>{
+ const f=timerFixture();
+ getNode("nmi").value="Kiểm thử";getNode("nmk").onclick();
+ f.run("KnowledgeTrialUI.render()");
+ assert.equal(getNode("trial-start").disabled,true);
+ getNode("review-question").value="Định nghĩa?";
+ getNode("review-answer").value="Một đáp án";
+ getNode("review-save").onclick();
+ assert.equal(getNode("trial-start").disabled,false);
+ const cards=f.saved().reviewCards,points=f.saved().points;
+ getNode("trial-count").value="5";
+ getNode("trial-start").onclick();
+ assert.equal(getNode("trial-setup").hidden,true);
+ assert.match(getNode("trial-current").innerHTML,/Định nghĩa/);
+ assert.doesNotMatch(getNode("trial-current").innerHTML,/Một đáp án/);
+ const click=trial=>getNode("trial-current").onclick({target:{closest:()=>({dataset:{trial,token:"1-0"}})}});
+ click("reveal");assert.match(getNode("trial-current").innerHTML,/Một đáp án/);
+ click("remember");assert.match(getNode("trial-current").innerHTML,/1\/1 · 100%/);
+ f.run("save()");assert.deepEqual(f.saved().reviewCards,cards);assert.equal(f.saved().points,points);
+ f.run("doRebirth()");assert.equal(getNode("trial-setup").hidden,false);assert.deepEqual(f.saved().reviewCards,cards);
+});
+
+test("Stage 6I: xác nhận, lưu lịch ôn và thấy thẻ trong Hôm nay sau khi tải lại",()=>{
+ const f=timerFixture();
+ f.run(`S.reviewCards=GameReviewCards.upsert(S,null,{question:'Định nghĩa?',answer:'Một đáp án'},'2026-12-10');
+   S.reviewCards[0].stage=3; save(); go('u','subjects')`);
+ getNode("trial-count").value="5";
+ getNode("trial-start").onclick();
+ const click=(trial,token="1-0")=>getNode("trial-current").onclick({target:{closest:()=>({dataset:{trial,token}})}});
+ click("reveal");click("forget");
+ assert.match(getNode("trial-current").innerHTML,/Ôn 1 thẻ vào ngày mai/);
+ f.run("window.confirm=()=>false");
+ click("schedule","1-1");
+ assert.equal(f.saved().reviewCards[0].due,"2026-12-10");
+ f.run(`window.confirm=()=>true; var writeReviewTest=localStorage.setItem;
+   localStorage.setItem=()=>{throw new Error('Quota')}`);
+ try{click("schedule","1-1")}finally{f.run("localStorage.setItem=writeReviewTest")}
+ assert.equal(f.run("S.reviewCards[0].due"),"2026-12-10");
+ const points=f.saved().points;
+ click("schedule","1-1");
+ assert.equal(f.saved().reviewCards[0].due,"2026-11-25");
+ assert.equal(f.saved().reviewCards[0].stage,3);
+ assert.equal(f.saved().points,points);
+ assert.doesNotMatch(getNode("trial-current").innerHTML,/Ôn 1 thẻ vào ngày mai/);
+ f.run("go('u','l')");
+ assert.equal(getNode("today-review-count").textContent,"Không có thẻ đến hạn");
+ f.advance(3*60000);f.reload();f.run("go('u','l')");
+ assert.equal(getNode("today-review-count").textContent,"1 thẻ đến hạn");
 });

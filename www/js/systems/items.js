@@ -50,7 +50,7 @@
      {id:"t7",n:"Vạn Kiếp Bất Hoại",d:"Vượt mọi thiên kiếp với từ Trung bình trở lên",b:"Hoàn thành liên hoàn +30 linh lực mỗi giờ học, tối đa 120",ok:()=>examResults().length>=EX.length&&examResults().every(r=>r.rows.some(z=>z.u&&z.ok===true&&z.s>=50))},
      {id:"n1",n:"Dạ Hành Kiếm Tiên",d:"Hoàn thành 10 nhiệm vụ trong khoảng 22 giờ đến 5 giờ sáng",b:"Học từ 22 giờ đến 5 giờ +10 linh lực/giờ, tối đa 2 giờ thưởng mỗi đêm",ok:()=>lifeStats().ni>=10},
      {id:"n2",n:"Thần Hi Đạo Quân",d:"Hoàn thành 10 nhiệm vụ trước 7 giờ sáng",b:"Học từ 5 đến 9 giờ +10 linh lực/giờ",ok:()=>lifeStats().da>=10},
-     {id:"n3",n:"Phách Lực Vô Song",d:"Hoàn thành 15 nhiệm vụ nhanh có hạn giờ",b:"+12 linh lực mỗi giờ học có hạn giờ",ok:()=>lifeStats().ru>=15},
+     {id:"n3",n:"Phách Lực Vô Song",d:"Hoàn thành 15 nhiệm vụ nhanh đúng hạn",b:"+12 linh lực mỗi giờ học đúng hạn",ok:()=>lifeStats().ru>=15},
      {id:"n4",n:"Luân Hồi Chi Chủ",d:"Chuyển kiếp lần đầu",b:"Giảm 8% chi phí đổi nhàn hạ",ok:()=>(getState().rb||0)>=1},
      {id:"n5",n:"Thượng Cổ Đan Sư",d:"Dùng 10 vật phẩm",b:"Vật phẩm tăng cường kéo dài thêm 1 giờ học",ok:()=>lifeStats().it>=10},
      {id:"n6",n:"Bảng Thượng Hữu Danh",d:"Lọt top 10 bảng Thiên Kiêu khi hoàn thành một nhiệm vụ",b:"Cửu Vĩ Hồ thu thêm 2 linh lực mỗi giờ",ok:()=>lifeStats().top>=1},

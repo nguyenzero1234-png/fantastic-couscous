@@ -91,6 +91,7 @@
   S.quests=[];S.chains=[];S.claimed={};S.sched={};S.ev={w:{h:10,r:100},m:{h:40,r:500}};S.sm=null;
   if(S.lb){S.lb.t0=Date.now();S.lb.adj=Array(50).fill(0);S.lb.bal=Array(50).fill(0);S.lb.week=weekStart();S.lb.log="";S.lb.sp={};S.lb.spx={};S.lb.spl=[];S.lb.gb=[];S.lb.dv=[];S.lb.hh=[];S.lb.td=[]}
   S.bal=0
+  if(S.lb)delete S.lb.rankHistory;
   S.sp=null;
   LeaderboardSimulation.reset();LeaderboardUI.reset();setProfileIndex();
   vlog("Luân hồi lần "+S.rb+". Mọi thứ của kiếp trước đã trở về hư không.");

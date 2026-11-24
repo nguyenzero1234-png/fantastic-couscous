@@ -10,6 +10,17 @@
   lbInit();
   const t=Date.now(),rows=B.map((b,i)=>({i,n:b.n,s:sc(i,t)}));rows.push({u:1,n:S.name||"Bạn",s:S.points});
   rows.sort((a,b)=>b.s-a.s);
+  // Record the first observed board each day, without inventing missing days.
+  if(deps.save&&today){
+    const day=today(),previous=S.lb.rankHistory;
+    const history=Array.isArray(previous)?previous:[];
+    if(!history.some(row=>row?.day===day)){
+      const snapshot={day,order:rows.map(r=>r.u?-1:r.i)};
+      if(deps.ri)snapshot.realms=B.map((_,i)=>deps.ri(bxp(i,t)));
+      S.lb.rankHistory=[...history.filter(row=>row?.day<day),snapshot].slice(-30);
+      if(!deps.save()){if(previous===undefined)delete S.lb.rankHistory;else S.lb.rankHistory=previous;}
+    }
+  }
   const me=rows.findIndex(r=>r.u)+1,last=rows[rows.length-1];
   const nx=new Date();nx.setHours(0,0,0,0);nx.setDate(nx.getDate()+((8-nx.getDay())%7||7));
   const ms=nx-t;
@@ -24,10 +35,10 @@
   list.innerHTML=rows.map((r,k)=>{if(!showAll&&k>=20&&!r.u)return "";const b=B[r.i],key=r.u?-1:r.i,p=PV[key],d=p==null?0:r.s-p;PV[key]=r.s;
     const ar=Math.abs(d)<.05?"":`<small style="display:block;color:${d>0?"var(--jade)":"var(--red)"}">${d>0?"▲":"▼"} ${Math.abs(d).toFixed(1)}</small>`;
     const balMark=!r.u&&k+1>=BAL_RANK?` · <span style="color:var(--jade)">Cân Bằng</span>`:(r.u&&balOn?` · <span style="color:var(--jade)">Cân Bằng ×${playerMult}</span>`:"");
-    const avHtml=`<span class="lb-avatar" aria-hidden="true">${r.u?portrait(S.name,{player:1,w:36,h:36}):AVATARS[r.n]?portrait(r.n,{npc:1,w:36,h:36}):esc(r.n.trim().charAt(0))}</span>`;
+    const avHtml=`<span class="lb-avatar" aria-hidden="true">${r.u?portrait(S.name,{player:1,w:44,h:44}):AVATARS[r.n]?portrait(r.n,{npc:1,w:44,h:44}):esc(r.n.trim().charAt(0))}</span>`;
     const talent=!r.u&&isTK(r.i);
     const detail=r.u?"":talent?`<small class="lb-talent">${esc(b.d.split(" — ")[0])}</small>`:`<small>${esc(deps.world?deps.world.personality(r.i):b.d)}</small>`;
-    return `<li data-pi="${r.u?-1:r.i}" role="button" tabindex="0" aria-label="Hạng ${k+1}, ${esc(r.n)}, xem hồ sơ" class="${r.u?"now":talent?"tkf":""}"><b class="lb-rank">${k+1}</b>${avHtml}<div class="nm">${esc(r.n)}<small>${r.u?"Linh lực hiện có":b.t+", +"+Math.round(b.b*100)+"% tốc độ"}${balMark}</small><small>${r.u?(S.sect!=null?SECTS[S.sect].n:"Chưa có tông môn"):SECTS[SO[r.i]].n}, ${rname(r.u?uxp():bxp(r.i,t))}</small>${detail}</div><span class="lb-spark" aria-hidden="true">${r.u?"":spark(r.i,t)}</span><div class="lb-score"><b>${r.u?r.s:r.s.toFixed(1)}</b>${ar}</div></li>`}).join("");
+    return `<li data-pi="${r.u?-1:r.i}" role="button" tabindex="0" aria-label="Hạng ${k+1}, ${esc(r.n)}, xem hồ sơ" class="${r.u?"now":talent?"tkf":""}"><b class="lb-rank">${k+1}</b>${avHtml}<div class="nm"><span class="lb-name">${esc(r.n)}</span><small class="lb-identity">${r.u?"Linh lực hiện có":b.t+", +"+Math.round(b.b*100)+"% tốc độ"}${balMark}</small><small class="lb-realm">${r.u?(S.sect!=null?SECTS[S.sect].n:"Chưa có tông môn"):SECTS[SO[r.i]].n}, ${rname(r.u?uxp():bxp(r.i,t))}</small>${detail}</div><span class="lb-spark" aria-hidden="true">${r.u?"":spark(r.i,t)}</span><div class="lb-score"><b>${r.u?r.s:r.s.toFixed(1)}</b>${ar}</div></li>`}).join("");
   if(focusIndex!==null)list.querySelector(`li[data-pi="${focusIndex}"]`)?.focus({preventScroll:true});
   renderProf();
 }
@@ -36,9 +47,11 @@ const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
   lbInit();
   const now=Date.now(),H=36e5,t0=S.lb.t0,L=recentEv(),n0=Math.floor((now-t0)/H),end=e=>t0+(e.m+e.ph+e.dur)*H,act=L.filter(e=>end(e)>now);
   let h=`<div class="box"><h2>Nhật ký của bạn</h2><ul>${(S.vlog||[]).slice(0,8).map(x=>`<li><div class="nm">${esc(x.t)}<small>${fmtT(x.ts)}</small></div></li>`).join("")||`<li class="empty" style="display:block">Chưa có hoạt động. Hoàn thành nhiệm vụ để ghi vào đây.</li>`}</ul></div>`;
+  const news=root.GameWorldChronicle.news(S,B,today());
+  h+=`<div class="box world-news"><h2>Phong văn Cửu Châu</h2><ul>${news.map(e=>`<li><div class="nm">${esc(e.title)}<small>${esc(e.detail)}</small></div></li>`).join("")||'<li class="empty">Chưa có biến động được ghi nhận.</li>'}</ul></div>`;
   if(deps.world){
     const events=deps.world.events();
-    h+=`<div class="box world-news"><h2>Phong văn</h2><ul>${events.map((e,i)=>`<li><div class="nm">${esc(e.title)}<small>Ngày ${e.day} · ${esc(e.npc)} · ${esc(e.trait)}</small>${i===0?`<small>${esc(e.description)}</small>`:""}${e.goal?`<small style="color:${e.goal.done?"var(--jade)":"var(--mute)"}">Đồng tu hôm nay: ${esc(e.goal.title)} · ${e.goal.current}/${e.goal.target} ${e.goal.unit}${e.goal.done?" · Đã đạt":""}</small>`:""}</div></li>`).join("")}</ul></div>`;
+    h+=`<div class="box world-news"><h2>Lịch tụ hội</h2><ul>${events.map((e,i)=>`<li><div class="nm">${esc(e.title)}<small>Ngày ${e.day} · ${esc(e.npc)} · ${esc(e.trait)}</small>${i===0?`<small>${esc(e.description)}</small>`:""}${e.goal?`<small style="color:${e.goal.done?"var(--jade)":"var(--mute)"}">Đồng tu hôm nay: ${esc(e.goal.title)} · ${e.goal.current}/${e.goal.target} ${e.goal.unit}${e.goal.done?" · Đã đạt":""}</small>`:""}</div></li>`).join("")}</ul></div>`;
   }
   h+=`<div class="box"><h2>Đang diễn ra</h2>${act.length?`<ul>${act.map(e=>`<li><div class="nm">${B[e.i].n}: ${e.name}<small>${efTxt(e)}, còn ${Math.ceil((end(e)-now)/H)} giờ</small></div><b>${hrs(e.i,n0).toFixed(1)}h</b></li>`).join("")}</ul>`:`<small>Chưa có cơ duyên nào.</small>`}</div>`;
   h+=`<div class="box"><h2>Top 10 hiện tại</h2><ul><li class="now"><div class="nm">Bạn<small>${rname(uxp())}, Hạng ${myRk()} trên Thiên Kiêu Bảng</small></div><b>${((S.hist[today()]||{m:0}).m/60).toFixed(1)} giờ hôm nay</b></li>${B.map((b,i)=>({b,i})).sort((x,y)=>sc(y.i,now)-sc(x.i,now)).slice(0,10).map(({b,i})=>`<li><div class="nm">${b.n}<small>${rname(bxp(i,now))}, Hạng ${rkNow(i)} trên Thiên Kiêu Bảng</small></div><b>${hrs(i,n0).toFixed(1)} giờ/ngày</b></li>`).join("")}</ul></div>`;

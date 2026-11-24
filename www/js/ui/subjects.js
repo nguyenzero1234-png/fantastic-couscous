@@ -12,6 +12,12 @@
   }
   function render(){
    const data=S.subjects,T=today(),W=weekStart();
+   const review=$("weekly-review");
+   if(review){
+    const r=root.GameAnalytics.weeklyReview(S,T,W),t=r.totals;
+    const html=`<div class="lore-current-grid"><div><small>Thời gian học đã ghi nhận</small><b>${t.minutes} phút</b><small>${t.activeDays}/${r.days.length} ngày có học</small></div><div><small>Nhiệm vụ hoàn thành</small><b>${t.tasks}</b><small>${r.since?`${t.onTime} đúng hạn · ${t.late} quá hạn`:"Chưa có dữ liệu hạn"}</small></div></div>${r.partial&&r.since?`<small>Thống kê hạn ghi nhận từ ${esc(r.since)}; dữ liệu tuần có thể chưa đủ.</small>`:""}${r.focus?`<p class="lore-note">Môn cần chú ý: ${esc(r.focus.name)} · ${r.focus.minutes}/${r.focus.weekly} phút mục tiêu tuần.</p>`:`<small>Chưa có môn còn thiếu mục tiêu tuần đã đặt.</small>`}${r.subjectPartial?"<small>Dữ liệu theo môn của tuần có thể chưa đầy đủ.</small>":""}`;
+    if(review.innerHTML!==html)review.innerHTML=html;
+   }
    const techniques=root.GameTechniques,training=techniques.init(S),selected=techniques.find(training.active);
    if($("technique-select").value!==training.active)$("technique-select").value=training.active;
    $("technique-info").textContent=selected?selected.description:"Chọn một công pháp phù hợp cách học của đạo hữu.";

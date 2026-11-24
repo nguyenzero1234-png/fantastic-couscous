@@ -9,8 +9,8 @@
   // Tọa độ % theo bản đồ cổ họa Cửu Châu (ảnh gốc)
   // px/py = left%, top% — khớp chấm trên tranh
   const locs=[
-    {id:"cc",n:"Cửu Châu",px:50,py:11,d:"Thiên Sơn trung tâm · Thiên Kiêu Bảng treo trên đỉnh. Cả chín châu hướng về đây mỗi tuần khi bảng chốt.",go:()=>go("t","b"),col:"#f5f0e0",tag:"Bảng xếp hạng"},
-    {id:"ccw",n:"Cửu Châu (Tây)",px:28,py:23,d:"Động phủ trên núi mây phía tây. Nơi ghi chép Thiên Cơ và đạo quả các đời.",go:()=>go("s","o"),col:"#c0c0c8",tag:"Thiên Cơ Lục"},
+    {id:"cc",n:"Thiên Kiêu Sơn",px:50,py:11,d:"Thánh địa trung tâm Cửu Châu · Thiên Kiêu Bảng treo trên đỉnh. Cả chín châu hướng về đây mỗi tuần khi bảng chốt.",go:()=>go("t","b"),col:"#f5f0e0",tag:"Bảng xếp hạng"},
+    {id:"ccw",n:"Cổ khố phía tây",px:28,py:23,d:"Thánh địa trên núi mây phía tây. Nơi ghi chép Thiên Cơ và đạo quả các đời.",go:()=>go("s","o"),col:"#c0c0c8",tag:"Thiên Cơ Lục"},
     {id:"dc",n:"Dương Châu",px:72,py:21,d:"Tông môn trên dãy núi phía đông bắc. Không gian cổ, nền tảng vững — Thái Hư Điện đóng tại đây.",go:()=>go("t","z"),sect:3,col:"#8b6bb8",tag:SECTS[3].n},
     {id:"hc",n:"Hoài Châu",px:50,py:34,d:"Đảo giữa sông lớn. Vạn Pháp Các lơ lửng trên hồ Linh Tâm, trăm nhà pháp thuật hội tụ.",go:()=>go("t","z"),sect:2,col:"#5eb0c8",tag:SECTS[2].n},
     {id:"tc",n:"Tùng Châu",px:36,py:40,d:"Rừng phong đỏ và đình cổ. Kỳ ngộ và linh thú thường xuất hiện nơi hoang nguyên này.",go:()=>go("w","e"),col:"#c8483a",tag:"Kỳ ngộ / Linh thú"},
@@ -45,7 +45,7 @@
     </div>
   </div>
   <div class="box" id="mapinfo"><small>Chạm một chấm trên bản đồ để xem mô tả châu và dịch chuyển.</small></div>
-  <div class="box"><small style="line-height:1.55"><b>Chú giải chín châu:</b> Cửu Châu (đỉnh) · Dương · Hoài · Tùng · Thanh · Tứ · Ung · Ký · Tề · Lạc. Chấm viền vàng = tông môn bạn đang gia nhập.</small></div>`;
+  <div class="box"><small style="line-height:1.55"><b>Chín châu:</b> Dương · Hoài · Tùng · Thanh · Tứ · Ung · Ký · Tề · Lạc.<br><b>Hai thánh địa:</b> Thiên Kiêu Sơn và Cổ khố phía tây. Chấm viền vàng = tông môn bạn đang gia nhập.</small></div>`;
   el.onclick=e=>{
     const g=e.target.closest("[data-map]");if(!g)return;
     const L=locs[+g.dataset.map];if(!L)return;

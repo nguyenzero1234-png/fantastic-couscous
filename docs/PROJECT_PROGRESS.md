@@ -1512,3 +1512,87 @@ Tiếp theo theo thứ tự ưu tiên:
 - Theo ý kiến làm rõ của chủ dự án, trả kích thước thẻ, chân dung, chữ và bảng về Stage 6A ban đầu. Chỉ tăng kích thước hai rồng góc của khung Thiên Kiêu, sử dụng PNG hiện có; cắt biên sát họa tiết hơn và tăng vùng góc lên 88 × 38 px trên desktop, 72 × 32 px trên điện thoại. Với màn hình tối đa 360 px, chừa thêm khoảng dưới điểm linh lực để rồng không che chữ.
 - [x] Edge headless kiểm tra 7 kích thước 280–900 px, 51 hàng, hai chế độ trang trí; không tràn ngang, các cột thẳng hàng. Kiểm tra ảnh chụp thẻ Cố Thái Hư ở 760/390/280 px và luồng mở hồ sơ, học nhanh đạt. `git diff --check` đạt.
 - [ ] CI/APK bản chỉnh họa tiết rồng và nghiệm thu Android thật.
+
+### Stage 6B — Mô phỏng cân bằng nhiều kiếp (2026-11-24)
+
+- Mở rộng `tests/balance-sim.cjs` với `--full`, `--scenario`, `--days`; giữ chế độ so sánh Stage 2C mặc định. Dùng fixture khởi động chung `tests/game-fixture.cjs`, chạy logic game thật với đồng hồ và seed cố định, đủ 50 NPC, thi, nhiệm vụ, phục hồi Mệnh, điểm danh, vật phẩm, nhàn hạ và luân hồi.
+- [x] 11 kết quả kiếp 119 ngày, gồm 4 kiếp liên tiếp của người học gián đoạn; chạy thử 30 ngày, legacy 21 dòng. Kiểm tra hoàn tác/redo và trần thưởng 120 phút đêm. Kết quả, phạm vi và đề xuất nằm trong `docs/STAGE_6B_BALANCE_REPORT.md`.
+- [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC. Không sửa công thức hay gameplay hiện hành.
+- [ ] Chủ dự án duyệt phương án cân bằng trước khi chỉnh hệ số; khảo sát thêm lộ trình phục hồi sau nhiều kiếp và buff đêm thực tế. Nghiệm thu Android thật vẫn mở.
+
+
+#### Stage 6B.1–6B.2 — Deadline, thiên kiếp và Thiên Kiêu (2026-11-24)
+
+- [x] Sửa thưởng phiên học hoàn thành quá hạn theo timestamp thực tế; giữ thưởng cơ bản, bỏ nhân deadline và buff đúng hạn. Bảo toàn receipt khi hoàn tác, khôi phục sau hạn và reload. Sửa trạng thái/nút khôi phục trên thẻ nhiệm vụ và nhãn buff.
+- [x] Hiển thị ngưỡng linh lực, điểm đánh giá và lý do trượt thiên kiếp riêng biệt; không đổi ngưỡng hay hình phạt.
+- [x] Thẻ Thiên Kiêu chỉ hiện tên thiên phú, chân dung 44/40 px, giữ họa tiết rồng; hồ sơ thêm hạng quan sát (7 mốc, lưu tối đa 30), 5 cơ duyên gần đây, giữ trạng thái mở mục chi tiết. Hạng ghi lần đầu mở bảng mỗi ngày, reset khi luân hồi, dữ liệu cũ không tự suy diễn.
+- [x] Mô phỏng phục hồi kiếp 5 sau bốn kiếp gián đoạn: 2h/ngày đạt 83.836 linh lực, 1/8 kiếp, stack 11→13; 4h/ngày đạt 160.087, 3/8, stack 11→12. Cả hai chưa ân xá. Báo cáo và lệnh tái lập trong `docs/STAGE_6B_BALANCE_REPORT.md`.
+- [x] 157/157 kiểm thử tại Asia/Ho_Chi_Minh và UTC; kiểm tra Edge headless 760/390/320/280 px: 51 hàng, không tràn ngang, tên thiên phú ngắn, mục lịch sử giữ trạng thái mở, không lỗi JS.
+- [ ] APK/CI và nghiệm thu Android thật; khảo sát buff học đêm chủ động và hiệu chỉnh ngưỡng sau khi duyệt.
+
+### Stage 6C — Gợi ý tu luyện (2026-11-24)
+
+- [x] Thẻ gợi ý gọn trong Nhiệm vụ, chọn một việc phù hợp, ghi lý do và thời lượng. Ưu tiên nhiệm vụ đang đến giờ Nhật trình (kể cả lịch lặp); khi rảnh, chọn hạn gần nhất có thể hoàn thành, sau đó ưu tiên thời lượng ngắn. Chừa thời gian cho lịch tiếp theo và không gợi ý phiên vượt cuối ngày.
+- [x] Loại nhiệm vụ đã hoàn thành, hết hạn, khóa liên hoàn, biên nhận đang chờ khôi phục và thời lượng sai. Nếu lịch chồng lấn khác việc hoặc có việc không đủ thời gian, chờ khung giờ phù hợp. Khi có phiên học, hiển thị trạng thái đang học. Nút Học ngay kiểm tra lại gợi ý rồi gọi timer hiện có.
+- [x] Tách logic đọc dữ liệu vào `www/js/systems/study-planner.js`, giao diện vào `www/js/ui/study-planner.js`. Dùng ngày game cho lịch và ngày lặp, đồng hồ thực cho hạn. Không thêm schema lưu trữ, không đổi điểm thưởng/phạt, không tự tạo, hoàn thành hoặc sửa lịch. Cập nhật Hướng dẫn tu luyện và phiên bản Stage 6C.
+- [x] Bốn kiểm thử riêng đạt: ưu tiên hạn, lịch lặp/chồng lấn, trạng thái nhiệm vụ, gợi ý cũ và bắt đầu timer qua UI không làm thay đổi nhiệm vụ/lịch/điểm trước khi học xong.
+- [x] Hồi quy toàn bộ 161/161 tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [ ] Nghiệm thu giao diện thực tế: lần chạy Edge headless chưa trả về số đo, đã dọn hồ sơ tạm. APK/CI và Android thật chưa được nghiệm thu.
+
+#### Stage 6C — Thay tuyển tập trích dẫn (2026-11-24)
+
+- Thay toàn bộ 20 câu dẫn cũ bằng 11 câu về học tập và tu dưỡng theo tuyển tập đã đề xuất: Khuyến học, Giới tử thư, Luận Ngữ, thơ Lục Du và Chu Hy, Hồng Lâu Mộng, Tây Du Ký, Kiếm Lai. Hai câu Kiếm Lai ghi rõ dịch ý, đối chiếu bản truyện trực tuyến; chưa xác minh bản xuất bản chính thức. Hồ sơ và nhật ký dùng chung danh sách mới, giữ cơ chế luân phiên hiện có.
+
+### Stage 6C.1 — Thiên Cơ Lục và thế giới Cửu Châu (2026-11-24)
+
+- [x] Tách chính sử, thân thế Nguyên Lưu Chi Chủ, địa lý, truyền thừa sáu tông môn và thiên kiêu sang `www/js/data/world-lore.js`. Xây dựng bốn thời đại, thống nhất chín châu và hai thánh địa với bản đồ.
+- [x] Thiên Cơ Lục chia bảy chương mở/thu gọn; Phong vân hiện thế hiển thị kiếp, ngày, cảnh giới, hạng, người dẫn đầu, thiên kiếp và Đạo Văn gần nhất từ dữ liệu thật. Chỉ cập nhật khi mở trang, giữ trạng thái đọc.
+- [x] Đạo Văn đặt trước nhật ký ngày, mở mặc định dấu mốc mới nhất và hôm nay. Giữ trạng thái mở khi làm mới, thoát ký tự HTML trong nội dung.
+- [x] Chỉnh lời văn Chân Tiên phù hợp quy luật luân hồi; không thay đổi cơ chế tu luyện, thưởng phạt hoặc save. Cập nhật nhãn phiên bản Stage 6C.1.
+- [x] Kiểm thử module: 136/136 đạt, gồm kiểm thử cập nhật hiện thế và bảo toàn bố cục. Toàn bộ bộ kiểm thử: 162/162 đạt.
+- [ ] Nghiệm thu trực quan trên thiết bị Android và build APK.
+
+### Stage 6D — Phong Vân Cửu Châu (2026-11-24)
+
+- [x] `www/js/systems/world-chronicle.js`: bảy chương mở theo cảnh giới cao nhất, tông môn, kết quả vượt kiếp, Top 10 và số lần luân hồi. Ký ức cảnh giới đối chiếu ngưỡng của độ dài kiếp đã lưu; chương vượt kiếp có điều kiện riêng cho kiếp hiện tại. Bí mật Nguyên Lưu Chi Chủ được hé lộ dần dưới dạng truyền thuyết trong Thiên Cơ Lục.
+- [x] Hồ sơ NPC giữ tiểu sử gốc, thêm chí hướng cho 11 thiên kiêu và chí hướng chung cho tu sĩ thường; tiểu sử thu gọn, giữ trạng thái đọc. Quan hệ đồng môn, đối thủ cùng bậc (cách tối đa hai hạng) và bạn đồng hành dựa trên tông môn, thứ hạng, lượt vấn đạo. Thẻ Thiên Kiêu Bảng chỉ hiển thị tên thiên phú; mô tả dài nằm trong hồ sơ.
+- [x] Phong văn ghi biến động hạng và cảnh giới NPC giữa hai mốc quan sát; dùng Đạo Văn, kết quả thiên kiếp và nhật ký tông môn chiến cho sự kiện đã xảy ra. Lịch tụ hội là mục riêng. Bổ sung trường cảnh giới NPC vào mốc thứ hạng mới, tương thích mốc cũ, không suy diễn cảnh giới lịch sử chưa ghi.
+- [x] Vạn Pháp có tổng kết tuần hiện tại, thời lượng học đã ghi nhận, ngày có học, nhiệm vụ hoàn thành, đúng/quá hạn và môn đang thiếu nhiều phút nhất so với mục tiêu tuần. Chỉ lấy ngày đã qua trong kiếp, loại môn lưu trữ khỏi gợi ý, ghi chú khi thiếu độ phủ dữ liệu.
+- [x] Cập nhật nhãn phiên bản Stage 6D. Không thay đổi công thức linh lực, phạt, giới hạn học đêm, quyền God Mode hoặc hiệu ứng thiên phú.
+- [x] Kiểm thử module 139/139 và toàn bộ 165/165 đạt. Kiểm tra `git diff --check` đạt.
+- [ ] Nghiệm thu trực quan Android và build APK/CI. Máy hiện chưa có thư mục Android SDK mặc định, ANDROID_HOME/ANDROID_SDK_ROOT chưa thiết lập; chưa push bản này.
+
+### Stage 6E — Ôn Cố Lục (2026-11-24)
+
+- [x] Thêm thẻ tự ôn trong Vạn Pháp, thu gọn mặc định. Tạo, sửa, xóa và phân môn; hiển thị số thẻ đến hạn, ưu tiên thẻ quá hạn lâu nhất, chỉ hiện đáp án khi người chơi yêu cầu.
+- [x] Lịch ôn theo mức tự đánh giá: nhớ tăng bậc với khoảng cách 1, 3, 7, 14, 30 ngày; quên về bậc 0 và ôn lại ngày mai. Giới hạn 300 thẻ, câu hỏi 300 ký tự, đáp án 1000 ký tự. Sửa nội dung đặt lại lịch; đổi môn giữ lịch.
+- [x] Tách `www/js/systems/review-cards.js` và `www/js/ui/review-cards.js`. Dữ liệu tùy chọn tương thích save cũ, giữ qua luân hồi, hoàn tác khi lỗi lưu. Không phát sinh linh lực, đạo tâm, phút học hay phần thưởng.
+- [x] Kiểm thử toàn bộ 170/170 đạt, gồm 5 ca mới về lịch, sửa/xóa, giao diện, lỗi lưu, validator, reload và luân hồi. Cập nhật nhãn phiên bản Stage 6E.
+- [ ] Nghiệm thu trực quan Android, build APK và push repository.
+
+### Stage 6F — Vấn Đạo Thí Luyện (2026-11-25)
+
+- [x] Bổ sung phiên tự kiểm tra trong Vạn Pháp, dùng thẻ thật từ Ôn Cố Lục. Lọc theo môn, tất cả môn hoặc chưa phân môn; chọn ngẫu nhiên không trùng tối đa 5, 10 hoặc 20 câu, kể cả thẻ chưa đến hạn.
+- [x] Ẩn đáp án đến khi người chơi yêu cầu, tự đánh giá từng câu, hiển thị tiến độ và tỷ lệ nhớ, luyện lại các câu chưa nhớ. Phiên giữ trong bộ nhớ khi đổi tab, kết thúc khi đóng game hoặc luân hồi; không đổi lịch ôn, linh lực hay phần thưởng.
+- [x] Tách `www/js/systems/knowledge-trial.js` và `www/js/ui/knowledge-trial.js`; cập nhật số thẻ khả dụng ngay khi sửa Ôn Cố Lục, chặn thao tác cũ sau khi đổi câu hoặc phiên. Cập nhật nhãn Stage 6F.
+- [x] Kiểm thử toàn bộ 174/174 đạt, gồm 4 ca mới kiểm tra chọn thẻ, chấm, luyện lại, giao diện và luân hồi.
+- [ ] Nghiệm thu trực quan Android, build APK và push repository.
+
+### Stage 6G — Tạo thẻ Ôn Cố Lục bằng AI (2026-11-25)
+
+- [x] Thêm prompt AI động theo danh sách môn học hiện có. Prompt hỗ trợ ghi chép, tài liệu và ảnh chụp, yêu cầu chỉ tạo thẻ từ nội dung đọc được, không suy đoán, giữ câu hỏi tối đa 300 ký tự và đáp án tối đa 1000 ký tự.
+- [x] Thêm thao tác chép prompt và vùng dán kết quả ngay trong Ôn Cố Lục. Nhập hàng loạt theo TSV hoặc dấu `|`, bỏ qua hàng tiêu đề, hàng phân cách và code fence; chấp nhận thẻ chưa phân môn.
+- [x] Kiểm tra tên môn, nội dung, thẻ trùng và giới hạn 300 thẻ. Nhập theo giao dịch lưu hiện có, tự hoàn tác state nếu lưu thất bại. Không gọi API AI bên ngoài, người chơi gửi prompt và tài liệu cho AI rồi dán kết quả về game.
+- [x] Kiểm thử toàn bộ 178/178 đạt, gồm 4 ca mới cho prompt, nhập TSV/pipe, giới hạn và lưu UI. `git diff --check` đạt.
+- [ ] Nghiệm thu trực quan Android, build APK và push repository.
+
+### Stage 6H — Hôm nay
+
+- Nhật trình hiển thị khung giờ hiện tại và lịch kế tiếp trong ngày, gợi ý nhiệm vụ vừa thời gian còn lại và số thẻ Ôn Cố Lục đến hạn. Học ngay dùng timer hiện có và kiểm tra lại gợi ý khi bấm. Ôn ngay mở thẻ đến hạn trong Vạn Pháp, vẫn ẩn đáp án ban đầu.
+- [ ] Build APK và nghiệm thu trên Android theo checklist. Máy triển khai chưa có Android SDK tại vị trí mặc định và chưa cấu hình đường dẫn SDK.
+
+### Stage 6I — Ôn theo điểm yếu
+
+- Kết quả Vấn Đạo Thí Luyện có thao tác đưa các thẻ chưa nhớ về ngày mai sau khi xác nhận. Chỉ dời thẻ đang hẹn sau ngày mai và còn khớp nội dung đã kiểm tra. Bậc ghi nhớ được giữ và thẻ xuất hiện trong Nhật trình → Hôm nay khi tới hạn.
+- Dùng luồng lưu Ôn Cố Lục hiện có, hoàn tác khi lưu thất bại. Thao tác luyện lại tại chỗ vẫn có thể dùng ngay sau khi xếp lịch.
+- [x] 181/181 kiểm thử đạt. Ca tích hợp kiểm tra hủy xác nhận, lỗi lưu, tải lại và số thẻ trong Hôm nay khi sang ngày mới.

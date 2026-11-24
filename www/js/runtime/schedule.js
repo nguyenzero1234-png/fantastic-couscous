@@ -53,7 +53,8 @@
       const q=qOf(cur),d=q&&isDone(q);
       h+=`<h2 style="font-size:20px;margin:4px 0">${esc(rn(cur))}</h2><small>${cur.s} - ${cur.e}, còn ${tm(cur.e)-tm(now)} phút${d?", đã hoàn thành":""}</small>`;
       if(q&&!d&&!expired(q))h+=`<div class="row"><button class="btn" data-a="t" data-id="${q.id}">Hoàn thành</button>${q.mins?`<button class="btn alt" data-a="p" data-id="${q.id}" style="margin-left:0">Học</button>`:""}</div>`;
-    }else h+=`<h2 style="font-size:20px;margin:4px 0">Không có việc trong khung giờ này</h2><small>${nxt?"Kế tiếp "+nxt.s+": "+esc(rn(nxt)):"Hôm nay chưa có lịch phía sau"}</small>`;
+    }
+    h+=`<small>${nxt?"Kế tiếp "+nxt.s+": "+esc(rn(nxt)):"Không còn lịch nào sau khung giờ này."}</small>`;
     updateMarkup("now",h);
     $("nowbar").hidden=!cur;
     if(cur){

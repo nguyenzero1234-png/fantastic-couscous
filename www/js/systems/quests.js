@@ -11,6 +11,12 @@
  function basePoints(minutes,rate,difficulty=1,deadlineKind=""){
   return Math.max(1,Math.round(minutes*rate*Math.round(difficulty*100)*Math.round(deadlineMultiplier(deadlineKind)*100)/600000));
  }
+ function lateBasePoints(q){
+  if(!Number.isFinite(q.pts)||q.pts<=0)return 0;
+  if(Number.isFinite(q.basePts)&&q.basePts>=1&&q.basePts<=q.pts)return q.basePts;
+  // Legacy tasks with a known multiplier keep their original configured rate.
+  return Math.max(1,Math.round(q.pts/deadlineMultiplier(q.deadlineKind)));
+ }
  function isDone(quest,today){return !!quest.doneOn&&(!quest.repeat||quest.doneOn===today)}
  function isExpired(quest,isDoneFn,now){
   return !!quest.due&&!isDoneFn(quest)&&now>quest.due;
@@ -33,7 +39,7 @@
   else if(h==="0"||h==="homnay"||h==="hôm nay"||h==="today"){const d=new Date(clock());due=d.setHours(23,59,59,999)}
   const deadlineKind=due?(h==="1"||h==="1h"?"1":h==="3"||h==="3h"?"3":"0"):"";
   const pts=basePoints(mins,o.perHour||280,diff,deadlineKind);
-  return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff,deadlineKind,...(subjectId?{subjectId}:{})};
+  return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,basePts:basePoints(mins,o.perHour||280,diff),mins,due,repeat:rep&&!due,doneOn:null,diff,deadlineKind,...(subjectId?{subjectId}:{})};
  }
 
  function importBulk(text,options){
@@ -77,6 +83,6 @@
   });
   return added;
  }
- global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked,importBulk,exportOpen,addChain,addPresetChains,basePoints,deadlineMultiplier});
+ global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked,importBulk,exportOpen,addChain,addPresetChains,basePoints,deadlineMultiplier,lateBasePoints});
 
 })(window);

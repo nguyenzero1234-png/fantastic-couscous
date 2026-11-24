@@ -1071,7 +1071,7 @@ test("item data tạo tổng linh lực và mô tả vật phẩm mà không s�
   const I = window.GameItemData;
   const cases = [
     [{ id: "ca", c: 100, q: [2, 100, ""] }, { tot: 200, d: "Dùng: 2 giờ học kế tiếp, mỗi giờ +100 linh lực (tổng cơ bản +200, 200% giá mua, trước hệ số thưởng/phạt)" }],
-    [{ id: "fast", c: 800, q: [4, 200, "q"], u: "Tăng tốc" }, { tot: 800, d: "Dùng: Tăng tốc; 4 giờ học có hạn giờ kế tiếp, mỗi giờ +200 linh lực (tổng cơ bản +800, 100% giá mua, trước hệ số thưởng/phạt)" }],
+    [{ id: "fast", c: 800, q: [4, 200, "q"], u: "Tăng tốc" }, { tot: 800, d: "Dùng: Tăng tốc; 4 giờ học đúng hạn kế tiếp, mỗi giờ +200 linh lực (tổng cơ bản +800, 100% giá mua, trước hệ số thưởng/phạt)" }],
     [{ id: "long", c: 900, q: [3, 300, "l"], ex: 100, u: "Bảo hộ" }, { tot: 1000, d: "Dùng: Bảo hộ; thêm 3 giờ học trong phiên từ 60 phút kế tiếp, mỗi giờ +300 linh lực (tổng cơ bản +1000, 111% giá mua, trước hệ số thưởng/phạt)" }],
     [{ id: "utility", c: 1000, q: [4, 250, ""], u: "Giảm giá" }, { tot: 1000, d: "Dùng: Giảm giá; 4 giờ học kế tiếp, mỗi giờ +250 linh lực (tổng cơ bản +1000, 100% giá mua, trước hệ số thưởng/phạt)" }]
   ];
@@ -1370,11 +1370,19 @@ test("sect war reward gives consolation for defeat and safely skips no-sect stat
 
 test("exam modal xác nhận thiên kiếp, mở khóa nền và điều hướng",()=>{
  const elements={thd:{style:{},hidden:true},exok:{}},body={style:{}},calls=[];
- const state={sem:{res:{e1:{rows:[{u:true,s:90,g:"Giỏi",ok:true}],menhLoss:0,seen:false}}},exLock:"e1"};
+ const state={sem:{res:{e1:{rows:[{u:true,s:90,g:"Giỏi",ok:true,xp:120,st:6}],menhLoss:0,seen:false}}},exLock:"e1"};
  const event={id:"e1",day:3,n:"Kiếp thử",desc:"Mô tả",kind:"Lôi kiếp",need:0,w:1};
- const deps={state,realmLabels:[["Phàm"],["Linh"]],exGod:()=>"",save:()=>calls.push("save"),go:(...x)=>calls.push(["go",...x]),render:()=>calls.push("render"),findNext:()=>null,document:{getElementById:id=>elements[id]},body,setTimeout:fn=>fn()};
+ const deps={state,realmLabels:[["Phàm",100],["Linh",200]],graceFactor:.8,exGod:()=>"",save:()=>calls.push("save"),go:(...x)=>calls.push(["go",...x]),render:()=>calls.push("render"),findNext:()=>null,document:{getElementById:id=>elements[id]},body,setTimeout:fn=>fn()};
  window.GameExamModal.show(deps,event);assert.equal(elements.thd.hidden,false);assert.match(elements.thd.innerHTML,/Thiên Kiếp Giáng Lâm/);assert.equal(body.style.pointerEvents,"none");elements.exok.onclick();
  assert.equal(state.sem.res.e1.seen,true);assert.equal(state.exLock,null);assert.equal(elements.thd.hidden,true);assert.deepEqual(calls,["save",["go","w","x"],"render"]);
+ const summary=window.GameExamModal.resultSummary;
+ assert.match(elements.thd.innerHTML,/120 \/ 100 linh lực/);
+ assert.match(summary({s:90,g:"Giỏi",ok:false,xp:79,sp:2},event,deps.realmLabels,.8),/Thiếu tu vi/);
+ assert.match(summary({s:49,g:"Yếu",ok:true,xp:100},event,deps.realmLabels,.8),/Điểm đánh giá dưới 50/);
+ assert.match(summary({s:49,g:"Yếu",ok:false,xp:10},event,deps.realmLabels,.8),/Thiếu tu vi · Điểm đánh giá dưới 50/);
+ assert.equal(window.GameQuestData.lateBasePoints({pts:125,deadlineKind:"1"}),100);
+ assert.equal(window.GameQuestData.lateBasePoints({pts:125}),125);
+ assert.equal(window.GameQuestData.lateBasePoints({pts:0}),0);
 });
 
 
@@ -1511,9 +1519,13 @@ test("GameCultivationDisplayData giữ nguyên bảng màu cảnh giới và câ
   const D = window.GameCultivationDisplayData;
   assert.equal(D.realmColors.length, 9);
   assert.equal(D.realmColors[0], "#7fb8a4");
-  assert.equal(D.quotes.length, 20);
-  assert.match(D.quotes[0], /Phương Nguyên/);
-  assert.match(D.quotes[19], /biến tấu Cầu Ma/);
+  assert.equal(D.quotes.length, 11);
+  assert.equal(new Set(D.quotes).size, 11);
+  assert.ok(D.quotes.every(q=>/^「.+」— .+$/.test(q)));
+  assert.match(D.quotes[0], /Tuân Tử · Khuyến học/);
+  assert.match(D.quotes[7], /Hồng Lâu Mộng/);
+  assert.match(D.quotes[8], /Tây Du Ký/);
+  assert.match(D.quotes[10], /Kiếm Lai/);
 });
 
 test("GameFortuneData cung cấp đủ dữ liệu cơ duyên theo giờ", () => {
@@ -1540,7 +1552,7 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
   assert.equal(window.GameItemData.catalog()[0].q[0], 2);
   assert.deepEqual(JSON.parse(JSON.stringify(window.GameItemData.describe({ id: "x", c: 100, q: [2, 60, "q"] }))), {
     tot: 120,
-    d: "Dùng: 2 giờ học có hạn giờ kế tiếp, mỗi giờ +60 linh lực (tổng cơ bản +120, 120% giá mua, trước hệ số thưởng/phạt)"
+    d: "Dùng: 2 giờ học đúng hạn kế tiếp, mỗi giờ +60 linh lực (tổng cơ bản +120, 120% giá mua, trước hệ số thưởng/phạt)"
   });
 });
 
@@ -1721,6 +1733,32 @@ test("GameMapUI render bản đồ và xử lý chọn địa điểm",()=>{
 });
 
 
+test("Stage 6D mở chương theo tiến độ thật và giữ ký ức từ kiếp có độ dài khác",()=>{
+ const M=window.GameWorldChronicle;
+ const S={points:0,pk:0,rb:0,sect:null,sem:{res:{tl:{rows:[{u:1,ok:false,g:"Xuất sắc"}]}}}};
+ assert.equal(M.chapters(S).filter(c=>c.unlocked).length,1);
+ S.pk=1;S.sect=0;S.sem.res.tl.rows[0].ok=true;
+ assert.equal(M.chapters(S).filter(c=>c.unlocked).length,4);
+ S.pk=0;S.sect=null;S.sem=null;S.rb=3;S.rbh=[{cycleDays:30,pk:window.GameProgressData.cycleConfig(30).realms[2][1],rank:8,sect:"Vạn Pháp Các"}];
+ const chapters=M.chapters(S);assert.ok(chapters[1].unlocked&&chapters[2].unlocked&&chapters[4].unlocked&&chapters[5].unlocked&&chapters[6].unlocked);assert.equal(chapters[3].unlocked,false);
+});
+
+test("Stage 6D phong văn chỉ dùng thứ hạng và cảnh giới đã quan sát",()=>{
+ const M=window.GameWorldChronicle,B=[{n:"Cố Thái Hư"},{n:"Vô Song"}],S={name:"Bạn",lb:{rankHistory:[{day:"2026-11-22",order:[0,1,-1],realms:[0,0]},{day:"2026-11-24",order:[1,-1,0],realms:[0,1]},{day:"2026-11-25",order:[0,1,-1],realms:[2,2]}]}};
+ assert.equal(M.rankNews(S,B,"2026-11-21").length,0);
+ assert.match(M.rankNews(S,B,"2026-11-24")[0].title,/Cố Thái Hư · Hạng 1 → 3/);
+ assert.match(M.realmNews(S,B,"2026-11-24")[0].title,/Vô Song · Luyện Khí → Trúc Cơ/);
+ delete S.lb.rankHistory[0].realms;assert.equal(M.realmNews(S,B,"2026-11-24").length,0);
+ assert.match(M.relationship({sect:0,npcAffinity:{1:7}},1,2,3,0),/Đồng môn · Đối thủ cùng bậc · Bạn đồng hành/);
+});
+
+test("Stage 6D tổng kết tuần chỉ lấy ngày đã qua và loại môn lưu trữ khỏi gợi ý",()=>{
+ const S={hist:{"2026-11-23":{m:30},"2026-11-24":{m:45},"2026-11-25":{m:999}},cnt:{"2026-11-24":2},studyReport:{sinceDay:"2026-11-24",days:{"2026-11-24":{onTime:1,late:1}}},subjects:{since:"2026-11-24",list:[{id:"a",name:"Toán",weekly:120},{id:"b",name:"Cũ",weekly:500,archived:true}],days:{"2026-11-24":{a:45}}}};
+ const r=window.GameAnalytics.weeklyReview(S,"2026-11-24","2026-11-23");
+ assert.equal(r.days.length,2);assert.equal(r.totals.minutes,75);assert.equal(r.totals.tasks,2);assert.equal(r.totals.onTime,1);assert.equal(r.totals.late,1);assert.equal(r.focus.name,"Toán");assert.equal(r.partial,true);
+ const empty=window.GameAnalytics.weeklyReview({},"2026-11-24","2026-11-23");assert.equal(empty.totals.minutes,0);assert.equal(empty.focus,null);assert.equal(empty.since,null);
+});
+
 test("GameLoreUI dựng Thiên Cơ Lục từ dữ liệu tông môn",()=>{
  const host={innerHTML:""},sects=Array.from({length:6},(_,i)=>({n:"Tông "+i,lore:"Truyền thừa "+i}));
  const M=window.GameLoreUI.create({SECTS:sects,$:()=>host});
@@ -1728,6 +1766,25 @@ test("GameLoreUI dựng Thiên Cơ Lục từ dữ liệu tông môn",()=>{
  assert.match(host.innerHTML,/Thiên Cơ Lục/);
  assert.match(host.innerHTML,/Nguyên Lưu Chi Chủ/);
  assert.match(host.innerHTML,/Tông 5/);
+});
+
+test("Thiên Cơ Lục cập nhật hiện thế mà giữ nguyên bố cục chương",()=>{
+ const current={innerHTML:"",hidden:true},host={innerHTML:"",querySelector:()=>current};
+ const status={name:"<Đạo hữu>",life:2,realm:"Trúc Cơ",day:5,days:119,rank:4,leader:"Cố Thái Hư",leaderSect:"Vạn Pháp Các",exams:1,penalty:true,latest:"Bái nhập"};
+ const M=window.GameLoreUI.create({SECTS:[],$:()=>host,worldStatus:()=>status});
+ M.render();
+ assert.match(host.innerHTML,/Chính sử Cửu Châu/);
+ assert.match(host.innerHTML,/Thượng Cổ/);
+ assert.match(current.innerHTML,/&lt;Đạo hữu&gt;/);
+ assert.match(current.innerHTML,/Cố Thái Hư/);
+ assert.match(current.innerHTML,/Thiên Đạo Trừng Phạt/);
+ assert.equal(current.hidden,false);
+ const initial=host.innerHTML;
+ status.rank=1;status.leader="Đạo hữu";status.penalty=false;
+ M.render();
+ assert.equal(host.innerHTML,initial);
+ assert.match(current.innerHTML,/Hạng 1/);
+ assert.doesNotMatch(current.innerHTML,/Thiên Đạo Trừng Phạt/);
 });
 
 
@@ -1758,7 +1815,8 @@ test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển
 test("GameLeaderboardUI chỉ hiện tên thiên phú trên thẻ Thiên Kiêu",()=>{
  const nodes={lbhead:{},lb:{},lbgod:{},lbgodi:{}};
  const B=[{n:"Cố Thái Hư",t:"Thái Hư Cổ Long",b:.5,d:"Thái Hư Bất Thoái — Mô tả hiệu ứng dài"},{n:"Tu sĩ",t:"Tán tu",b:.1,d:"Tu luyện đều đặn"}];
- const M=window.GameLeaderboardUI.create({S:{name:"Cố Thái Hư",points:120,sect:null,lb:{log:""},god:false},B,sc:i=>200-i*10,lbInit:()=>{},BAL_RANK:40,SECTS:[{n:"Vạn Pháp Các"}],SO:[0,0],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:i=>i===0,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
+ const S={name:"Cố Thái Hư",points:120,sect:null,lb:{log:""},god:false};let day="2026-11-24",writes=0,canSave=true;
+ const M=window.GameLeaderboardUI.create({S,today:()=>day,save:()=>{writes++;return canSave},B,sc:i=>200-i*10,lbInit:()=>{},BAL_RANK:40,SECTS:[{n:"Vạn Pháp Các"}],SO:[0,0],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:i=>i===0,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
  M.render();
  assert.match(nodes.lb.innerHTML,/class="tkf"/);
  assert.match(nodes.lb.innerHTML,/class="lb-talent">Thái Hư Bất Thoái<\/small>/);
@@ -1770,6 +1828,13 @@ test("GameLeaderboardUI chỉ hiện tên thiên phú trên thẻ Thiên Kiêu",
  assert.equal((nodes.lb.innerHTML.match(/role="button" tabindex="0"/g)||[]).length,3);
  M.render();
  assert.doesNotMatch(nodes.lb.innerHTML,/[▲▼]/);
+ assert.deepEqual(JSON.parse(JSON.stringify(S.lb.rankHistory)),[{day,order:[0,1,-1]}]);assert.equal(writes,1);
+ S.points=250;M.render();assert.equal(writes,1);assert.equal(S.lb.rankHistory[0].order[2],-1);
+ day="2026-11-25";canSave=false;M.render();assert.equal(S.lb.rankHistory.length,1);
+ canSave=true;M.render();assert.equal(S.lb.rankHistory[1].order[0],-1);
+ for(let n=1;n<=31;n++){day="2026-12-"+String(n).padStart(2,"0");M.render()}
+ assert.equal(S.lb.rankHistory.length,30);assert.equal(S.lb.rankHistory[0].day,"2026-12-02");
+ day="2026-11-23";M.render();assert.equal(S.lb.rankHistory.length,1);
 });
 
 test("GameDiaryUI render nhật ký ngày và Đạo Văn",()=>{
@@ -1876,11 +1941,11 @@ test("Mệnh bằng 0 không hồi lại khi thất bại thiên kiếp liên ti
 });
 
 test("GameTribulationSystem luân hồi reset state và giữ tiến độ xuyên kiếp",()=>{
- const S={rb:0,sect:0,tdPenalty:true,tdStacks:2,failStreak:3,life:{},lb:{},hist:{},cnt:{},stl:[],kc:{},inv:{},pets:{},tt:{},quests:[],chains:[],claimed:{},sched:{},ev:{},streak:{},storyLog:[],storyFlags:{}};
+ const S={rb:0,sect:0,tdPenalty:true,tdStacks:2,failStreak:3,life:{},lb:{rankHistory:[{day:"2026-11-23",order:[-1]}]},hist:{},cnt:{},stl:[],kc:{},inv:{},pets:{},tt:{},quests:[],chains:[],claimed:{},sched:{},ev:{},streak:{},storyLog:[],storyFlags:{}};
  const calls=[];let salt=0;
  const M=window.GameTribulationSystem.create({S,EX:[],exD:()=>new Date(0),KD:1,KS:()=>({pk:100,skx:0}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>0,immuneTaiHu:()=>false,vlog:x=>calls.push(x),bxp:()=>0,spKn:()=>-1,kh:()=>0,khNpc:()=>0,spE:e=>e,streakAt:()=>0,SPQ:[{f:1},{f:1},{f:1}],ri:()=>0,gr:()=>"Yếu",daoTam:()=>0,spRetire:()=>{},save:()=>calls.push("save"),hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>{},schedule:()=>{},buildRecord:()=>({n:1,grade:"Xuất Sắc",anXa:true,pk:100}),burst:()=>calls.push("burst"),sfx:()=>{},KS:()=>({}),setSalt:v=>salt=v,weekStart:()=>"2026-11-23",LeaderboardSimulation:{reset:()=>calls.push("sim-reset")},LeaderboardUI:{reset:()=>calls.push("ui-reset")},setProfileIndex:()=>calls.push("profile-reset"),chkLegacy:()=>calls.push("legacy"),render:()=>calls.push("render"),showThd:()=>calls.push("show")});
  M.doRebirth();
- assert.equal(S.rb,1);assert.equal(S.tdPenalty,false);assert.equal(S.menh,100);assert.equal(S.sect,null);assert.equal(S.life.anXa,1);assert.equal(S.life.excel,1);assert.equal(S.life.sectN,1);assert.equal(salt,7919);
+ assert.equal(S.lb.rankHistory,undefined);assert.equal(S.rb,1);assert.equal(S.tdPenalty,false);assert.equal(S.menh,100);assert.equal(S.sect,null);assert.equal(S.life.anXa,1);assert.equal(S.life.excel,1);assert.equal(S.life.sectN,1);assert.equal(salt,7919);
  assert.ok(calls.includes("sim-reset")&&calls.includes("ui-reset")&&calls.includes("profile-reset")&&calls.includes("legacy")&&calls.includes("save")&&calls.includes("render"));
 });
 
@@ -1944,9 +2009,9 @@ test("GameLeaderboardUI render dự báo giữ thứ hạng",()=>{
 
 
 test("GameProfileUI render hồ sơ người chơi qua dependency",()=>{
- const node={innerHTML:""};const S={lb:{t0:0},sect:null,name:"Đạo Hữu",title:null,points:123};
+ const node={innerHTML:""};const S={lb:{t0:0,rankHistory:[{day:"2026-11-23",order:[0,-1]},{day:"2026-11-24",order:[-1,0]}]},sect:null,name:"Đạo Hữu",title:null,points:123};
  const M=window.GameProfileUI.create({S,B:[],SO:[],SECTS:[],TITLES:[],BH:[],SP:60000,CDN:[],HTC:{f:[]},NVC_TITLES:["Nguyên Lưu"],RL:[["Luyện Khí",0]],STG:["Sơ nhập"],$:()=>node,uxp:()=>123,bxp:()=>0,ri:()=>0,tok:()=>false,bio:()=>"",myRk:()=>1,rkNow:()=>1,portrait:()=>"avatar",isTK:()=>false,esc:x=>String(x),htCount:()=>0,htLate:()=>0,hrs:()=>0,miles:()=>[],fmtT:()=>"",rname:()=>"Luyện Khí",getProfileIndex:()=>-1});
- M.render();assert.match(node.innerHTML,/Đạo Hữu/);assert.match(node.innerHTML,/Hạng 1/);assert.match(node.innerHTML,/Luyện Khí/);
+ M.render();assert.match(node.innerHTML,/Đạo Hữu/);assert.match(node.innerHTML,/Hạng 1/);assert.match(node.innerHTML,/Luyện Khí/);assert.match(node.innerHTML,/2026-11-23<\/span><b>Hạng 2/);
 });
 
 
@@ -2087,6 +2152,17 @@ test("B: migration timer legacy và validator bảo toàn dữ liệu khi phiên
  assert.equal(old.timers.play,null);
  const validOrphan={...base,timers:{focus:{id:"f",questId:"removed",startedAt:1,lastSeenAt:2,endAt:3},play:null}};
  assert.equal(valid(validOrphan),true);
+});
+
+test("Stage 6E: save validator tương thích dữ liệu cũ và từ chối thẻ sai",()=>{
+ const valid=window.GameStorage.validSave,base={quests:[],points:0};
+ const card={id:"review-test",subjectId:null,question:"Hỏi",answer:"Đáp",stage:0,due:"2026-11-24"};
+ assert.equal(valid(base),true);
+ assert.equal(valid({...base,reviewCards:[card]}),true);
+ assert.equal(valid({...base,reviewCards:[{...card,stage:6}]}),false);
+ assert.equal(valid({...base,reviewCards:[card,card]}),false);
+ assert.equal(valid({...base,reviewCards:[{...card,due:"2026-04-31"}]}),false);
+ assert.equal(window.GameState.migrate({...base,reviewCards:[card]}).reviewCards[0].id,card.id);
 });
 
 test("3E: cycle scaling preserves exam rules and default semester", () => {
