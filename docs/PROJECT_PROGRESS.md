@@ -1034,3 +1034,10 @@ Sau mỗi đợt thay đổi:
 - [x] Đưa renderer Lệnh Bảng ngày/tuần/tháng vào nhóm UI hoạt động cùng lịch học, bảo khố và chuỗi nhiệm vụ.
 - [x] Chỉ inject getter dữ liệu và phép tính tiến độ; giữ xử lý nhận thưởng/click trong `game.js` để không thay đổi nghiệp vụ.
 - [x] Giữ wrapper `renderLenh` và thêm test renderer đủ tiến độ/nhận thưởng.
+
+
+## Gom tiêu đề nhân vật và hồ sơ vào ui/profile.js (2026-11-24)
+
+- [x] Chuyển renderer thẻ nhân vật chính (cảnh giới, Mệnh, tông môn, thứ hạng, ký ức kiếp trước) vào cùng module hồ sơ.
+- [x] Giữ cập nhật màu hào quang và cờ top 10; dữ liệu cảnh giới/quotes/DOM được inject.
+- [x] Giữ wrapper `renderHero` và bổ sung test tiêu đề nhân vật.

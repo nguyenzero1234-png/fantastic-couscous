@@ -1517,3 +1517,10 @@ test("GameActivityUI render nhiệm vụ ngày, tuần, tháng qua dữ liệu t
  const M=window.GameActivityUI.create({S,nowHM:()=>"12:00",today:()=>"2026-11-24",tm:()=>720,isDone:()=>false,sq:()=>null,rn:x=>x.label||"",ITEMS:[],IC:{},buffTxt:()=>"",TITLES:[],nwS:()=>({t:{}}),escapeHtml:x=>String(x),isExpired:()=>false,isUnlocked:()=>true,isTitleUnlocked:()=>false,renderStepRow:()=>"",getLQ:()=>[{id:"d1",n:"Nhật khóa",per:"d",met:"m",tg:60,r:20,desc:"Học đủ 60 phút"}],getLP:()=>({d:["Nhật khóa","Mỗi ngày"],w:["Tuần khóa","Mỗi tuần"],m:["Nguyệt khóa","Mỗi tháng"]}),lval:()=>60,lpk:()=>"2026-11-24",lenhTop:()=>"<header>Tiến độ</header>",$:()=>node});
  M.renderDailyMissions();assert.match(node.innerHTML,/Nhật khóa/);assert.match(node.innerHTML,/60\/60/);assert.match(node.innerHTML,/Nhận thưởng/);
 });
+
+
+test("GameProfileUI render tiêu đề nhân vật và cập nhật hào quang cảnh giới",()=>{
+ const node={innerHTML:""},attrs={};const S={name:"Đạo Hữu",points:120,menh:100,rb:0,sect:null,life:{}};
+ const M=window.GameProfileUI.create({S,B:[],SO:[],SECTS:[],TITLES:[],BH:[],SP:60000,CDN:[],HTC:{f:[]},NVC_TITLES:["Nguyên Lưu"],RL:[["Luyện Khí",0],["Trúc Cơ",100]],STG:["Sơ nhập"],$:id=>id==="hero"?node:{innerHTML:""},uxp:()=>120,bxp:()=>0,ri:()=>0,tok:()=>false,bio:()=>"",myRk:()=>1,rkNow:()=>1,portrait:()=>"avatar",isTK:()=>false,esc:x=>String(x),htCount:()=>0,htLate:()=>0,hrs:()=>0,miles:()=>[],fmtT:()=>"",rname:()=>"Luyện Khí",getProfileIndex:()=>-1,realmColors:["jade"],quotes:["Kiên trì tu luyện"],document:{documentElement:{style:{setProperty:(k,v)=>attrs[k]=v}}},prevMemory:()=>null});
+ M.renderHero();assert.match(node.innerHTML,/Đạo Hữu/);assert.match(node.innerHTML,/Luyện Khí/);assert.equal(attrs["--aura"],"jade");assert.equal(S.life.top10,1);
+});

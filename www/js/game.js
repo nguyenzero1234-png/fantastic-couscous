@@ -142,7 +142,7 @@ function warReward(){return GameSectWar.reward({
   random:Math.random
 });}
 
-const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,getProfileIndex:()=>PI});
+const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),getProfileIndex:()=>PI});
 function renderProf(){ProfileUI.render()}
 const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:EP,$});
 function renderSect(){SectUI.render()}
@@ -499,15 +499,7 @@ setInterval(()=>{if(!$("b").hidden)renderLb()},1000);
 setInterval(()=>{if(!$("v").hidden)renderVan()},3000);
 setInterval(()=>{if(!$("z").hidden)renderSect()},3000);
 const RC=GameCultivationDisplayData.realmColors, QT=GameCultivationDisplayData.quotes;
-function renderHero(){
-  const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(1,(x-lo)/(hi-lo)),C=2*Math.PI*52;
-  const dn=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5),ttl=TITLES.find(t=>t.id===S.title&&tok(t));
-  document.documentElement.style.setProperty("--aura",RC[k]);
-  const menh=S.menh==null?100:S.menh;
-  const mem=prevMemory();
-  if(myRk()<=10){S.life=S.life||{};S.life.top10=1}
-  $("hero").innerHTML=`<div class="hero"><div class="av">${portrait(S.name,{player:1,w:56,h:56})}</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="rb" cx="60" cy="60" r="52"/><circle class="rf" cx="60" cy="60" r="52" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-p)).toFixed(1)}"/></svg><div class="hc"><div class="rn">${RL[k][0]}</div><div class="rt">${RL[k+1]?"tầng "+Math.min(9,Math.floor(p*9)+1):"vô cực"}</div></div></div><div class="hi"><b style="font-size:18px">${esc(S.name||"Đệ tử")}</b><br><small>${rname(x)} · Kiếp ${(S.rb||0)+1}${ttl?" · "+ttl.n:""}</small><br><small>Ngày ${Math.min(KD,Math.floor(kAge())+1)}/${KD} của kiếp · Mệnh ${menh}/100${S.tdPenalty?` · <span style="color:var(--red)">Trừng Phạt −${Math.min(30,5*Math.max(1,S.tdStacks||1))}%</span>`:""}${(S.failStreak||0)>1?` · fail×${S.failStreak}`:""}</small><br><small>${S.sect!=null?SECTS[S.sect].n:"Chưa vào tông môn"}, Hạng ${myRk()} trên Thiên Kiêu Bảng</small><br><small>Linh lực ${x}${RL[k+1]?" / "+hi:""}</small>${mem?`<small style="display:block;margin-top:4px;opacity:.85;font-style:italic">${mem}</small>`:""}<div class="qt">${QT[Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/36e5)%QT.length]}</div></div></div>`;
-}
+function renderHero(){ProfileUI.renderHero()}
 const KT0=GameFortuneData.epoch, KN=GameFortuneData.events, KX=GameFortuneData.effects;
 function knAt(h){
   if(!S.seed)S.seed=1+Math.floor(Math.random()*1e9);
