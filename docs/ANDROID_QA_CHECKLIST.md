@@ -4,6 +4,8 @@
 
 CI build APK debug chỉ xác nhận khả năng cài dependency, đồng bộ Capacitor và biên dịch. Nó không thay thế việc cài và thao tác trên thiết bị Android thật. Không đánh dấu checklist này hoàn thành nếu chưa có người cầm thiết bị thực hiện và ghi lại model máy, phiên bản Android, phiên bản APK và kết quả.
 
+Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit `fcf07f5`), người dùng phản hồi “App dùng tốt”. Đã có xác nhận sử dụng cơ bản; chưa có model máy, phiên bản Android, SHA APK thực tế hoặc kết quả từng mục bên dưới. Giữ các mục nghiệm thu chi tiết mở đến khi có kết quả tương ứng.
+
 ## Chuẩn bị
 
 - [ ] Tải artifact `TuTienHocDao-apk` từ GitHub Actions của commit mới nhất đã xanh.

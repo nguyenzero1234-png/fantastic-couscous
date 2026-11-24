@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-24
-> Mốc 2026-11-24 · Gom JavaScript theo chức năng, loại bỏ compatibility guard và chuẩn hóa thứ tự nạp. Chi tiết kiểm thử ở cuối tài liệu.
+> Mốc 2026-11-24 · Hoàn thành gom module, xác minh CI build APK tự động; người dùng xác nhận ứng dụng sử dụng tốt trên Android. Nghiệm thu Android chi tiết còn theo checklist.
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -1194,7 +1194,7 @@ Sau mỗi đợt thay đổi:
 - [x] P2. Chuẩn hóa vòng đời state, nhập backup và reload; giữ đồng bộ state giữa các factory và bộ nhớ đệm.
 - [x] P3. Rà phụ thuộc giữa các module, thứ tự khởi tạo và API toàn cục; giảm phụ thuộc không cần thiết.
 - [x] P4. Chạy kiểm thử hồi quy, gồm lưu và khôi phục dữ liệu, ở UTC và Asia/Ho_Chi_Minh.
-- [ ] P5. Kiểm thử web/APK và CI trên đúng commit; ghi rõ phần chưa xác minh.
+- [x] P5. Kiểm thử web, xác minh CI build APK theo SHA và ghi nhận người dùng xác nhận app sử dụng tốt; nghiệm thu Android chi tiết còn mở.
 - [x] P6. Cập nhật bản đồ kiến trúc và hướng dẫn bảo trì theo miền chức năng.
 
 Nguyên tắc: giữ luật chơi, tránh chia file theo helper nhỏ; cập nhật trạng thái từng mục sau khi kiểm thử.
@@ -1223,3 +1223,8 @@ Phần còn lại: kiểm thử tương tác trên trình duyệt/Android, build
 - Commit d2f917e đã tự kích hoạt Build APK (run 45326189100). Kiểm thử JavaScript và audit đạt; Gradle thất bại do Maven Central trả HTTP 429 khi tải dependency, chưa tạo APK.
 - Bổ sung cache Gradle và tối đa 3 lần build khi gặp HTTP 429, nghỉ 30/60 giây giữa các lần thử; lỗi khác vẫn làm workflow thất bại.
 - Commit `fcf07f5d92f262da761f61017984d08bc9f0a02a`: [Build APK run 45326644529](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45326644529) hoàn thành thành công trên push tự động; toàn bộ bước kiểm thử, audit, Gradle và upload đạt. Artifact `TuTienHocDao-apk` ID 14890515180 (5.830.457 byte, chưa hết hạn), chứa APK debug. Build CI đã xác minh; P5 còn kiểm thử cài đặt và chạy trên thiết bị Android thật.
+
+### Xác nhận sử dụng APK trên Android (2026-11-24)
+
+- Sau khi nhận link APK của run 45326644529, người dùng xác nhận: “App dùng tốt”. Ghi nhận kiểm thử sử dụng cơ bản đạt theo phản hồi người dùng; model máy, phiên bản Android, SHA APK thực tế và kết quả từng ca chưa được cung cấp.
+- P1–P6 của kế hoạch hoàn thiện cấu trúc Stage 1 đã đạt ở phạm vi hiện tại. Các mục kiểm thử riêng về lưu dữ liệu, backup/restore, thông báo, timer, vòng đời Android và ký release tiếp tục theo `docs/ANDROID_QA_CHECKLIST.md`; chưa đánh dấu nghiệm thu Android đầy đủ.
