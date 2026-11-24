@@ -1596,3 +1596,12 @@ test("GameGodModeSystem.advance đồng bộ lịch ảo, leaderboard và streak
  const M=window.GameGodModeSystem.create({S,KS:()=>cycle,curStreak:()=>streak,setStreak:n=>{streak=n}});
  M.advance(2,true);assert.equal(cycle.skd,172800000);assert.equal(S.dOff,3);assert.equal(S.lb.t0,100000-172800000);assert.equal(cycle.start,500000-172800000);assert.equal(streak,6);
 });
+
+
+test("GameRewardClaims nhận kỳ ngộ và điểm danh qua dependency",()=>{
+ const S={claimed:{},points:0,inv:{},buff:{n:0},ci:{last:"",n:0},streak:{last:"",n:0}};let saves=0,renders=0,msg="",history=[];
+ const M=window.GameRewardClaims.create({S,CI:[[10],[15],[20],[30],[40],[60],[120]],ITEMS:[],KX:["","Tỉnh thần trà","Buff","","","Linh thú"],knAt:()=>({h:1,T:30,pts:40,k:5,name:"Kỳ ngộ thử"}),kmins:()=>30,eventGain:x=>x,hAdd:(d,p,m)=>history.push([d,p,m]),today:()=>"2026-11-24",dayStr:()=>"2026-11-23",modGain:x=>x,grantPet:()=>({n:"Hồ Ly"}),vlog:()=>{},save:()=>saves++,render:()=>renders++,say:x=>msg=x,addPts:()=>{},hasBonusTitle:()=>false,random:()=>0.5});
+ assert.equal(M.claimFortune(1),true);assert.equal(S.points,40);assert.equal(S.claimed["o:1"],1);assert.match(msg,/Hồ Ly/);
+ assert.equal(M.checkin(),true);assert.equal(S.points,50);assert.equal(S.ci.n,1);assert.equal(history.length,2);assert.equal(saves,2);assert.equal(renders,2);
+ assert.equal(M.checkin(),false);assert.equal(S.points,50);
+});

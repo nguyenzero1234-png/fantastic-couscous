@@ -1114,3 +1114,10 @@ Sau mỗi đợt thay đổi:
 - [x] Đưa cập nhật ngày ảo, mốc bảng xếp hạng và tùy chọn giữ chuỗi khi tua ngày vào `GameGodModeSystem.advance`.
 - [x] Giữ wrapper `godAdvance` cho event handler cũ.
 - [x] Bổ sung test đồng bộ ba loại state.
+
+
+## Tách nhận thưởng kỳ ngộ và điểm danh vào systems/rewards.js (2026-11-24)
+
+- [x] Gom xử lý nhận kỳ ngộ, hiệu ứng vật phẩm/buff, cơ hội linh thú và thưởng điểm danh vào `GameRewardClaims`.
+- [x] Inject state, công thức thưởng, ngày, inventory, pet grant, save/render và thông báo; không để module phụ thuộc DOM.
+- [x] Giữ wrapper `claimKn` và `checkin`; bổ sung test luồng nhận thưởng và chống nhận điểm danh trùng ngày.

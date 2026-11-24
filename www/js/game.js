@@ -479,28 +479,10 @@ function knAt(h){
 function grantPet(prefer){return GamePetData.grant(S,PS,prefer,{now:Date.now(),random:Math.random,markNew:id=>{nwS().p[id]=1}})}
 const kmins=o=>GameAnalytics.sumStudyMinutesBetween(S.stl,o.st,o.en);
 function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}function renderKn(){ActivityUI.renderFortunes()}
-function claimKn(h){
-  const o=knAt(h),ck="o:"+h;if(!o||S.claimed[ck]||kmins(o)<o.T)return;
-  S.claimed[ck]=1;const op=eventGain(o.pts);S.points+=op;hAdd(today(),op,0);
-  let extraPet="";
-  if(o.k===1)S.inv.ca=(S.inv.ca||0)+1;
-  else if(o.k===3)S.inv.bm=(S.inv.bm||0)+1;
-  else if(o.k===4)hAdd(today(),80,0);
-  else if(o.k===2){if(S.buff.n>0)addPts(20);else S.buff={n:3,m:1.3}}
-  else if(o.k===5){const pet=grantPet();if(pet){extraPet=" · Linh thú xuất hiện: "+pet.n+"!";vlog("Nhận linh thú từ kỳ ngộ: "+pet.n)}}
-  // Kỳ ngộ dài (≥90 phút) có thêm cơ hội nhỏ nhận linh thú
-  if(o.k!==5&&o.T>=90&&Math.random()<0.18){const pet=grantPet();if(pet){extraPet=" · Kỳ ngộ ban thêm linh thú: "+pet.n+"!";vlog("Nhận linh thú từ kỳ ngộ: "+pet.n)}}
-  vlog("Kỳ ngộ "+o.name+": +"+op+" linh lực");save();render();say("Kỳ ngộ "+o.name+": +"+op+" linh lực, "+KX[o.k]+extraPet+".");
-}
+function claimKn(h){return RewardClaims.claimFortune(h)}
 const CI=[[10],[15],[20,"ca"],[30],[40,"bm"],[60],[120,"the"]];
-function checkin(){
-  const c=S.ci||(S.ci={last:"",n:0}),T=today();if(c.last===T)return;
-  c.n=c.last===dayStr(1)?c.n%7+1:1;c.last=T;const r=CI[c.n-1],rr=modGain(r[0]+(eqT("n16")?15:0));
-  S.points+=rr;hAdd(T,rr,0);if(r[1])S.inv[r[1]]=(S.inv[r[1]]||0)+1;
-  let petMsg="";
-  if(c.n===7&&Math.random()<0.35){const pet=grantPet();if(pet){petMsg=" · Điểm danh tròn tuần, linh thú theo về: "+pet.n+"!";vlog("Nhận linh thú từ điểm danh: "+pet.n)}}
-  vlog("Điểm danh ngày "+c.n+": +"+rr+" linh lực");save();render();say("Điểm danh ngày "+c.n+": +"+rr+" linh lực"+(r[1]?" và 1 "+ITEMS.find(i=>i.id===r[1]).n:"")+petMsg+".");
-}
+const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,hasBonusTitle:()=>eqT("n16"),random:Math.random});
+function checkin(){return RewardClaims.checkin()}
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
 $("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").value=b.dataset.tn;$("nd").value=b.dataset.tm;renderMore()};
 let SPD=7,SMT="p";
