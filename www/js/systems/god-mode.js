@@ -86,7 +86,12 @@ function runGod(a,btn){
   else return null;
   return true;
 }
-  return Object.freeze({calib,selfCheck,run:runGod});
+  function advance(n,keep){
+    const prev=curStreak();
+    KS().skd=(KS().skd||0)+n*864e5;S.dOff=(S.dOff||0)+n;if(S.lb)S.lb.t0-=n*864e5;KS().start-=n*864e5;
+    if(keep)setStreak(prev+n);
+  }
+  return Object.freeze({calib,selfCheck,run:runGod,advance});
  }
  root.GameGodModeSystem=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

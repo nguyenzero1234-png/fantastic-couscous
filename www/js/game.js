@@ -735,11 +735,7 @@ const GMG=[
 // Đặt chuỗi = n ngày tính đến hôm nay (lịch ảo), đồng bộ nhật ký ngày để streakAt/actDays đọc từ lịch sử vẫn khớp
 function setStreak(n){return GameStreak.set(S,n,{today:today(),dayOffset:S.dOff||0,now:Date.now(),lifeStats:()=>LS(),cycleState:()=>KS()})}
 const curStreak=()=>GameStreak.current(S.streak,today(),dayStr(1));
-function godAdvance(n,keep){
-  const prev=curStreak();
-  KS().skd=(KS().skd||0)+n*864e5;S.dOff=(S.dOff||0)+n;if(S.lb)S.lb.t0-=n*864e5;KS().start-=n*864e5;
-  if(keep)setStreak(prev+n);
-}
+function godAdvance(n,keep){GodModeSystem.advance(n,keep)}
 function renderGod(){
   const g=$("g");if(!g)return;
   g.innerHTML=`<div class="box"><h2>Thiên Đạo</h2>

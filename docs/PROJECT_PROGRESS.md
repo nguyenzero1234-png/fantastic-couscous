@@ -1107,3 +1107,10 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển thao tác đặt chuỗi, đồng bộ lịch sử học 420 ngày và cập nhật kỷ lục kiếp/tổng đời vào `GameStreak.set`.
 - [x] Giữ wrapper `setStreak` để god mode và các call-site cũ không đổi.
 - [x] Bổ sung test đồng bộ lịch sử, xóa mốc ảo cũ và bảo toàn kỷ lục cao nhất.
+
+
+## Chuyển tua ngày Thiên Đạo vào systems/god-mode.js (2026-11-24)
+
+- [x] Đưa cập nhật ngày ảo, mốc bảng xếp hạng và tùy chọn giữ chuỗi khi tua ngày vào `GameGodModeSystem.advance`.
+- [x] Giữ wrapper `godAdvance` cho event handler cũ.
+- [x] Bổ sung test đồng bộ ba loại state.

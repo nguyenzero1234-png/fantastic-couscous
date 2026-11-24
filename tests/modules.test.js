@@ -1589,3 +1589,10 @@ test("GameStreak.set đồng bộ streak, lịch sử và kỷ lục xuyên ki�
  state.hist["2026-11-22"]={p:0,m:1,g:1};G.set(state,1,{today:"2026-11-24",dayOffset:0,now,lifeStats:()=>life,cycleState:()=>cycle});
  assert.equal(state.hist["2026-11-22"],undefined);assert.equal(state.hist["2026-11-23"],undefined);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
 });
+
+
+test("GameGodModeSystem.advance đồng bộ lịch ảo, leaderboard và streak",()=>{
+ const S={dOff:1,lb:{t0:100000}},cycle={skd:0,start:500000};let streak=4;
+ const M=window.GameGodModeSystem.create({S,KS:()=>cycle,curStreak:()=>streak,setStreak:n=>{streak=n}});
+ M.advance(2,true);assert.equal(cycle.skd,172800000);assert.equal(S.dOff,3);assert.equal(S.lb.t0,100000-172800000);assert.equal(cycle.start,500000-172800000);assert.equal(streak,6);
+});
