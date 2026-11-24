@@ -10,6 +10,9 @@
     const fontSize = ui.fs || "md";
     const theme = ui.theme || "auto";
 
+    if (ui.ornament === "minimal") root.setAttribute("data-ornament", "minimal");
+    else root.removeAttribute("data-ornament");
+
     root.removeAttribute("data-skin");
     if (skin !== "classic") root.setAttribute("data-skin", skin);
 

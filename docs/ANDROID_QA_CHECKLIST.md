@@ -43,6 +43,12 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Từ chối rồi cấp lại quyền thông báo, kiểm tra trạng thái giao diện và lịch nhắc được khôi phục; hủy/dừng phiên để kiểm tra thông báo cũ không còn.
 - [ ] Kiểm tra giao thông báo khi màn hình khóa, app chạy nền, đóng app và với chế độ tiết kiệm pin; ghi rõ giới hạn theo thiết bị/Android.
 
+## Bổ sung nghiệm thu Stage 3E và Stage 4
+
+- [ ] Chọn kiếp 30 ngày lúc nhập đạo, đổi kiếp sau sang 60 ngày, reload và luân hồi; kiểm tra thời lượng hiện tại, sử kiếp và các mốc thiên kiếp.
+- [ ] Chọn ảnh chân dung JPG, PNG, WebP từ bộ chọn ảnh Android; kiểm tra ảnh cắt vuông hiển thị trên tiêu đề, hồ sơ và bảng xếp hạng. Thử ảnh lỗi và ảnh vượt giới hạn.
+- [ ] Đổi trang trí, đóng/mở app, luân hồi, xuất và khôi phục JSON trên bản thử nghiệm; kiểm tra chân dung và lựa chọn trang trí được giữ. Reset về mặc định.
+
 ## Tiêu chí đạt
 
 

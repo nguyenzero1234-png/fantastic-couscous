@@ -512,3 +512,9 @@ summary:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px so
 .first-cycle{display:grid;gap:6px;margin-top:14px}
 .first-cycle select{width:100%;min-width:0;min-height:40px}
 #setpanel .ui-opt.cycle-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.portrait-setting{display:flex;align-items:center;gap:12px}
+.portrait-setting>div{flex:1;min-width:0}
+.portrait-setting button{margin:0 5px 5px 0}
+.portrait-setting small{display:block}
+html[data-ornament="minimal"] .hero .qt,html[data-ornament="minimal"] #lb li.tkf::after,html[data-ornament="minimal"] #lb li.now::after,html[data-ornament="minimal"] .tkh::after,html[data-ornament="minimal"] .player-frame::after{display:none}
+html[data-ornament="minimal"] #lb li.tkf,html[data-ornament="minimal"] #lb li.now,html[data-ornament="minimal"] .tkh,html[data-ornament="minimal"] .player-frame{--frame-pad:12px}

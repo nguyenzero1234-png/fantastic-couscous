@@ -12,7 +12,7 @@
   const bt=u?"Nguyên Lưu Chi Chủ, kẻ xuyên không đứng ngoài vòng vận mệnh, thân phận thần bí, thực lực khủng bố, khiến cả thiên kiêu cũng phải kiêng dè"+(TITLES.some(t=>t.id===S.title&&tok(t))?", mang danh hiệu "+TITLES.find(t=>t.id===S.title).n:"")+".":bio(i);
   const rankTxt=u?("Hạng "+myRk()+" trên Thiên Kiêu Bảng"):("Hạng "+rkNow(i)+" trên Thiên Kiêu Bảng");
   const nm=u?(S.name||"Bạn"):b.n;
-  const avP=u?portrait(nm,{player:1,w:56,h:56}):portrait(nm,{w:56,h:56}),tk=!u&&isTK(i);
+  const avP=u?portrait(nm,{player:1,w:56,h:56}):portrait(nm,{npc:1,w:56,h:56}),tk=!u&&isTK(i);
   const talentHtml=tk&&b&&b.d?(()=>{const parts=b.d.split(" — "),name=parts.shift(),desc=parts.join(" — ");return `<section class="prof-talent" aria-label="Thiên phú"><div class="prof-talent-tag">✦ THIÊN PHÚ ĐỘC NHẤT</div><h3>${esc(name)}</h3><p>${esc(desc||"Thiên phú chưa được ghi chép.")}</p></section>`})():"";
   const htHtml=(!u&&BH[i].ht)?(()=>{const t=Math.max(0,(now-S.lb.t0)/SP/60),c=htCount(i,t);return `<section class="prof-talent" aria-label="Cơ duyên đã đạt"><div class="prof-talent-tag">✦ CƠ DUYÊN ĐÃ ĐẠT</div><h3>Bách Gia Hội Tụ: ${c}/9 loại · +${Math.round((c*2+htLate(t)*100)*10)/10}% hiệu suất</h3><ul style="list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px">${CDN.map((n,k)=>{const f=HTC.f[k],got=f<=t;return `<li style="${got?"color:var(--gold)":"opacity:.5"}">${got?"✔":"○"} ${esc(n)}${got?` <small>(ngày ${Math.floor(f/24)+1})</small>`:""}</li>`}).join("")}</ul>${c>=9?`<p style="margin-top:8px">Đã gặp đủ 9 loại, nhận 50.000 linh lực thưởng. Vạn Hóa Quy Nhất đang tăng: +${Math.round(htLate(t)*1000)/10}% (tối đa +20%).</p>`:""}</section>`})():"";
   const world=deps.world,dialogue=!u&&world?world.dialogue(i):null;

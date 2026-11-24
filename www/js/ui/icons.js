@@ -48,12 +48,37 @@
   const AV_NAM="assets/avatars/nam.jpg";
   const AV_NU="assets/avatars/nu.jpg";
   const AVATARS={"Bạch Nhược Hư":"assets/avatars/bach-nhuoc-hu.jpg","Giang Thừa Ảnh":"assets/avatars/giang-thua-anh.jpg","Hạ Trường Ca":"assets/avatars/ha-truong-ca.jpg","Liễu Như Yên":"assets/avatars/lieu-nhu-yen.jpg","Lăng Tiêu Hàn":"assets/avatars/lang-tieu-han.jpg","Mạc Vô Cực":"assets/avatars/mac-vo-cuc.jpg","Tần Hạo Thiên":"assets/avatars/tan-hao-thien.jpg","Vô Song":"assets/avatars/vo-song.jpg","Đường Thanh Liên":"assets/avatars/duong-thanh-lien.jpg","Cố Thái Hư":"assets/avatars/co-thai-hu.jpg","Phong Vân Tử":"assets/avatars/phong-van-tu.jpg"};
+  const validPortrait=src=>typeof src==="string" && src.length<=160000 && /^data:image\/jpeg;base64,\/9j\/[A-Za-z0-9+/]+={0,2}$/.test(src);
+  function playerPortraitSource(state){
+    const src=state.ui?.portrait;
+    return validPortrait(src)?src:state.gender==="nu"?AV_NU:AV_NAM;
+  }
+  async function readPortrait(file){
+    if(!file || !["image/jpeg","image/png","image/webp"].includes(file.type) || file.size>10*1024*1024)throw Error("Chọn ảnh JPG, PNG hoặc WebP dưới 10 MB.");
+    const url=URL.createObjectURL(file);
+    try{
+      const img=new Image();
+      img.src=url;
+      try{await img.decode()}catch{throw Error("Ảnh không hợp lệ hoặc không đọc được.")}
+      const side=Math.min(img.naturalWidth,img.naturalHeight);
+      if(!side)throw Error("Ảnh không hợp lệ.");
+      const canvas=document.createElement("canvas");
+      canvas.width=canvas.height=192;
+      const ctx=canvas.getContext("2d");
+      ctx.fillStyle="#d8cbb0";
+      ctx.fillRect(0,0,192,192);
+      ctx.drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,192,192);
+      const src=canvas.toDataURL("image/jpeg",0.82);
+      if(!validPortrait(src))throw Error("Không thể xử lý ảnh.");
+      return src;
+    }finally{URL.revokeObjectURL(url)}
+  }
   function portrait(state,seed,opts){
     opts=opts||{};
     const w=opts.w||48,h=opts.h||48;
     // Avatar NVC theo giới tính
-    if(opts.player||seed===state.name||(opts.forcePlayer)){
-      const src=state.gender==="nu"?AV_NU:AV_NAM;
+    if(opts.player||opts.forcePlayer||(!opts.npc&&seed===state.name)){
+      const src=playerPortraitSource(state);
       return `<img class="av-img" src="${src}" width="${w}" height="${h}" alt="" style="width:${w}px;height:${h}px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.2);display:block">`;
     }
     // Avatar NPC đặc biệt theo tên
@@ -62,5 +87,5 @@
     }
     return ""; // NPC thường không có avatar
   }
-  root.GameIcons=Object.freeze({IC,AV_NAM,AV_NU,AVATARS,petIcon,portrait});
+  root.GameIcons=Object.freeze({IC,AV_NAM,AV_NU,AVATARS,petIcon,portrait,validPortrait,playerPortraitSource,readPortrait});
 })(window);

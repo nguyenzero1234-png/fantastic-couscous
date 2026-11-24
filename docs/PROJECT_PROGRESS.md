@@ -1393,3 +1393,16 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Edge headless 390 × 844 và 320 × 844: kiểm tra chọn 30 ngày, đặt kiếp sau 60 ngày, luân hồi và reload; không lỗi JS hoặc tràn ngang. Đã xem ảnh nhập đạo và cài đặt tại 320 px. Luân hồi trong QA được kích hoạt trực tiếp.
 - [ ] Xác nhận CI/APK Stage 3E sau push. Nghiệm thu Android thật còn chờ.
 - Tiếp theo Stage 4 — Cá nhân hóa.
+
+### Xác nhận CI Stage 3E
+
+- [x] Commit `2470468a8a5deaca706d2610d93a4b2faa283735`: JavaScript Tests (45371928702) và Build APK (45371928984) đều completed/success. Artifact APK ID 14909801097 (6.286.043 byte, chưa hết hạn lúc kiểm tra).
+
+## Stage 4 — Cá nhân hóa (2026-11-24)
+
+- Cài đặt Giao diện cho chọn chân dung JPG, PNG hoặc WebP tối đa 10 MiB; xử lý cục bộ, cắt vuông giữa ảnh và lưu JPEG 192 × 192, giới hạn chuỗi 160.000 ký tự. Có nút trở về ảnh mặc định theo giới tính. Chân dung dùng chung ở tiêu đề, hồ sơ và Thiên Kiêu Bảng; NPC trùng tên giữ ảnh riêng.
+- Chọn trang trí Cổ phong hoặc Tối giản. Tối giản ẩn câu trích dẫn và hoa văn viền Thiên Kiêu, thu gọn khoảng đệm; vẫn giữ các thông tin gameplay. Lựa chọn và ảnh được lưu trong dữ liệu UI, tồn tại qua reload, luân hồi và bản sao JSON; save cũ dùng giao diện mặc định. Lưu thất bại hoàn tác lựa chọn. Không thay đổi kinh tế, điểm và luật thưởng/phạt.
+- [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh và UTC; kiểm tra tương thích save, lựa chọn UI, reload, luân hồi, reset và NPC trùng tên. `git diff --check` đạt.
+- [x] Edge headless trên hồ sơ riêng tại 390 × 844 và 320 × 844: chọn ảnh thật qua file input, giải mã JPEG 192 × 192 (15.319 ký tự với ảnh mẫu), từ chối file HTML, kiểm tra tiêu đề, hồ sơ, bảng xếp hạng, NPC trùng tên, tối giản, reload, luân hồi trực tiếp và reset. Không lỗi JS hoặc tràn ngang. Đã xem ảnh chụp cài đặt ở 320 px.
+- [ ] Xác nhận CI/APK Stage 4 sau push và nghiệm thu Android thật, đặc biệt bộ chọn ảnh và nhập/xuất backup có ảnh.
+- Tiếp theo: nghiệm thu Android theo checklist, rà soát hiệu năng, ổn định và cân bằng bằng dữ liệu sử dụng thực tế trước khi mở rộng gameplay.

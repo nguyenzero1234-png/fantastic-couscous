@@ -179,10 +179,24 @@ test("GameUI áp dụng tùy chọn giao diện và xóa thuộc tính mặc đ�
   assert.deepEqual(Object.fromEntries(rootAttributes), {
     "data-skin": "jade", "data-density": "compact", "data-fs": "lg", "data-theme": "dark"
   });
+  apply({ ui: { ornament: "minimal" } });
+  assert.deepEqual(Object.fromEntries(rootAttributes), {"data-ornament":"minimal"});
   apply({ ui: {} });
   assert.deepEqual(Object.fromEntries(rootAttributes), {});
   apply(null);
   assert.deepEqual(Object.fromEntries(rootAttributes), {});
+});
+
+test("Stage 4: chân dung người chơi và Thiên Kiêu dùng nguồn riêng",()=>{
+  const I=window.GameIcons,src="data:image/jpeg;base64,/9j/AA==";
+  const state={name:"Cố Thái Hư",gender:"nu",ui:{portrait:src}};
+  assert.equal(I.playerPortraitSource(state),src);
+  assert.ok(I.portrait(state,state.name,{player:1}).includes(src));
+  assert.ok(I.portrait(state,state.name,{npc:1}).includes(I.AVATARS[state.name]));
+  for(const invalid of ['javascript:alert(1)','data:image/svg+xml;base64,AAAA','data:image/jpeg;base64,/9j/" onerror="alert(1)','data:image/jpeg;base64,/9j/'+"A".repeat(160000)]){
+    assert.equal(I.validPortrait(invalid),false);
+    assert.equal(I.playerPortraitSource({...state,ui:{portrait:invalid}}),I.AV_NU);
+  }
 });
 
 test("các module giao diện và tiến trình được khởi tạo trong môi trường tích hợp", () => {

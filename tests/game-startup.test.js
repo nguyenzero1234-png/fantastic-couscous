@@ -683,3 +683,27 @@ test("3E: chọn kiếp đầu, khóa kiếp hiện tại, đổi khi luân hồ
  assert.equal(f.run("EX.map(e=>e.day).join(',')"),"13,24,36,48,61,75,88,100");
  assert.match(getNode("rbs").innerHTML,/Dừng chân ở Chân Tiên/);
 });
+
+test("Stage 4: cá nhân hóa tồn tại qua reload và luân hồi, trả lại mặc định",()=>{
+ const f=timerFixture();
+ const src="data:image/jpeg;base64,/9j/AA==";
+ getNode("nmi").value="Kiểm thử";getNode("nmk").onclick();
+ f.run("S.ui.portrait="+JSON.stringify(src)+";save();render();renderSettings()");
+ const select=v=>f.run("bx.onclick({target:{closest:()=>({dataset:{ui:'ornament',v:'"+v+"'}})}})");
+ select("minimal");
+ assert.equal(f.saved().ui.ornament,"minimal");
+ assert.equal(f.saved().ui.portrait,src);
+ assert.ok(getNode("hero").innerHTML.includes(src));
+ assert.match(f.run("bx.innerHTML"),/portraitReset/);
+ f.reload();
+ assert.ok(getNode("hero").innerHTML.includes(src));
+ assert.equal(f.saved().ui.ornament,"minimal");
+ f.run("doRebirth()");
+ assert.equal(f.saved().ui.portrait,src);
+ assert.equal(f.saved().ui.ornament,"minimal");
+ f.run("bx.onclick({target:{closest:selector=>selector==='button'?{dataset:{bk:'portraitReset'}}:null}})");
+ select("classic");
+ assert.equal(f.saved().ui.portrait,undefined);
+ assert.equal(f.saved().ui.ornament,undefined);
+ assert.match(getNode("hero").innerHTML,/assets\/avatars\/nam\.jpg/);
+});

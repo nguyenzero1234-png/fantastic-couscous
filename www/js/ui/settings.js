@@ -3,8 +3,19 @@
  "use strict";
  function create(deps){
   const {S,fold,container}=deps;
+  let portraitRequest=0;
+  function setPortrait(src){
+    S.ui=S.ui||{};
+    const previous=S.ui.portrait;
+    if(src)S.ui.portrait=src;else delete S.ui.portrait;
+    if(deps.save()===false){
+      if(previous)S.ui.portrait=previous;else delete S.ui.portrait;
+      deps.say("Không thể lưu chân dung.");return;
+    }
+    render();deps.refresh();deps.say(src?"Đã đổi chân dung.":"Đã dùng chân dung mặc định.");
+  }
   function render(){
-    const u={skin:"classic",density:"normal",fs:"md",theme:"auto",...S.ui};
+    const u={skin:"classic",density:"normal",fs:"md",theme:"auto",ornament:"classic",...S.ui};
     const draft=deps.$?.("bk")?.value||"";
     const advanced=deps.$?.("bkadvanced")?.open||false;
     const choice=(k,v,label,active)=>`<button type="button" class="btn alt${active?" on":""}" data-ui="${k}" data-v="${v}" aria-pressed="${active}">${label}</button>`;
@@ -18,10 +29,17 @@
 <div class="setting-row"><b>Đạo hiệu</b><button class="btn alt" data-bk="nm">Đổi tên</button></div>
 <div class="setting-row"><b>Hướng dẫn</b><button class="btn alt" data-bk="tut">Xem lại</button></div>`,1)
     +fold("ui","Giao diện",`
+<div class="setting-field"><b>Chân dung</b><div class="portrait-setting">
+  ${root.GameIcons.portrait(S,S.name,{player:1,w:64,h:64})}
+  <div><input id="portraitfile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+  <button type="button" class="btn alt" data-bk="portrait">Chọn ảnh</button>
+  ${root.GameIcons.validPortrait(u.portrait)?'<button type="button" class="btn alt" data-bk="portraitReset">Mặc định</button>':""}
+  <small>Ảnh lưu cùng bản sao JSON.</small></div></div></div>
 ${options("Phong cách","skin",[["classic","Cổ thư"],["jade","Thanh ngọc"],["ink","Mặc thư"],["night","U huyền"]])}
 ${options("Chế độ sáng","theme",[["auto","Tự động"],["light","Sáng"],["dark","Tối"]])}
 ${options("Cỡ chữ","fs",[["sm","Nhỏ"],["md","Vừa"],["lg","Lớn"]])}
-${options("Mật độ","density",[["compact","Gọn"],["normal","Vừa"],["roomy","Rộng"]])}`,0)
+${options("Mật độ","density",[["compact","Gọn"],["normal","Vừa"],["roomy","Rộng"]])}
+${options("Trang trí","ornament",[["classic","Cổ phong"],["minimal","Tối giản"]])}<small>Tối giản ẩn câu trích dẫn và hoa văn viền Thiên Kiêu.</small>`,0)
     +fold("bk","Sao lưu",`
 <small>Tiến trình được lưu trên thiết bị. Giữ một bản sao khi đổi máy hoặc cài lại app.</small>
 ${deps.isWriteBlocked?.()?'<p class="setting-alert" role="alert">Đang khóa lưu. Hãy tải dữ liệu cứu hộ trước khi khôi phục.</p><button class="btn alt" data-bk="recovery">Tải dữ liệu cứu hộ</button>':""}
@@ -51,7 +69,10 @@ container.onclick=e=>{
     }
     S.ui=S.ui||{};
     if(ui.dataset.ui==="studyOnly"){S.ui.studyOnly=ui.dataset.v==="1";save();root.GameUI.apply(S);render();drawNav();refresh();say(S.ui.studyOnly?"Đã bật chế độ Chỉ học.":"Đã về chế độ đầy đủ.");return}
-    S.ui[ui.dataset.ui]=ui.dataset.v;save();root.GameUI.apply(S);render();say("Đã đổi giao diện.");return;
+    const key=ui.dataset.ui,previous=S.ui[key];
+    if(key==="ornament"&&ui.dataset.v==="classic")delete S.ui[key];else S.ui[key]=ui.dataset.v;
+    if(save()===false){if(previous===undefined)delete S.ui[key];else S.ui[key]=previous;render();say("Không thể lưu giao diện.");return}
+    root.GameUI.apply(S);render();say("Đã đổi giao diện.");return;
   }
   const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
   if(a==="ex"||a==="dl"||a==="recovery"){
@@ -65,6 +86,8 @@ container.onclick=e=>{
       }
     }catch(x){say("Không thể tạo backup: "+(x.message||"dữ liệu không hợp lệ."))}
   }
+  else if(a==="portrait"){$("portraitfile").click()}
+  else if(a==="portraitReset"){portraitRequest++;setPortrait(null)}
   else if(a==="file"){$("bkfile").click()}
   else if(a==="im"){
     try{
@@ -83,6 +106,14 @@ container.onclick=e=>{
 };
 
 container.addEventListener("change",async e=>{
+  if(e.target.id==="portraitfile"){
+    const file=e.target.files?.[0];e.target.value="";
+    if(!file)return;
+    const request=++portraitRequest;
+    try{const src=await root.GameIcons.readPortrait(file);if(request===portraitRequest)setPortrait(src)}
+    catch(x){if(request===portraitRequest)say(x.message||"Không đọc được ảnh.")}
+    return;
+  }
   if(e.target.id!=="bkfile")return;
   const file=e.target.files&&e.target.files[0];if(!file)return;
   try{

@@ -37,7 +37,9 @@
       if(S.lb&&S.lb.bal)S.lb.bal=Array(50).fill(0);
       S.bal=0;S._balCleared=1;
     }
-    if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
+    if(!S.ui||typeof S.ui!=="object"||Array.isArray(S.ui))S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
+    if(S.ui.portrait!==undefined&&!root.GameIcons?.validPortrait(S.ui.portrait))delete S.ui.portrait;
+    if(S.ui.ornament!=="minimal")delete S.ui.ornament;
     if(S.fb&&S.fb.n>0)(S.fx=S.fx||[]).push({n:S.fb.n,v:S.fb.v,t:""});
     delete S.fb;
     return S;
