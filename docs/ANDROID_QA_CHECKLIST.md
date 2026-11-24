@@ -62,6 +62,11 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Đổi công pháp sau khi đã nhận thưởng; hoàn tác và khôi phục nhiệm vụ, xác nhận không nhận thêm lượt trong ngày. Kiểm tra phiên timer ban đêm, đối soát qua ngày, và nhiệm vụ quá hạn.
 - [ ] Đóng/mở, xuất/nhập backup và luân hồi trên save thử nghiệm; xác nhận lựa chọn, ngày vận công và sử công pháp được giữ đúng.
 
+## Bổ sung nghiệm thu Stage 5D
+
+- [ ] Mở Thiên Thư → Thống kê ở cả hai chế độ, đổi khoảng 7/30 ngày, chọn ngày, mở/đóng tiến độ môn học, kiểm tra tên môn dài và mục tiêu hiện tại ở màn hình hẹp.
+- [ ] Kiểm tra save cũ, môn lưu trữ, phút chưa gán môn và dữ liệu chưa theo dõi; đối chiếu so sánh các kiếp khác thời lượng và dữ liệu thiếu; đóng/mở app.
+
 ## Tiêu chí đạt
 
 

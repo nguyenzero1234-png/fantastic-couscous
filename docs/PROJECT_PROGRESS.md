@@ -1419,7 +1419,7 @@ Tiếp theo theo thứ tự ưu tiên:
 
 - [x] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp (nghiệm thu Android còn chờ).
 - [x] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức (nghiệm thu Android còn chờ).
-- [ ] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp.
+- [x] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp (nghiệm thu Android còn chờ).
 - [ ] 5C — Mục tiêu, quan hệ và sự kiện NPC.
 - [ ] 5E — Tông môn, sư phụ và truyền thừa.
 - [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
@@ -1441,4 +1441,13 @@ Tiếp theo theo thứ tự ưu tiên:
 - Biên nhận ghi riêng phần công pháp nằm trong thưởng cộng; hoàn tác/khôi phục giữ thưởng gốc, không mở lại lượt vận công. Số ngày vận công tính số lần kích hoạt, kể cả đã hoàn tác. Save cũ mặc định không chọn; lưu lựa chọn qua reload, giữ lựa chọn khi luân hồi và lưu số ngày theo từng công pháp vào sử kiếp. Không cộng dồn buff xuyên kiếp.
 - [x] Edge headless trên profile thử nghiệm độc lập: 390, 320, 280 px không tràn ngang; chọn công pháp, nhận thưởng, đổi công pháp trong ngày, chế độ Chỉ học, reload, luân hồi đều đạt, không lỗi JS. Đã tạo ảnh kiểm tra nhưng chưa xác nhận trực quan qua ảnh.
 - [x] 150/150 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt. Ba kiểm thử mới bao gồm sáu điều kiện, ngày hợp lệ, giới hạn ngày, biên nhận, hoàn tác, timer, lưu và luân hồi.
-- [ ] CI/APK và nghiệm thu Android thật. Tiếp theo Stage 5D.
+- [x] CI Stage 5B, commit `b3b6119acb4928a59045c712df5e036533df0684`: JavaScript Tests (45378321093) và Build APK (45378321144) thành công. Artifact APK ID 14911878465 (6.289.125 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Nghiệm thu Android thật.
+
+## Stage 5D — Thống kê học tập (2026-11-24)
+
+- Thiên Thư → Thống kê bổ sung xu hướng học tập 7/30 ngày trong kiếp, chỉ so sánh khi đủ hai khoảng thời gian trọn vẹn. Tiến độ môn học hiển thị phút học, tỷ trọng, mục tiêu ngày/tuần và phân biệt phút chưa gán môn với dữ liệu cũ chưa được theo dõi.
+- So sánh tối đa năm kiếp gần nhất theo phút/ngày và nhiệm vụ/ngày, có thời lượng kiếp nếu biết. Dữ liệu thiếu hiển thị dấu —. Không thay đổi dữ liệu lưu hoặc cơ chế thưởng phạt.
+- [x] 151/151 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [x] Edge headless profile riêng tại 390, 320, 280 px: bộ lọc, môn học, dữ liệu cũ, mục thu gọn, chế độ Chỉ học và reload đạt, không tràn ngang hoặc lỗi JS. Có ảnh QA nhưng chưa xác nhận trực quan.
+- [ ] Xác nhận CI/APK sau push và nghiệm thu Android thật. Tiếp theo Stage 5C.

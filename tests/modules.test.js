@@ -1549,6 +1549,35 @@ test("GameStatisticsUI giữ bộ lọc biểu đồ trong module UI",()=>{
  assert.equal(typeof host.innerHTML,"string");
 });
 
+test("5D: xu hướng theo ngày trong kiếp, tiến độ môn và so sánh kiếp",()=>{
+ const A=window.GameAnalytics,T="2026-11-24",P="2026-11-23",Q="2026-11-22",R="2026-11-21";
+ const S={kst:{start:new Date(2026,10,23,9).getTime()},hist:{[P]:{m:60,p:120},[T]:{m:40,p:80}},cnt:{[P]:2,[T]:1},subjects:{since:P,list:[{id:"math",name:"Giải tích <1>",daily:45,weekly:180,archived:false},{id:"code",name:"Lập trình",daily:0,weekly:0,archived:true}],days:{[P]:{math:20,none:10},[T]:{math:20,code:20}}}};
+ const short=A.studyTrend(S,[P,T],[R,Q]);
+ assert.equal(short.days,2);assert.equal(short.previousDays,0);assert.equal(short.comparable,false);
+ assert.equal(short.current.minutes,100);assert.equal(short.current.tasks,3);
+ S.kst.start=new Date(2026,10,20,9).getTime();
+ assert.equal(A.studyTrend(S,[P,T],[R,Q]).comparable,true);
+ const progress=A.subjectProgress(S,[P,T],T,P);
+ assert.equal(progress.rows[0].minutes,40);assert.equal(progress.rows[0].today,20);assert.equal(progress.rows[0].week,40);
+ assert.equal(progress.rows[1].minutes,20);assert.equal(progress.rows[1].archived,true);
+ assert.equal(progress.assigned,60);assert.equal(progress.unassigned,10);assert.equal(progress.untracked,30);assert.equal(progress.partial,true);
+ assert.equal(A.subjectProgress(S,[T],T,P).partial,false);
+ assert.equal(A.subjectProgress({},[T],T,P),null);
+ assert.equal(A.lifePace(1200,30,30).minutesPerDay,40);
+ assert.equal(A.lifePace(2400,60,60).tasksPerDay,1);
+ assert.equal(A.lifePace(2400,undefined,60).tasksPerDay,null);
+ assert.equal(A.lifePace(0,0,0).minutesPerDay,null);
+ const host={innerHTML:""};
+ const ui=window.GameStatisticsUI.create({S:{...S,streak:{},rbh:[{n:1,hrs:20,days:30,cycleDays:30},{n:2,hrs:40,days:60,quests:60,cycleDays:60}],rb:2,sem:null},$:()=>host,today:()=>T,dayStr:o=>window.GameDateData.dayOffset(0,o,new Date(2026,10,24,12).getTime()),GameAnalytics:A,GameTimeFormat:{hoursLabel:m=>m/60+" giờ"},fold:(id,label,html)=>`<section>${label}${html}</section>`,uxp:()=>0,ri:()=>0,RL:[["Phàm",0]],rname:()=>"Phàm",EX:[],exD:()=>0,getKD:()=>119,getKAge:()=>4});
+ ui.render();
+ assert.match(host.innerHTML,/Giải tích &lt;1&gt;/);assert.doesNotMatch(host.innerHTML,/Giải tích <1>/);
+ assert.match(host.innerHTML,/Thiếu dữ liệu phân môn: 0 giờ 30 phút/);
+ assert.match(host.innerHTML,/Hạn 60 ngày/);assert.match(host.innerHTML,/0 giờ 40 phút\/ngày · 1.0 nhiệm vụ\/ngày/);
+ assert.match(host.innerHTML,/0 giờ 40 phút\/ngày · —/);
+ ui.handleClick({target:{closest:()=>({dataset:{sp:"30"}})}});
+ assert.match(host.innerHTML,/Tiến độ môn học · 30 ngày/);
+});
+
 test("Stage 3A: thu chi, hoàn tác, giờ chơi qua ngày và sử luân hồi",()=>{
  const A=window.GameAnalytics, start=new Date(2026,10,23,23,59,50).getTime();
  const S={points:100,quests:[],hist:{},cnt:{},studyReport:A.newReport({},start)};

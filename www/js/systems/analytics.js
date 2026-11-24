@@ -136,5 +136,29 @@
   const days=new Set([...Object.keys(state.hist||{}),...Object.keys(state.cnt||{}),...Object.keys(state.studyReport.days)]);
   return {since:state.studyReport.since,sinceDay:state.studyReport.sinceDay,totals:reportPeriod(state,days)};
  }
- global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween,newReport,recordCompletion,recordPlay,recordLeisureCost,recordPoints,reportPeriod,archiveReport});
+ function studyTrend(state,currentDays,previousDays){
+  const start=Number.isFinite(state.kst?.start)?new Date(state.kst.start+(state.dOff||0)*864e5).toLocaleDateString("sv"):null;
+  const eligible=days=>days.filter(day=>!start||day>=start);
+  const current=eligible(currentDays),previous=eligible(previousDays);
+  return {current:reportPeriod(state,current),previous:reportPeriod(state,previous),days:current.length,previousDays:previous.length,comparable:!!start&&current.length===currentDays.length&&previous.length===previousDays.length&&previous[0]>start};
+ }
+ function subjectProgress(state,days,today,weekStart){
+  const data=state.subjects;
+  if(!data)return null;
+  const selected=new Set(days),totals=new Map(),daily=new Map(),weekly=new Map();
+  for(const [day,values] of Object.entries(data.days))for(const [id,minutes] of Object.entries(values)){
+   if(selected.has(day))totals.set(id,(totals.get(id)||0)+minutes);
+   if(day===today)daily.set(id,minutes);
+   if(day>=weekStart&&day<=today)weekly.set(id,(weekly.get(id)||0)+minutes);
+  }
+  const rows=data.list.map(s=>({...s,minutes:totals.get(s.id)||0,today:daily.get(s.id)||0,week:weekly.get(s.id)||0}));
+  const assigned=rows.reduce((sum,s)=>sum+s.minutes,0),unassigned=totals.get("none")||0;
+  const recorded=reportPeriod(state,days).minutes;
+  return {rows,assigned,unassigned,untracked:Math.max(0,recorded-assigned-unassigned),since:data.since,partial:days.some(day=>day<=data.since)};
+ }
+ function lifePace(minutes,tasks,days){
+  const validDays=Number.isFinite(days)&&days>0;
+  return {minutesPerDay:validDays&&Number.isFinite(minutes)?minutes/days:null,tasksPerDay:validDays&&Number.isFinite(tasks)?tasks/days:null};
+ }
+ global.GameAnalytics=Object.freeze({summarize,kiepMetrics,questProgress,sumMinutes,sumPointsBetween,pointsThrough,countStudyLogEntries,sumCountsBetween,studyWindowStats,sumStudyMinutesBetween,newReport,recordCompletion,recordPlay,recordLeisureCost,recordPoints,reportPeriod,archiveReport,studyTrend,subjectProgress,lifePace});
 })(window);

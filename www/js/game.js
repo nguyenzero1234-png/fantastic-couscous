@@ -297,7 +297,7 @@ const CI=[[10],[15],[20,"ca"],[30],[40,"bm"],[60],[120,"the"]];
 const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,onPointsChanged:before=>{if(ri(S.points)>ri(before))onRealmUp(ri(before),ri(S.points))},hasBonusTitle:()=>eqT("n16"),random:Math.random});
 function checkin(){return RewardClaims.checkin()}
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
-const StatsUI=GameStatisticsUI.create({S,$,today,dayStr,GameAnalytics,GameTimeFormat,fold,uxp,ri,RL,rname,EX,exD,getKD:()=>KD,getKAge:()=>kAge(),bestKiep:()=>bk()});
+const StatsUI=GameStatisticsUI.create({S,$,today,dayStr,weekStart,GameAnalytics,GameTimeFormat,fold,uxp,ri,RL,rname,EX,exD,getKD:()=>KD,getKAge:()=>kAge(),bestKiep:()=>bk()});
 function renderStats(){StatsUI.render()}
 $("stats").onclick=e=>StatsUI.handleClick(e);
 const LQ=[
