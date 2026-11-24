@@ -74,6 +74,18 @@ test("game khởi động và xử lý nhiệm vụ, bảo khố, danh hiệu, h
  const saved=JSON.parse(storage.get(key));
  assert.ok(saved.quests[0].got>0);
  assert.equal(saved.hist[saved.quests[0].doneOn].m,25);
+ getNode("list").onclick({target:{closest:()=>button}});
+ const undone=JSON.parse(storage.get(key));
+ assert.equal(undone.points,saved.points-saved.quests[0].got);
+ assert.equal(undone.hist[saved.quests[0].doneOn].m,0);
+ assert.equal(undone.quests[0].completion.undone,true);
+ assert.equal(undone.ls.q,saved.ls.q-1);
+ getNode("list").onclick({target:{closest:()=>button}});
+ const redone=JSON.parse(storage.get(key));
+ assert.equal(redone.points,saved.points);
+ assert.equal(redone.quests[0].got,saved.quests[0].got);
+ assert.equal(redone.ls.q,saved.ls.q);
+ assert.equal(redone.stl.length,saved.stl.length);
  getNode("lb").onclick({target:{closest:()=>({dataset:{pi:"-1"}})}});
  assert.match(getNode("prof").innerHTML,/Lịch sử tu vi/);
  getNode("prof").onclick({target:{closest:()=>true}});
@@ -203,4 +215,21 @@ test("cài đặt, nhập file backup sau render và tải lại đồng bộ st
  assert.equal(getNode("pts").textContent,12345);
  assert.equal(vm.runInContext("S.points+=10;save();S.points",fresh),12355);
  assert.equal(JSON.parse(storage.get(key)).points,12355);
+});
+
+test("khởi động khi cả hai save lỗi hiển thị cảnh báo và giữ nguyên dữ liệu",()=>{
+ const key=vm.runInContext("GameState.KEY",context);
+ const primary="{invalid",backup='{"quests":[],"points":-1}';
+ storage.set(key,primary);
+ storage.set(key+".backup",backup);
+ nodes.clear();
+ const fresh=createContext();
+ vm.runInContext("globalThis.window=globalThis",fresh);
+ for(const name of scripts)vm.runInContext(fs.readFileSync(path.join(jsDir,name),"utf8"),fresh,{filename:name});
+ assert.equal(getNode("savewarning").hidden,false);
+ assert.match(getNode("savewarning").textContent,/Tạm khóa lưu/);
+ assert.equal(vm.runInContext("save()",fresh),false);
+ assert.equal(storage.get(key),primary);
+ assert.equal(storage.get(key+".backup"),backup);
+ assert.match(vm.runInContext("bx.innerHTML",fresh),/Tải dữ liệu cứu hộ/);
 });

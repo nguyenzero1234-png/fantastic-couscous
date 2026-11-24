@@ -61,15 +61,17 @@
     function claimFortune(h){
       const o=knAt(h),ck="o:"+h;
       if(!o||S.claimed[ck]||kmins(o)<o.T)return false;
+      const before=S.points;
       S.claimed[ck]=1;const op=eventGain(o.pts);S.points+=op;hAdd(today(),op,0);
       let extraPet="";
       if(o.k===1)S.inv.ca=(S.inv.ca||0)+1;
       else if(o.k===3)S.inv.bm=(S.inv.bm||0)+1;
-      else if(o.k===4)hAdd(today(),80,0);
+      else if(o.k===4){S.points+=80;hAdd(today(),80,0)}
       else if(o.k===2){if(S.buff.n>0)addPts(20);else S.buff={n:3,m:1.3}}
       else if(o.k===5){const pet=grantPet();if(pet){extraPet=" · Linh thú xuất hiện: "+pet.n+"!";vlog("Nhận linh thú từ kỳ ngộ: "+pet.n)}}
       if(o.k!==5&&o.T>=90&&random()<0.18){const pet=grantPet();if(pet){extraPet=" · Kỳ ngộ ban thêm linh thú: "+pet.n+"!";vlog("Nhận linh thú từ kỳ ngộ: "+pet.n)}}
-      vlog("Kỳ ngộ "+o.name+": +"+op+" linh lực");save();render();say("Kỳ ngộ "+o.name+": +"+op+" linh lực, "+KX[o.k]+extraPet+".");
+      deps.onPointsChanged?.(before);
+      vlog("Kỳ ngộ "+o.name+": +"+(op+(o.k===4?80:0))+" linh lực");save();render();say("Kỳ ngộ "+o.name+": +"+op+" linh lực, "+KX[o.k]+extraPet+".");
       return true;
     }
     function checkin(){

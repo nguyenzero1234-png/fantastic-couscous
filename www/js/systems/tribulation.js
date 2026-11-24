@@ -38,7 +38,7 @@
       S.failStreak=(S.failStreak||0)+1;
       const streakMul=Math.min(2.5,1+0.25*(S.failStreak-1));
       menhLoss=Math.round((10*e.w+(!me0.ok?6:0))*streakMul);
-      S.menh=Math.max(0,(S.menh||100)-menhLoss);
+      S.menh=Math.max(0,(S.menh??100)-menhLoss);
       vlog("Kiếp nạn "+e.n+": trừ "+menhLoss+" Mệnh (chuỗi fail ×"+S.failStreak+", còn "+S.menh+")");
       if(S.menh<=0){
         S.menh=0;

@@ -3,7 +3,14 @@ const GameStateHandle=GameState.create();
 const S=GameStateHandle.state;
 let KSALT=(S.rb||0)*7919;
 
-const save=GameStateHandle.save;
+const save=()=>{const ok=GameStateHandle.save();if(ok)document.getElementById("savewarning").hidden=true;return ok};
+function showSaveWarning(){
+  const warning=document.getElementById("savewarning");
+  warning.hidden=false;
+  warning.textContent=GameStateHandle.isWriteBlocked()?"Dữ liệu lưu bị lỗi. Tạm khóa lưu để bảo toàn tiến trình. Mở Cài đặt → Sao lưu để xuất dữ liệu cứu hộ hoặc nhập backup hợp lệ.":"Không thể lưu tiến trình. Hãy xuất backup và kiểm tra bộ nhớ thiết bị.";
+}
+window.addEventListener("game-save-error",showSaveWarning);
+if(GameStateHandle.isWriteBlocked())showSaveWarning();
 const SectSystem=GameSectSystem.create({
  state:S,realmIndex:()=>ri(uxp()),lifeStats:()=>LS(),examResults:()=>xr()
 });
@@ -119,7 +126,7 @@ const weekStart=()=>GameDateData.weekStart(S.dOff||0);
 const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
-const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
+const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d?(q.got??q.pts):q.pts}</span></li>`};
 function renderLich(){if(window.GameWeeklySchedule)window.GameWeeklySchedule.render();else ActivityUI.renderSchedule()}
 function renderShop(){InventoryUI.render()}
 function renderChains(){ActivityUI.renderChains()}
@@ -146,13 +153,18 @@ const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
 const calc=()=>Math.max(1,Math.round(dur()/60*S.perHour*parseFloat($("nl").value)*qm()));
 function finish(q){
-  return GameQuestCompletion.finish(q, {
+  const before=ri(S.points);
+  const completed=GameQuestCompletion.finish(q, {
     S, today, dayStr, GameTimer, GameStreak, KS,
     extraGet:()=>extra, extraSet:value=>{extra=value;}, vlog, TB, LS, petBuff,
     GameRewards, eqT, rewardFactors, hourNow, ITEMS, myRk, hAdd, rname, uxp, isDone
   });
+  if(completed&&ri(S.points)>before)onRealmUp(before,ri(S.points));
+  return completed;
 }
+function undoQuest(q){return GameQuestCompletion.undo(q,{S,isDone,LS,hAdd})}
 function startFocus(q){
+  if(isDone(q)){say("Nhiệm vụ đã hoàn thành.");return}
   if(!GameTimer.startFocus(q,q.mins*60000)){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
   say("Bắt đầu học: "+q.name);render();
 }
@@ -215,7 +227,7 @@ setInterval(()=>{
   const q=GameTimer.activeFocus();if(!q)return;
   if(!S.quests.includes(q)){GameTimer.cancelFocus();render();return}
   const left=GameTimer.focusRemaining();
-  if(left<=0){GameTimer.cancelFocus();finish(q);save();render();say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".");return}
+  if(left<=0){GameTimer.cancelFocus();if(finish(q)){save();render();say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".")}else render();return}
   $("ft").textContent=fmt(left);
 },500);
 $("fx").onclick=()=>{GameTimer.cancelFocus();say("Đã hủy phiên học, không tính linh lực.");render()};
@@ -235,7 +247,7 @@ const kmins=o=>GameAnalytics.sumStudyMinutesBetween(S.stl,o.st,o.en);
 function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}function renderKn(){ActivityUI.renderFortunes()}
 function claimKn(h){return RewardClaims.claimFortune(h)}
 const CI=[[10],[15],[20,"ca"],[30],[40,"bm"],[60],[120,"the"]];
-const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,hasBonusTitle:()=>eqT("n16"),random:Math.random});
+const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,onPointsChanged:before=>{if(ri(S.points)>ri(before))onRealmUp(ri(before),ri(S.points))},hasBonusTitle:()=>eqT("n16"),random:Math.random});
 function checkin(){return RewardClaims.checkin()}
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
 let SPD=7,SMT="p";
@@ -381,7 +393,7 @@ $("g").onclick=e=>{
 
 /* Sao lưu và cài đặt + tùy chỉnh giao diện */
 const bx=document.createElement("div");bx.style.display="contents";bx.id="setbox";
-const SettingsUI=GameSettingsUI.create({S,fold,container:bx,$,FO,save,refresh:render,drawNav:()=>drawNav(),say,sfx:(...args)=>sfx(...args),today,askName,showTut:()=>showTut(),importBackup:GameStateHandle.importBackup});
+const SettingsUI=GameSettingsUI.create({S,fold,container:bx,$,FO,save,refresh:render,drawNav:()=>drawNav(),say,sfx:(...args)=>sfx(...args),today,askName,showTut:()=>showTut(),importBackup:GameStateHandle.importBackup,isWriteBlocked:GameStateHandle.isWriteBlocked,recoveryData:GameStateHandle.recoveryData});
 function renderSettings(){SettingsUI.render()}
 renderSettings();
 $("setpanel").appendChild(bx);
@@ -495,7 +507,7 @@ const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,sp
 const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say});
 const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,save,refresh:render,renderMore,say,hAdd,finish,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,save,refresh:render,renderMore,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
 ActivityUI.bindQuestEvents();
 const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
 EventsUI.bindEvents();

@@ -210,6 +210,58 @@ test("storage khôi phục backup khi save chính hỏng", () => {
   const state = window.GameStorage.load("broken", { quests: [], points: 0 });
   assert.equal(state.points, 77);
   assert.ok(events.includes("game-save-recovered"));
+  assert.equal(window.GameStorage.save("broken", state), true);
+  assert.equal(JSON.parse(storageData.get("broken.backup")).points, 77);
+});
+
+test("storage từ chối điểm âm, schema tương lai và dữ liệu lồng lỗi", () => {
+  const valid = window.GameStorage.validSave;
+  for (const fields of [{points:-1},{schemaVersion:3},{quests:[{id:"q"},{id:"q"}]},{hist:{day:{p:0,m:-1}}},{stl:[[123,"bad"]]},{buff:{n:1,m:null}},{quests:[{id:"q",completion:{day:"today"}}]}]) {
+    assert.equal(valid({quests:[],points:0,...fields}),false);
+  }
+});
+
+test("state khóa lưu lỗi, bảo toàn bản gốc và migration khi nhập lại", () => {
+  storageData.clear();
+  const key="recovery-test", primary="{bad", backup='{"quests":[],"points":-1}';
+  storageData.set(key,primary);
+  storageData.set(key+".backup",backup);
+  const game=window.GameState.create({key,applyUI:false});
+  assert.equal(game.isWriteBlocked(),true);
+  assert.equal(game.save(),false);
+  assert.equal(storageData.get(key),primary);
+  assert.equal(storageData.get(key+".backup"),backup);
+  const raw=JSON.parse(game.recoveryData());
+  assert.equal(raw.primary,primary);
+  assert.equal(raw.backup,backup);
+  assert.throws(()=>game.importBackup('{bad'));
+  assert.equal(storageData.get(key),primary);
+  const imported=game.importBackup(JSON.stringify({quests:[],points:42,menh:0}));
+  assert.equal(imported.schemaVersion,2);
+  assert.equal(imported.menh,0);
+  assert.equal(JSON.parse(storageData.get(key+".recovery")).primary,primary);
+  assert.equal(game.save(),false);
+  const restored=window.GameState.create({key,applyUI:false});
+  assert.equal(restored.isWriteBlocked(),false);
+  assert.equal(restored.state.points,42);
+  assert.equal(restored.state.schemaVersion,2);
+  assert.equal(restored.save(),true);
+});
+
+test("storage giữ backup tốt nếu bản chính lỗi sau migration hoặc rỗng", () => {
+  storageData.clear();
+  const key="migration-fallback", backup=JSON.stringify({quests:[],points:15});
+  storageData.set(key,JSON.stringify({quests:[],points:30,fb:{n:1,v:"bad"}}));
+  storageData.set(key+".backup",backup);
+  const restored=window.GameState.create({key,applyUI:false});
+  assert.equal(restored.state.points,15);
+  assert.equal(restored.save(),true);
+  assert.equal(storageData.get(key+".backup"),backup);
+  storageData.set("empty-save","");
+  const empty=window.GameState.create({key:"empty-save",applyUI:false});
+  assert.equal(empty.isWriteBlocked(),true);
+  assert.equal(empty.save(),false);
+  assert.equal(storageData.get("empty-save"),"");
 });
 
 test("storage sao lưu bản trước và báo lỗi khi không ghi được", () => {
@@ -1023,6 +1075,41 @@ test("quest completion module cập nhật streak, curse, điểm, lịch sử v
   assert.equal(daily.q, 1);
   assert.equal(daily.m, 30);
   assert.equal(logs.length, 1);
+  assert.equal(Q.finish(quest,deps),false);
+  assert.equal(Q.undo(quest,deps).ok,true);
+  assert.equal(state.points,10);
+  assert.equal(state.hist["2026-11-23"].m,0);
+  assert.equal(daily.q,0);
+  assert.equal(state.life.q,0);
+  assert.equal(state.stl.length,0);
+  assert.equal(state.cnt["2026-11-23"],0);
+  assert.equal(Q.finish(quest,deps),true);
+  assert.equal(state.points,110);
+  assert.equal(daily.q,1);
+  assert.equal(daily.m,30);
+  assert.equal(state.stl.length,1);
+  assert.equal(logs.length,1);
+  state.points=99;
+  assert.equal(Q.undo(quest,deps).ok,false);
+  assert.equal(state.points,99);
+  state.points=110;
+  const zero={id:"zero",name:"Không thưởng",pts:20,mins:5,repeat:true};
+  state.buff={n:2,m:1.5};
+  deps.GameRewards.questCompletionReward=()=>({gain:0,effects:[]});
+  let day="2026-11-23";
+  deps.today=()=>day;
+  deps.isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===day);
+  assert.equal(Q.finish(zero,deps),true);
+  assert.equal(state.buff.n,1);
+  assert.equal(Q.undo(zero,deps).gain,0);
+  assert.equal(Q.finish(zero,deps),true);
+  assert.equal(state.buff.n,1);
+  assert.equal(state.points,110);
+  day="2026-11-24";
+  assert.equal(Q.finish(zero,deps),true);
+  assert.equal(state.buff.n,0);
+  assert.equal(zero.completion.day,day);
+  assert.equal(Q.undo({...zero,chain:"chain"},deps).ok,false);
 });
 
 test("GamePetUI tách renderer và xử lý tương tác linh thú", () => {
@@ -1488,6 +1575,21 @@ test("GameTribulationSystem chấm kiếp, cập nhật Mệnh và khóa xem k�
 });
 
 
+test("Mệnh bằng 0 không hồi lại khi thất bại thiên kiếp liên tiếp",()=>{
+ const S={points:0,menh:0,tdStacks:1,failStreak:0,sem:{res:{}},life:{}};
+ const EX=[{id:"e1",n:"Kiếp 1",day:0,need:1,w:1},{id:"e2",n:"Kiếp 2",day:1,need:1,w:1}];
+ let saved=0;
+ const M=window.GameTribulationSystem.create({S,EX,exD:()=>new Date(0),KD:120,KS:()=>({}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>0,immuneTaiHu:()=>false,vlog:()=>{},bxp:()=>0,spKn:()=>-1,kh:()=>0,khNpc:()=>0,spE:e=>e,streakAt:()=>0,SPQ:[{f:1},{f:1},{f:1}],ri:()=>0,gr:()=>"Yếu",daoTam:()=>0,spRetire:()=>{},save:()=>saved++,hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>{},schedule:()=>{}});
+ M.resolveEx();
+ assert.equal(S.menh,0);
+ assert.equal(S.tdStacks,3);
+ assert.equal(S.failStreak,2);
+ assert.equal(S.tdPenalty,true);
+ M.resolveEx();
+ assert.equal(S.tdStacks,3);
+ assert.equal(saved,1);
+});
+
 test("GameTribulationSystem luân hồi reset state và giữ tiến độ xuyên kiếp",()=>{
  const S={rb:0,sect:0,tdPenalty:true,tdStacks:2,failStreak:3,life:{},lb:{},hist:{},cnt:{},stl:[],kc:{},inv:{},pets:{},tt:{},quests:[],chains:[],claimed:{},sched:{},ev:{},streak:{},storyLog:[],storyFlags:{}};
  const calls=[];let salt=0;
@@ -1648,6 +1750,18 @@ test("GameRewardClaims nhận kỳ ngộ và điểm danh qua dependency",()=>{
  assert.equal(M.checkin(),false);assert.equal(S.points,50);
 });
 
+
+test("kỳ ngộ loại 4 cộng đủ 80 linh lực và ghi lịch sử đúng một lần",()=>{
+ const S={claimed:{},points:10,inv:{},buff:{n:0},ci:{last:"",n:0},streak:{last:"",n:0}};
+ const history=[],before=[];
+ const M=window.GameRewardClaims.create({S,CI:[],ITEMS:[],KX:[],knAt:()=>({h:1,T:30,pts:40,k:4,name:"Kỳ ngộ thử"}),kmins:()=>30,eventGain:x=>x,hAdd:(d,p,m)=>history.push(p),today:()=>"2026-11-24",dayStr:()=>"2026-11-23",modGain:x=>x,grantPet:()=>{},vlog:()=>{},save:()=>{},render:()=>{},say:()=>{},onPointsChanged:p=>before.push(p)});
+ assert.equal(M.claimFortune(1),true);
+ assert.equal(S.points,130);
+ assert.deepEqual(history,[40,80]);
+ assert.deepEqual(before,[10]);
+ assert.equal(M.claimFortune(1),false);
+ assert.equal(S.points,130);
+});
 
 test("tạo chuỗi chỉ ghi khi đủ hai bước và bỏ qua chuỗi mẫu đã có",()=>{
  const state={chains:[],quests:[],perHour:120};

@@ -13,6 +13,7 @@
   };
   function migrate(state){
     const S=state;
+    S.schemaVersion=2;
     if(!S.ph200){S.perHour=200;S.ph200=1;}
     if(S.menh==null)S.menh=100;
     if(S.tdPenalty==null)S.tdPenalty=false;
@@ -34,15 +35,17 @@
   function create(options){
     const opts=options||{},storage=opts.storage||root.GameStorage;
     const key=opts.key||KEY;
-    const state=migrate(storage.load(key,JSON.parse(JSON.stringify(opts.defaults||DEFAULTS))));
+    const defaults=()=>JSON.parse(JSON.stringify(opts.defaults||DEFAULTS));
+    const normalize=parsed=>migrate(Object.assign(defaults(),parsed));
+    const state=migrate(storage.load(key,defaults(),normalize));
     if(opts.applyUI!==false&&root.GameUI&&root.GameUI.apply)root.GameUI.apply(state);
     let importing=false;
     function importBackup(raw){
-      const imported=storage.importData(key,raw);
+      const imported=storage.importData(key,raw,normalize);
       importing=true;
       return imported;
     }
-    return {key,state,importBackup,save:()=>importing?false:storage.save(key,state)};
+    return {key,state,importBackup,isWriteBlocked:()=>!!storage.isWriteBlocked?.(key),recoveryData:()=>storage.recoveryData(key),save:()=>importing?false:storage.save(key,state)};
   }
   root.GameState={KEY,DEFAULTS,migrate,create};
 })(typeof window!=="undefined"?window:globalThis);

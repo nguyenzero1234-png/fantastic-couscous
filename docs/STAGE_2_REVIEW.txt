@@ -1,0 +1,106 @@
+BÁO CÁO RÀ SOÁT VÀ ĐỀ XUẤT STAGE 2 — TU TIÊN HỌC ĐẠO
+Ngày 24/11/2026 | Nhánh stage-1/foundation | Mốc code 49a3773
+Trạng thái: đề xuất để duyệt, chưa triển khai thay đổi gameplay.
+
+1. KẾT LUẬN VÀ PHẠM VI
+
+Stage 1 đã tạo nền tảng đủ tốt để phát triển tiếp. Tôi đề xuất chuyển trọng tâm sang tính chính xác của tiến trình học, độ bền dữ liệu và cân bằng vòng chơi 119 ngày, rồi mới bổ sung nội dung. Không cần một đợt tái cấu trúc toàn bộ nữa.
+
+Đã đọc tiến độ, các module nhiệm vụ, timer, lưu trữ, phần thưởng, kiếp nạn, dữ liệu cảnh giới và một số luồng giao diện. npm test chạy ngày 24/11 đạt 117/117, mã thoát 0. Các thử nghiệm Node độc lập trên trạng thái giả xác nhận validator nhận dữ liệu lồng sai, điểm âm, biểu thức hoàn tác sai khi thưởng 0, biểu thức Mệnh sai khi Mệnh bằng 0 và timer mất phiên khi module được nạp lại. Các thử nghiệm này không sửa save thật và không phải kiểm thử toàn bộ giao diện Android.
+
+Theo PROJECT_PROGRESS.md, Stage 1 từng đạt 11/11 ca tương tác Edge headless; build APK tự động tại commit fcf07f5, run 45326644529, thành công; người dùng xác nhận app dùng tốt. Các thông tin về thiết bị, phiên bản Android, từng ca khôi phục save, thông báo và chạy nền chưa đầy đủ. Đây là rà soát tập trung theo rủi ro, chưa phải nghiệm thu mọi tính năng.
+
+Quy ước: P0 = sai dữ liệu/tiến trình cần ưu tiên; P1 = độ tin cậy và cân bằng; P2 = cải thiện trải nghiệm sau khi core ổn định. Các đề xuất luật chơi bên dưới cần được duyệt riêng.
+
+2. P0 — CÁC VẤN ĐỀ CẦN SỬA TRƯỚC
+
+2.1. Hoàn thành và hoàn tác nhiệm vụ không nhất quán
+Nguồn: www/js/ui/activities.js:125–140; www/js/systems/quest-completion.js (finish).
+Đã xác nhận: khi hoàn tác, q.got||q.pts lấy điểm gốc nếu phần thưởng thực tế bằng 0. Thử biểu thức với got=0, pts=200 cho kết quả 200. Ngoài ra, hoàn thành cập nhật số nhiệm vụ xuyên kiếp, phút học, streak, vật phẩm ngẫu nhiên, buff, tiến trình giải tâm ma, lịch sử học và điều kiện danh hiệu. Hoàn tác chỉ trừ điểm, phút trong hist, cnt và bỏ doneOn. Bật/tắt nhiều lần có thể làm tăng thống kê hoặc kích hoạt lại cơ hội nhận vật phẩm; buff đã dùng không được khôi phục. Bước chuỗi đã hoàn thành vốn bị chặn hoàn tác, cần giữ quy tắc này.
+Đề xuất: quản lý hoàn thành/hoàn tác trong subsystem nhiệm vụ, ghi nhận kết quả thực tế bằng biên nhận có ID nhiệm vụ và lần hoàn thành (nhiệm vụ lặp theo ngày). Chặn xử lý trùng trước khi cộng thưởng. Phân biệt giá trị 0 với trường bị thiếu ở save cũ. Thống nhất hành vi khi xóa/sửa nhiệm vụ đã hoàn thành. Đề nghị cho phép sửa thao tác nhầm với một lần cấp thưởng cho mỗi lượt học hợp lệ; không cho hoàn tác để quay lại bốc vật phẩm. Cần chốt chính sách đối với vật phẩm đã dùng, danh hiệu đã mở và điểm đã tiêu; không tự ý đảo ngược giao dịch khác.
+Nghiệm thu: thưởng 0, nhấn nhanh, hoàn tác rồi hoàn thành lại, nhiệm vụ lặp qua ngày, xóa khi timer chạy, chuỗi đã nhận thưởng, save cũ thiếu got và trường hợp đã tiêu điểm.
+
+2.2. Bảo vệ dữ liệu lưu và nhập backup
+Nguồn: www/js/core/storage.js:7–45, 52–115; www/js/core/state.js.
+Đã xác nhận: validSave chỉ kiểm tra quests là mảng và points là số hữu hạn. {quests:[],points:0,streak:null,hist:null,chains:null} và {quests:[],points:-1} đều được chấp nhận. Import ghi dữ liệu trước khi quá trình nạp/migration hoàn tất. Load gộp nông với mặc định; dữ liệu lồng sai có thể vượt qua kiểm tra và gây lỗi ở các nơi truy cập như S.streak.last, S.hist[t]. Nếu cả bản chính và dự phòng lỗi, load trả mặc định; cần kiểm tra khả năng lần save tiếp theo ghi đè dữ liệu cần cứu.
+Đề xuất: giữ storage phụ trách I/O, state phụ trách chuẩn hóa và migration theo phiên bản; kiểm tra toàn bộ cấu trúc quan trọng trước khi chấp nhận bản nhập. Chấp nhận dữ liệu cũ hợp lệ bằng migration. Sao lưu trước khi thay đổi, báo lỗi rõ nếu không thể ghi, có chế độ phục hồi/xuất dữ liệu thô khi không thể nạp. Giữ định dạng backup tương thích hoặc nâng phiên bản có hướng chuyển đổi. Không yêu cầu người dùng reset tiến trình để cập nhật.
+Nghiệm thu: backup cũ, thiếu field tùy chọn, trường lồng null/sai kiểu, ID trùng, điểm âm, JSON hỏng, bản dự phòng hợp lệ, lỗi ghi storage, nhập lỗi không làm mất save trước đó và reload sau nhập.
+
+2.3. Mệnh bằng 0 có thể tự tăng khi thất bại tiếp
+Nguồn: www/js/systems/tribulation.js:35–49.
+Đã xác nhận biểu thức (S.menh||100) mặc định về 100 khi giá trị Mệnh là 0. Với mức mất giả định 20, biểu thức cho ra 80. Điều này xung đột với ý nghĩa của phép trừ Mệnh nếu giá trị 0 là trạng thái hợp lệ. Cần kiểm tra luồng hồi Mệnh và xử phạt liên tiếp để chốt quy tắc khi đã hết Mệnh.
+Đề xuất: chỉ dùng mặc định khi giá trị thiếu hoặc không hợp lệ, giữ 0 nếu chưa có cơ chế hồi phục được kích hoạt. Kiểm thử nhiều kiếp nạn được xử lý sau khi mở lại app, quy tắc cộng chồng Trừng Phạt, hồi Mệnh và save cũ.
+
+2.4. Phần thưởng kỳ ngộ +80 linh lực chỉ ghi lịch sử
+Nguồn: www/js/systems/rewards.js:61–72; www/js/data/cultivation-display-data.js:36.
+Đã đối chiếu code: nhãn hiệu ứng là '+80 linh lực', nhưng nhánh o.k===4 chỉ gọi hAdd(today(),80,0), không cộng 80 vào S.points. Đây là lệch giữa nhãn và cập nhật số dư. Đề xuất thống nhất ghi nhận phần thưởng qua luồng điểm dùng chung; chốt +80 là số cố định hay còn chịu hệ số. Kiểm tra bảng xếp hạng, kiếp nạn và nhãn thông báo sau khi nhận. Đồng thời rà các đường cộng điểm trực tiếp, vì addPts trong game.js:136–141 gọi onRealmUp còn finish và một số phần thưởng ghi S.points trực tiếp. Cần kiểm thử sự kiện thăng cảnh giới để xác định có mất thông báo hay đã được xử lý ở nơi khác.
+
+3. P1 — PHIÊN HỌC VÀ VÒNG ĐỜI ỨNG DỤNG
+
+3.1. Timer học/chơi
+Nguồn: www/js/core/game-loop.js; www/js/game.js:207–225.
+Đã xác nhận timer giữ focusTask, focusEndAt, playing, lastPlayTick trong bộ nhớ JS. Nạp lại module làm activeFocus trở thành null. Callback kết thúc học kiểm tra nhiệm vụ còn tồn tại nhưng không kiểm tra lại hết hạn hoặc đã nhận thưởng. Rủi ro trên Android: bị đóng app, WebView khởi tạo lại hoặc deadline đến trong khi chạy timer. Khi đang chơi, thời lượng còn lại được lưu từng giây nhưng trạng thái đang chạy không được khôi phục.
+Đề xuất: lưu phiên theo ID nhiệm vụ, ID phiên, mốc bắt đầu/kết thúc, trạng thái và thông tin cần để quyết toán; khôi phục khi mở lại và khi app trở về foreground. Chốt việc có tiếp tục tính thời gian khi app ở nền/đã đóng và cách xử lý hạn nhiệm vụ đến giữa phiên. Giữ hoàn thành thủ công để tự ghi nhận việc học. Chặn nhận thưởng hai lần qua cùng một phiên, xử lý hủy/xóa và đổi ngày. Đồng hồ trên thiết bị có thể bị chỉnh; mục tiêu là trải nghiệm và tính nhất quán cho công cụ tự học.
+Nghiệm thu: học qua màn hình khóa, chuyển app, đóng/mở, hết hạn giữa phiên, qua nửa đêm, hoàn thành thủ công trong khi timer chạy, thay đổi giờ máy, mất quyền thông báo; kiểm tra riêng timer chơi.
+
+3.2. Thông báo và hiệu năng
+Nguồn: www/js/runtime/notify.js:201–220; www/js/game.js:207–225,270; www/js/core/storage.js.
+Rủi ro cần kiểm thử: hủy thông báo cũ rồi lập lịch mới có thể để trống lịch nếu bước sau lỗi. Android có hạn chế tùy quyền và phiên bản. Đề xuất quản lý ID lịch, chỉ báo trạng thái đồng bộ thành công, xử lý retry khi cần và kiểm tra trên điện thoại thật. Không khẳng định lỗi trên thiết bị khi chưa tái hiện.
+Hai interval 500 ms, render bảng xếp hạng mỗi giây khi mở, render timeline/tông môn mỗi 3 giây, save và render mỗi giây khi chơi. Save có thể tuần tự sao lưu và ghi toàn bộ state. Đề xuất đo chi phí với save nhỏ/lớn trên máy thật, sau đó chỉ cập nhật phần giao diện thay đổi và lưu tại mốc nghiệp vụ/lifecycle phù hợp. Không giảm tần suất lưu đến mức làm mất tiến trình sau khi app bị đóng.
+
+4. P1 — CÂN BẰNG GAMEPLAY (CẦN DUYỆT LUẬT)
+
+4.1. Nhịp tiến cảnh giới và kiếp nạn
+Nguồn: www/js/data/progression-data.js; www/js/systems/rewards.js; www/js/game.js (cấu hình tốc độ nhận điểm).
+Một kiếp dài 119 ngày, mốc Chân Tiên 200.000, Phi Thăng Kiếp ngày 100. Tốc độ cơ bản mặc định 200 linh lực/giờ, người dùng có thể điều chỉnh. Bảng dưới chỉ tính thời gian học nhân 200, chưa có thưởng độ khó, chuỗi ngày, linh thú, sư phụ, tông môn, kỳ ngộ, điểm tiêu hao hay hình phạt.
+
+Giờ/ngày     Ngày 13     Ngày 48     Ngày 100
+1             2.600       9.600        20.000
+2             5.200      19.200        40.000
+4            10.400      38.400        80.000
+6            15.600      57.600       120.000
+Mốc chuẩn     20.000      92.000       200.000
+
+Ở tốc độ gốc, cần 1.000 giờ để đạt 200.000, trung bình 10 giờ/ngày trong 100 ngày. Mốc chuẩn là tham số đánh giá kiếp nạn; điểm thi có hàm phi tuyến, điều kiện cảnh giới và đạo tâm riêng. Chưa thể kết luận game quá khó hoặc không thể phi thăng từ phép tính này.
+Đề xuất: mô phỏng bằng chính công thức hiện tại với lịch 1/2/4/6 giờ mỗi ngày, ngày nghỉ, độ khó 1/1,25/1,5, lựa chọn tiêu điểm, buff và NPC. Báo tỷ lệ qua từng kiếp nạn, thời gian đạt cảnh giới, phân phối hạng, Mệnh còn lại và khả năng hồi phục. Dùng seed cố định và nhiều seed cho sự kiện ngẫu nhiên. Sau khi có số liệu, chọn mục tiêu: người học đều 2–4 giờ/ngày có thể tiến triển đến đâu; Chân Tiên có cần dành cho người chơi xuất sắc hay không. Ưu tiên giữ giá trị của học đều, tránh tạo áp lực phải học quá nhiều vì game.
+
+4.2. Chia nhỏ nhiệm vụ có thể tối ưu điểm quá mức
+Nguồn: www/js/systems/rewards.js:40–58 (questBonus).
+Có phần thưởng cố định mỗi nhiệm vụ, ví dụ 3 x chỉ số cảnh giới và các bonus danh hiệu/linh thú. Minh họa với tổng 60 phút, tốc độ 200/giờ và một bonus cố định +10 mỗi nhiệm vụ, bỏ qua làm tròn và các hệ số khác: 1 nhiệm vụ 60 phút nhận 210, 12 nhiệm vụ 5 phút nhận 320. Chênh 110 (~52% so với nhiệm vụ dài). Bonus dành riêng nhiệm vụ dài có thể bù một phần; đây là ví dụ kiểm soát, không phải kết quả toàn bộ gameplay.
+Đề xuất: kiểm thử cùng tổng phút với cách chia 5/15/30/60/120 phút. Có thể chuyển một số bonus cố định sang bonus theo thời lượng hoặc theo mốc ngày, giữ thưởng nhiệm vụ dài và cảm giác tiến bộ. Không cấm nhiệm vụ ngắn vì chúng có ích khi học.
+
+4.3. Hình phạt và khả năng phục hồi
+Nguồn: www/js/systems/rewards.js; www/js/systems/tribulation.js.
+Chuỗi fail có thể tăng mức mất Mệnh tới 2,5 lần. Nếu các hệ số phạt tối đa 0,70, 0,80 và 0,65 cùng áp dụng, tích là 0,364 trước các yếu tố khác. Cần mô phỏng số ngày/nhiệm vụ để hồi phục sau khi bỏ học vài hôm. Đề xuất đánh giá ngày nghỉ có kế hoạch, chuỗi học linh hoạt hoặc nhiệm vụ phục hồi; lựa chọn giữ độ khó tu tiên và giảm vòng xoáy phạt. Không tự bỏ các cơ chế tâm ma/kiếp nạn đang có.
+
+4.4. Linh lực dùng làm cả tiến trình và tài nguyên
+Nguồn: www/js/game.js:103,136–141,201; www/js/data/progression-data.js:56–61; www/js/systems/items.js.
+Điểm bị trừ khi mua đồ/đổi giờ chơi. playerXpAt kết hợp tổng hist với số dư hiện tại, nên cần đối chiếu cách tính điểm ở ngày quá khứ với ngày hiện tại. Cần xác nhận tiêu linh lực có chủ ý làm tụt cảnh giới và ảnh hưởng kiếp nạn hay không. Hai lựa chọn: giữ chi phí tu vi hiện tại để tạo đánh đổi, hoặc tách tu vi tích lũy và tài nguyên chi tiêu. Nếu chọn tách, cần đổi đồng bộ shop, xếp hạng, kiếp nạn, trọng sinh, giao diện và migration; đây là thay đổi luật lớn, đề nghị chưa triển khai khi chưa duyệt.
+
+5. P2 — TRẢI NGHIỆM HỌC TẬP VÀ GIAO DIỆN
+
+Đề xuất thiết kế sau khi ổn định nghiệp vụ. Chưa kết luận giao diện hiện tại có lỗi trên màn hình thật.
+- Ưu tiên màn hình hôm nay: nhiệm vụ đang học, hạn gần nhất, số phút đã học, mục tiêu ngày và một thao tác bắt đầu rõ ràng. Tận dụng chế độ chỉ học sẵn có.
+- Hiển thị phần thưởng dự kiến và thực tế, lý do buff/phạt, tiến độ trước kiếp nạn và cách giải tâm ma. Hạn chế thông báo mâu thuẫn với số dư.
+- Khi mở lại app, hiển thị phiên đang chạy hoặc kết quả đã quyết toán; thao tác hủy rõ ràng. Thông báo lỗi lưu và nút xuất backup dễ tìm.
+- Giữ bản sắc tu tiên, hệ thống NPC, tông môn, sư phụ, linh thú, trọng sinh hiện có. Chưa mở rộng thêm hệ thống nội dung cho đến khi có mô hình cân bằng và kiểm thử.
+
+6. KIẾN TRÚC VÀ TRÌNH TỰ TRIỂN KHAI ĐỀ XUẤT
+
+Giữ nhóm core/, systems/, data/, ui/, runtime/ và các module theo miền chức năng. game.js là điểm lắp ghép/điều phối. Ưu tiên mở rộng quest-completion cho giao dịch nhiệm vụ, game-loop cho phiên, storage/state cho dữ liệu, rewards cho công thức và tribulation cho Mệnh. UI gọi API miền chức năng. Không tạo file riêng cho từng helper, không dàn trải refactor ngoài phạm vi. Chỉ tách module mới nếu có một nghiệp vụ độc lập, nhiều caller hoặc hợp đồng dữ liệu cần quản lý riêng. Cập nhật PROJECT_PROGRESS.md sau mỗi mốc thực sự hoàn thành và kiểm thử.
+
+Đợt A — P0: sửa bảo toàn save và kiểm tra migration; thống nhất hoàn thành/hoàn tác; sửa Mệnh và kỳ ngộ; kiểm thử hồi quy từng vấn đề.
+Đợt B — P1: lưu phiên học/chơi, phục hồi vòng đời, kiểm tra thông báo Android. Build APK và chạy các ca thiết bị liên quan.
+Đợt C — P1: mô phỏng cân bằng, lập báo cáo số liệu và trình lựa chọn luật. Chỉ chỉnh hệ số/mốc khi đã thống nhất mục tiêu.
+Đợt D — P2: cải thiện màn hình học và minh bạch thưởng/phạt; đo hiệu năng trước/sau; chạy kiểm thử web, APK và checklist Android.
+
+Điều kiện hoàn thành mỗi đợt: test cũ vẫn đạt, ca hồi quy mới bao phủ lỗi đã sửa, save cũ mở được, kiểm tra tương tác thực tế phù hợp phạm vi, ghi bằng chứng và cập nhật tiến độ. Không suy ra APK Android đạt mọi ca chỉ từ test Node hay CI build thành công.
+
+7. CÁC QUYẾT ĐỊNH CẦN NGƯỜI DÙNG DUYỆT
+
+A. Duyệt nhóm sửa tính đúng đắn P0. Riêng hoàn tác cần chọn cách xử lý điểm/vật phẩm đã tiêu và Mệnh 0 cần xác định quy tắc phạt tiếp.
+B. Khi app đóng hoặc chạy nền, timer học tiếp tục đến mốc kết thúc hay tạm dừng? Nếu hết hạn trong lúc học, cho hoàn thành phiên hợp lệ đã bắt đầu hay áp hạn cứng? Timer chơi có thể có quy tắc khác.
+C. Mục tiêu cân bằng cho người học 2–4 giờ/ngày và ý nghĩa của ngày nghỉ. Đề nghị duyệt sau báo cáo mô phỏng, chưa đổi luật trước khi có số liệu.
+D. Giữ linh lực là tài nguyên chung hay tách tu vi và tiền chi tiêu? Đề nghị giữ hiện trạng trong đợt A/B, đánh giá tại đợt C.
+
+Tôi đề nghị duyệt đợt A trước, rồi thực hiện theo thứ tự trên. Báo cáo này chỉ ghi nhận rà soát, không xác nhận đã sửa các lỗi hoặc thay đổi luật chơi.

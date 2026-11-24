@@ -1,9 +1,50 @@
 (function(root){
+  // A completion receipt keeps its original reward and additive counters on redo.
+  // Consumed effects, streak milestones and awarded items are one-time outcomes.
+  function applyReceipt(q, receipt, d, direction){
+    const {S,hAdd,LS}=d;
+    const {day,gain,mins,stats,at}=receipt;
+    S.points+=direction*gain;
+    hAdd(day,direction*gain,direction*mins);
+    S.cnt=S.cnt||{};
+    S.cnt[day]=Math.max(0,(S.cnt[day]||0)+direction);
+    const ls=LS();
+    for(const key of ["q","m","ni","da","ru","lg"]){
+      if(stats[key])ls[key]=Math.max(0,(ls[key]||0)+direction*stats[key]);
+    }
+    S.life=S.life||{};
+    S.life.q=Math.max(0,(S.life.q||0)+direction*(stats.q||0));
+    const log=S.stl||(S.stl=[]);
+    if(at){
+      if(direction>0){
+        log.push([at,mins]);
+        if(log.length>1&&log[log.length-2][0]>at)log.sort((a,b)=>a[0]-b[0]);
+        if(log.length>300)log.shift();
+      }
+      else{const index=log.findIndex(row=>row[0]===at&&row[1]===mins);if(index>=0)log.splice(index,1)}
+    }
+    receipt.undone=direction<0;
+    q.completion=receipt;
+    q.doneOn=receipt.undone?null:day;
+    q.got=receipt.undone?0:gain;
+  }
+  function undo(q,d){
+    if(!d.isDone(q)||q.chain)return {ok:false,reason:"Nhiệm vụ không thể hoàn tác."};
+    const receipt=q.completion||{day:q.doneOn,gain:q.got??q.pts??0,mins:q.mins||0,at:0,stats:{q:1,m:q.mins||0,ru:q.due?1:0,lg:(q.mins||0)>=120?1:0},undone:false};
+    if(d.S.points<receipt.gain)return {ok:false,reason:"Không đủ linh lực để hoàn tác phần thưởng đã nhận."};
+    applyReceipt(q,receipt,d,-1);
+    return {ok:true,gain:receipt.gain};
+  }
   function finish(q, d) {
     const { S, today, dayStr, GameTimer, GameStreak, KS, extraGet, extraSet, vlog, TB, LS, petBuff, GameRewards, eqT, rewardFactors, hourNow, ITEMS, myRk, hAdd, rname, uxp, isDone } = d;
     let extra = extraGet();
       const t=today();
+      if(isDone(q))return false;
       if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();
+      if(q.completion?.undone&&(!q.repeat||q.completion.day===t)){
+        applyReceipt(q,q.completion,d,1);
+        return true;
+      }
       if(S.streak.last!==t){
         const decision=GameStreak.completeDay({last:S.streak.last,today:t,yesterday:dayStr(1),twoDaysAgo:dayStr(2),streak:S.streak.n,lifeCharm:S.inv.the,heartCharm:!!S.sh,random:Math.random});
         if(decision.consumeLifeCharm)S.inv.the--;
@@ -25,17 +66,18 @@
       m*=tf.mult;
       const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60));
       q.got=questReward.gain;S.fx=questReward.effects;
-      {const h=hourNow(),ks=KS();ls.q++;S.life=S.life||{};S.life.q=(S.life.q||0)+1;ls.m+=q.mins||0;if(h>=22||h<5)ls.ni++;if(h<7)ls.da++;if(q.due)ls.ru++;if((q.mins||0)>=120)ls.lg++;ls.ms=Math.max(ls.ms,S.streak.n);ks.ms=Math.max(ks.ms,S.streak.n);
+      const h=hourNow(),mins=q.mins||0,stats={q:1,m:mins,ni:h>=22||h<5?1:0,da:h<7?1:0,ru:q.due?1:0,lg:mins>=120?1:0};
+      {const ks=KS();ls.ms=Math.max(ls.ms||0,S.streak.n);ks.ms=Math.max(ks.ms||0,S.streak.n);
        if(pb.dr&&Math.random()<pb.dr){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
-      const r0=myRk();(S.cnt||(S.cnt={}))[t]=(S.cnt[t]||0)+1;(S.stl||(S.stl=[])).push([Date.now(),q.mins||0]);if(S.stl.length>300)S.stl.shift();q.doneOn=t;
-      // q.got đã qua modGain; addPts không nhân lần 2 — ghi hist trực tiếp
-      S.points+=q.got;hAdd(t,q.got,q.mins||0);
+      const r0=myRk();
+      applyReceipt(q,{day:t,gain:q.got,mins,stats,at:Date.now(),undone:false},d,1);
       ls.top=ls.top||(myRk()<=10?1:0);if(myRk()<=1)ls.t1=1;ls.mc=Math.max(ls.mc||0,S.cnt[t]);
       vlog("Hoàn thành "+q.name+": +"+q.got+" linh lực"+(S.tdPenalty?" (Trừng Phạt −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"%)":"")+", giờ học hôm nay "+(((S.hist[t]||{}).m||0)/60).toFixed(1)+" giờ, tu vi "+rname(uxp())+", hạng "+r0+" → "+myRk());
       const c=q.chain&&S.chains.find(x=>x.id===q.chain);
       if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=GameRewards.chainCompletionReward(st.reduce((s,x)=>s+x.got,0),eqT("t7"),rewardFactors());S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
     
     extraSet(extra);
+    return true;
   }
-  root.GameQuestCompletion = { finish };
+  root.GameQuestCompletion = { finish, undo };
 })(typeof window !== "undefined" ? window : globalThis);

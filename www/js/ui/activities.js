@@ -53,11 +53,11 @@
     const rem=remaining;
   const qs=S.quests.filter(x=>!x.chain).sort((a,b)=>(isDone(a)||expired(a))-(isDone(b)||expired(b)));
   $("list").innerHTML=qs.length?qs.map(q=>{const d=isDone(q);
-    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}${expired(q)?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
+    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}${expired(q)?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}<span class="pb">+${d?(q.got??q.pts):q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
     :`<li class="empty" style="display:block">Chưa có nhiệm vụ. Thêm việc học đầu tiên ở phía trên.</li>`;
   }
   function bindQuestEvents(){
-    const {dur,calc,save,refresh,renderMore,say,hAdd,finish,startFocus,GameTimer,GameQuestData,templates,document,navigator,prompt,setTimeout,clearTimeout}=deps;
+    const {dur,calc,save,refresh,renderMore,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates,document,navigator,prompt,setTimeout,clearTimeout}=deps;
     const {PN,PLAN,AI_PROMPT,CHAIN_PROMPT,SCHED_PROMPT,PRESET_MIX,DEF_Q,DEF_C,DEF_S}=templates;
 function addQuest(){
   const name=$("nm").value.trim();
@@ -112,6 +112,7 @@ $("und").onclick=()=>{if(_ud){S.quests.push(_ud);_ud=null;$("und").hidden=true;s
 $("list").addEventListener("click",e=>{const n=e.target.closest(".nm");if(!n||e.target.closest("button"))return;
   const li=n.closest("li"),id=li&&li.querySelector("[data-id]")&&li.querySelector("[data-id]").dataset.id,q=S.quests.find(x=>x.id===id);
   if(!q||isDone(q)||q.chain)return;
+  if(q.completion?.undone&&(!q.repeat||q.completion.day===today())){say("Lượt học đã hoàn tác giữ nguyên phần thưởng và thời lượng. Hãy khôi phục hoặc tạo nhiệm vụ mới.");return}
   const v=prompt("Sửa nhiệm vụ: Tên | phút",q.name+" | "+(q.mins||30));if(v==null)return;
   const p=v.split("|"),nm=(p[0]||"").trim().slice(0,80);if(!nm)return;
   const mi=Math.min(480,Math.max(5,parseInt(p[1])||q.mins||30));
@@ -134,8 +135,8 @@ $("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
   if(b.dataset.a==="rn"){q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();refresh();say("Đã tạo lại, không còn hạn.");return}
   if(b.dataset.a==="d"){if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
   else if(b.dataset.a==="p"){startFocus(q);return}
-  else if(isDone(q)){const g=q.got||q.pts;S.points=Math.max(0,S.points-g);hAdd(q.doneOn,-g,-(q.mins||0));if(S.cnt&&S.cnt[q.doneOn]>0)S.cnt[q.doneOn]--;q.doneOn=null;q.got=0;say("Đã bỏ hoàn thành, trừ "+g+" linh lực.")}
-  else{finish(q);say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
+  else if(isDone(q)){const result=undoQuest(q);if(!result.ok){say(result.reason);return}say("Đã bỏ hoàn thành, trừ "+result.gain+" linh lực.")}
+  else{if(!finish(q))return;say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
   save();refresh();
 };
 

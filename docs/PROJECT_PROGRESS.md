@@ -1228,3 +1228,19 @@ Phần còn lại: kiểm thử tương tác trên trình duyệt/Android, build
 
 - Sau khi nhận link APK của run 45326644529, người dùng xác nhận: “App dùng tốt”. Ghi nhận kiểm thử sử dụng cơ bản đạt theo phản hồi người dùng; model máy, phiên bản Android, SHA APK thực tế và kết quả từng ca chưa được cung cấp.
 - P1–P6 của kế hoạch hoàn thiện cấu trúc Stage 1 đã đạt ở phạm vi hiện tại. Các mục kiểm thử riêng về lưu dữ liệu, backup/restore, thông báo, timer, vòng đời Android và ký release tiếp tục theo `docs/ANDROID_QA_CHECKLIST.md`; chưa đánh dấu nghiệm thu Android đầy đủ.
+
+## Stage 2 — Đợt A: tính đúng đắn và bảo toàn dữ liệu (2026-11-24)
+
+Phạm vi theo `STAGE_2_REVIEW.txt`. Giữ cấu trúc module hiện tại và cơ chế linh lực chung.
+
+- [x] `core/storage.js`, `core/state.js`: kiểm tra schema và các trường lồng quan trọng trước/sau migration; ghi schemaVersion 2, tiếp tục hỗ trợ save legacy và backup formatVersion 1. Nếu save chính lỗi thì thử backup; giữ backup tốt khi lỗi phát sinh trong migration. Nếu không còn bản hợp lệ thì khóa ghi tự động, cảnh báo cố định và cho xuất JSON cứu hộ chứa hai bản gốc. Nhập backup hợp lệ bảo toàn bản lỗi vào `.recovery` trước khi ghi và khóa state cũ đến khi reload.
+- [x] `systems/quest-completion.js`, `ui/activities.js`: dùng biên nhận theo lượt hoàn thành để chống nhận thưởng trùng. Hoàn tác đảo điểm, thời gian học, số nhiệm vụ và thống kê cộng dồn có thể đảo; khôi phục cùng lượt giữ mức thưởng và thời lượng cũ, kể cả 0 linh lực. Không quay lại kết quả ngẫu nhiên, hiệu ứng đã tiêu hao, vật phẩm/danh hiệu đã cấp, streak và kỷ lục cao nhất. Không cho hoàn tác nhiệm vụ chuỗi hoặc khi số dư không đủ; lượt legacy thiếu biên nhận chỉ đảo được thống kê có thể suy ra, không xác định chính xác bản ghi thời gian cũ. Nhiệm vụ lặp qua ngày mới có lượt thưởng mới.
+- [x] `systems/tribulation.js`: Mệnh 0 giữ nguyên 0 qua lần thất bại tiếp theo; vẫn cộng tầng Trừng Phạt theo quy tắc hiện tại. `systems/rewards.js`: kỳ ngộ loại 4 cộng đủ 80 linh lực cố định vào số dư và lịch sử, đồng bộ cập nhật cảnh giới; chặn nhận trùng.
+- [x] Kiểm thử hồi quy: từ 117 lên 123 test, đạt 123/123 ở `Asia/Ho_Chi_Minh` và `UTC`; `git diff --check` đạt. Có ca giao diện giả lập hoàn thành/hoàn tác/khôi phục, boot lại từ backup, hai bản lỗi/khóa lưu/cứu hộ, migration thất bại vẫn giữ backup tốt, thưởng 0, buff không tiêu hao lại, Mệnh 0 và kỳ ngộ +80. Dữ liệu thật trên thiết bị chưa được dùng để kiểm thử.
+- [ ] Xác minh tương tác trên trình duyệt thật và APK Android của bản đợt A; ghi SHA/run CI khi có kết quả build.
+
+Tiếp theo theo thứ tự ưu tiên:
+
+- [ ] Đợt B — lưu/khôi phục phiên học và chơi khi app đóng hoặc chạy nền; thống nhất quy tắc thời gian/hạn nhiệm vụ trước khi thay đổi hành vi; kiểm tra thông báo Android.
+- [ ] Đợt C — mô phỏng cân bằng và trình lựa chọn luật chơi dựa trên số liệu.
+- [ ] Đợt D — cải thiện giao diện học tập, minh bạch thưởng/phạt và hiệu năng.

@@ -39,6 +39,7 @@
   </div>
   <small style="display:block;margin-top:4px">Chỉ học: ẩn bảng, tông, bảo khố phức tạp — giữ nhiệm vụ, nhật trình, thiên kiếp, nhật ký.</small>
 </div>`,1)+fold("bk","Sao lưu & hệ thống",`<small>Dữ liệu chỉ nằm trong trình duyệt này. Xuất ra để không mất khi đổi máy.</small>
+${deps.isWriteBlocked?.()?'<p role="alert">Đang khóa lưu để bảo toàn dữ liệu lỗi. Hãy xuất dữ liệu cứu hộ trước khi nhập backup mới.</p><button class="btn alt" data-bk="recovery">Tải dữ liệu cứu hộ</button>':""}
 <textarea id="bk" placeholder="Dữ liệu backup JSON sẽ hiện ở đây…"></textarea>
 <input id="bkfile" type="file" accept=".json,application/json" hidden>
 <div class="chips" style="margin-top:8px">
@@ -64,13 +65,13 @@ container.onclick=e=>{
     S.ui[ui.dataset.ui]=ui.dataset.v;save();root.GameUI.apply(S);render();say("Đã đổi giao diện.");return;
   }
   const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
-  if(a==="ex"||a==="dl"){
+  if(a==="ex"||a==="dl"||a==="recovery"){
     try{
-      const raw=GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
+      const raw=a==="recovery"?deps.recoveryData():GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
       if(a==="ex"){try{navigator.clipboard&&navigator.clipboard.writeText(raw)}catch(x){}say("Đã tạo backup. Hãy sao chép hoặc tải file để cất giữ.")}
       else{
         const blob=new Blob([raw],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");
-        link.href=url;link.download="tu-tien-hoc-dao-backup-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
+        link.href=url;link.download="tu-tien-hoc-dao-"+(a==="recovery"?"recovery":"backup")+"-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
         setTimeout(()=>URL.revokeObjectURL(url),1000);say("Đã tải file backup JSON.");
       }
     }catch(x){say("Không thể tạo backup: "+(x.message||"dữ liệu không hợp lệ."))}
