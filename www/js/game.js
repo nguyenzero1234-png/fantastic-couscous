@@ -136,7 +136,7 @@ const weekStart=()=>GameDateData.weekStart(S.dOff||0);
 const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
-const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d?(q.got??q.pts):q.pts}</span></li>`};
+const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút${GameSubjects.find(S,q.subjectId)?" · "+esc(GameSubjects.find(S,q.subjectId).name):""}</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d?(q.got??q.pts):q.pts}</span></li>`};
 function renderLich(){if(window.GameWeeklySchedule)window.GameWeeklySchedule.render();else ActivityUI.renderSchedule()}
 function renderShop(){InventoryUI.render()}
 function renderChains(){ActivityUI.renderChains()}
@@ -188,6 +188,7 @@ function renderLore(){LoreUI.render()}
 function renderMore(){
   renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
   renderVisibleScreens();
+  SubjectsUI.options();
   ActivityUI.renderQuestPreview();
   if(document.activeElement!==$("ph"))$("ph").value=S.perHour;
   const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask){$("fn").textContent=focusTask.name;$("ft").textContent=fmt(GameTimer.focusRemaining())}
@@ -314,18 +315,18 @@ const sfx=AudioUI.sfx;
 const clk=AudioUI.clk;
 AudioUI.bind(document);
 const GR=[
- {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"],["study-guide","Hướng dẫn"]]},
+ {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"],["subjects","Vạn Pháp"],["study-guide","Hướng dẫn"]]},
  {id:"t",n:"Thiên Kiêu",s:[["b","Bảng"],["f","Thiên diễn"],["v","Vạn Sự Điện"],["z","Tông môn",1],["p","Bản đồ",1]]},
  {id:"w",n:"Thử Thách",s:[["j","Kiếp nạn"],["e","Kỳ sự"],["y","Lệnh bài"],["x","Thiên kiếp",1]]},
  {id:"k",n:"Bảo Khố",s:[["k","Kỳ Bảo"],["i","Càn Khôn"],["r","Nhàn hạ"]]},
  {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"],["a","Sứ mệnh"],["o","Thiên Cơ Lục"],["g","Thiên Đạo"]]}
 ];
 const GR_SIMPLE=[
- {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["l","Nhật trình"],["study-guide","Hướng dẫn"]]},
+ {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["l","Nhật trình"],["subjects","Vạn Pháp"],["study-guide","Hướng dẫn"]]},
  {id:"w",n:"Thử Thách",s:[["x","Thiên kiếp",1]]},
  {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"],["g","Thiên Đạo"]]}
 ];
-const ALLS=["q","c","l","study-guide","j","e","y","x","b","f","v","z","p","k","i","r","s","o","g","d","a"];
+const ALLS=["q","c","l","subjects","study-guide","j","e","y","x","b","f","v","z","p","k","i","r","s","o","g","d","a"];
 let TG="u",TS="q";
 function activeGR(){return (S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR}
 /* ===== Chấm đỏ thông báo =====
@@ -335,6 +336,7 @@ function renderVisibleScreens(){
   if(!$("b").hidden)renderLb();
   if(!$("v").hidden)renderVan();
   if(!$("s").hidden)renderStats();
+  if(!$("subjects").hidden)SubjectsUI.render();
 }
 const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,onNavigate:renderVisibleScreens,schedule:(fn,ms)=>setTimeout(fn,ms)});
 function nwUpdate(){NavigationUI.update()}
@@ -496,6 +498,8 @@ const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlo
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,rewardFactors,save,refresh:render,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
 ActivityUI.bindQuestEvents();
+const SubjectsUI=GameSubjectsUI.create({S,$,today,weekStart,escapeHtml:esc,save,refresh:render,say,prompt});
+SubjectsUI.bind();
 const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
 EventsUI.bindEvents();
 const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),refreshSettings:renderSettings,resetProgress:()=>GameStateHandle.importBackup(JSON.stringify(GameState.DEFAULTS)),confirm:message=>window.confirm(message),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});

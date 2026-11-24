@@ -25,6 +25,9 @@
       if(!optional(q.name,v=>typeof v==="string")||!optional(q.pts,nonnegative)||!optional(q.mins,nonnegative)||!optional(q.got,nonnegative)||!optional(q.doneOn,v=>v===null||typeof v==="string")||!optional(q.due,v=>v===null||nonnegative(v)))return false;
       if(!optional(q.completion,v=>record(v)&&typeof v.day==="string"&&nonnegative(v.gain)&&nonnegative(v.mins)&&nonnegative(v.at)&&record(v.stats)&&Object.values(v.stats).every(nonnegative)&&typeof v.undone==="boolean"))return false;
     }
+    if(!optional(value.subjects,v=>global.GameSubjects.valid(v)))return false;
+    if(value.quests.some(q=>[q.subjectId,q.completion?.subjectId].some(id=>id!==undefined&&id!==null&&(!value.subjects||!global.GameSubjects.find(value,id)))))return false;
+    if(value.quests.some(q=>q.completion?.subjectId!==undefined&&!/^\d{4}-\d{2}-\d{2}$/.test(q.completion.day)))return false;
     const maps=["hist","sched","claimed","inv","cnt","ls","life","pets","tt","kc"];
     if(maps.some(k=>!optional(value[k],record)))return false;
     if(!optional(value.streak,v=>record(v)&&typeof v.last==="string"&&nonnegative(v.n)))return false;

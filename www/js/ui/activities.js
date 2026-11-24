@@ -73,7 +73,7 @@
     $("quest-summary").textContent=`${qs.length-done-overdue} đang chờ · ${done} hoàn thành${overdue?` · ${overdue} hết hạn`:""}`;
     const markup=qs.length?qs.map(q=>{
       const d=isDone(q),late=!d&&expired(q);
-      const meta=[late?"Hết hạn":q.due&&!d?"Còn "+remaining(q.due):"",q.mins?q.mins+" phút":"",q.repeat?"Lặp mỗi ngày":""].filter(Boolean).join(" · ");
+      const meta=[late?"Hết hạn":q.due&&!d?"Còn "+remaining(q.due):"",q.mins?q.mins+" phút":"",q.repeat?"Lặp mỗi ngày":"",esc(root.GameSubjects.find(S,q.subjectId)?.name||"")].filter(Boolean).join(" · ");
       const receipt=q.completion,restorable=receipt?.undone&&(!q.repeat||receipt.day===today());
       const b=receipt?.breakdown;
       const hasBreakdown=(d||restorable)&&b&&["base","multiplier","flat","taskBonus","subtotal","td","balance","status","adjusted","itemGain"].every(k=>Number.isFinite(b[k]))&&Number.isFinite(receipt.gain)&&b.adjusted+b.itemGain===receipt.gain;
@@ -98,7 +98,7 @@ function addQuest(study=false){
   const baseId=Date.now().toString(36);
   let id=baseId,suffix=1;
   while(S.quests.some(q=>q.id===id))id=baseId+"-"+suffix++;
-  const q={id,name,pts,mins,due,repeat:qv===""&&$("nr").checked,doneOn:null,diff:parseFloat($("nl").value)||1,deadlineKind:qv};
+  const q={id,name,pts,mins,due,repeat:qv===""&&$("nr").checked,doneOn:null,diff:parseFloat($("nl").value)||1,deadlineKind:qv,subjectId:root.GameSubjects.find(S,$("nsubject").value)?.id||null};
   S.quests.push(q);
   $("nm").value="";
   if(study&&startFocus(q))return;
@@ -113,16 +113,18 @@ $("nm").onkeydown=e=>{if(e.key==="Enter")addQuest()};
 
 
 
-function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||280,now:Date.now,random:Math.random})}
+function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||280,now:Date.now,random:Math.random,resolveSubject:name=>root.GameSubjects.resolve(S,name,true)})}
 function importBulkQuests(){
-  const raw=$("qbulk").value||"",result=GameQuestData.importBulk(raw,{perHour:S.perHour||280,now:Date.now,random:Math.random});
+  const raw=$("qbulk").value||"",result=GameQuestData.importBulk(raw,{perHour:S.perHour||280,now:Date.now,random:Math.random,resolveSubject:name=>root.GameSubjects.resolve(S,name,true)});
   if(!result.total){say("Chưa có dòng nào để nhập.");return}
   const added=result.quests;
-  if(!added.length){say("Không đọc được nhiệm vụ. Kiểm tra mẫu: Tên | phút");return}
+  if(!added.length){say("Không đọc được nhiệm vụ. Kiểm tra mẫu và tên môn học.");return}
+  const ids=new Set(S.quests.map(q=>q.id));
+  for(const q of added){while(ids.has(q.id))q.id+="-1";ids.add(q.id)}
   S.quests.push(...added);
-  $("qbulk").value="";
-  if($("qbulkhint"))$("qbulkhint").textContent="Đã nhập "+added.length+" nhiệm vụ.";
-  save();refresh();say("Đã nhập "+added.length+" nhiệm vụ từ bộ dán.");
+  $("qbulk").value=(result.rejected||[]).join("\n");
+  if($("qbulkhint"))$("qbulkhint").textContent="Đã nhập "+added.length+" nhiệm vụ."+(result.invalid?" "+result.invalid+" dòng lỗi được giữ lại.":"");
+  save();refresh();say("Đã nhập "+added.length+" nhiệm vụ."+(result.invalid?" Còn "+result.invalid+" dòng cần sửa.":""));
 }
 function exportQuestsText(){
   const result=GameQuestData.exportOpen(S.quests,{now:Date.now(),isDone:q=>isDone(q),isExpired:q=>expired(q)}),qs=result.quests;
@@ -137,8 +139,9 @@ $("qbulkin").onclick=importBulkQuests;
 const cpy=(t,m)=>{const ok=()=>say(m||"Đã chép prompt AI. Dán vào ChatGPT/Claude, điền các mục [ ], rồi dán kết quả vào app.");
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
   function fb(){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let r=false;try{r=document.execCommand("copy")}catch(e){}a.remove();say(r?(m||"Đã chép prompt AI."):"Trình duyệt chặn chép. Hãy thử lại hoặc dùng HTTPS.")}};
-$("qbulkcp").onclick=()=>cpy(AI_PROMPT);
-$("ccp").onclick=()=>cpy(CHAIN_PROMPT);
+const subjectPrompt=()=>{const names=S.subjects.list.filter(s=>!s.archived).map(s=>s.name);return names.length?"\nMôn học hiện có: "+names.join(", ")+".":""};
+$("qbulkcp").onclick=()=>cpy(AI_PROMPT+subjectPrompt()+"\nCó thể thêm cột thứ 6 là tên môn chính xác; bỏ trống nếu không thuộc danh sách.");
+$("ccp").onclick=()=>cpy(CHAIN_PROMPT+subjectPrompt()+"\nCó thể thêm cột thứ 3 là tên môn chính xác; bỏ trống nếu không thuộc danh sách.");
 $("lcp").onclick=()=>cpy(SCHED_PROMPT);
 function addDefQ(){let n=0;DEF_Q.split("\n").forEach(l=>{const q=parseBulkLine(l);if(!q||S.quests.some(x=>x.name===q.name&&!isDone(x)))return;S.quests.push(q);n++});return n}
 $("qdef").onclick=()=>{const n=addDefQ();if(n){save();refresh()}say(n?"Đã thêm "+n+" nhiệm vụ mặc định.":"Nhiệm vụ mặc định đã có sẵn trong danh sách.")};
@@ -154,10 +157,12 @@ $("list").addEventListener("click",e=>{const n=e.target.closest(".nm");if(!n||e.
   if(!q||isDone(q)||q.chain)return;
   if(GameTimer.activeFocus()===q){say("Hãy kết thúc hoặc hủy phiên học trước khi sửa.");return}
   if(q.completion?.undone&&(!q.repeat||q.completion.day===today())){say("Lượt học đã hoàn tác giữ nguyên phần thưởng và thời lượng. Hãy khôi phục hoặc tạo nhiệm vụ mới.");return}
-  const v=prompt("Sửa nhiệm vụ: Tên | phút",q.name+" | "+(q.mins||30));if(v==null)return;
+  const v=prompt("Sửa nhiệm vụ: Tên | phút | môn học",q.name+" | "+(q.mins||30)+" | "+(root.GameSubjects.find(S,q.subjectId)?.name||""));if(v==null)return;
   const p=v.split("|"),nm=(p[0]||"").trim().slice(0,80);if(!nm)return;
   const mi=Math.min(480,Math.max(5,parseInt(p[1])||q.mins||30));
-  q.name=nm;q.mins=mi;q.pts=GameQuestData.basePoints(mi,S.perHour,GameQuestData.parseDiff(String(q.diff||1)),q.deadlineKind??(q.due?"0":""));save();refresh();say("Đã sửa nhiệm vụ.")});
+  const subjectId=p.length<3?q.subjectId:root.GameSubjects.resolve(S,p[2],true);
+  if(p[2]?.trim()&&!subjectId){say("Môn học chưa tồn tại trong Vạn Pháp.");return}
+  q.subjectId=subjectId||null;q.name=nm;q.mins=mi;q.pts=GameQuestData.basePoints(mi,S.perHour,GameQuestData.parseDiff(String(q.diff||1)),q.deadlineKind??(q.due?"0":""));save();refresh();say("Đã sửa nhiệm vụ.")});
 $("qbulkex").onclick=exportQuestsText;
 $("qbulkmix").onclick=()=>{
   $("qbulk").value=PRESET_MIX;
@@ -198,7 +203,7 @@ $("cadd").onclick=()=>{
   const name=$("cn").value.trim();
   const lines=raw.filter(l=>!l.startsWith("#")).slice(0,15);
   const count=GameQuestData.addChain(S,name,lines,"c"+Date.now().toString(36));
-  if(!count){say("Cần tên chuỗi và ít nhất 2 bước, mỗi bước một dòng.");return}
+  if(!count){say("Cần tên chuỗi, ít nhất 2 bước và tên môn hợp lệ nếu có.");return}
   $("cn").value=$("cs").value="";save();refresh();say("Đã tạo chuỗi "+count+" bước.");
 };
   }

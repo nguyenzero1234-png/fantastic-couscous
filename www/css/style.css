@@ -481,3 +481,11 @@ summary:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px so
 @media(min-width:480px){.quest-fields{grid-template-columns:repeat(3,minmax(0,1fr))}.quest-fields label:last-child{grid-column:auto}.quest-create-actions{flex:0 1 320px;margin-left:auto}.hero{grid-template-columns:84px minmax(0,1fr)}.hero .ring{width:84px;height:84px}}
 @media(max-width:360px){#list .quest-card{grid-template-columns:36px minmax(0,1fr) 36px;gap:4px 6px}#list .quest-card .tick,#list .quest-card .del{width:36px;min-width:36px}.quest-card-footer,.quest-receipt{grid-column:1 / -1}.hero{grid-template-columns:68px minmax(0,1fr)}.hero .ring{width:68px;height:68px}}
 @media(prefers-reduced-motion:reduce){.hero::before{animation:none}.ring .rf,.fold>summary::after,#gn button,#sn button{transition:none}}
+
+/* Vạn Pháp */
+#nsubject{width:100%;margin:4px 0 10px}
+.subject-card{min-width:0;overflow-wrap:anywhere}
+.subject-card .row{margin:0 0 8px;justify-content:space-between}
+.subject-card small,#subject-list .box>small{display:block;margin:6px 0}
+.subject-card .chips{margin-top:10px}
+#subjects .quest-fields{margin:8px 0}

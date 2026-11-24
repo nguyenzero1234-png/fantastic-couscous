@@ -1330,3 +1330,18 @@ Tiếp theo theo thứ tự ưu tiên:
 - Stage 3D — Hiệu ứng đột phá cảnh giới, ưu tiên nhẹ và hỗ trợ giảm chuyển động.
 - Stage 3E — Chu kỳ tu luyện tùy chọn, mặc định 119 ngày; thiết kế lại mốc kỳ thi phù hợp từng chu kỳ.
 - Stage 4 — Cá nhân hóa. Nghiệm thu Android theo checklist là điều kiện kiểm chứng thực tế xuyên suốt.
+
+### Xác nhận CI Stage 3A
+
+- [x] Commit ac70863f57a778f054aba1834d441bdaac3271da đã push. JavaScript Tests (45365544386) và Build APK (45365544440) đều completed/success đúng SHA. Artifact APK ID 14907290300 (6.273.702 byte, chưa hết hạn khi kiểm tra).
+- [ ] Nghiệm thu Android thật theo checklist.
+
+## Stage 3B — Vạn Pháp (2026-11-24)
+
+- Thêm tab Vạn Pháp trong Tu Luyện ở cả hai chế độ. Mặc định có Toán học, Lập trình, Tiếng Anh, Ngoại ngữ, NCKH; cho thêm, đổi tên, đặt mục tiêu phút/ngày và phút/tuần, lưu trữ/khôi phục môn học. Mục tiêu 0 nghĩa là không đặt mục tiêu. Tuần tính từ thứ Hai theo lịch game.
+- Thêm lựa chọn môn học tùy chọn trong form nhiệm vụ và khi sửa nhiệm vụ. Nhập/xuất hàng loạt hỗ trợ cột thứ sáu (tên hoặc ID môn), Liên hoàn hỗ trợ cột thứ ba. Prompt AI đưa danh sách môn hiện có. Dòng nhiệm vụ lỗi được giữ lại để sửa; chuỗi có tên môn sai không được tạo. Môn đã lưu trữ vẫn nhận dữ liệu từ nhiệm vụ có sẵn và dữ liệu nhập có ID hợp lệ để bảo toàn lịch sử.
+- systems/subjects.js quản lý dữ liệu và tính phút, ui/subjects.js quản lý giao diện. Biên nhận chụp ID môn lúc hoàn thành; hoàn tác/khôi phục dùng biên nhận gốc, xóa nhiệm vụ không mất sử, nhiệm vụ lặp có lượt ghi mới. Save cũ migrate không gán hồi tố; hiển thị mốc ghi nhận. Luân hồi lưu tổng phút theo môn vào sử kiếp, giữ danh mục và mục tiêu, xóa phút của kiếp cũ khỏi bảng hiện tại. Giữ nguyên cơ chế thưởng/phạt.
+- [x] 141/141 kiểm thử ở Asia/Ho_Chi_Minh và UTC, bao gồm luân hồi, nhập/xuất, reload, đổi môn, hoàn tác, nhiệm vụ lặp, lưu trữ. git diff --check đạt.
+- [x] Edge headless profile riêng, 390 × 844 và 320 × 844: tạo môn, lập nhiệm vụ 30 phút, chọn môn, hoàn thành, xác nhận 30/45 phút hôm nay và 30/180 phút tuần này. Chiều rộng tài liệu bằng viewport, không lỗi JS. Có ảnh chụp QA nhưng chưa kiểm tra bằng mắt.
+- [ ] Nghiệm thu Android thật. CI/APK Stage 3B cần xác nhận sau push.
+- Tiếp theo Stage 3C — tính cách và sự kiện Thiên Kiêu, rồi 3D, 3E và Stage 4.

@@ -7,6 +7,7 @@
     S.points+=direction*gain;
     hAdd(day,direction*gain,direction*mins);
     root.GameAnalytics?.recordCompletion(S,receipt,direction);
+    root.GameSubjects?.recordCompletion(S,receipt,direction);
     S.cnt=S.cnt||{};
     S.cnt[day]=Math.max(0,(S.cnt[day]||0)+direction);
     const ls=LS();
@@ -76,7 +77,7 @@
        if(pb.dr&&Math.random()<1-Math.pow(1-pb.dr,mins/60)){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
       const r0=myRk();
       const at=Date.now();
-      applyReceipt(q,{day:t,gain:q.got,mins,stats,at,undone:false,breakdown:questReward.breakdown,tracked:!!S.studyReport,deadlineResult:q.due?((d.completedAt??at)<=q.due?"onTime":"late"):"none"},d,1);
+      applyReceipt(q,{day:t,gain:q.got,mins,stats,at,undone:false,breakdown:questReward.breakdown,tracked:!!S.studyReport,subjectId:root.GameSubjects?.find(S,q.subjectId)?.id||null,deadlineResult:q.due?((d.completedAt??at)<=q.due?"onTime":"late"):"none"},d,1);
       ls.top=ls.top||(myRk()<=10?1:0);if(myRk()<=1)ls.t1=1;ls.mc=Math.max(ls.mc||0,S.cnt[t]);
       vlog("Hoàn thành "+q.name+": +"+q.got+" linh lực"+(S.tdPenalty?" (Trừng Phạt −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"%)":"")+", giờ học hôm nay "+(((S.hist[t]||{}).m||0)/60).toFixed(1)+" giờ, tu vi "+rname(uxp())+", hạng "+r0+" → "+myRk());
       const c=q.chain&&S.chains.find(x=>x.id===q.chain);

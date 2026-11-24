@@ -35,6 +35,8 @@
         <label>Độ khó <select id="nl"><option value="1">Dễ</option><option value="1.15">Vừa</option><option value="1.3">Khó</option></select></label>
         <label>Thời hạn <select id="nq"><option value="">Không</option><option value="1">1 giờ</option><option value="3">3 giờ</option><option value="0">Hết hôm nay</option></select></label>
       </div>
+      <label class="quest-name-label" for="nsubject">Môn học</label>
+      <select id="nsubject" aria-label="Môn học"></select>
       <div class="quest-create-footer">
         <label><input type="checkbox" id="nr"> Lặp mỗi ngày</label>
         <small class="quest-preview">Cơ bản: <span id="prev"></span></small>
@@ -100,6 +102,11 @@
     <div class="box" style="margin-top:10px"><h2>Nhập lịch bằng AI</h2><textarea id="lbulk" rows="5" placeholder="19:00-19:45 | Học từ vựng" aria-label="Lịch nhập hàng loạt"></textarea><div class="chips"><button class="btn" id="lin">Nhập lịch</button><button class="btn alt" id="lcp">Chép prompt AI</button><button class="btn alt" id="ldef">Lịch mặc định</button></div></div>
     <div class="box" style="margin-top:10px"><h2>Việc lặp hàng tuần</h2><ul id="lrep"></ul></div>
   </section>
+  <section id="subjects" hidden>
+    <div class="stack"><h2>Vạn Pháp</h2><small id="subject-coverage"></small>
+      <details class="fold"><summary>Thêm môn học</summary><input id="subject-name" maxlength="60" placeholder="Tên môn" aria-label="Tên môn"><div class="quest-fields"><label>Phút/ngày<input id="subject-daily" type="number" min="0" max="1440" value="0"></label><label>Phút/tuần<input id="subject-weekly" type="number" min="0" max="10080" value="0"></label></div><button class="btn" id="subject-add">Thêm môn</button></details>
+      <div class="stack" id="subject-list"></div></div>
+  </section>
   <section id="study-guide" hidden>
     <div class="stack study-guide">
       <h2>Hướng dẫn tu luyện</h2>
@@ -114,13 +121,13 @@
         <p>Thưởng thực tế còn phụ thuộc chuỗi ngày học, buff và trạng thái lúc hoàn thành. Mở Chi tiết linh lực trên nhiệm vụ đã xong để xem phép tính thực tế.</p>
         <h3>Nhập bằng AI</h3>
         <p>Chép prompt AI, điền yêu cầu, gửi cho AI rồi dán kết quả vào ô Nhập / xuất nhiệm vụ và bấm Nhập.</p>
-        <code class="guide-example">Tên nhiệm vụ | phút | độ khó | lặp | hạn</code>
-        <p>Độ khó: 1 / 1.15 / 1.3 (hoặc de / vua / kho). Lặp: 0 hoặc 1. Hạn: để trống, 1, 3 hoặc homnay. Nếu chỉ ghi tên, mặc định 30 phút.</p>
+        <code class="guide-example">Tên nhiệm vụ | phút | độ khó | lặp | hạn | môn học (tùy chọn)</code>
+        <p>Độ khó: 1 / 1.15 / 1.3 (hoặc de / vua / kho). Lặp: 0 hoặc 1. Hạn: để trống, 1, 3 hoặc homnay. Nếu chỉ ghi tên, mặc định 30 phút. Cột môn học tùy chọn dùng tên hoặc ID môn đã tạo trong Vạn Pháp. Dòng có môn không hợp lệ sẽ bị bỏ qua và giữ lại để sửa.</p>
         <code class="guide-example">Ôn lý thuyết | 45 | 1.15 | 0<br>Làm 20 bài code | 60 | 1.3 | 0 | 3<br>Từ vựng | 25 | 1 | 1</code>
         <p>Mặc định thêm nhiệm vụ mẫu; bộ VSTEP + Code + NCKH nạp nội dung vào ô nhập để chỉnh sửa trước khi nhập. Xuất sao chép các nhiệm vụ còn mở.</p>
       </details>
       <details class="fold"><summary>Liên hoàn</summary>
-        <p>Đặt tên chuỗi và nhập 2–15 bước, mỗi dòng một bước. Thời lượng mặc định 30 phút nếu bỏ trống.</p>
+        <p>Đặt tên chuỗi và nhập 2–15 bước, mỗi dòng một bước. Thời lượng mặc định 30 phút nếu bỏ trống. Có thể thêm cột thứ ba là tên môn đã tạo trong Vạn Pháp.</p>
         <code class="guide-example">TÊN CHUỖI: Ôn thi<br>Đọc chương 1 | 45<br>Làm bài tập chương 1 | 60<br>Ôn lại ghi chú</code>
         <p>Dòng TÊN CHUỖI từ AI tự điền tên nếu ô tên còn trống. Dùng Chép prompt AI để tạo chuỗi, sau đó dán vào ô các bước và bấm Tạo chuỗi.</p>
         <p>Hoàn thành lần lượt các bước để mở khóa bước tiếp theo. Khi xong cả chuỗi, nhận thêm 15% tổng linh lực thực nhận từ các bước và thưởng danh hiệu nếu đủ điều kiện. Bước đã hoàn thành không thể hoàn tác.</p>
@@ -206,6 +213,7 @@
 <script src="js/systems/items.js" charset="utf-8"></script>
 <script src="js/systems/streak.js" charset="utf-8"></script>
 <script src="js/systems/analytics.js" charset="utf-8"></script>
+<script src="js/systems/subjects.js" charset="utf-8"></script>
 <script src="js/systems/quests.js" charset="utf-8"></script>
 <script src="js/systems/pets.js" charset="utf-8"></script>
 <script src="js/systems/sect.js" charset="utf-8"></script>
@@ -230,6 +238,7 @@
 <script src="js/ui/settings.js" charset="utf-8"></script>
 <script src="js/ui/god-mode.js" charset="utf-8"></script>
 <script src="js/ui/events.js" charset="utf-8"></script>
+<script src="js/ui/subjects.js" charset="utf-8"></script>
 <script src="js/ui/activities.js" charset="utf-8"></script>
 <script src="js/ui/inventory.js" charset="utf-8"></script>
 <script src="js/ui/icons.js" charset="utf-8"></script>

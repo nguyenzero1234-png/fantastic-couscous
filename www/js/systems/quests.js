@@ -23,6 +23,8 @@
   const o=options||{},clock=typeof o.now==="function"?o.now:()=>o.now==null?Date.now():o.now,random=o.random||Math.random;
   const parts=String(line||"").split("|").map(x=>x.trim());
   if(!parts[0])return null;
+  const subjectId=parts[5]&&o.resolveSubject?o.resolveSubject(parts[5]):null;
+  if(parts[5]&&!subjectId)return null;
   const name=parts[0].slice(0,80),mins=Math.min(480,Math.max(5,parseInt(parts[1])||30)),diff=parseDiff(parts[2]);
   const rep=parts[3]==="1"||/^l[aă]p/i.test(parts[3]||"");
   let due=0;const h=(parts[4]||"").toLowerCase();
@@ -31,31 +33,35 @@
   else if(h==="0"||h==="homnay"||h==="hôm nay"||h==="today"){const d=new Date(clock());due=d.setHours(23,59,59,999)}
   const deadlineKind=due?(h==="1"||h==="1h"?"1":h==="3"||h==="3h"?"3":"0"):"";
   const pts=basePoints(mins,o.perHour||280,diff,deadlineKind);
-  return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff,deadlineKind};
+  return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff,deadlineKind,...(subjectId?{subjectId}:{})};
  }
 
  function importBulk(text,options){
   const lines=String(text||"").split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith("#")&&!s.startsWith("//"));
-  const quests=[];let invalid=0;
-  lines.forEach(line=>{const q=parseBulkLine(line,options);if(q)quests.push(q);else invalid++});
-  return {quests,invalid,total:lines.length};
+  const quests=[],rejected=[];let invalid=0;
+  lines.forEach(line=>{const q=parseBulkLine(line,options);if(q)quests.push(q);else{invalid++;rejected.push(line)}});
+  return {quests,invalid,total:lines.length,...(rejected.length?{rejected}:{})};
  }
  function exportOpen(quests,options){
   const o=options||{},now=o.now==null?Date.now():o.now,isDoneFn=o.isDone||(()=>false),isExpiredFn=o.isExpired||(()=>false);
   const open=(quests||[]).filter(q=>!q.chain&&!isDoneFn(q)&&!isExpiredFn(q));
   const text=open.map(q=>{
    const diff=q.diff||1,lim=q.due?(q.deadlineKind??(q.due-now<2*3600000?"1":q.due-now<4*3600000?"3":"homnay")):"";
-   return [q.name,q.mins||30,diff,q.repeat?1:0,lim].join(" | ");
+   const fields=[q.name,q.mins||30,diff,q.repeat?1:0,lim];
+   if(q.subjectId)fields.push(q.subjectId);
+   return fields.join(" | ");
   }).join("\n");
   return {quests:open,text};
  }
  function addChain(state,name,lines,id){
   const steps=[];
   for(const line of lines){
-   const [label,duration]=line.split("|");
+   const [label,duration,subject]=line.split("|");
    if(!label.trim())continue;
    const mins=Math.min(480,Math.max(5,parseInt(duration,10)||30));
-   steps.push({name:label.trim().slice(0,80),pts:Math.max(1,Math.round(mins/60*state.perHour)),mins});
+   const subjectId=subject?.trim()?global.GameSubjects.resolve(state,subject,true):null;
+   if(subject?.trim()&&!subjectId)return 0;
+   steps.push({name:label.trim().slice(0,80),pts:Math.max(1,Math.round(mins/60*state.perHour)),mins,...(subjectId?{subjectId}:{})});
   }
   if(!name||steps.length<2)return 0;
   while(state.chains.some(chain=>chain.id===id))id+="_";
