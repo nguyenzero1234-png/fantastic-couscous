@@ -1531,3 +1531,11 @@ test("GameOnboardingUI hiển thị, chuyển bước và bỏ qua hướng dẫ
  const M=window.GameOnboardingUI.create({S,AV_NAM:"nam.png",AV_NU:"nu.png",TUT:[{t:"Bước một",b:"Giới thiệu"},{t:"Bước hai",b:"Bắt đầu"}],$:id=>nodes[id],save:()=>saved++,render:()=>rendered++,say:x=>message=x,showTutorial:()=>{},schedule:()=>{}});
  M.showTutorial();assert.equal(nodes.tut.hidden,false);assert.match(nodes.tut.innerHTML,/Bước một/);nodes.tutn.onclick();assert.equal(S.tutStep,1);assert.match(nodes.tut.innerHTML,/Bước hai/);nodes.tutsk.onclick();assert.equal(S.tutDone,1);assert.equal(S.tutStep,0);assert.equal(nodes.tut.hidden,true);assert.ok(saved>=2);assert.match(message,/bỏ qua hướng dẫn/);
 });
+
+
+test("GameNavigationUI quản lý tab, chế độ chỉ học và cập nhật badge",()=>{
+ const nodes={gn:{innerHTML:"",onclick:null,querySelector:()=>null,scrollLeft:0,clientWidth:100},sn:{innerHTML:"",onclick:null,hidden:false,querySelector:()=>null,scrollLeft:0,clientWidth:100},lkh:{textContent:""},q:{hidden:true},s:{hidden:true}};const doc={title:"Game",querySelector:()=>false,querySelectorAll:()=>[]};const S={god:false,pk:0,points:50,ui:{studyOnly:false},nw:{t:{},p:{},k:{},kt:{}},pets:{},act:null,streak:{last:"",n:0}};let message="";
+ const GR=[{id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"]]},{id:"s",n:"Thiên Thư",s:[["s","Thống kê"]]}],GR_SIMPLE=[{id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"]]}];
+ const M=window.GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS:["q","s"],$:id=>nodes[id],document:doc,nwS:()=>S.nw,knList:()=>[],save:()=>{},sfx:()=>{},say:x=>message=x,ri:()=>0,uxp:()=>50,renderPet:()=>{},schedule:()=>{}});
+ M.drawNav();assert.match(nodes.gn.innerHTML,/Tu Luyện/);assert.match(nodes.sn.innerHTML,/Nhiệm vụ/);M.go("s","s");assert.equal(nodes.s.hidden,false);assert.equal(M.settings().screen,"s");assert.equal(message,"");S.ui.studyOnly=true;M.drawNav();assert.doesNotMatch(nodes.gn.innerHTML,/Thiên Thư/);M.update();assert.equal(doc.title,"Game");
+});

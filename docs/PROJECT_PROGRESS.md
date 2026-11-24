@@ -1057,3 +1057,11 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển nội dung và điều khiển từng bước hướng dẫn vào module onboarding cùng màn nhập đạo.
 - [x] Giữ callback `showTut` trong `game.js` để tương thích luồng khởi tạo và cài đặt.
 - [x] Bổ sung test chuyển bước, kết thúc và bỏ qua hướng dẫn.
+
+
+## Tách điều hướng và badge tab vào ui/navigation.js (2026-11-24)
+
+- [x] Chuyển state chọn nhóm/tab, lọc tab theo cảnh giới/chế độ Chỉ học, render nav và event handler sang `GameNavigationUI`.
+- [x] Gom tính badge, phát hiện kỳ ngộ mới, đánh dấu đã xem và cập nhật tiêu đề app vào cùng module điều hướng.
+- [x] Giữ `nwS` làm accessor state tương thích cho các module UI khác; giữ wrapper `go`, `drawNav`, `nwUpdate`, `nwSeenK` trong bootstrap.
+- [x] Bổ sung test điều hướng, Chỉ học và badge.
