@@ -3,6 +3,7 @@
  "use strict";
  function create(deps){
   const {S,AV_NAM,AV_NU,$,save,render,say,schedule}=deps;
+  const TUT=deps.TUT;
   const showTutorial=deps.showTutorial;
   function askName(){
 const o=$("nmo");
@@ -44,7 +45,18 @@ const done=()=>{
 };
 $("nmk").onclick=done;$("nmi").onkeydown=e=>{if(e.key==="Enter")done()};
   }
-  return Object.freeze({askName});
+  function showTutorialStep(){
+  if(S.tutDone)return;
+  const i=S.tutStep||0,step=TUT[i];if(!step){S.tutDone=1;save();$("tut").hidden=true;return}
+  $("tut").innerHTML=`<div class="box"><h2>Hướng dẫn · ${i+1}/${TUT.length}</h2><p style="margin:12px 0;line-height:1.7"><b>${step.t}</b><br>${step.b}</p>
+    <div class="row"><button class="btn" style="margin-left:0" id="tutn">${i===TUT.length-1?"Bắt đầu tu luyện":"Tiếp"}</button>
+    <button class="btn alt" id="tutsk">Bỏ qua</button></div></div>`;
+  $("tut").hidden=false;
+  $("tutn").onclick=()=>{S.tutStep=(S.tutStep||0)+1;if(S.tutStep>=TUT.length){S.tutDone=1;S.tutStep=0;$("tut").hidden=true;say("Hướng dẫn xong. Hãy lập nhiệm vụ đầu tiên.");}save();if(!S.tutDone)showTutorialStep();else render()};
+  $("tutsk").onclick=()=>{S.tutDone=1;S.tutStep=0;save();$("tut").hidden=true;say("Đã bỏ qua hướng dẫn. Có thể xem lại trong Cài đặt.")};
+}
+
+  return Object.freeze({askName,showTutorial:showTutorialStep});
  }
  root.GameOnboardingUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

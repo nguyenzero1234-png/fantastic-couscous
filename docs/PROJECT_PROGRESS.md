@@ -1050,3 +1050,10 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển khối tóm tắt điểm danh/kỳ ngộ được nhúng trong Lệnh Bảng vào cùng module.
 - [x] Giữ thuật toán tạo kỳ ngộ, tính phút và nhận thưởng trong `game.js`/systems; module UI chỉ nhận dữ liệu qua getter.
 - [x] Bổ sung test kỳ ngộ, hiệu ứng và khối điểm danh.
+
+
+## Gom hướng dẫn lần đầu vào ui/onboarding.js (2026-11-24)
+
+- [x] Chuyển nội dung và điều khiển từng bước hướng dẫn vào module onboarding cùng màn nhập đạo.
+- [x] Giữ callback `showTut` trong `game.js` để tương thích luồng khởi tạo và cài đặt.
+- [x] Bổ sung test chuyển bước, kết thúc và bỏ qua hướng dẫn.

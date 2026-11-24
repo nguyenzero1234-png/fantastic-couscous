@@ -1524,3 +1524,10 @@ test("GameProfileUI render tiêu đề nhân vật và cập nhật hào quang c
  const M=window.GameProfileUI.create({S,B:[],SO:[],SECTS:[],TITLES:[],BH:[],SP:60000,CDN:[],HTC:{f:[]},NVC_TITLES:["Nguyên Lưu"],RL:[["Luyện Khí",0],["Trúc Cơ",100]],STG:["Sơ nhập"],$:id=>id==="hero"?node:{innerHTML:""},uxp:()=>120,bxp:()=>0,ri:()=>0,tok:()=>false,bio:()=>"",myRk:()=>1,rkNow:()=>1,portrait:()=>"avatar",isTK:()=>false,esc:x=>String(x),htCount:()=>0,htLate:()=>0,hrs:()=>0,miles:()=>[],fmtT:()=>"",rname:()=>"Luyện Khí",getProfileIndex:()=>-1,realmColors:["jade"],quotes:["Kiên trì tu luyện"],days:119,getKAge:()=>0,document:{documentElement:{style:{setProperty:(k,v)=>attrs[k]=v}}},prevMemory:()=>null});
  M.renderHero();assert.match(node.innerHTML,/Đạo Hữu/);assert.match(node.innerHTML,/Luyện Khí/);assert.equal(attrs["--aura"],"jade");assert.equal(S.life.top10,1);
 });
+
+
+test("GameOnboardingUI hiển thị, chuyển bước và bỏ qua hướng dẫn",()=>{
+ const nodes={tut:{innerHTML:"",hidden:true},tutn:{onclick:null},tutsk:{onclick:null}};const S={tutDone:0,tutStep:0};let saved=0,rendered=0,message="";
+ const M=window.GameOnboardingUI.create({S,AV_NAM:"nam.png",AV_NU:"nu.png",TUT:[{t:"Bước một",b:"Giới thiệu"},{t:"Bước hai",b:"Bắt đầu"}],$:id=>nodes[id],save:()=>saved++,render:()=>rendered++,say:x=>message=x,showTutorial:()=>{},schedule:()=>{}});
+ M.showTutorial();assert.equal(nodes.tut.hidden,false);assert.match(nodes.tut.innerHTML,/Bước một/);nodes.tutn.onclick();assert.equal(S.tutStep,1);assert.match(nodes.tut.innerHTML,/Bước hai/);nodes.tutsk.onclick();assert.equal(S.tutDone,1);assert.equal(S.tutStep,0);assert.equal(nodes.tut.hidden,true);assert.ok(saved>=2);assert.match(message,/bỏ qua hướng dẫn/);
+});

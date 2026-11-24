@@ -1070,18 +1070,8 @@ const TUT=[
   {t:"Thiên Kiêu Bảng",b:"Ngươi cạnh tranh với các tu sĩ trên bảng. Học đều để giữ hạng. Tông môn mở từ Trúc Cơ — có bái sư và nhiệm vụ tông."},
   {t:"Thiên kiếp & Mệnh",b:"Theo ngày trong kiếp, thiên kiếp giáng xuống. Thất bại trừ Mệnh; hết Mệnh chịu Trừng Phạt. Phải xác nhận bảng kiếp trước khi chơi tiếp."},
   {t:"Nhật ký & Sứ mệnh",b:"Thiên Thư có Nhật ký đạo hữu và Sứ mệnh xuyên kiếp (chỉ danh hiệu). Cài đặt cho phép chế độ Chỉ học nếu muốn tối giản. Chúc tu luyện thuận lợi."}
-];
-function showTut(){
-  if(S.tutDone)return;
-  const i=S.tutStep||0,step=TUT[i];if(!step){S.tutDone=1;save();$("tut").hidden=true;return}
-  $("tut").innerHTML=`<div class="box"><h2>Hướng dẫn · ${i+1}/${TUT.length}</h2><p style="margin:12px 0;line-height:1.7"><b>${step.t}</b><br>${step.b}</p>
-    <div class="row"><button class="btn" style="margin-left:0" id="tutn">${i===TUT.length-1?"Bắt đầu tu luyện":"Tiếp"}</button>
-    <button class="btn alt" id="tutsk">Bỏ qua</button></div></div>`;
-  $("tut").hidden=false;
-  $("tutn").onclick=()=>{S.tutStep=(S.tutStep||0)+1;if(S.tutStep>=TUT.length){S.tutDone=1;S.tutStep=0;$("tut").hidden=true;say("Hướng dẫn xong. Hãy lập nhiệm vụ đầu tiên.");}save();if(!S.tutDone)showTut();else render()};
-  $("tutsk").onclick=()=>{S.tutDone=1;S.tutStep=0;save();$("tut").hidden=true;say("Đã bỏ qua hướng dẫn. Có thể xem lại trong Cài đặt.")};
-}
-
+];const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,TUT,$,save,render,say,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
+function showTut(){OnboardingUI.showTutorial()}
 /* ===== Nhật ký đạo hữu ===== */
 
 /* ===== Đạo Văn · Ký lục đột phá cảnh giới (Story) ===== */
@@ -1112,7 +1102,6 @@ function doRebirth(){TribulationSystem.doRebirth()}
 const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){TribulationUI.renderRbs()}
 $("rbs").onclick=e=>{const b=e.target.closest("[data-vi]");if(b&&S.rbh&&S.rbh[+b.dataset.vi])showThd(S.rbh[+b.dataset.vi])};
-const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,$,save,render,say,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
 function askName(){OnboardingUI.askName()}
 if(!S.name||!S.gender)askName();
 else if(!S.tutDone)setTimeout(showTut,400);
