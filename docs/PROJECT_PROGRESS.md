@@ -1121,3 +1121,11 @@ Sau mỗi đợt thay đổi:
 - [x] Gom xử lý nhận kỳ ngộ, hiệu ứng vật phẩm/buff, cơ hội linh thú và thưởng điểm danh vào `GameRewardClaims`.
 - [x] Inject state, công thức thưởng, ngày, inventory, pet grant, save/render và thông báo; không để module phụ thuộc DOM.
 - [x] Giữ wrapper `claimKn` và `checkin`; bổ sung test luồng nhận thưởng và chống nhận điểm danh trùng ngày.
+
+
+## Sửa thứ tự khởi tạo module trong game.js (2026-11-24)
+
+- [x] Phát hiện các factory UI/system được gọi trước khi một số `const` dependency (`KS`, `KX`, `tok`, `curStreak`, `kAge`) khởi tạo xong; đây là lỗi temporal-dead-zone có thể làm app dừng khi nạp.
+- [x] Dời các factory phụ thuộc sang cuối bootstrap, sau khi dữ liệu, state và helper đã sẵn sàng; giữ wrapper và event handler cũ.
+- [x] Thêm test thứ tự khởi tạo để ngăn hồi quy.
+- [ ] Chạy kiểm thử khởi động trong trình duyệt/DOM thực; CI Node chưa thay thế được kiểm thử giao diện thật.

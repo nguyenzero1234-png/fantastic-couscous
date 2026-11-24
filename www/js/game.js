@@ -142,9 +142,7 @@ function warReward(){return GameSectWar.reward({
   random:Math.random
 });}
 
-const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),getProfileIndex:()=>PI});
 function renderProf(){ProfileUI.render()}
-const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:EP,$});
 function renderSect(){SectUI.render()}
 const rkAt=(i,ms)=>{const s=sc(i,ms);let r=1;for(let j=0;j<B.length;j++)if(j!==i&&sc(j,ms)>s)r++;return r};
 /* Hạng hiện tại của NPC trên bảng chung (tính cả người chơi, hòa điểm thì NPC đứng trước, khớp thứ tự bảng xếp hạng) */
@@ -202,17 +200,12 @@ function playerXpAt(dv){return GameProgressData.playerXpAt(S.hist,S.points,dv.to
 function streakAt(d,cur){return GameProgressData.streakAt(S.hist,S.streak,d,cur,today(),dayStr(1))}
 // Đạo tâm 0..1 = chuỗi / chuỗi yêu cầu của kiếp (chuỗi càng dài, kiếp càng cuối càng đòi hỏi nhiều)
 const daoTam=(st,e)=>GameProgressData.taoTamProgress(st,e);
-const LeaderboardSystem=GameLeaderboardSystem.create({S,B,KS,save,vlog,simulation:LeaderboardSimulation,leaderboardData:GameLeaderboardData,npcData:GameNpcData,hash:hs,getSalt:()=>KSALT,exams:EX,days:KD,examDate:exD,playerXpAt,weekStart:()=>weekStart(),myRank:myRk,warReward,bxpAt:bxX});
-const {SPQ,spA,spK,spKn,spE,nextEx,spUntil,spExtra,lbRows,spRoll,spRetire,BAL_RANK,BAL_MULT,sc,lbInit,playerBalanced,settle,spark,bs,bsX,immuneTaiHu}=LeaderboardSystem;
 const EXOPEN={};
-const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),vlog,burst,sfx,KS,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:()=>{PI=null},chkLegacy,save,render,showThd:(...args)=>showThd(...args)});
 function resolveEx(){TribulationSystem.resolveEx()}
 function showExModal(e){
   GameExamModal.show({state:S,realmLabels:RL,exGod,save,go,render,findNext:()=>EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen),document,body:document.body,setTimeout},e);
 }
-const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt});
 function renderExams(){TribulationUI.render()}
-const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml()});
 function renderLb(){LeaderboardUI.render()}
 const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
 const qm=()=>QM[$("nq").value]||1;
@@ -223,7 +216,6 @@ const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
 const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$});
 function renderLich(){ActivityUI.renderSchedule()}
 function renderShop(){ActivityUI.renderShop()}
 function renderChains(){ActivityUI.renderChains()}
@@ -730,7 +722,6 @@ function renderGod(){
     <pre id="gout" style="white-space:pre-wrap;font:13px/1.6 var(--serif);margin:12px 0 0;max-height:200px;overflow:auto"></pre>
   </div>`;
 }
-const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
 function calib(){GodModeSystem.calib()}
 function selfCheck(){GodModeSystem.selfCheck()}
 function runGod(a,btn){return GodModeSystem.run(a,btn)}
@@ -989,6 +980,17 @@ else if(!S.tutDone)setTimeout(showTut,400);
 $("f").innerHTML=`<div class="box"><h2>Thiên Diễn</h2><small>Suy diễn tu vi các tu sĩ sau số ngày bạn nhập, rồi tính bạn cần tu luyện thế nào để giữ hạng hiện tại. Tối đa 90 ngày.</small><div class="row"><label>Sau <input type="number" id="fd" min="1" max="90" value="7"> ngày</label><button class="btn" id="fgo">Diễn toán</button></div></div><div id="fout"></div>`;
 function thienDien(){LeaderboardUI.renderForecast()}
 $("fgo").onclick=thienDien;
+/* Dependency-injected feature modules are created only after their full dependency set is initialized. */
+const LeaderboardSystem=GameLeaderboardSystem.create({S,B,KS,save,vlog,simulation:LeaderboardSimulation,leaderboardData:GameLeaderboardData,npcData:GameNpcData,hash:hs,getSalt:()=>KSALT,exams:EX,days:KD,examDate:exD,playerXpAt,weekStart:()=>weekStart(),myRank:myRk,warReward,bxpAt:bxX});
+const {SPQ,spA,spK,spKn,spE,nextEx,spUntil,spExtra,lbRows,spRoll,spRetire,BAL_RANK,BAL_MULT,sc,lbInit,playerBalanced,settle,spark,bs,bsX,immuneTaiHu}=LeaderboardSystem;
+const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),getProfileIndex:()=>PI});
+const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:EP,$});
+const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml()});
+const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt});
+const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:()=>{PI=null},chkLegacy,render,showThd:(...args)=>showThd(...args)});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$});
+const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
+
 drawNav();
 
 render();
