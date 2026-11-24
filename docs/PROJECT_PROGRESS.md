@@ -983,7 +983,7 @@ Sau mỗi đợt thay đổi:
 - [x] Truyền builder hồ sơ kiếp, state, save/render, UI và callback reset qua dependency injection; giữ wrapper `doRebirth`.
 - [x] Bổ sung test reset state, ân xá, xuất sắc và tiến độ xuyên kiếp.
 - [x] Loại bỏ dependency trùng khai báo trong factory khi mở rộng hệ thống cho luân hồi.
-- [x] Gắn callback `+"`buildRecord`"+` vào alias `+"`buildRec`"+` mà luồng luân hồi hiện tại sử dụng.
+- [x] Gắn callback `buildRecord` vào alias `buildRec` mà luồng luân hồi hiện tại sử dụng.
 
 
 ## Tách lệnh Thiên Đạo và tự kiểm tra sang systems/god-mode.js (2026-11-24)
@@ -999,7 +999,7 @@ Sau mỗi đợt thay đổi:
 - [x] Dùng `GameLeaderboardSimulation` làm lõi; inject dữ liệu NPC, dữ liệu xếp hạng, lịch, save và chiến tông môn.
 - [x] Giữ API wrapper ở `game.js` để UI, thiên kiếp và lệnh Thiên Đạo không đổi call-site.
 - [x] Bổ sung test bảng, cân bằng tuần và cơ duyên.
-- [x] Giữ nguyên factory `+"`GameLeaderboardSimulation`"+` và bổ sung `+"`GameLeaderboardSystem`"+` cùng file; không ghi đè lõi mô phỏng đã có.
+- [x] Giữ nguyên factory `GameLeaderboardSimulation` và bổ sung `GameLeaderboardSystem` cùng file; không ghi đè lõi mô phỏng đã có.
 
 
 ## Gom UI thiên kiếp và lịch sử luân hồi vào ui/heavenly-tribulation.js (2026-11-24)
@@ -1017,5 +1017,5 @@ Sau mỗi đợt thay đổi:
 - [x] Giữ wrapper `askName` và `thienDien` để không đổi luồng khởi tạo và nút diễn toán.
 - [x] Bổ sung test nhập đạo, lọc tên và dự báo thứ hạng.
 - [x] Sửa dấu đóng callback scheduler trong onboarding module trước khi nghiệm thu CI.
-- [x] Loại bỏ khai báo trùng `+"`today`"+` trong leaderboard UI factory; dùng giá trị đã destructure từ dependency.
-- [x] Dùng dependency `+"`myRank`"+` nhất quán trong renderer Thiên Diễn, tránh phụ thuộc biến cache của màn hình leaderboard.
+- [x] Loại bỏ khai báo trùng `today` trong leaderboard UI factory; dùng giá trị đã destructure từ dependency.
+- [x] Dùng dependency `myRank` nhất quán trong renderer Thiên Diễn, tránh phụ thuộc biến cache của màn hình leaderboard.
