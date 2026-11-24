@@ -1221,4 +1221,5 @@ Phần còn lại: kiểm thử tương tác trên trình duyệt/Android, build
 - Workflow Build APK tự chạy khi push thay đổi www/, tests/, package/lock, capacitor.config.json hoặc chính workflow lên main và các nhánh stage-*/**. Giữ workflow_dispatch để build thủ công. Thay đổi chỉ tài liệu không kích hoạt build.
 - APK debug được lưu trong artifact TuTienHocDao-apk sau khi kiểm thử và audit đạt. Workflow báo lỗi nếu thiếu APK.
 - Commit d2f917e đã tự kích hoạt Build APK (run 45326189100). Kiểm thử JavaScript và audit đạt; Gradle thất bại do Maven Central trả HTTP 429 khi tải dependency, chưa tạo APK.
-- Bổ sung cache Gradle và tối đa 3 lần build khi gặp HTTP 429, nghỉ 30/60 giây giữa các lần thử; lỗi khác vẫn làm workflow thất bại. Cần xác minh run mới và kiểm thử trên thiết bị Android.
+- Bổ sung cache Gradle và tối đa 3 lần build khi gặp HTTP 429, nghỉ 30/60 giây giữa các lần thử; lỗi khác vẫn làm workflow thất bại.
+- Commit `fcf07f5d92f262da761f61017984d08bc9f0a02a`: [Build APK run 45326644529](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45326644529) hoàn thành thành công trên push tự động; toàn bộ bước kiểm thử, audit, Gradle và upload đạt. Artifact `TuTienHocDao-apk` ID 14890515180 (5.830.457 byte, chưa hết hạn), chứa APK debug. Build CI đã xác minh; P5 còn kiểm thử cài đặt và chạy trên thiết bị Android thật.
