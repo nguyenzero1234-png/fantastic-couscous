@@ -242,7 +242,7 @@ const spA=()=>S.sp&&!(S.sem&&S.sem.res&&S.sem.res[S.sp.ex])?S.sp:null;
 const spK=()=>{const p=spA();return p?p.k:-1};
 const spKn=(i,e)=>{const p=S.lb&&S.lb.sp&&S.lb.sp[i];return p&&p.ex===e.id?p.k:-1};
 const spE=(e,k)=>k===2?Object.assign({},e,{chuan:Math.round(e.chuan*SPQ[2].f),ls:Math.max(1,Math.round(e.ls*SPQ[2].f))}):e;
-const nextEx=()=>EX.find(e=>e.day<KD&&!(S.sem&&S.sem.res[e.id])&&exD(e).getTime()>Date.now());
+const nextEx=()=>EX.find(e=>e.day<(S.cycleDays||KD)&&!(S.sem&&S.sem.res[e.id])&&exD(e).getTime()>Date.now());
 const spUntil=p=>{const e=EX.find(z=>z.id===p.ex);return e?(exD(e).getTime()+(KS().skx||0)-S.lb.t0)/SP:Infinity};
 // Phần linh lực NPC được cộng thêm từ cơ duyên đặc biệt đang hiệu lực (tính theo bước mô phỏng x)
 function spExtra(i,ms,fn){

@@ -58,3 +58,9 @@ for(const [scenario,options] of [
 ]){
   console.log(JSON.stringify({scenario,after:simulate(current,280,2,options)}));
 }
+
+for(const days of current.P.CYCLE_DAYS){
+  const cycle=current.P.cycleConfig(days);
+  const scenario={P:{...current.P,KD:cycle.days,END:cycle.end,RL:cycle.realms,EX:cycle.exams},R:current.R};
+  for(const hours of [2,4,6])console.log(JSON.stringify({scenario:"cycle-length",days,end:cycle.end,...simulate(scenario,280,hours)}));
+}

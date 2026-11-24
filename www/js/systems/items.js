@@ -38,7 +38,7 @@
     return true;
   }
 
-  function createTitles({getState,lifeStats,examResults,EX,END,markNew,save,say,schedule}){
+  function createTitles({getState,lifeStats,examResults,EX,END,getEnd=()=>END,markNew,save,say,schedule}){
     const cl=p=>Object.keys(getState().claimed).filter(k=>k[0]===p).length;
     const TITLES=[
      {id:"t1",n:"Phá Hiểu Tân Tinh",d:"Nhận thưởng event tuần lần đầu",b:"+3 linh lực cố định mỗi giờ học",ok:()=>cl("w")>=1},
@@ -63,9 +63,9 @@
      {id:"n13",n:"Nhàn Vân Dã Hạc",d:"Đổi tổng cộng 300 phút nhàn hạ",b:"Mỗi 60 phút nhàn hạ tặng thêm 5 phút theo tỷ lệ",ok:()=>(lifeStats().lv||0)>=300},
      {id:"n14",n:"Độ Kiếp Hành Giả",d:"Vượt 30 kiếp nạn",b:"Mỗi lần vượt kiếp nạn +25 linh lực",ok:()=>(lifeStats().kn||0)>=30},
      {id:"n15",n:"Tông Môn Chi Trụ",d:"Thắng 3 trận tông môn chiến",b:"Thắng tông môn chiến +100 linh lực",ok:()=>(lifeStats().sw||0)>=3},
-     {id:"n16",n:"Phi Thăng Chi Tử",d:"Đạt Chân Tiên lần đầu",b:"Điểm danh mỗi ngày +15 linh lực",ok:()=>getState().points>=END||(getState().rbh||[]).some(r=>r.pk>=END)},
+     {id:"n16",n:"Phi Thăng Chi Tử",d:"Đạt Chân Tiên lần đầu",b:"Điểm danh mỗi ngày +15 linh lực",ok:()=>getState().points>=getEnd()||(getState().rbh||[]).some(r=>r.pk>=(r.end||END))},
      {id:"n17",n:"Càn Khôn Bảo Chủ",d:"Giữ 15 vật phẩm trong Càn Khôn Giới cùng lúc",b:"Mỗi lần dùng vật phẩm nhận ngay +15 linh lực",ok:()=>Object.values(getState().inv).reduce((a,b)=>a+b,0)>=15},
-     {id:"n18",n:"Nguyên Lưu Chưởng Khống Giả",d:"Đạt Chân Tiên và từng đứng hạng 1 bảng Thiên Kiêu khi hoàn thành nhiệm vụ",b:"Mỗi giờ học +12 linh lực cố định",ok:()=>(getState().points>=END||(getState().rbh||[]).some(r=>r.pk>=END))&&!!lifeStats().t1}
+     {id:"n18",n:"Nguyên Lưu Chưởng Khống Giả",d:"Đạt Chân Tiên và từng đứng hạng 1 bảng Thiên Kiêu khi hoàn thành nhiệm vụ",b:"Mỗi giờ học +12 linh lực cố định",ok:()=>(getState().points>=getEnd()||(getState().rbh||[]).some(r=>r.pk>=(r.end||END)))&&!!lifeStats().t1}
     ];
     const tok=t=>!!getState().ft||!!(getState().tt&&getState().tt[t.id])||t.ok();
     const eqT=id=>{const t=TITLES.find(x=>x.id===id);return !!t&&getState().title===id&&tok(t)};

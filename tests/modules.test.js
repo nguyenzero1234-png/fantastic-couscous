@@ -1921,3 +1921,22 @@ test("B: migration timer legacy và validator bảo toàn dữ liệu khi phiên
  const validOrphan={...base,timers:{focus:{id:"f",questId:"removed",startedAt:1,lastSeenAt:2,endAt:3},play:null}};
  assert.equal(valid(validOrphan),true);
 });
+
+test("3E: cycle scaling preserves exam rules and default semester", () => {
+  const P=window.GameProgressData;
+  for(const days of [30,60,90,119]){
+    const c=P.cycleConfig(days);
+    assert.equal(c.days,days);
+    assert.equal(c.end,Math.round(P.END*days/P.KD));
+    assert.equal(c.exams.length,8);
+    c.exams.forEach((e,i)=>{
+      assert.ok(e.day>0 && e.day<days && (!i || e.day>c.exams[i-1].day));
+      assert.ok(e.ls>0 && e.ls<=e.day);
+      assert.equal(e.chuan,c.realms[e.need+1][1]);
+      for(const key of ["id","w","a","bm"])assert.equal(e[key],P.EX[i][key]);
+    });
+  }
+  assert.deepEqual(P.cycleConfig(119).realms,P.RL);
+  assert.deepEqual(P.cycleConfig(119).exams,P.EX);
+  assert.equal(P.cycleConfig(0).days,119);
+});

@@ -14,6 +14,9 @@
   function migrate(state){
     const S=state;
     S.schemaVersion=2;
+    const cycleDays=[30,60,90,119];
+    if(!cycleDays.includes(S.cycleDays))S.cycleDays=119;
+    if(!cycleDays.includes(S.nextCycleDays))S.nextCycleDays=S.cycleDays;
     if(!S.studyReport)S.studyReport=root.GameAnalytics.newReport(S);
     root.GameSubjects.init(S);
     if(!S.studyReport.sinceDay)S.studyReport.sinceDay=new Date(S.studyReport.since+(S.dOff||0)*864e5).toLocaleDateString("sv");

@@ -25,7 +25,7 @@
   EX.forEach((e,ei)=>{
     const d=exD(e);if(now<d||S.sem.res[e.id])return;
     // Không cho thiên kiếp vượt quá ngày KD của kiếp hiện tại
-    if(e.day>=KD)return;
+    if(e.day>=(S.cycleDays||KD))return;
     // dn: mốc thời gian của kiếp (bù phần thời gian bị tua tay bằng Thiên Đạo Lệnh); dv: ngày tương ứng trên lịch ảo của nhật ký
     const dn=d.getTime()+(KS().skx||0),dv=new Date(dn+(S.dOff||0)*864e5);
     // Thiên phú Bất Diệt Kim Thân (Giang Thừa Ảnh): 70% kích hoạt mỗi thiên kiếp, nhận chênh lệch với hạng 5 (30% số lần kích hoạt: hạng 2)
@@ -80,6 +80,7 @@
   // legacy + life + ui + name + god + tut + diary prefs keep
   S.rb=(S.rb||0)+1;
   S.storyLog=[];S.storyFlags={};S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
+  deps.applyNextCycle?.();
   S.studyReport=root.GameAnalytics.newReport(S);
   root.GameSubjects.reset(S);
   S.menh=100;S.failStreak=0;S.menhRecovery=null;S.nightStudy={};

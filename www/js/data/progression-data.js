@@ -15,6 +15,13 @@
    {id:"ck2",n:"Đại Thừa Hỗn Nguyên Kiếp",kind:"Đại thiên kiếp · viên mãn Hợp Thể, thăng Đại Thừa",day:88,need:6,chuan:172000,w:2,a:.72,bm:28,ls:70,desc:"Hỗn nguyên chi khí giáng xuống, phân rõ viên mãn và nửa đường. Hợp Thể viên mãn mới đủ tư cách bước vào Đại Thừa."},
    {id:"pt",n:"Phi Thăng Kiếp",kind:"Thiên kiếp phi thăng · viên mãn Đại Thừa, thăng Chân Tiên",day:100,need:7,chuan:200000,w:2.5,a:.7,bm:30,ls:85,desc:"Chín mươi chín đạo thiên lôi, ba nghìn hỏa tai, tâm ma hiện hình cùng lúc. Chỉ Đại Thừa viên mãn với đạo tâm bất đoạn suốt cả kiếp mới bước qua được cổng trời thành Chân Tiên."}
   ];
+  const CYCLE_DAYS=Object.freeze([30,60,90,KD]);
+  const validCycleDays=days=>CYCLE_DAYS.includes(days)?days:KD;
+  function cycleConfig(days){
+    const duration=validCycleDays(days),scale=duration/KD;
+    const realms=RL.map(([name,xp])=>[name,Math.round(xp*scale)]);
+    return {days:duration,end:realms[realms.length-1][1],realms,exams:EX.map(e=>({...e,day:Math.round(e.day*scale),chuan:realms[e.need+1][1],ls:Math.max(1,Math.round(e.ls*scale))}))};
+  }
   const RW={"Xuất sắc":200,"Giỏi":140,"Khá":90,"Trung bình":40,"Yếu":0};
 
   const grade = score => score >= 90 ? "Xuất sắc"
@@ -116,7 +123,7 @@
   };
 
   root.GameProgressData = Object.freeze({
-    RL, END, KD, EX, RW,
+    RL, END, KD, EX, RW, CYCLE_DAYS, validCycleDays, cycleConfig,
     grade, normalizedExamProgress, examScore, npcExamScore, taoTamProgress, examConditions,
     realmIndex, realmName, playerXpAt, bestKiep, activeDays, streakAt
   });

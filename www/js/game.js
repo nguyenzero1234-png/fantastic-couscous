@@ -1,6 +1,16 @@
 const KEY=GameState.KEY;
 const GameStateHandle=GameState.create();
 const S=GameStateHandle.state;
+const initialCycle=GameProgressData.cycleConfig(S.cycleDays);
+const RL=initialCycle.realms,EX=initialCycle.exams,RW=GameProgressData.RW;
+let KD=initialCycle.days,END=initialCycle.end;
+function applyNextCycle(){
+  const config=GameProgressData.cycleConfig(S.nextCycleDays);
+  S.cycleDays=config.days;S.nextCycleDays=config.days;
+  KD=config.days;END=config.end;
+  RL.splice(0,RL.length,...config.realms);EX.splice(0,EX.length,...config.exams);
+  renderSettings();
+}
 const GameTimer=window.GameTimer.create(S,()=>Date.now());
 let timerNoticeKey=GameTimer.notificationKey(),timerDirty=false,lastTimerSave=Date.now(),timerDay=null;
 let KSALT=(S.rb||0)*7919;
@@ -39,7 +49,7 @@ function burst(){FeedbackUI.burst()}
 
 
 
-const {TITLES,tok,eqT,chkT}=GameItemSystem.createTitles({getState:()=>S,lifeStats:()=>LS(),examResults:()=>xr(),EX:GameProgressData.EX,END:GameProgressData.END,markNew:id=>{nwS().t[id]=1},save,say,schedule:(fn,ms)=>setTimeout(fn,ms)});
+const {TITLES,tok,eqT,chkT}=GameItemSystem.createTitles({getState:()=>S,lifeStats:()=>LS(),examResults:()=>xr(),EX,getEnd:()=>END,END:GameProgressData.END,markNew:id=>{nwS().t[id]=1},save,say,schedule:(fn,ms)=>setTimeout(fn,ms)});
 // Giá ≈ 2,5–4× giá trị kỳ vọng của hiệu ứng (linh lực / tiện ích)
 /* Hệ thống vật phẩm: mọi vật phẩm tăng linh lực đều hoàn lại ít nhất bằng giá mua, phát dần theo nhiệm vụ.
    q:[số giờ học, linh lực cố định mỗi giờ, điều kiện ("" mọi nhiệm vụ, "q" nhiệm vụ nhanh, "l" từ 60 phút)]
@@ -104,7 +114,6 @@ function renderVan(){LeaderboardUI.renderTimeline()}
 let _oppStatsUI=null;
 function spStatsHtml(){return (_oppStatsUI||(_oppStatsUI=GameOpportunityStatsUI.create({S,B,EX,KN,KX,CDN,SPQ,evAt,knAt,KS,KT0,spA,getKD:()=>KD,getKSALT:()=>KSALT}))).html()}
 const xr=()=>S.sem?Object.values(S.sem.res).filter(r=>r.claimed):[];
-const {RL,END,KD,EX,RW}=GameProgressData;
 const ri=x=>GameProgressData.realmIndex(x,RL);
 const rname=x=>GameProgressData.realmName(x,RL);
 
@@ -418,7 +427,6 @@ function renderX(){
 }
 /* Chuyển kiếp */
 const DEF=()=>({quests:[],points:0,gameSec:0,rate:2,perHour:280,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null});
-const MAXXP=END;
 const LS=()=>S.ls||(S.ls={q:0,m:0,ni:0,da:0,ru:0,lg:0,kn:0,it:0,top:0,ms:0,tmc:0});
 const KS=()=>S.kst||(S.kst={start:Date.now(),pk:0,ms:0,tm:0});
 
@@ -439,7 +447,7 @@ function buildRec(){
   return GameRebirthData.buildRecord(S,{
     cycle:KS,now:Date.now,pets:PS,titles:TITLES,isTitleUnlocked:tok,
     milestones:()=>miles(-1),rank:myRk,npcs:B,npcXp:bxp,lifeStats:LS,
-    sects:SECTS,end:END,realms:RL,realmName:rname
+    sects:SECTS,end:END,cycleDays:KD,realms:RL,realmName:rname
   });
 }
 /* ===== Hướng dẫn lần đầu ===== */
@@ -450,7 +458,15 @@ const TUT=[
   {t:"Thiên Kiêu Bảng",b:"Ngươi cạnh tranh với các tu sĩ trên bảng. Học đều để giữ hạng. Tông môn mở từ Trúc Cơ — có bái sư và nhiệm vụ tông."},
   {t:"Thiên kiếp & Mệnh",b:"Theo ngày trong kiếp, thiên kiếp giáng xuống. Thất bại trừ Mệnh; hết Mệnh chịu Trừng Phạt. Phải xác nhận bảng kiếp trước khi chơi tiếp."},
   {t:"Nhật ký & Sứ mệnh",b:"Thiên Thư có Nhật ký đạo hữu và Sứ mệnh xuyên kiếp (chỉ danh hiệu). Cài đặt cho phép chế độ Chỉ học nếu muốn tối giản. Chúc tu luyện thuận lợi."}
-];const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,TUT,$,save,render,say,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
+];const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,TUT,$,save,render,say,canChooseFirstCycle,chooseFirstCycle,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
+function canChooseFirstCycle(){
+  return !S.name&&!S.gender&&!S.rb&&!S.points&&!S.tdPenalty&&!S.quests.length&&!Object.keys(S.hist).length&&!Object.keys(S.sem?.res||{}).length&&(!S.kst||kAge()<1);
+}
+function chooseFirstCycle(days){
+  if(!canChooseFirstCycle())return;
+  S.nextCycleDays=GameProgressData.validCycleDays(days);
+  applyNextCycle();
+}
 function askName(){OnboardingUI.askName()}
 function showTut(){OnboardingUI.showTutorial()}
 /* ===== Nhật ký đạo hữu ===== */
@@ -504,7 +520,7 @@ const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITL
 const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:sectWarEpoch,membership:SectSystem,claimMission:claimSectM,log:vlog,save,refresh:render,say,$});
 const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml(),world:NpcWorld});
 const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt,simulateExam:id=>TribulationSystem.simulateExam(id),claimExam:id=>TribulationSystem.claimExam(id),claimTrial:key=>TribulationSystem.claimTrial(key),claimRecovery:()=>TribulationSystem.claimRecovery()});
-const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say,kmet});
+const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),applyNextCycle,burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say,kmet});
 const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,rewardFactors,save,refresh:render,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
@@ -513,7 +529,7 @@ const SubjectsUI=GameSubjectsUI.create({S,$,today,weekStart,escapeHtml:esc,save,
 SubjectsUI.bind();
 const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
 EventsUI.bindEvents();
-const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),refreshSettings:renderSettings,resetProgress:()=>GameStateHandle.importBackup(JSON.stringify(GameState.DEFAULTS)),confirm:message=>window.confirm(message),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
+const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),refreshSettings:renderSettings,resetProgress:()=>GameStateHandle.importBackup(JSON.stringify(GameState.DEFAULTS)),confirm:message=>window.confirm(message),getMaxXp:()=>END,$});
 
 ProfileUI.bindSelection();
 TribulationUI.bindEvents();

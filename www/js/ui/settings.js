@@ -14,6 +14,7 @@
   ${choice("studyOnly","0","Đầy đủ",!u.studyOnly)}${choice("studyOnly","1","Chỉ học",!!u.studyOnly)}
 </div><small>Chỉ học giúp tập trung vào nhiệm vụ, nhật trình và thiên kiếp.</small></div>
 <div class="setting-row"><div><b>Âm thanh</b><small>Hiệu ứng khi thao tác</small></div><button type="button" class="btn alt${S.snd===0?"":" on"}" data-bk="sn" role="switch" aria-checked="${S.snd!==0}">${S.snd===0?"Tắt":"Bật"}</button></div>
+<div class="setting-field"><b>Thời lượng kiếp sau</b><div class="ui-opt cycle-options" role="group" aria-label="Thời lượng kiếp sau">${[[30,"1 tháng"],[60,"2 tháng"],[90,"3 tháng"],[119,"Học kỳ"]].map(([days,label])=>choice("cycleDays",days,label,(S.nextCycleDays||119)===days)).join("")}</div><small>Kiếp hiện tại: ${S.cycleDays||119} ngày. Kiếp sau: ${S.nextCycleDays||119} ngày. Áp dụng khi luân hồi.</small></div>
 <div class="setting-row"><b>Đạo hiệu</b><button class="btn alt" data-bk="nm">Đổi tên</button></div>
 <div class="setting-row"><b>Hướng dẫn</b><button class="btn alt" data-bk="tut">Xem lại</button></div>`,1)
     +fold("ui","Giao diện",`
@@ -42,6 +43,12 @@ $("s").addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.
 container.onclick=e=>{
   const ui=e.target.closest("[data-ui]");
   if(ui){
+    if(ui.dataset.ui==="cycleDays"){
+      const days=Number(ui.dataset.v);if(![30,60,90,119].includes(days))return;
+      const previous=S.nextCycleDays;S.nextCycleDays=days;
+      if(save()===false){S.nextCycleDays=previous;render();say("Không thể lưu thời lượng kiếp sau.");return}
+      render();say("Kiếp sau sẽ kéo dài "+days+" ngày.");return;
+    }
     S.ui=S.ui||{};
     if(ui.dataset.ui==="studyOnly"){S.ui.studyOnly=ui.dataset.v==="1";save();root.GameUI.apply(S);render();drawNav();refresh();say(S.ui.studyOnly?"Đã bật chế độ Chỉ học.":"Đã về chế độ đầy đủ.");return}
     S.ui[ui.dataset.ui]=ui.dataset.v;save();root.GameUI.apply(S);render();say("Đã đổi giao diện.");return;

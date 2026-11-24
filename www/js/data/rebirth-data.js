@@ -33,7 +33,7 @@
     const record={
       n:(state.rb||0)+1,name:state.name||"đạo hữu",
       pk:Math.round(Math.max(cycle.pk,state.points)),fin:Math.round(state.points),
-      days:Math.max(1,Math.round((now-cycle.start)/864e5)),hrs:minutes/60,
+      days:Math.max(1,Math.round((now-cycle.start)/864e5)),cycleDays:deps.cycleDays||119,end:deps.end,hrs:minutes/60,
       quests:Object.values(state.cnt||{}).reduce((total,count)=>total+count,0),
       best,ms:cycle.ms,tm:cycle.tm,kn:Object.keys(state.kc||{}).length,
       miles:deps.milestones().filter(([realm])=>realm>0),rank:deps.rank(),

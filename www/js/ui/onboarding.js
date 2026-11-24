@@ -7,7 +7,7 @@
   const showTutorial=deps.showTutorial;
   function askName(){
 const o=$("nmo");
-const g=S.gender==="nu"?"nu":"nam";
+const g=S.gender==="nu"?"nu":"nam",chooseCycle=deps.canChooseFirstCycle?.();
 o.innerHTML=`<div class="box"><h2>Nhập đạo · Chọn hình thể</h2>
   <small>Thiên Đạo cần biết đạo hiệu và hình thể của ngươi. Avatar theo nam hoặc nữ.</small>
   <div class="row" style="margin-top:10px;justify-content:center;gap:16px;flex-wrap:wrap">
@@ -20,6 +20,7 @@ o.innerHTML=`<div class="box"><h2>Nhập đạo · Chọn hình thể</h2>
       <span>Nữ tu</span>
     </button>
   </div>
+  ${chooseCycle?'<div class="first-cycle"><label for="first-cycle"><b>Thời lượng kiếp đầu</b></label><select id="first-cycle"><option value="119" selected>Học kỳ · 119 ngày</option><option value="30">1 tháng · 30 ngày</option><option value="60">2 tháng · 60 ngày</option><option value="90">3 tháng · 90 ngày</option></select></div>':""}
   <div class="row" style="margin-top:12px"><input type="text" id="nmi" maxlength="20" placeholder="Ví dụ: Lăng Vân / Tố Tuyết" value="${S.name||""}"><button class="btn" id="nmk" style="margin-left:0">Nhập đạo</button></div>
 </div>`;
 o.hidden=false;
@@ -38,6 +39,7 @@ o.querySelectorAll(".gender-pick").forEach(btn=>{
 const done=()=>{
   const v=$("nmi").value.replace(/[<>&"'`]/g,"").trim().slice(0,20);
   if(!v){$("nmi").focus();return}
+  if(chooseCycle)deps.chooseFirstCycle(Number($("first-cycle").value));
   S.name=v;S.gender=pick||"nam";
   save();o.hidden=true;render();
   say("Chào mừng "+(S.gender==="nu"?"nữ tu":"đạo hữu")+" "+v+".");

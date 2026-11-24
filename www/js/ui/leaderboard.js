@@ -20,7 +20,7 @@
   else h+=`<small style="display:block;margin-top:6px">${playerMult===1?"Đã trải qua ba lần luân hồi, Thiên Đạo Cân Bằng dành cho đạo hữu đã kết thúc.":"Bạn đã vào top "+(BAL_RANK-1)+"; buff Cân Bằng tắt."} Đứng cuối hiện: ${last.n}.</small>`;
   if(S.lb.log)h+=`<small style="display:block;margin-top:6px">${esc(S.lb.log)}</small>`;
   $("lbhead").innerHTML=h;
-  $("lbgod").hidden=!S.god;if(S.god)$("lbgodi").textContent="Ngày "+Math.floor(getKAge())+"/"+KD+" · chuỗi "+getCurStreak();
+  $("lbgod").hidden=!S.god;if(S.god)$("lbgodi").textContent="Ngày "+Math.floor(getKAge())+"/"+(S.cycleDays||KD)+" · chuỗi "+getCurStreak();
   $("lb").innerHTML=rows.map((r,k)=>{if(!showAll&&k>=20&&!r.u)return "";const b=B[r.i],p=PV[r.n],d=p==null?0:r.s-p;PV[r.n]=r.s;
     const ar=Math.abs(d)<.05?"":`<small style="display:block;color:${d>0?"var(--jade)":"var(--red)"}">${d>0?"▲":"▼"} ${Math.abs(d).toFixed(1)}</small>`;
     const balMark=!r.u&&k+1>=BAL_RANK?` · <span style="color:var(--jade)">Cân Bằng</span>`:(r.u&&balOn?` · <span style="color:var(--jade)">Cân Bằng ×${playerMult}</span>`:"");

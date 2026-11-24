@@ -4,7 +4,7 @@
  function create(deps){
   const {S,uxp,ri,RL,rname,KD,EX,exD,spA,SPQ,exGod,modGain,RW,$}=deps;
   const EXOPEN=deps.EXOPEN||{};
-  const today=deps.today,weekStart=deps.weekStart,kmet=deps.kmet,kAge=deps.kAge,kEnd=deps.kEnd,KS=deps.KS,bk=deps.bestKiep,fold=deps.fold,END=deps.END,doRebirth=deps.doRebirth,say=deps.say,document=deps.document,Blob=deps.Blob,URL=deps.URL,prompt=deps.prompt;
+  const today=deps.today,weekStart=deps.weekStart,kmet=deps.kmet,kAge=deps.kAge,kEnd=deps.kEnd,KS=deps.KS,bk=deps.bestKiep,fold=deps.fold,doRebirth=deps.doRebirth,say=deps.say,document=deps.document,Blob=deps.Blob,URL=deps.URL,prompt=deps.prompt;
   function render(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(100,Math.round((x-lo)/(hi-lo)*100));
   const menh=S.menh==null?100:S.menh;
@@ -13,7 +13,7 @@
     <div class="bar"><i style="width:${menh}%;background:${menh<=20?"var(--red)":"var(--jade)"}"></i></div>
     <small>Thất bại trừ Mệnh theo sức kiếp; chuỗi fail liên tiếp tăng mức trừ (tối đa ×2,5). Hết Mệnh → Trừng Phạt xếp chồng (−5% mỗi lần, tối đa −30%).${S.tdPenalty?` <b style="color:var(--red)">Đang Trừng Phạt −${Math.min(30,5*Math.max(1,S.tdStacks||1))}%${(S.failStreak||0)>1?" · chuỗi fail "+S.failStreak:""}.</b>`:""}${(S.failStreak||0)>0&&!S.tdPenalty?` Chuỗi fail hiện: ${S.failStreak}.`:""}</small></div>`;
   if(S.menhRecovery){const days=root.GameTribulationSystem.recoveryProgress(S,today());h+=`<div class="box"><h2>Tĩnh Tâm Dưỡng Mệnh</h2><small>Thiên lôi lưu thương, lấy chuyên cần dưỡng lại bản nguyên. Sau lần thất bại gần nhất, tu luyện ít nhất 60 phút mỗi ngày trong 3 ngày riêng biệt. Hồi 15 Mệnh một lần, Trừng Phạt và chuỗi thất bại vẫn được giữ.</small><div class="row"><b>${S.menhRecovery.claimed?"Đã viên mãn":Math.min(3,days)+"/3 ngày"}</b><button class="btn" data-a="xr" ${S.menhRecovery.claimed||days<3?"disabled":""}>Dưỡng Mệnh</button></div></div>`}
-  h+=`<div class="box"><small>Thiên kiếp giáng theo ngày trong kiếp hiện tại (tối đa ${KD} ngày): ngày ${EX.map(e=>e.day).join(", ")}. Mỗi thiên kiếp là cửa ải viên mãn một cảnh giới để thăng lên cảnh giới kế. Khi đến hạn sẽ hiện bảng bắt buộc xác nhận. Thất bại trừ Mệnh theo sức mạnh kiếp.</small></div>`;
+  h+=`<div class="box"><small>Thiên kiếp giáng theo ngày trong kiếp hiện tại (tối đa ${S.cycleDays||KD} ngày): ngày ${EX.map(e=>e.day).join(", ")}. Mỗi thiên kiếp là cửa ải viên mãn một cảnh giới để thăng lên cảnh giới kế. Khi đến hạn sẽ hiện bảng bắt buộc xác nhận. Thất bại trừ Mệnh theo sức mạnh kiếp.</small></div>`;
   EX.forEach(e=>{
     const d=exD(e),r=S.sem&&S.sem.res[e.id];
     const penaltyMultiplier=Math.min(2.5,1+0.25*(S.failStreak||0)),predLoss=Math.round((10*e.w+6)*penaltyMultiplier),sk=(spA()&&S.sp.ex===e.id)?S.sp.k:-1,fk=sk===2?SPQ[2].f:1;
@@ -36,15 +36,16 @@
   $("kiep").innerHTML=`<div class="box"><h2>Nhật Kiếp</h2><small>Đổi mỗi ngày, độ khó tăng theo cảnh giới. Vượt đủ ba kiếp được thêm 30 linh lực.</small><ul>${daily.map(row).join("")}</ul></div><div class="box"><h2>Tuần Kiếp</h2><small>Đổi vào thứ Hai. Vượt đủ ba kiếp được 1 Tỉnh Thần Linh Trà.</small><ul>${weekly.map(row).join("")}</ul></div>`;
 }
   function renderRb(){
-  const rb=S.rb||0,left=Math.max(0,Math.ceil(KD-kAge()));let h="";
-  if(kEnd())h=`<div class="box" style="margin-bottom:14px;border-color:var(--gold)"><b>Kiếp này đã khép lại</b><br><small>${S.points>=END?"Đã chứng Chân Tiên, kiếp khép lại đúng kỳ hạn.":"Đã đủ "+KD+" ngày của một kiếp."} Bước vào luân hồi: linh lực về 0, mọi vật phẩm, linh thú, danh hiệu, tông môn và hiệu ứng đều trở về hư không. Bảng NPC cùng thiên kiếp làm lại từ đầu. Không còn hiệu ứng vĩnh viễn từ kiếp trước.</small><div class="row"><button class="btn" style="margin-left:0" data-rb="1">Bước vào luân hồi</button></div></div>`;
+  const days=S.cycleDays||KD,end=RL[RL.length-1][1];
+  const rb=S.rb||0,left=Math.max(0,Math.ceil(days-kAge()));let h="";
+  if(kEnd())h=`<div class="box" style="margin-bottom:14px;border-color:var(--gold)"><b>Kiếp này đã khép lại</b><br><small>${S.points>=end?"Đã chứng Chân Tiên, kiếp khép lại đúng kỳ hạn.":"Đã đủ "+days+" ngày của một kiếp."} Bước vào luân hồi: linh lực về 0, mọi vật phẩm, linh thú, danh hiệu, tông môn và hiệu ứng đều trở về hư không. Bảng NPC cùng thiên kiếp làm lại từ đầu. Không còn hiệu ứng vĩnh viễn từ kiếp trước.</small><div class="row"><button class="btn" style="margin-left:0" data-rb="1">Bước vào luân hồi</button></div></div>`;
   else h=`<small style="display:block;margin:0 2px 10px">Kiếp thứ ${rb+1}, còn ${left} ngày.</small>`;
   $("tmb").insertAdjacentHTML("beforeend",h);
 }
   function renderRbs(){
-  const h=S.rbh||[],cur=KS().pk,best=h.reduce((a,r)=>(!a||r.pk>a.pk)?r:a,null);
+  const h=S.rbh||[];
   const bb=bk(),top=bb.pk>0?"Kiếp "+bb.n+(bb.cur?" (đang tu)":"")+": "+bb.pk+" linh lực":"chưa có";
-  $("rbs").innerHTML=fold("t7","Các Kiếp Trước",`<div class="grid2"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kiếp đỉnh nhất</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${r.pk>=END?"Chân Tiên":rname(r.pk)}. ${r.days} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`,0);
+  $("rbs").innerHTML=fold("t7","Các Kiếp Trước",`<div class="grid2"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kỷ lục linh lực</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${root.GameProgressData.realmName(r.pk,root.GameProgressData.cycleConfig(r.cycleDays).realms)}. ${r.days}/${r.cycleDays||119} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`,0);
 }
   function showThd(r,ask){
   $("thd").innerHTML=`<div class="box"><h2>Kiếp Trước</h2><small>Kiếp thứ ${r.n} · ${r.name}${r.grade?" · Đánh giá: "+r.grade:""}</small>${r.txt.map(x=>`<p style="margin:10px 0">${x}</p>`).join("")}

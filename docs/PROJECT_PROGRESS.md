@@ -1370,3 +1370,26 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] 143/143 kiểm thử tại Asia/Ho_Chi_Minh và UTC; hồi quy mốc cao nhất, tăng nhiều cảnh giới, tụt rồi hồi phục, reload và luân hồi.
 - [x] Edge headless 390 × 844 và 320 × 844 (giảm chuyển động): đã xem ảnh thẻ Trúc Cơ và Kim Đan; tự đóng, không tràn ngang, không chặn tương tác và không lỗi JS. Kiểm thử Android thật còn chờ.
 - [ ] Xác nhận CI/APK sau push. Tiếp theo Stage 3E và Stage 4.
+
+### Xác nhận CI Stage 3D
+
+- [x] Commit 91de98ee8f7e1e6088d9ae500fe8d18c8da2ec3a: JavaScript Tests (45370063269) và Build APK (45370063365) đều completed/success. Artifact APK ID 14909215439 (6.285.243 byte, chưa hết hạn lúc kiểm tra).
+
+## Stage 3E — Chu kỳ tu luyện tùy chọn (2026-11-24)
+
+- Chọn 30, 60, 90 hoặc 119 ngày khi nhập đạo; mặc định học kỳ Việt Nam 119 ngày. Trong kiếp, Cài đặt chỉ chọn thời lượng kiếp sau; luân hồi mới áp dụng. Save cũ mặc định 119 ngày. Lưu thời lượng và ngưỡng Chân Tiên trong sử mỗi kiếp.
+- GameProgressData.cycleConfig tính ngưỡng cảnh giới, ngày và yêu cầu chuyên cần của tám thiên kiếp theo tỷ lệ thời lượng; 119 ngày giữ nguyên toàn bộ ngưỡng gốc. Giữ hệ số và hình phạt Stage 2C, tốc độ 280 linh lực/giờ mặc định, giới hạn học đêm 120 phút. NPC và bảng xếp hạng sử dụng cấu hình kiếp hiện tại.
+- Mô phỏng chỉ học, 280 linh lực/giờ, không tính NPC, vật phẩm, nhàn hạ hoặc hồi Mệnh. Kết quả là linh lực cuối kiếp / số thiên kiếp vượt qua:
+
+| Ngày | Ngưỡng Chân Tiên | 2 giờ/ngày | 4 giờ/ngày | 6 giờ/ngày |
+| --- | ---: | ---: | ---: | ---: |
+| 30 | 50.420 | 23.068 / 1 | 50.312 / 7 | 75.819 / 8 |
+| 60 | 100.840 | 47.549 / 1 | 102.071 / 7 | 154.206 / 8 |
+| 90 | 151.261 | 72.116 / 1 | 154.333 / 8 | 232.608 / 8 |
+| 119 | 200.000 | 95.745 / 1 | 204.379 / 8 | 308.400 / 8 |
+
+- Kiếp ngắn khó hơn đôi chút do quá trình tích chuỗi và làm tròn ngày; thưởng cố định có thể có tác động tương đối lớn hơn. Giữ nguyên luật phạt và cấu hình học kỳ, cần theo dõi bằng thực tế.
+- [x] 145/145 kiểm thử ở Asia/Ho_Chi_Minh và UTC; git diff --check đạt. Hồi quy lựa chọn kiếp đầu, khóa chu kỳ hiện tại, luân hồi, reload, sử kiếp cũ và cấu hình 119 ngày.
+- [x] Edge headless 390 × 844 và 320 × 844: kiểm tra chọn 30 ngày, đặt kiếp sau 60 ngày, luân hồi và reload; không lỗi JS hoặc tràn ngang. Đã xem ảnh nhập đạo và cài đặt tại 320 px. Luân hồi trong QA được kích hoạt trực tiếp.
+- [ ] Xác nhận CI/APK Stage 3E sau push. Nghiệm thu Android thật còn chờ.
+- Tiếp theo Stage 4 — Cá nhân hóa.

@@ -4,7 +4,7 @@
  function create(deps){
   const {S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst}=deps;
   const setStreak=deps.setStreak,curStreak=deps.curStreak,kAge=deps.kAge,storage=deps.storage,location=deps.location,schedule=deps.schedule,getMaxXp=deps.getMaxXp,$=deps.$;
-  function calib(){const o=[];for(const d of [28,56,84,112,KD,126]){const m=d*1440;let s=0;for(let j=0;j<B.length;j++){cum(j,m);s+=CD[j][m]+B[j].p}o.push("Ngày "+d+": NPC trung bình "+Math.round(s/B.length)+" linh lực")}$("gout").textContent="Mốc viên mãn "+END+" ở ngày "+KD+"\n"+o.join("\n")}
+  function calib(){const days=S.cycleDays||KD,o=[];for(const d of [28,56,84,112,119,126].map(d=>Math.round(d*days/119))){const m=d*1440;let s=0;for(let j=0;j<B.length;j++){cum(j,m);s+=CD[j][m]+B[j].p}o.push("Ngày "+d+": NPC trung bình "+Math.round(s/B.length)+" linh lực")}$("gout").textContent="Mốc viên mãn "+getMaxXp()+" ở ngày "+days+"\n"+o.join("\n")}
 function selfCheck(){
   const r=[],ok=(n,c)=>r.push((c?"✓ ":"✗ ")+n),fin=Number.isFinite;
   ok("Linh lực hợp lệ ("+Math.round(S.points)+")",fin(S.points)&&S.points>=0);
@@ -23,7 +23,7 @@ function selfCheck(){
   ok("Linh thú: "+PS.length,PS.every(p=>p.e(1)&&p.e(5)));
   ok("Linh thú đang theo hợp lệ",!S.act||!!(S.pets&&S.pets[S.act]));
   ok("Tên: "+(S.name||"chưa"),true);
-  ok("Kiếp "+KD+" ngày, còn "+Math.max(0,Math.ceil(KD-kAge()))+" ngày",true);
+  ok("Kiếp "+(S.cycleDays||KD)+" ngày, còn "+Math.max(0,Math.ceil((S.cycleDays||KD)-kAge()))+" ngày",true);
   ok("Giờ giả lập: "+(S.hh==null?"thật":S.hh+"h"),true);
   let sz=0;try{sz=(storage.getItem(KEY)||"").length}catch(e){}
   ok("Lưu trữ ("+Math.round(sz/1024)+" KB)",sz>0);
@@ -55,13 +55,13 @@ function runGod(a,btn){
   else if(a==="kc")S.kc={};
   else if(a==="it")ITEMS.filter(i=>!i.once).forEach(i=>S.inv[i.id]=(S.inv[i.id]||0)+3);
   else if(a==="bf"){S.buff={n:5,m:1.25};S.fx=[{n:3,v:30,t:""},{n:2,v:30,t:"q"},{n:2,v:30,t:"l"}];S.xb={u:Date.now()+864e5,v:15};S.tb=Date.now()+864e5;S.sl=1;S.ln=t;S.sh=1;S.lt=15;S.eb=100;S.pw=3;S.kd=t;S.tcCharges=4;S.cbUntil=Date.now()+864e5}
-  else if(a==="k0"){const o=KS().start;KS().start=Date.now()-KD*864e5-1e3;KS().skx=(KS().skx||0)+(o-KS().start)}
+  else if(a==="k0"){const o=KS().start;KS().start=Date.now()-(S.cycleDays||KD)*864e5-1e3;KS().skx=(KS().skx||0)+(o-KS().start)}
   else if(a==="ti")TITLES.forEach(x=>(S.tt||(S.tt={}))[x.id]=Date.now());
   else if(a==="tr"){S.tt={};S.ft=false;S.title=""}
   else if(a==="ic"){S.inv={};S.buff={n:0,m:1};S.fx=[];S.xb=null;S.sh=0;S.lt=0;S.eb=0;S.pw=0;S.sl=0;S.tb=0;S.ln=null;S.kd=null;S.tcCharges=0;S.cbUntil=0}
   else if(a==="hh"){const c=[null,23,6,12];const cur=S.hh==null?null:S.hh;S.hh=c[(c.indexOf(cur)+1)%4]}
   else if(a==="ev")hAdd(t,0,Math.max((S.ev.w||{}).h||10,(S.ev.m||{}).h||40)*60);
-  else if(a==="ex"){S.sem=S.sem||{res:{}};const o=KS().start;KS().start=Date.now()-KD*864e5;KS().skx=(KS().skx||0)+(o-KS().start);S.sem.res={};resolveEx()}
+  else if(a==="ex"){S.sem=S.sem||{res:{}};const o=KS().start;KS().start=Date.now()-(S.cycleDays||KD)*864e5;KS().skx=(KS().skx||0)+(o-KS().start);S.sem.res={};resolveEx()}
   else if(a==="xr"){S.sem=null;S.exLock=null}
   else if(a==="sw"){if(S.sect==null)S.sect=0;const w=warGain();vlog("Thiên Đạo: thắng tông chiến +"+w)}
   else if(a==="js"){S.sect=Math.floor(Math.random()*SECTS.length);S.master=null}

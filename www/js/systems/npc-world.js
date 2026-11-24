@@ -62,7 +62,7 @@
       return false;
     }
     function events(){
-      const day=Math.max(1,Math.min(days,Math.floor(getKAge())+1));
+      const day=Math.max(1,Math.min(S.cycleDays||days,Math.floor(getKAge())+1));
       const period=Math.floor((day-1)/3),life=S.rb||0;
       const out=[];
       for(let p=period;p>=Math.max(0,period-2);p--){

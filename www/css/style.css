@@ -508,3 +508,7 @@ summary:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px so
 .subject-card small,#subject-list .box>small{display:block;margin:6px 0}
 .subject-card .chips{margin-top:10px}
 #subjects .quest-fields{margin:8px 0}
+
+.first-cycle{display:grid;gap:6px;margin-top:14px}
+.first-cycle select{width:100%;min-width:0;min-height:40px}
+#setpanel .ui-opt.cycle-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
