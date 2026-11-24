@@ -48,7 +48,8 @@
   $("rbs").innerHTML=fold("t7","Các Kiếp Trước",`<div class="grid2"><div><span class="lbl">Số kiếp đã qua</span><div class="num">${h.length}</div><small>Đang ở kiếp thứ ${(S.rb||0)+1}</small></div><div><span class="lbl">Kỷ lục linh lực</span><div class="num" style="font-size:18px">${top}</div></div></div>${h.length?`<ul>${h.map((r,i)=>`<li><div class="nm">Kiếp ${r.n}${r.name?" · "+r.name:""}${r.grade?" · "+r.grade:""}<small>Dừng chân ở ${root.GameProgressData.realmName(r.pk,root.GameProgressData.cycleConfig(r.cycleDays).realms)}. ${r.days}/${r.cycleDays||119} ngày, ${r.quests} nhiệm vụ, hạng ${r.rank}, đỉnh ${r.pk} linh lực.</small></div><button class="btn alt" data-vi="${i}">Xem lại</button></li>`).reverse().join("")}</ul>`:""}`,0);
 }
   function showThd(r,ask){
-  $("thd").innerHTML=`<div class="box"><h2>Kiếp Trước</h2><small>Kiếp thứ ${r.n} · ${r.name}${r.grade?" · Đánh giá: "+r.grade:""}</small>${r.txt.map(x=>`<p style="margin:10px 0">${x}</p>`).join("")}
+  const transmissions=root.GameSectSystem.transmissionNames(r.transmissions);
+  $("thd").innerHTML=`<div class="box"><h2>Kiếp Trước</h2><small>Kiếp thứ ${r.n} · ${r.name}${r.grade?" · Đánh giá: "+r.grade:""}</small>${r.txt.map(x=>`<p style="margin:10px 0">${x}</p>`).join("")}${transmissions.length?`<p>Truyền thừa: ${transmissions.join(", ")}</p>`:""}
     <div class="row">
       ${ask?`<button class="btn" style="margin-left:0" id="thr">Bước vào luân hồi</button>`:""}
       <button class="btn alt" style="margin-left:0" id="thx">${ask?"Để sau":"Đóng"}</button>
@@ -58,7 +59,7 @@
   $("thx").onclick=()=>{$("thd").hidden=true};
   if(ask)$("thr").onclick=()=>{$("thd").hidden=true;doRebirth()};
   $("thex").onclick=()=>{
-    const text=["Kiếp Trước","Kiếp "+r.n+" · "+r.name+(r.grade?" · "+r.grade:""),"",...(r.txt||[])].join("\n");
+    const text=["Kiếp Trước","Kiếp "+r.n+" · "+r.name+(r.grade?" · "+r.grade:""),"",...(r.txt||[]),...(transmissions.length?["Truyền thừa: "+transmissions.join(", ")]:[])].join("\n");
     try{
       const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
       const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="phan-quyet-kiep-"+r.n+".txt";a.click();

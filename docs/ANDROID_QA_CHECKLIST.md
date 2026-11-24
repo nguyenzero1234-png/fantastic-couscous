@@ -72,6 +72,11 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Mở hồ sơ Thiên Kiêu, ghi vấn đạo, xem giao tình và tiến độ đồng tu; đổi NPC, xác nhận chỉ ghi một lần/ngày. Hoàn thành rồi hoàn tác nhiệm vụ, đối chiếu mục tiêu và Phong văn.
 - [ ] Đóng/mở app, xuất/nhập backup và luân hồi trên dữ liệu thử nghiệm; xác nhận giao tình được lưu trong kiếp và reset đúng, không thay đổi điểm khi vấn đạo.
 
+## Bổ sung nghiệm thu Stage 5E
+
+- [ ] Mở Tông môn, kiểm tra điều kiện bái sư Cửu U qua năm ngày học thường, xem tiến độ truyền thừa; nhận khi đủ điều kiện, đổi tông và quay lại, xác nhận không nhận trùng.
+- [ ] Kiểm tra lưu/reload, backup và luân hồi trên dữ liệu thử nghiệm; sử kiếp và file phán quyết có tên truyền thừa, linh lực không tăng khi lĩnh ngộ.
+
 ## Tiêu chí đạt
 
 

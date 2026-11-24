@@ -40,6 +40,33 @@ function listJsFiles(dir, prefix = "") {
 const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "runtime/notify.js", "runtime/schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
+test("5E: truyền thừa theo học tập, giới hạn mỗi tông và hoàn tác khi lưu lỗi",()=>{
+  const S={quests:[],points:100,sect:0,master:null,hist:{},streak:{n:0,last:""}};
+  let saved=false;
+  const M=window.GameSectSystem.create({state:S,realmIndex:()=>1,lifeStats:()=>({}),examResults:()=>[],save:()=>saved});
+  for(let i=1;i<=14;i++)S.hist[`2026-11-${String(i).padStart(2,"0")}`]={m:45,p:0};
+  assert.equal(M.transmission().ready,false);
+  assert.equal(M.masters[4].ok(),true);
+  S.master=0;
+  assert.equal(M.transmission().ready,true);
+  assert.equal(M.claimTransmission().claimed,undefined);
+  assert.equal(S.transmissions,undefined);
+  saved=true;
+  assert.equal(M.claimTransmission().claimed,true);
+  assert.equal(M.claimTransmission().claimed,undefined);
+  assert.equal(S.points,100);
+  S.sect=S.master=2;
+  window.GameSubjects.init(S);
+  S.subjects.days={"2026-11-01":Object.fromEntries(S.subjects.list.slice(0,3).map(s=>[s.id,60]))};
+  assert.equal(M.transmission().ready,true);
+  assert.equal(M.claimTransmission().claimed,true);
+  for(const id of [1,3,4,5]){S.sect=S.master=id;assert.equal(M.claimTransmission().claimed,true)}
+  assert.equal(window.GameSectSystem.transmissionNames(S.transmissions).length,6);
+  assert.equal(window.GameStorage.validSave(S),true);
+  assert.equal(window.GameStorage.validSave({...S,transmissions:[0,0]}),false);
+  assert.equal(window.GameStorage.validSave({...S,rbh:[{transmissions:[6]}]}),false);
+});
+
 test("5C: giao tình giới hạn ngày, hoàn tác lưu lỗi và mục tiêu theo lịch sử",()=>{
   const S={quests:[],points:10,hist:{},storyFlags:{},storyLog:[]};
   let day="2026-11-24",saved=false,age=0;

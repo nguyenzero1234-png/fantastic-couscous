@@ -34,7 +34,7 @@ function showSaveWarning(){
 window.addEventListener("game-save-error",showSaveWarning);
 if(GameStateHandle.isWriteBlocked())showSaveWarning();
 const SectSystem=GameSectSystem.create({
- state:S,realmIndex:()=>ri(uxp()),lifeStats:()=>LS(),examResults:()=>xr()
+ state:S,realmIndex:()=>ri(uxp()),lifeStats:()=>LS(),examResults:()=>xr(),save
 });
 const {sects:SECTS,masters:MASTERS,masterBuff}=SectSystem;
 const $=id=>document.getElementById(id);

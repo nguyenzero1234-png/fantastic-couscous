@@ -1421,7 +1421,7 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức (nghiệm thu Android còn chờ).
 - [x] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp (nghiệm thu Android còn chờ).
 - [x] 5C — Mục tiêu, quan hệ và sự kiện NPC (nghiệm thu Android còn chờ).
-- [ ] 5E — Tông môn, sư phụ và truyền thừa.
+- [x] 5E — Tông môn, sư phụ và truyền thừa (nghiệm thu Android còn chờ).
 - [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
 
 ## Stage 5A — Hiệu năng và độ bền save (2026-11-24)
@@ -1459,4 +1459,14 @@ Tiếp theo theo thứ tự ưu tiên:
 - Giao tình tính theo số ngày đã ghi lời vấn đạo với từng NPC: Sơ ngộ, Tương thức (1), Thân quen (3), Tri kỷ (7). Vẫn chỉ ghi một NPC mỗi ngày, lưu thất bại hoàn tác cả giao tình lẫn Đạo Văn, giới hạn 119 lần mỗi NPC, reset khi luân hồi. Save cũ khởi đầu Sơ ngộ, giữ nguyên Đạo Văn cũ. Không cộng buff, linh lực, thưởng hoặc phạt mới; điểm mô phỏng NPC không đổi.
 - [x] 152/152 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt. Hồi quy giới hạn ngày, lưu lỗi, mục tiêu từ lịch sử, reload, luân hồi và dữ liệu không hợp lệ.
 - [x] Edge headless profile riêng tại 390, 320, 280 px: hồ sơ, giao tình, tiến độ, Phong văn, reload và giới hạn ngày đều đạt, không lỗi JS hoặc tràn ngang.
-- [ ] Xác nhận CI/APK sau push và nghiệm thu Android thật. Tiếp theo Stage 5E.
+- [x] CI Stage 5C, commit `d467b015bc30a865dc0c86ea725593b6fa453309`: JavaScript Tests (45381120861), Build APK (45381120935) thành công; artifact APK ID 14913567288 (6.291.083 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Nghiệm thu Android thật.
+
+## Stage 5E — Sư môn truyền thừa (2026-11-24)
+
+- Mỗi tông có một truyền thừa danh dự trong kiếp, cần đang bái sư và đạt mục tiêu từ lịch sử học. Thiên Kiếm: 6 ngày ≥45 phút; Huyền Đan: 10 ngày ≥20 phút; Vạn Pháp: 3 môn ≥60 phút/môn (kể cả môn lưu trữ); Thái Hư: 14 ngày ≥30 phút; Cửu U: 7 ngày ≥30 phút; Bách Thảo: 8 ngày ≥20 phút. Tích lũy ngày không bắt buộc liên tiếp, không yêu cầu học đêm.
+- Mở thêm đường bái sư Cửu U bằng 5 ngày học ≥30 phút/ngày, giữ đường cũ 5 nhiệm vụ đêm và buff +12 linh lực/giờ đêm trong giới hạn 120 phút thưởng hiện hành. Không tăng thưởng đêm, không thay công thức phạt. Truyền thừa không tăng sức mạnh, không hoàn lại lượt nhận khi hoàn tác nhiệm vụ, lưu tối đa sáu ID khác nhau/kiếp và chỉ lưu danh dự khi luân hồi. Save cũ bắt đầu chưa lĩnh ngộ. Khi lưu thất bại, hoàn tác lần nhận.
+- Sử kiếp và bản xuất phán quyết hiển thị tên truyền thừa đã lĩnh ngộ.
+- [x] Edge headless profile riêng tại 390, 320, 280 px: nhận, giới hạn một lần, reload, luân hồi, sử kiếp, không tràn ngang và lỗi JS.
+- [x] 154/154 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [ ] Xác nhận CI/APK và nghiệm thu Android thật.

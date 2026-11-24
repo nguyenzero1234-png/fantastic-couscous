@@ -59,6 +59,8 @@
           <small style="display:block;margin-top:4px;color:var(--mute)">Hủy sẽ mất buff ngay. Có thể bái lại khi đủ điều kiện.</small>`
         :`<div class="row" style="margin-top:10px"><button class="btn" style="margin-left:0" data-a="bai" ${canBai?"":"disabled"}>${canBai?"Bái sư ngay":"Chưa đủ điều kiện"}</button></div>`}
     </div>`;
+    const tr=deps.membership.transmission();
+    h+=`<div class="box"><h2>Truyền thừa</h2><b>${tr.n}</b><small style="display:block;margin-top:4px">${tr.d} · ${tr.progress}/${tr.need}</small><div class="bar"><i style="width:${Math.round(tr.progress/tr.need*100)}%"></i></div><small>Danh dự lưu vào sử kiếp. Cần bái sư để lĩnh ngộ.</small><div class="row"><button class="btn" style="margin-left:0" data-a="inherit" ${tr.ready?"":"disabled"}>${tr.claimed?"Đã lĩnh ngộ":"Lĩnh ngộ"}</button></div></div>`;
     const sms=sectMissions();
     h+=`<div class="box"><h2>Nhiệm vụ tông · tuần này</h2><small>Hoàn thành để nhận linh lực và đóng góp danh dự tông môn. Làm mới mỗi tuần.</small>`+
       sms.map(m=>{const cur=Math.min(m.met(),m.need),got=S.sm&&S.sm.got[m.id];
@@ -80,6 +82,11 @@
     if(!button || button.disabled)return;
     const {a,id}=button.dataset;
     if(a==="sm")return deps.claimMission(id);
+    if(a==="inherit"){
+      const result=deps.membership.claimTransmission();
+      if(result.claimed)deps.refresh();
+      return deps.say(result.message);
+    }
     let result;
     if(a==="sj")result=deps.membership.join(Number(id));
     if(a==="bai")result=deps.membership.apprentice();

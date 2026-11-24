@@ -28,6 +28,9 @@
     if(!optional(value.subjects,v=>global.GameSubjects.valid(v)))return false;
     if(!optional(value.technique,v=>global.GameTechniques.valid(v)))return false;
     if(!optional(value.npcAffinity,v=>record(v)&&Object.entries(v).every(([i,count])=>/^(?:[0-9]|[1-4][0-9])$/.test(i)&&Number.isInteger(count)&&count>=1&&count<=119)))return false;
+    const validTransmissions=v=>Array.isArray(v)&&v.length<=6&&new Set(v).size===v.length&&v.every(id=>Number.isInteger(id)&&id>=0&&id<6);
+    if(!optional(value.transmissions,validTransmissions))return false;
+    if(Array.isArray(value.rbh)&&value.rbh.some(r=>r&&!optional(r.transmissions,validTransmissions)))return false;
     if(value.quests.some(q=>[q.subjectId,q.completion?.subjectId].some(id=>id!==undefined&&id!==null&&(!value.subjects||!global.GameSubjects.find(value,id)))))return false;
     if(value.quests.some(q=>q.completion?.subjectId!==undefined&&!/^\d{4}-\d{2}-\d{2}$/.test(q.completion.day)))return false;
     const maps=["hist","sched","claimed","inv","cnt","ls","life","pets","tt","kc"];

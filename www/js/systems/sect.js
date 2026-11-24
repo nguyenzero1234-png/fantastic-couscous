@@ -10,14 +10,24 @@
     {n:"Cửu U Cốc",d:"Hành sự quỷ dị, thích bất ngờ",lore:"Nằm sâu trong Cửu U U Minh, nơi ánh sáng mặt trời không bao giờ chạm tới. Đệ tử Cửu U Cốc tu luyện pháp môn âm hàn, thích hành động trong bóng tối và bất ngờ. Nhiều người e sợ, nhưng trong lịch sử Cửu Châu, không ít lần chính họ đã ngăn được đại họa mà các chính đạo không dám đối mặt."},
     {n:"Bách Thảo Đường",d:"Y đạo nhân từ, đồng tâm hiệp lực",lore:"Dựng giữa cánh đồng dược thảo bạt ngàn, Bách Thảo Đường lấy «cứu người» làm tông chỉ. Đệ tử không chỉ giỏi y đạo mà còn hợp lực thành trận, lấy nhu thắng cương. Trong tông môn chiến, họ ít khi dẫn đầu về sát thương, nhưng luôn là chỗ dựa vững chắc khi đồng đạo gặp nạn."}
   ];
-  function create({state,realmIndex,lifeStats,examResults}){
+  const TRANSMISSIONS=[
+    {n:"Kiếm Tâm Minh Ngộ",d:"6 ngày học từ 45 phút",need:6,minutes:45},
+    {n:"Đan Tâm Kiên Định",d:"10 ngày học từ 20 phút",need:10,minutes:20},
+    {n:"Bách Pháp Quy Nhất",d:"3 môn học từ 60 phút mỗi môn",need:3},
+    {n:"Thái Hư Định Tâm",d:"14 ngày học từ 30 phút",need:14,minutes:30},
+    {n:"U Minh Tĩnh Chiếu",d:"7 ngày học từ 30 phút",need:7,minutes:30},
+    {n:"Thanh Liên Dưỡng Đạo",d:"8 ngày học từ 20 phút",need:8,minutes:20}
+  ];
+  function create({state,realmIndex,lifeStats,examResults,save=()=>true}){
     const S=state;
+    const studyDays=minutes=>Object.values(S.hist||{}).filter(day=>day.m>=minutes).length;
+    const canU=()=>studyDays(30)>=5||(lifeStats().ni||0)>=5;
     const MASTERS=[
       {n:"Kiếm Tôn Bạch Hồng",title:"Trưởng lão Thiên Kiếm",req:"Trúc Cơ trở lên và tổng ≥8 nhiệm vụ",ok:()=>realmIndex()>=1&&(lifeStats().q||0)>=8,okTxt:()=>realmIndex()>=1&&(lifeStats().q||0)>=8?"Đã đủ điều kiện":"Cần Trúc Cơ + ≥8 nhiệm vụ",buff:"+8 linh lực mỗi giờ học trong phiên từ 45 phút",apply:()=>({fl:8})},
       {n:"Đan Thánh Huyền Cơ",title:"Thái thượng trưởng lão Huyền Đan",req:"Dùng ≥3 vật phẩm và chuỗi ≥3 ngày",ok:()=>(lifeStats().it||0)>=3&&(S.streak.n||0)>=3,okTxt:()=>(lifeStats().it||0)>=3&&(S.streak.n||0)>=3?"Đã đủ điều kiện đan đạo":"Cần dùng ≥3 vật phẩm + chuỗi 3 ngày",buff:"Mỗi lần dùng vật phẩm +10 linh lực",apply:()=>({itemBonus:10})},
       {n:"Pháp Tôn Vạn Tượng",title:"Các chủ Vạn Pháp",req:"Hoàn thành ≥15 nhiệm vụ",ok:()=>(lifeStats().q||0)>=15,okTxt:()=>(lifeStats().q||0)>=15?"Đã đủ kinh nghiệm":"Cần ≥15 nhiệm vụ",buff:"+5% linh lực mọi nhiệm vụ",apply:()=>({mult:1.05})},
       {n:"Thái Hư Lão Tổ",title:"Điện chủ Thái Hư",req:"Chuỗi ≥7 ngày và không tâm ma",ok:()=>(S.streak.n||0)>=7&&!S.tm,okTxt:()=>(S.streak.n||0)>=7&&!S.tm?"Đạo tâm đủ tĩnh":"Cần chuỗi ≥7 ngày, không tâm ma",buff:"Giảm 15% chi phí đổi nhàn hạ",apply:()=>({dc:15})},
-      {n:"U Minh Quỷ Tôn",title:"Cốc chủ Cửu U",req:"≥5 nhiệm vụ đêm (22h–5h)",ok:()=>(lifeStats().ni||0)>=5,okTxt:()=>(lifeStats().ni||0)>=5?"Đã quen bóng tối":"Cần ≥5 nhiệm vụ đêm",buff:"Học đêm +12 linh lực/giờ, tối đa 2 giờ thưởng mỗi đêm",apply:()=>({fn:12})},
+      {n:"U Minh Quỷ Tôn",title:"Cốc chủ Cửu U",req:"5 ngày học từ 30 phút hoặc ≥5 nhiệm vụ đêm",ok:canU,okTxt:()=>canU()?"Đã đủ điều kiện":"Cần 5 ngày tu luyện từ 30 phút hoặc 5 nhiệm vụ đêm",buff:"Học đêm +12 linh lực/giờ, tối đa 2 giờ thưởng mỗi đêm",apply:()=>({fn:12})},
       {n:"Dược Vương Thanh Liên",title:"Đường chủ Bách Thảo",req:"1 thiên kiếp từ Khá trở lên",ok:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&me.ok===true&&["Xuất sắc","Giỏi","Khá"].includes(me.g)}),okTxt:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&me.ok===true&&["Xuất sắc","Giỏi","Khá"].includes(me.g)})?"Đã đủ":"Cần 1 thiên kiếp từ Khá trở lên",buff:"Khi có tâm ma, +8 linh lực mỗi giờ học",apply:()=>({ft:8})}
     ];
     function masterBuff(){
@@ -47,9 +57,27 @@
       S.master=null;
       return {log:"Hủy bái sư",message:"Đã hủy bái sư. Buff sư phụ không còn hiệu lực."};
     }
-    return {sects:SECTS,masters:MASTERS,masterBuff,join,apprentice,leaveMaster};
+    function transmission(){
+      const id=S.sect,def=TRANSMISSIONS[id];
+      if(!def)return null;
+      const progress=def.minutes?studyDays(def.minutes):(S.subjects?.list||[]).filter(s=>root.GameSubjects.minutes(S,s.id)>=60).length;
+      const claimed=(S.transmissions||[]).includes(id);
+      return {...def,id,progress:Math.min(progress,def.need),claimed,ready:!claimed&&S.master===id&&progress>=def.need};
+    }
+    function claimTransmission(){
+      const item=transmission();
+      if(!item?.ready)return {message:"Chưa thể nhận truyền thừa."};
+      const previous=S.transmissions;
+      S.transmissions=[...(previous||[]),item.id];
+      if(save()===false){
+        if(previous===undefined)delete S.transmissions;else S.transmissions=previous;
+        return {message:"Chưa lưu được truyền thừa. Hãy thử lại."};
+      }
+      return {claimed:true,message:"Đã lĩnh ngộ 「"+item.n+"」."};
+    }
+    return {sects:SECTS,masters:MASTERS,masterBuff,join,apprentice,leaveMaster,transmission,claimTransmission};
   }
-  root.GameSectSystem={create};
+  root.GameSectSystem={create,transmissionNames:ids=>Array.isArray(ids)?ids.filter(id=>Number.isInteger(id)&&TRANSMISSIONS[id]).map(id=>TRANSMISSIONS[id].n):[]};
 })(typeof window!=="undefined"?window:globalThis);
 
 

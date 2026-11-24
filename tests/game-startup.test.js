@@ -614,6 +614,21 @@ test("5B: Tĩnh Tâm Quyết chỉ thưởng timer đủ thời lượng vào ba
  assert.equal(Object.keys(f.saved().technique.days).length,1);
 });
 
+test("5E: nhận truyền thừa tại tông môn, reload và lưu sử kiếp",()=>{
+ const f=timerFixture();
+ f.run("S.sect=S.master=0;for(let i=1;i<=6;i++)S.hist['2026-11-0'+i]={m:45,p:0};save();renderSect()");
+ assert.match(getNode("sect").innerHTML,/Kiếm Tâm Minh Ngộ/);
+ getNode("sect").onclick({target:{closest:()=>({dataset:{a:"inherit"},disabled:false})}});
+ assert.deepEqual(f.saved().transmissions,[0]);
+ assert.match(getNode("sect").innerHTML,/Đã lĩnh ngộ/);
+ f.reload();f.run("renderSect()");
+ assert.match(getNode("sect").innerHTML,/Đã lĩnh ngộ/);
+ f.run("doRebirth()");
+ assert.equal(f.saved().transmissions,undefined);
+ assert.deepEqual(f.saved().rbh.at(-1).transmissions,[0]);
+ assert.match(getNode("thd").innerHTML,/Truyền thừa: Kiếm Tâm Minh Ngộ/);
+});
+
 test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong văn theo kiếp",()=>{
  const f=timerFixture();
  const openNpc=i=>getNode("lb").onclick({target:{closest:()=>({dataset:{pi:String(i)}})}});
