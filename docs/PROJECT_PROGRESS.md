@@ -1263,5 +1263,6 @@ Tiếp theo theo thứ tự ưu tiên:
 - Báo cáo đầy đủ và số liệu mô phỏng: [STAGE_2_BALANCE_REPORT.md](STAGE_2_BALANCE_REPORT.md). Tái chạy mô phỏng bằng `node tests/balance-sim.cjs`. Tag phục hồi `stage2-pre-balance-b0811e3`.
 - Ghi chú trì hoãn: chu kỳ học kỳ mặc định giữ 119 ngày; tùy chọn một tháng và các chu kỳ khác sẽ thiết kế sau.
 - [x] Kiểm thử cục bộ 134/134 ở UTC và Asia/Ho_Chi_Minh; git diff --check đạt; mô phỏng 119 ngày thành công.
-- [ ] Xác nhận CI/APK đúng commit Stage 2C.
+- [x] Commit cục bộ `6b56dacf99516201528507e6aaa614e482f59b72` chứa mã Stage 2C, báo cáo và kiểm thử. Tag phục hồi đã xác minh trỏ đúng Stage 2B.
+- [ ] Push và xác nhận CI/APK đúng commit Stage 2C. Xét duyệt tự động từ chối push vào `nguyenzero1234-png/fantastic-couscous` dù đã xác minh remote theo dõi đúng nhánh; cần xác nhận quyền gửi mã nguồn Stage 2C và tag đến repo này. Chưa có build APK Stage 2C mới.
 - [ ] Nghiệm thu Android thật và duyệt số liệu cân bằng trước khi triển khai Đợt D.
