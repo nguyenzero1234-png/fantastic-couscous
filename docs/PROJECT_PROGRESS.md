@@ -1214,3 +1214,10 @@ Phần còn lại: kiểm thử tương tác trên trình duyệt/Android, build
 
 - Microsoft Edge headless, profile thử nghiệm độc lập: đạt 11/11 kiểm tra DOM và thao tác thật (lịch tuần, thêm/hoàn thành nhiệm vụ, tạo chuỗi, lịch lặp, đổi skin, tạo/xóa draft kỳ sự, từ chối JSON lỗi, đọc file backup sau render, reload khôi phục đúng điểm).
 - Android SDK chưa được phát hiện cục bộ; sử dụng workflow Build APK trên GitHub Actions sau khi push. Kiểm thử APK trên thiết bị và trạng thái CI cần xác nhận riêng.
+
+### Tự động build APK (2026-11-24)
+
+- Commit 100c949 đã push lên stage-1/foundation; JavaScript Tests thành công (run 45325396537).
+- Workflow Build APK tự chạy khi push thay đổi www/, tests/, package/lock, capacitor.config.json hoặc chính workflow lên main và các nhánh stage-*/**. Giữ workflow_dispatch để build thủ công. Thay đổi chỉ tài liệu không kích hoạt build.
+- APK debug được lưu trong artifact TuTienHocDao-apk sau khi kiểm thử và audit đạt. Workflow báo lỗi nếu thiếu APK.
+- Cần xác minh lần build tự động đầu tiên và kiểm thử trên thiết bị Android.
