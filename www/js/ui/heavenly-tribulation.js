@@ -2,7 +2,8 @@
 (function(root){
  "use strict";
  function create(deps){
-  const {S,uxp,ri,RL,rname,KD,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$}=deps;
+  const {S,uxp,ri,RL,rname,KD,EX,exD,spA,SPQ,exGod,modGain,RW,$}=deps;
+  const EXOPEN=deps.EXOPEN||{};
   const today=deps.today,weekStart=deps.weekStart,kmet=deps.kmet,kAge=deps.kAge,kEnd=deps.kEnd,KS=deps.KS,bk=deps.bestKiep,fold=deps.fold,END=deps.END,doRebirth=deps.doRebirth,say=deps.say,document=deps.document,Blob=deps.Blob,URL=deps.URL,prompt=deps.prompt;
   function render(){
   const x=uxp(),k=ri(x),lo=RL[k][1],hi=RL[k+1]?RL[k+1][1]:lo+1,p=Math.min(100,Math.round((x-lo)/(hi-lo)*100));
@@ -67,7 +68,55 @@
     }catch(e){prompt("Sao chép phán quyết:",text)}
   };
 }
-  return Object.freeze({render,renderKiep,renderRb,renderRbs,showThd});
+    function showTdLenh(){
+    const name=S.name||"đạo hữu",st=Math.max(1,S.tdStacks||1),pct=Math.min(30,5*st);
+    $("thd").innerHTML=`<div class="box" style="border-color:var(--red)"><h2>Thiên Đạo Lệnh Bảng</h2>
+      <small>Thiên chỉ · Lần thứ ${st}</small>
+      <p style="margin:12px 0;line-height:1.6">${name}. Tên đã được đọc. Không có lý do nào khác.</p>
+      <p style="margin:10px 0;line-height:1.6">Mệnh cạn không do ai rút. Nó chảy hết vì không có gì chắn. Thiên kiếp đến, gục. Thiên kiếp lại đến, gục. Xác thân còn đứng, linh căn đã tắt.</p>
+      <p style="margin:10px 0;line-height:1.6">Cán cân nghiêng thì Thiên Đạo ghi lại. Không giận, không thương. <b>Thiên Đạo Trừng Phạt</b> áp xuống (chồng lần ${st}):</p>
+      <p style="margin:10px 0;line-height:1.6">• Mọi nguồn linh lực thu về bị bớt <b>${pct}%</b> (mỗi lần Mệnh cạn thêm 5%, tối đa 30%).<br>• Gục thêm một lần, Mệnh mất thêm một phần. Không ai đếm hộ.<br>• Mệnh nằm ở 0 cho đến khi tự đứng dậy.</p>
+      <p style="margin:10px 0;line-height:1.6">Điều kiện gỡ: một kiếp <b>viên mãn</b>, mọi thiên kiếp từ <b>Khá</b> trở lên. Không có đường tắt. Không có ngoại lệ.</p>
+      <p style="margin:12px 0;font-style:italic;color:var(--mute)">Cửa không đóng. Cũng không có ai đứng chờ ở cửa.</p>
+      <div class="row"><button class="btn" style="margin-left:0" id="thx">Kính tuân</button></div>
+    </div>`;
+    $("thd").hidden=false;
+    $("thx").onclick=()=>{$("thd").hidden=true};
+  }
+
+  function bindEvents(){
+    $("exams").onclick=e=>{
+      const toggle=e.target.closest("[data-a=xl]");
+      if(toggle){
+        const id=toggle.dataset.id,list=toggle.parentNode.querySelector("ul.exl");
+        EXOPEN[id]=!EXOPEN[id];
+        if(list)list.classList.toggle("open",!!EXOPEN[id]);
+        toggle.textContent=EXOPEN[id]?"Thu gọn":"Xem đủ "+(list?list.children.length:0)+" người";
+        return;
+      }
+      const simulation=e.target.closest("[data-a=xm]");
+      const claim=e.target.closest("[data-a=xc]");
+      if(simulation)deps.simulateExam(simulation.dataset.id);
+      else if(claim)deps.claimExam(claim.dataset.id);
+    };
+    $("kiep").onclick=e=>{
+      const button=e.target.closest("button[data-k]");
+      if(button&&!button.disabled)deps.claimTrial(button.dataset.k,button.dataset.r);
+    };
+    $("tmb").onclick=e=>{
+      const button=e.target.closest("button[data-rb]");
+      if(!button)return;
+      if(!button.dataset.arm){
+        button.dataset.arm=1;button.textContent="Bấm lần nữa để xác nhận";return;
+      }
+      doRebirth();
+    };
+    $("rbs").onclick=e=>{
+      const button=e.target.closest("[data-vi]");
+      if(button&&S.rbh&&S.rbh[+button.dataset.vi])showThd(S.rbh[+button.dataset.vi]);
+    };
+  }
+  return Object.freeze({render,renderKiep,renderRb,renderRbs,showThd,showTdLenh,bindEvents});
  }
  root.GameTribulationUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

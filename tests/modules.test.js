@@ -37,7 +37,7 @@ function listJsFiles(dir, prefix = "") {
     return entry.isFile() && entry.name.endsWith(".js") ? [name] : [];
   });
 }
-const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "notify.js", "schedule.js"].includes(file));
+const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "runtime/notify.js", "runtime/schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
 test("tất cả script JavaScript trong www/js parse được", () => {
@@ -50,6 +50,12 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
   const names = scriptNames;
   const gameIndex = names.indexOf("game.js");
   assert.notEqual(gameIndex, -1, "game.js phải được khai báo");
+  const layers = ["core", "data", "systems", "ui"].map(layer =>
+    names.map((name, index) => name.startsWith(layer + "/") ? index : -1).filter(index => index >= 0)
+  );
+  for (let i = 1; i < layers.length; i++) {
+    assert.ok(Math.max(...layers[i - 1]) < Math.min(...layers[i]), "thứ tự core → data → systems → ui");
+  }
   assert.equal(new Set(names).size, names.length, "không được nạp trùng script");
   for (const name of names) {
     assert.ok(fs.existsSync(path.join(root, "www", "js", name)), name + " phải tồn tại trong www");
@@ -60,32 +66,36 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
   }
   assert.ok(names.indexOf("core/storage.js") < names.indexOf("core/state.js"));
   assert.equal(names.indexOf("core/state.js"), names.indexOf("core/storage.js") + 1, "core/state.js phải nạp ngay sau core/storage.js");
-  const compatibilityPairs = [
-    ["data/progression-data.js", "progression-data.js"],
-    ["data/npc-data.js", "npc-data.js"],
-    ["data/npc-roster.js", "npc-roster.js"],
-    ["data/kiep-nan-data.js", "kiep-nan-data.js"],
-    ["data/diary-data.js", "diary-data.js"],
-    ["data/leaderboard-data.js", "leaderboard-data.js"],
-    ["data/item-data.js", "item-data.js"],
-    ["data/rebirth-data.js", "rebirth-data.js"],
-    ["data/cultivation-display-data.js", "cultivation-display-data.js"],
-    ["data/story-data.js", "story-data.js"],
-    ["systems/quests.js", "quest-data.js"],
-    ["systems/pets.js", "pet-data.js"],
-    ["systems/rewards.js", "rewards.js"],
-    ["systems/streak.js", "streak.js"],
-    ["systems/analytics.js", "analytics.js"],
-    ["systems/legacy-missions.js", "legacy-missions.js"],
-    ["systems/sect.js", "sect-war.js"],
-    ["systems/sect.js", "sect-missions.js"],
-    ["systems/quest-completion.js", "quest-completion.js"],
-    ["ui/pets.js", "pet-ui.js"],
-    ["ui/exam-modal.js", "exam-modal.js"]
+  assert.deepEqual(listJsFiles(jsDir).filter(file => !file.includes("/")), ["game.js"], "chỉ game.js nằm ở gốc www/js");
+  assert.deepEqual([...names].sort(), listJsFiles(jsDir).sort(), "mỗi file JS phải được khai báo đúng một lần");
+  const exportedGlobals = [
+    "GameAnalytics",
+    "GameCultivationDisplayData",
+    "GameDiaryData",
+    "GameExamModal",
+    "GameItemData",
+    "GameKiepNanData",
+    "GameLeaderboardData",
+    "GameLegacyMissions",
+    "GameNpcData",
+    "GameNpcRoster",
+    "GamePetData",
+    "GamePetUI",
+    "GameProgressData",
+    "GameQuestCompletion",
+    "GameQuestData",
+    "GameRebirthData",
+    "GameRewards",
+    "GameSectMissions",
+    "GameSectWar",
+    "GameStorage",
+    "GameStoryData",
+    "GameStreak",
+    "GameTimer",
+    "GameUI",
   ];
-  for (const [implementation, compatibility] of compatibilityPairs) {
-    assert.ok(names.indexOf(implementation) !== -1, implementation + " phải được khai báo");
-    assert.ok(names.indexOf(compatibility) > names.indexOf(implementation), compatibility + " phải nạp sau implementation");
+  for (const name of exportedGlobals) {
+    assert.ok(window[name], name + " phải được module chính khởi tạo");
   }
   for (const helper of ["core/time-format.js", "core/date.js", "core/noise.js", "core/text.js"]) {
     assert.ok(names.includes(helper), helper + " phải được nạp từ core");
@@ -93,10 +103,7 @@ test("mọi script được khai báo đều tồn tại trong www và module n�
   assert.ok(names.indexOf("ui/preferences.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/game-loop.js") < names.indexOf("game.js"));
   assert.ok(names.indexOf("core/state.js") < gameIndex);
-  for (const name of ["notify.js", "schedule.js"]) {
-    assert.ok(names.includes(name), name + " phải được khai báo");
-    assert.ok(names.indexOf(name) > gameIndex, name + " phải nạp sau game.js");
-  }
+  assert.deepEqual(names.slice(gameIndex + 1), ["runtime/notify.js", "runtime/schedule.js"], "runtime nạp sau game.js theo đúng thứ tự");
 });
 
 test("GameUI áp dụng tùy chọn giao diện và xóa thuộc tính mặc định", () => {
@@ -909,6 +916,39 @@ test("rebirth previousMemory định dạng ký ức kiếp trước và xử l�
     "Ký ức kiếp trước: đỉnh 500 linh lực.");
 });
 
+test("rebirth buildRecord tổng kết kiếp và xét ân xá theo điểm thiên kiếp", () => {
+  const now = new Date(2026, 10, 24, 12).getTime();
+  const state = {
+    name: "Lăng Vân", points: 1000, rb: 1, tdPenalty: true,
+    hist: { "2026-11-24": { p: 500, m: 360 }, "2026-11-23": { p: 500, m: 360 } },
+    cnt: { "2026-11-23": 3, "2026-11-24": 2 },
+    sem: { res: { tl: { rows: [{ u: true, g: "Khá" }] } } }
+  };
+  const deps = {
+    now: () => now, cycle: () => ({ start: now - 2 * 864e5, pk: 1000, ms: 2, tm: 0 }),
+    pets: [], titles: [], npcs: [{}, {}], npcXp: index => [500, 600][index],
+    milestones: () => [[0, now - 864e5], [1, now]], rank: () => 3,
+    lifeStats: () => ({ it: 2 }), end: 1000,
+    realms: [["Luyện Khí", 0], ["Chân Tiên", 1000]], realmName: () => "Chân Tiên"
+  };
+  const build = window.GameRebirthData.buildRecord;
+  const record = build(state, deps);
+  assert.equal(record.n, 2);
+  assert.equal(record.hrs, 12);
+  assert.equal(record.quests, 5);
+  assert.equal(record.best.d, "2026-11-23");
+  assert.equal(record.miles.length, 1);
+  assert.equal(record.npc, 550);
+  assert.equal(record.grade, "Viên Mãn Xuất Chúng");
+  assert.equal(record.anXa, true);
+  assert.match(record.txt.join("\n"), /Ân Xá/);
+
+  state.sem.res.tl.rows[0].g = "Trung bình";
+  const penalized = build(state, deps);
+  assert.equal(penalized.anXa, false);
+  assert.match(penalized.txt.join("\n"), /Trừng Phạt vẫn còn/);
+});
+
 test("progression examConditions giữ nguyên điều kiện đạt điểm tối đa", () => {
   const P = window.GameProgressData;
   const exam = { a: 0.7, bm: 30, chuan: 1000, ls: 10 };
@@ -1180,7 +1220,7 @@ test("GameCultivationDisplayData giữ nguyên bảng màu cảnh giới và câ
 
 test("GameFortuneData cung cấp đủ dữ liệu cơ duyên theo giờ", () => {
   const D = window.GameFortuneData;
-  assert.equal(D.epoch, Date.parse("2026-01-01T00:00:00Z"));
+  assert.equal(D.epoch, new Date(2026, 0, 1).getTime());
   assert.equal(D.events.length, 6);
   assert.equal(D.effects.length, 6);
   assert.equal(D.events[0][0], "Thiên Cơ Hiện Thế");
@@ -1409,9 +1449,11 @@ test("GameEventsUI render sự kiện tuần/tháng và Kỳ Sự Cửu Châu",(
 
 test("GameActivityUI render lịch học, bảo khố và chuỗi nhiệm vụ",()=>{
  const nodes={lq:{value:"",innerHTML:""},now:{innerHTML:""},nowbar:{hidden:false,textContent:""},slots:{innerHTML:""},shop:{innerHTML:""},inv:{innerHTML:""},buff:{textContent:""},titles:{innerHTML:""},chains:{innerHTML:""}};
- const S={sched:{},quests:[],inv:{},dailyBought:{},points:1000,chains:[],ui:{},claimed:{}};
- const M=window.GameActivityUI.create({S,nowHM:()=>"12:00",today:()=>"2026-11-24",tm:()=>720,isDone:()=>false,sq:()=>null,rn:x=>x.label||"",ITEMS:[{id:"x",c:10,n:"Tâm Đan",d:"Tăng linh lực",use:false,once:false}],IC:{x:"✦"},buffTxt:()=>"Không có buff",TITLES:[],nwS:()=>({t:{}}),escapeHtml:x=>String(x),isExpired:()=>false,isUnlocked:()=>true,isTitleUnlocked:()=>false,renderStepRow:()=>"step",$:id=>nodes[id]});
- M.renderSchedule();M.renderShop();M.renderChains();
+ const S={sched:{},quests:[],inv:{},dailyBought:{},points:1000,chains:[],ui:{},claimed:{},buff:{n:0,m:1}};
+ const M=window.GameActivityUI.create({S,nowHM:()=>"12:00",today:()=>"2026-11-24",tm:()=>720,isDone:()=>false,sq:()=>null,rn:x=>x.label||"",ITEMS:[{id:"x",c:10,n:"Tâm Đan",d:"Tăng linh lực",use:false,once:false}],IC:{x:"✦"},masters:[],TITLES:[],nwS:()=>({t:{}}),escapeHtml:x=>String(x),isExpired:()=>false,isUnlocked:()=>true,isTitleUnlocked:()=>false,remaining:()=>"",renderStepRow:()=>"step",$:id=>nodes[id]});
+ M.renderSchedule();M.renderChains();
+ const inventory=window.GameInventoryUI.create({S,today:()=>"2026-11-24",ITEMS:[{id:"x",c:10,n:"Tâm Đan",d:"Tăng linh lực",use:false,once:false}],IC:{x:"✦"},masters:[],TITLES:[],nwS:()=>({t:{}}),isTitleUnlocked:()=>false,remaining:()=>"", $:id=>nodes[id]});
+ inventory.render();
  assert.match(nodes.now.innerHTML,/Không có việc trong khung giờ này/);
  assert.match(nodes.shop.innerHTML,/Tâm Đan/);
  assert.match(nodes.chains.innerHTML,/Chưa có chuỗi/);
@@ -1606,6 +1648,18 @@ test("GameRewardClaims nhận kỳ ngộ và điểm danh qua dependency",()=>{
  assert.equal(M.checkin(),false);assert.equal(S.points,50);
 });
 
+
+test("tạo chuỗi chỉ ghi khi đủ hai bước và bỏ qua chuỗi mẫu đã có",()=>{
+ const state={chains:[],quests:[],perHour:120};
+ const {addChain,addPresetChains}=window.GameQuestData;
+ assert.equal(addChain(state,"Ôn bài",["Đọc | 20"," | 15"],"c1"),0);
+ assert.equal(state.chains.length+state.quests.length,0);
+ const presets=[["Ôn bài",["Đọc | 20","Viết | 30"]]];
+ assert.equal(addPresetChains(state,presets),1);
+ assert.equal(addPresetChains(state,presets),0);
+ assert.deepEqual(state.quests.map(step=>step.pts),[40,60]);
+ assert.ok(state.quests.every(step=>step.chain===state.chains[0].id));
+});
 
 test("game.js defers injected feature factories until dependencies are initialized",()=>{
  const source=fs.readFileSync(path.join(jsDir,"game.js"),"utf8"),init=source.indexOf("/* Dependency-injected feature modules are created only after their full dependency set is initialized. */");

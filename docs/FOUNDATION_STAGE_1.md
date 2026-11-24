@@ -2,6 +2,48 @@
 
 Phạm vi của nhánh `stage-1/foundation`: giảm rủi ro mất dữ liệu và chuẩn bị nền cho các lần tách module tiếp theo, không thay đổi luật chơi hay cấu trúc dữ liệu đang dùng.
 
+## Bản đồ module hiện tại (2026-11-24)
+
+Ưu tiên tổ chức theo chức năng gameplay. Khi sửa một tính năng, đọc module sở hữu luật chơi và module giao diện tương ứng trước; chỉ đọc `game.js` khi cần kiểm tra kết nối giữa các hệ thống.
+
+Các đường dẫn trong bảng tính từ `www/js/`.
+
+~~~text
+www/js/
+  core/       # state, lưu trữ, thời gian, âm thanh và tiện ích chung
+  data/       # cấu hình, danh mục và dữ liệu tĩnh
+  systems/    # luật chơi và nghiệp vụ gameplay
+  ui/         # giao diện theo chức năng
+  runtime/    # thông báo và lịch tuần chạy sau bootstrap
+  game.js     # điểm vào và điều phối
+~~~
+
+Chỉ giữ `game.js` ở thư mục gốc. Các file compatibility guard cũ đã được bỏ sau khi kiểm tra các API toàn cục và thứ tự nạp.
+
+| Chức năng | Dữ liệu và luật chơi | Giao diện |
+|---|---|---|
+| Bảo khố, kho đồ, danh hiệu | `data/item-data.js`, `systems/items.js` (mua, dùng, mở khóa và trang bị danh hiệu) | `ui/inventory.js` |
+| Cảnh giới, thiên kiếp, Mệnh, luân hồi | `data/progression-data.js`, `systems/tribulation.js`, `data/rebirth-data.js` | `ui/heavenly-tribulation.js`, `ui/exam-modal.js` |
+| Linh thú | `systems/pets.js` (danh sách, cấp thú, buff, tích lũy) | `ui/pets.js` |
+| Nhiệm vụ học và chuỗi nhiệm vụ | `data/quest-data.js`, `systems/quests.js`, `systems/quest-completion.js` | `ui/activities.js` (render, thao tác nhiệm vụ/chuỗi, preset và bộ dán) |
+| Phần thưởng, chuỗi ngày, tâm ma | `systems/rewards.js`, `systems/streak.js` | `ui/activities.js`, `ui/heavenly-tribulation.js` |
+| Lịch học, điểm danh, kỳ ngộ | `data/schedule-data.js`, `runtime/schedule.js`, `systems/rewards.js` | `ui/activities.js` |
+| Sự kiện tuần/tháng, kỳ sự | `systems/rewards.js`, analytics | `ui/events.js` (render, thao tác và draft kỳ sự) |
+| Thông báo, âm thanh | `runtime/notify.js`, `core/audio.js` | Cài đặt và lịch học |
+| NPC và bảng Thiên Kiêu | `data/npc-data.js`, `data/npc-roster.js`, `data/leaderboard-data.js`, `systems/leaderboard.js` | `ui/leaderboard.js`, `ui/opportunity-stats.js`, `ui/profile.js` |
+| Tông môn | `systems/sect.js` (bao gồm tông chiến và nhiệm vụ tông môn) | `ui/sect.js` |
+| Lưu trạng thái và sao lưu | `core/state.js`, `core/storage.js` | `ui/settings.js` (cài đặt, xuất/nhập backup) |
+| Thiên Đạo (god mode) | `systems/god-mode.js` | `ui/god-mode.js` |
+
+Quy ước cho các lần refactor tiếp theo:
+
+- Gom cả luồng nghiệp vụ vào module chức năng đã có; tạo file mới khi có miền trách nhiệm riêng rõ ràng. Tránh tạo file cho từng helper hoặc tách hàm chỉ vì muốn giảm số dòng.
+- Dữ liệu và công thức có một nơi chính để chỉnh sửa. UI chịu trách nhiệm hiển thị, đọc thao tác người chơi và gọi system. `game.js` kết nối module, trạng thái, lưu và render; các wrapper còn được giữ để tương thích trong quá trình chuyển đổi.
+- `index.html` nạp core → data → systems → UI → `game.js` → `runtime/notify.js` → `runtime/schedule.js`. Các factory phải được khởi tạo sau khi dependency cần thiết sẵn sàng. Mỗi file JS chỉ được khai báo một lần.
+- Sau khi chuyển một chức năng, kiểm tra đường đi từ nút giao diện đến cập nhật state và save bằng `npm test`; cập nhật tiến độ và vị trí code trong `docs/PROJECT_PROGRESS.md`.
+
+Vòng đời state: `GameState.create()` sở hữu một state duy nhất cho mỗi lần khởi động; các factory nhận cùng tham chiếu. Nhập backup đi qua `GameStateHandle.importBackup()`, khóa save của vòng đời cũ sau khi ghi thành công, rồi reload để khởi tạo lại cache, timer và UI. Lịch tuần được điều phối qua `GameWeeklySchedule.render()` và `importSchedule()`; render lịch ngày chỉ dùng trong lần boot trước runtime. Những phần ghi dưới đây là lịch sử các đợt triển khai trước; dùng bản đồ hiện tại ở trên để tra đường dẫn.
+
 ## Thay đổi trong đợt này
 
 - Kiểm tra dữ liệu lưu trước khi gộp vào trạng thái mặc định: JSON phải là object, có `quests` dạng mảng và `points` dạng số. Dữ liệu lỗi không được nạp đè trạng thái mặc định.

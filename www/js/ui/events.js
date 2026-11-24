@@ -2,7 +2,8 @@
 (function(root){
  "use strict";
  function create(deps){
-  const {S,evCur,ugain,GameAnalytics,dayStr,today,KSD,$}=deps;
+  const {S,evCur,ugain,GameAnalytics,dayStr,today,$}=deps;
+  const KSD=deps.KSD||{};
   const weekStart=deps.weekStart,esc=deps.escapeHtml;
   function render(){
   // Sự kiện cố định tuần/tháng + các kỳ sự cổ phong
@@ -62,7 +63,44 @@
   h+=(S.ks||[]).map(c=>{const km=KM[c.met]||KM.c,cur=km[1](c.per);return card({id:c.id,n:c.n,desc:c.desc||"",r:c.r,tg:c.tg,cur,unit:km[0],per:c.per,ok:()=>cur>=c.tg,ck:c.id+":"+(c.per==="m"?mo:ws)},true)}).join("");
   $("events").innerHTML=h;
 }
-  return Object.freeze({render});
+  function bindEvents(){
+    const {save,refresh,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS}=deps;
+$("events").oninput=e=>{if(e.target.dataset.kd)KSD[e.target.dataset.kd]=e.target.value;const t=e.target,v=parseInt(t.value);if(S.god&&t.dataset.f&&v>=1){S.ev[t.dataset.p][t.dataset.f]=Math.min(9999,v);save()}};
+$("events").onchange=refresh;
+$("events").onclick=e=>{
+  const ga=e.target.closest("[data-a=kadd],[data-a=kdel],[data-a=ked],[data-a=kreset]");
+  if(ga&&S.god){const a=ga.dataset.a,id=ga.dataset.id;S.ks=S.ks||[];S.kso=S.kso||{};
+    if(a==="kadd"){const n=(KSD.n||"").trim().slice(0,40);if(!n){say("Hãy nhập tên kỳ sự.");return}
+      S.ks.push({id:"k"+Date.now().toString(36),n,desc:(KSD.d||"").trim().slice(0,120),met:KSD.m||"c",tg:Math.min(9999,Math.max(1,parseInt(KSD.t)||5)),r:Math.min(9999,Math.max(1,parseInt(KSD.r)||60)),per:KSD.p||"w"});
+      Object.keys(KSD).forEach(key=>delete KSD[key]);vlog("Thiên Đạo: thêm kỳ sự "+n);say("Đã thêm kỳ sự.")}
+    else if(a==="kdel"){S.ks=S.ks.filter(x=>x.id!==id);say("Đã xóa kỳ sự.")}
+    else if(a==="kreset"){delete S.kso[id];say("Đã khôi phục bản gốc.")}
+    else{const d=ga.dataset,cu=d.c==="1",v=prompt("Sửa kỳ sự: Tên | thưởng | mô tả"+(cu?" | mục tiêu":""),d.n+" | "+d.r+" | "+d.d+(cu?" | "+d.tg:""));if(v==null)return;
+      const p=v.split("|").map(x=>x.trim()),n=(p[0]||"").slice(0,40),r=Math.min(9999,Math.max(1,parseInt(p[1])||+d.r)),ds=(p[2]||"").slice(0,120);if(!n)return;
+      if(cu){const c=S.ks.find(x=>x.id===id);if(c){c.n=n;c.r=r;c.desc=ds;c.tg=Math.min(9999,Math.max(1,parseInt(p[3])||c.tg))}}else S.kso[id]={n,r,desc:ds};
+      say("Đã sửa kỳ sự.")}
+    save();refresh();return}
+  const xs=e.target.closest("[data-a=xs]");
+  if(xs&&!xs.disabled){
+    const ck=xs.dataset.ck,r=+xs.dataset.r;
+    if(S.claimed[ck])return;
+    S.claimed[ck]=1;const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);
+    vlog("Kỳ sự: +"+rr+" linh lực");save();refresh();say("Kỳ sự hoàn thành: +"+rr+" linh lực.");return;
+  }
+  const b=e.target.closest("[data-a]");if(!b||b.disabled||b.dataset.a!=="ec")return;
+  const p=b.dataset.p,k=b.dataset.k;
+  if(S.claimed[k]||evCur(p)<S.ev[p].h*60)return;
+  const had=new Set(TITLES.filter(t=>tok(t)).map(t=>t.id));
+  const er=modGain(evB(S.ev[p].r));S.eb=0;S.claimed[k]=1;S.points+=er;hAdd(today(),er,0);
+  const drop=p==="w"?"ca":"the";S.inv[drop]=(S.inv[drop]||0)+1;
+  let petMsg="";
+  const petChance=p==="m"?0.45:0.22;
+  if(Math.random()<petChance){const pet=grantPet();if(pet){petMsg=" · Linh thú theo về: "+pet.n+"!";vlog("Nhận linh thú từ kỳ sự: "+pet.n)}}
+  const nt=TITLES.filter(t=>tok(t)&&!had.has(t.id)).map(t=>t.n);
+  save();refresh();say("Nhận thưởng kỳ sự: +"+er+" linh lực và 1 "+ITEMS.find(i=>i.id===drop).n+petMsg+".");
+};
+  }
+  return Object.freeze({render,bindEvents});
  }
  root.GameEventsUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

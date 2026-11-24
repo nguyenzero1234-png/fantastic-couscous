@@ -1,7 +1,7 @@
 # Project Progress Tracker
 
 > Cập nhật lần cuối: 2026-11-24
-> Mốc mới: tách thống kê/lịch sử học sang `analytics.js`; 1.000 bộ dữ liệu hồi quy đạt.  
+> Mốc 2026-11-24 · Gom JavaScript theo chức năng, loại bỏ compatibility guard và chuẩn hóa thứ tự nạp. Chi tiết kiểm thử ở cuối tài liệu.
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
 
@@ -1092,7 +1092,7 @@ Sau mỗi đợt thay đổi:
 - [x] Hồi quy: so sánh HTML sinh ra của hàm cũ (lấy từ commit trước) và module mới trên 300 bộ dữ liệu ngẫu nhiên, 0 sai khác.
 - [x] Thêm test `GameOpportunityStatsUI` (nội dung bảng và cache theo kiếp). `npm test` cục bộ: 107/107 pass; `node --check` game.js và module mới đạt.
 - [x] Commit `c8172e9`. CI #61 bị hủy do push kế tiếp (concurrency); #62 đỏ vì test linh thú của commit khác (đã sửa ở `e175eca`, không liên quan module này). Đã có bằng chứng đạt: [CI #66](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45303934763) (`d165e96`, chứa `c8172e9`) thành công; `npm test` cục bộ ở `717ced3`: 112/112 pass.
-- [ ] Việc còn lại của Giai đoạn 5: `narrate`/`buildRec`/`doRebirth` (luân hồi), `finish`/`TB`/`buffTxt`/`useItem` (hoàn thành nhiệm vụ và vật phẩm), `resolveEx`/`showExModal`/`renderExams`, `showTdLenh`, `petIcon`/`portrait`, khối event handler cuối `game.js`.
+- [ ] Rà soát các trình xử lý sự kiện còn lại trong `game.js`, gồm thiên kiếp, bảo khố và chuỗi nhiệm vụ.
 
 
 ## Chuyển cấp linh thú và tích lũy linh lực sang systems/pets.js (2026-11-24)
@@ -1135,4 +1135,82 @@ Sau mỗi đợt thay đổi:
 
 - [x] Smoke test classic scripts phát hiện `GameEventsUI.create` vẫn nhận `dayStr` trước khi khai báo.
 - [x] Dời factory EventsUI xuống vùng khởi tạo cuối bootstrap, sau khi `dayStr` và các helper lịch đã sẵn sàng.
-- [ ] Tiếp tục chạy smoke test và xử lý mọi phụ thuộc khởi tạo sớm còn lại cho đến khi game.js chạy qua toàn bộ lần nạp đầu.
+- [x] Khôi phục dữ liệu tông môn, lịch sử tu vi, mốc tính tuần tông chiến và trạng thái chọn hồ sơ. Dùng lại khóa save từ `GameState` cho nhập sao lưu và Thiên Đạo.
+- [x] Truyền hàm tính điểm vào bước chốt thưởng tông môn. Kiểm thử khởi động nạp đủ script theo `index.html`, tạo và hoàn thành nhiệm vụ, xác nhận dữ liệu đã lưu, mở/đóng hồ sơ và chốt trận tuần trước.
+- [x] Sửa kiểm thử mốc kỳ ngộ theo giờ địa phương. `npm test` đạt 115/115 ở cả `Asia/Ho_Chi_Minh` và `UTC`.
+- [ ] Xác nhận trong trình duyệt và trên Android thật. Trình duyệt trong phiên này không kết nối được máy chủ cục bộ.
+
+## Tách tổng kết luân hồi sang data/rebirth-data.js (2026-11-24)
+
+- [x] Chuyển tạo bản ghi, lời tổng kết và xét Thiên Đạo Ân Xá sang `GameRebirthData.buildRecord`. `GameTribulationSystem` tiếp tục điều phối luân hồi và lưu bản ghi.
+- [x] So sánh toàn bộ bản ghi với mã trước khi tách trên 480 trường hợp. Tất cả kết quả trùng khớp, gồm lời tổng kết, xếp loại và cờ ân xá.
+
+## Gom phần thưởng, vật phẩm và màn hình hiệu ứng (2026-11-24)
+
+- [x] Chuyển công thức thưởng riêng cho từng nhiệm vụ `TB` sang `GameRewards.questBonus`, tiếp tục truyền trạng thái và các dịch vụ qua wrapper tại `game.js`.
+- [x] Chuyển điều kiện dùng, hiệu ứng, tiêu hao vật phẩm và thưởng linh lực sang `GameItemSystem` tại `www/js/systems/items.js`.
+- [x] Chuyển mô tả buff sang `GameActivityUI` và màn hình Thiên Đạo Lệnh sang `GameTribulationUI`.
+- [x] Kiểm tra luồng dùng vật phẩm cùng khởi động game: tiêu hao kho, cộng hiệu ứng và ghi số vật phẩm đã dùng. Bộ `npm test` đạt 115/115.
+- [ ] Kiểm tra các thao tác dùng từng loại vật phẩm trên thiết bị Android thật.
+
+## Hồ sơ, bảng xếp hạng và tông môn (2026-11-24)
+
+- [x] Gom biểu tượng vật phẩm, ảnh linh thú và chân dung vào `ui/icons.js`.
+- [x] Đưa thao tác mở, đóng và xóa lựa chọn hồ sơ khi luân hồi vào `GameProfileUI`. Nút mở rộng bảng trở về “Hiện tất cả” sau luân hồi.
+- [x] Chuyển gia nhập, đổi tông, bái sư và hủy bái sư vào `GameSectSystem`. Giao diện tông môn nhận thao tác và cập nhật nhật ký, dữ liệu lưu cùng thông báo.
+- [x] Kiểm thử tích hợp thực hiện gia nhập qua nút giao diện và xác nhận linh lực sau lần gia nhập đầu. Bộ JavaScript đạt 115/115.
+
+## Khôi phục sau CI #71 và chuẩn hóa thứ tự script
+
+- CI trên commit `5302d56` thất bại khi khởi động vì `SECTS is not defined`. Bước cài đặt dependency thành công. [JavaScript Tests #71](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45305365569)
+- Bản sửa gom các mốc cục bộ về khởi động, luân hồi, vật phẩm, hồ sơ và tông môn đã ghi ở trên. `index.html` nạp core, data, systems, UI, các entry tương thích rồi đến `game.js`, `notify.js`, `schedule.js`. Test kiểm tra cả ranh giới giữa các lớp.
+- `GameQuestData.addChain` và `addPresetChains` tạo nhiệm vụ theo bước. Hai nút tạo chuỗi trong `game.js` tiếp tục phụ trách đọc biểu mẫu, thông báo và lưu. Kiểm tra đủ hai tên bước trước khi ghi để một dòng thiếu tên không tạo ra chuỗi chỉ có một bước.
+- Cục bộ: `npm test` đạt 116/116, bao gồm parse toàn bộ JS, thứ tự script, khởi động, dùng vật phẩm, chốt tuần và tạo chuỗi. CI của bản mới được theo dõi riêng theo SHA.
+- Tiếp theo: rà thao tác thiên kiếp và bảo khố trong giai đoạn 4–5, sau đó kiểm tra reload từ save và tham chiếu compatibility ở giai đoạn 6.
+
+## Gom module theo chức năng gameplay (2026-11-24)
+
+- [x] Bảo khố, kho đồ, mô tả hiệu ứng và giao diện danh hiệu nằm trong `ui/inventory.js`; `systems/items.js` sở hữu mua/dùng vật phẩm, danh sách danh hiệu, điều kiện mở khóa và trang bị. Giá và cấu hình vật phẩm vẫn ở `data/item-data.js`.
+- [x] `systems/tribulation.js` sở hữu diễn kiếp, chấm kiếp, nhận thưởng thiên kiếp/nhật kiếp/tuần kiếp và luân hồi. `ui/heavenly-tribulation.js` quản lý hiển thị, mở rộng kết quả và thao tác xác nhận/nhận thưởng.
+- [x] Chuyển mốc cảnh giới, lịch và cấu hình thiên kiếp, bảng thưởng vào `data/progression-data.js`; chuyển toàn bộ danh sách linh thú vào `systems/pets.js` cùng logic linh thú. Giữ giá trị cấu hình và API tương thích.
+- [x] Khôi phục callback nhập đạo `askName` sau khi di chuyển nhóm handler luân hồi. `game.js` còn 738 dòng, chủ yếu nối module và các chức năng chưa chuyển hết.
+- [x] Cập nhật bản đồ chức năng trong `docs/FOUNDATION_STAGE_1.md` để người và AI xác định được module chính trước khi chỉnh sửa. Không tạo file riêng cho từng hàm nhỏ.
+- [x] Mở rộng smoke test qua handler UI: mua vật phẩm và chống mua trùng, mở khóa/đeo/gỡ danh hiệu, diễn kiếp với phù bảo hộ, nhận thưởng thiên kiếp Xuất sắc và chống nhận trùng, nhận đủ ba nhật kiếp và ba tuần kiếp kèm thưởng bộ.
+- [x] `npm test` đạt 116/116 ở cả `Asia/Ho_Chi_Minh` và `UTC`; `git diff --check` đạt.
+- [ ] Rà tiếp nhóm nhiệm vụ, lịch học, sự kiện và cài đặt theo miền chức năng. Lưu ý nhập backup hiện gán lại `S` trong khi các factory đã giữ tham chiếu state cũ; cần xử lý cùng kiểm thử vòng đời save/reload ở giai đoạn tiếp theo.
+- [ ] Xác nhận trên trình duyệt thật và APK Android, theo dõi CI theo commit mới sau khi có push. Đợt này chỉ sửa và kiểm thử cục bộ.
+
+## Dọn thư mục www/js (2026-11-24)
+
+- [x] Giảm số file JS ở thư mục gốc từ 29 xuống 1 (game.js); bỏ 24 compatibility guard đã được thay thế bằng các module chính.
+- [x] Chuyển audio.js vào core/, schedule-data.js vào data/, notify.js và schedule.js vào runtime/. Giữ nguyên nội dung bốn file được chuyển.
+- [x] Chuẩn hóa index.html theo thứ tự core → data → systems → ui → game.js → runtime/notify.js → runtime/schedule.js. Kiểm thử bảo đảm mọi file được nạp đúng một lần, các API toàn cục cũ vẫn tồn tại và game khởi động được.
+- [x] Cập nhật bản đồ kiến trúc trong docs/FOUNDATION_STAGE_1.md. npm test đạt 116/116 ở Asia/Ho_Chi_Minh và UTC; git diff --check đạt.
+- [ ] Kiểm thử thực tế trên trình duyệt và Android; chưa commit hoặc push đợt dọn này.
+
+## Kế hoạch hoàn thiện Stage 1 theo ưu tiên (2026-11-24)
+
+- [x] P1. Gom các nhóm nghiệp vụ còn lại trong game.js (nhiệm vụ, sự kiện, lịch học, cài đặt) vào module theo chức năng; ưu tiên module hiện có.
+- [x] P2. Chuẩn hóa vòng đời state, nhập backup và reload; giữ đồng bộ state giữa các factory và bộ nhớ đệm.
+- [x] P3. Rà phụ thuộc giữa các module, thứ tự khởi tạo và API toàn cục; giảm phụ thuộc không cần thiết.
+- [x] P4. Chạy kiểm thử hồi quy, gồm lưu và khôi phục dữ liệu, ở UTC và Asia/Ho_Chi_Minh.
+- [ ] P5. Kiểm thử web/APK và CI trên đúng commit; ghi rõ phần chưa xác minh.
+- [x] P6. Cập nhật bản đồ kiến trúc và hướng dẫn bảo trì theo miền chức năng.
+
+Nguyên tắc: giữ luật chơi, tránh chia file theo helper nhỏ; cập nhật trạng thái từng mục sau khi kiểm thử.
+
+### Kết quả thực hiện kế hoạch (2026-11-24)
+
+- P1: `ui/activities.js` sở hữu render và handler nhiệm vụ, chuỗi, preset và nhập/xuất hàng loạt; `ui/events.js` sở hữu thao tác kỳ sự; `ui/settings.js` sở hữu cài đặt, sao lưu. Lịch tuần dùng API `GameWeeklySchedule` từ `runtime/schedule.js`; bỏ handler lịch ngày trùng lặp. `game.js` giảm từ 738 xuống 524 dòng, không tạo thêm file JS.
+- P2: giữ một tham chiếu state trong mỗi vòng đời trang, sao chép sâu mặc định trước khi load; nhập backup thành công khóa save cũ và reload toàn bộ ứng dụng. Cài đặt gọi GameUI.apply; sự kiện change của input backup được delegate để hoạt động sau render lại. Draft kỳ sự được xóa tại chỗ.
+- P3: module nhiệm vụ/sự kiện/cài đặt nhận callback cần thiết; lịch tuần không còn ghi đè renderLich/importSched toàn cục. Giữ thứ tự script và các API runtime còn dùng.
+- P4: 117/117 test đạt ở UTC và Asia/Ho_Chi_Minh, gồm lịch lặp, kỳ sự, đổi skin, nhập file sau render, JSON lỗi, giữ backup cũ, chặn save từ state cũ và boot lại với dữ liệu nhập.
+- P5 (một phần): Microsoft Edge headless mở index.html thành công (exit 0), DOM có 7 nút ngày lịch tuần và khối cài đặt. Chrome headless thoát mã -2147483645, chưa xác minh tương tác trực tiếp. Chưa có thư mục android, ANDROID_HOME/JAVA_HOME chưa thiết lập; chưa xác minh APK. Nhánh stage-1/foundation HEAD 5302d56, thay đổi còn cục bộ; CI cho bản sửa chưa chạy vì chưa có commit/push mới.
+- P6: cập nhật bản đồ module, quyền sở hữu thao tác và hướng dẫn vòng đời state trong FOUNDATION_STAGE_1.md.
+
+Phần còn lại: kiểm thử tương tác trên trình duyệt/Android, build APK và xác minh CI theo SHA của bản đã commit/push.
+
+### Kiểm thử trình duyệt và chuẩn bị phát hành (2026-11-24)
+
+- Microsoft Edge headless, profile thử nghiệm độc lập: đạt 11/11 kiểm tra DOM và thao tác thật (lịch tuần, thêm/hoàn thành nhiệm vụ, tạo chuỗi, lịch lặp, đổi skin, tạo/xóa draft kỳ sự, từ chối JSON lỗi, đọc file backup sau render, reload khôi phục đúng điểm).
+- Android SDK chưa được phát hiện cục bộ; sử dụng workflow Build APK trên GitHub Actions sau khi push. Kiểm thử APK trên thiết bị và trạng thái CI cần xác nhận riêng.

@@ -75,7 +75,24 @@
   h+=`<div class="box"><h2>Tuần trước</h2><ul>${card(warPairs(w-1),prv,false)}</ul></div>`;
   $("sect").innerHTML=h;
 }
-  return Object.freeze({render});
+  function handleClick(event){
+    const button=event.target.closest("button[data-a]");
+    if(!button || button.disabled)return;
+    const {a,id}=button.dataset;
+    if(a==="sm")return deps.claimMission(id);
+    let result;
+    if(a==="sj")result=deps.membership.join(Number(id));
+    if(a==="bai")result=deps.membership.apprentice();
+    if(a==="unbai")result=deps.membership.leaveMaster();
+    if(!result)return;
+    if(result.log){
+      deps.log(result.log);
+      deps.save();
+      deps.refresh();
+    }
+    deps.say(result.message);
+  }
+  return Object.freeze({render,handleClick});
  }
  root.GameSectUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

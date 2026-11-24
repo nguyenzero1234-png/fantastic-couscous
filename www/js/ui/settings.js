@@ -1,4 +1,4 @@
-/* UI tùy chỉnh giao diện và sao lưu; thao tác được giữ ở bootstrap. */
+/* UI tùy chỉnh giao diện và sao lưu; quản lý hiển thị và thao tác. */
 (function(root){
  "use strict";
  function create(deps){
@@ -52,7 +52,55 @@
   <button class="btn alt" data-bk="god">${S.god?"Tắt Thiên Đạo":"Thiên Đạo"}</button>
 </div>`,0);
 }
-  return Object.freeze({render});
+  function bindEvents(){
+    const {$,FO,save,refresh,drawNav,say,sfx,today,askName,showTut,importBackup}=deps;
+$("gear").onclick=()=>{const p=$("setpanel"),on=p.hidden;p.hidden=!on;$("sbody").hidden=on;$("gear").classList.toggle("on",on);$("gear").setAttribute("aria-expanded",on)};
+$("s").addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k)FO[k]=e.target.open},true);
+container.onclick=e=>{
+  const ui=e.target.closest("[data-ui]");
+  if(ui){
+    S.ui=S.ui||{};
+    if(ui.dataset.ui==="studyOnly"){S.ui.studyOnly=ui.dataset.v==="1";save();root.GameUI.apply(S);render();drawNav();refresh();say(S.ui.studyOnly?"Đã bật chế độ Chỉ học.":"Đã về chế độ đầy đủ.");return}
+    S.ui[ui.dataset.ui]=ui.dataset.v;save();root.GameUI.apply(S);render();say("Đã đổi giao diện.");return;
+  }
+  const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
+  if(a==="ex"||a==="dl"){
+    try{
+      const raw=GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
+      if(a==="ex"){try{navigator.clipboard&&navigator.clipboard.writeText(raw)}catch(x){}say("Đã tạo backup. Hãy sao chép hoặc tải file để cất giữ.")}
+      else{
+        const blob=new Blob([raw],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");
+        link.href=url;link.download="tu-tien-hoc-dao-backup-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);say("Đã tải file backup JSON.");
+      }
+    }catch(x){say("Không thể tạo backup: "+(x.message||"dữ liệu không hợp lệ."))}
+  }
+  else if(a==="file"){$("bkfile").click()}
+  else if(a==="im"){
+    try{
+      if(!window.confirm("Nhập backup sẽ thay thế tiến trình hiện tại. Bản hiện tại sẽ được lưu thành backup nội bộ trước. Tiếp tục?"))return;
+      importBackup($("bk").value);
+    }catch(x){say("Không thể nhập backup: "+(x.message||"dữ liệu không hợp lệ.")+" Tiến trình hiện tại chưa bị thay thế.");return}
+    say("Đã nhập backup thành công. Đang tải lại.");
+    root.location.reload();
+  }
+  else if(a==="sn"){S.snd=S.snd===0?1:0;save();render();say(S.snd===0?"Đã tắt âm thanh.":"Đã bật âm thanh.");sfx(660)}
+  else if(a==="nm")askName();
+  else if(a==="tut"){S.tutDone=0;S.tutStep=0;save();showTut()}
+  else if(a==="god"){S.god=!S.god;save();render();refresh();say(S.god?"Thiên Đạo đã mở, mọi tab được mở khóa.":"Đã tắt Thiên Đạo.")}
+};
+
+container.addEventListener("change",async e=>{
+  if(e.target.id!=="bkfile")return;
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    $("bk").value=await file.text();
+    say("Đã đọc file backup. Kiểm tra nội dung rồi bấm «Nhập JSON» để xác nhận.");
+  }catch(x){say("Không đọc được file backup.")}
+  e.target.value="";
+});
+  }
+  return Object.freeze({render,bindEvents});
  }
  root.GameSettingsUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

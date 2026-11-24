@@ -34,9 +34,15 @@
   function create(options){
     const opts=options||{},storage=opts.storage||root.GameStorage;
     const key=opts.key||KEY;
-    const state=migrate(storage.load(key,opts.defaults||DEFAULTS));
+    const state=migrate(storage.load(key,JSON.parse(JSON.stringify(opts.defaults||DEFAULTS))));
     if(opts.applyUI!==false&&root.GameUI&&root.GameUI.apply)root.GameUI.apply(state);
-    return {key,state,save:()=>storage.save(key,state)};
+    let importing=false;
+    function importBackup(raw){
+      const imported=storage.importData(key,raw);
+      importing=true;
+      return imported;
+    }
+    return {key,state,importBackup,save:()=>importing?false:storage.save(key,state)};
   }
   root.GameState={KEY,DEFAULTS,migrate,create};
 })(typeof window!=="undefined"?window:globalThis);

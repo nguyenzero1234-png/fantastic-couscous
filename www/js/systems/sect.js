@@ -24,7 +24,30 @@
       if(S.master==null||S.sect==null||S.master!==S.sect)return {};
       return MASTERS[S.sect].apply()||{};
     }
-    return {sects:SECTS,masters:MASTERS,masterBuff};
+    function join(index){
+      if(!SECTS[index] || index===S.sect)return;
+      if(S.sect!=null){
+        if(S.points<100)return {message:"Cần 100 linh lực để chuyển tông môn."};
+        S.points-=100;
+      }
+      S.sect=index;
+      S.master=null;
+      const name=SECTS[index].n;
+      return {log:"Gia nhập "+name,message:"Đã gia nhập "+name+". Có thể bái sư trong tông."};
+    }
+    function apprentice(){
+      const master=MASTERS[S.sect];
+      if(!master || S.master===S.sect)return;
+      if(!master.ok())return {message:"Chưa đủ điều kiện: "+master.okTxt()};
+      S.master=S.sect;
+      return {log:"Bái sư: "+master.n+" ("+SECTS[S.sect].n+")",message:"Đã bái sư "+master.n+". "+master.buff};
+    }
+    function leaveMaster(){
+      if(S.master==null)return;
+      S.master=null;
+      return {log:"Hủy bái sư",message:"Đã hủy bái sư. Buff sư phụ không còn hiệu lực."};
+    }
+    return {sects:SECTS,masters:MASTERS,masterBuff,join,apprentice,leaveMaster};
   }
   root.GameSectSystem={create};
 })(typeof window!=="undefined"?window:globalThis);

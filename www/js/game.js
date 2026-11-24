@@ -1,7 +1,13 @@
+const KEY=GameState.KEY;
 const GameStateHandle=GameState.create();
-let S=GameStateHandle.state;
+const S=GameStateHandle.state;
 let KSALT=(S.rb||0)*7919;
+
 const save=GameStateHandle.save;
+const SectSystem=GameSectSystem.create({
+ state:S,realmIndex:()=>ri(uxp()),lifeStats:()=>LS(),examResults:()=>xr()
+});
+const {sects:SECTS,masters:MASTERS,masterBuff}=SectSystem;
 const $=id=>document.getElementById(id);
 const today=()=>GameDateData.today(S.dOff||0);
 const esc=GameText.escapeHtml;
@@ -15,34 +21,7 @@ function burst(){sfx(523);setTimeout(()=>sfx(784),130);if(navigator.vibrate)try{
 
 
 const QM={"1":2,"3":1.75,"0":1.5};
-const cl=p=>Object.keys(S.claimed).filter(k=>k[0]===p).length;
-const TITLES=[
- {id:"t1",n:"Phá Hiểu Tân Tinh",d:"Nhận thưởng event tuần lần đầu",b:"+3 linh lực cố định mỗi nhiệm vụ",ok:()=>cl("w")>=1},
- {id:"t2",n:"Hỏa Luyện Bất Diệt",d:"Nhận thưởng event tuần 4 lần",b:"Mỗi ngày chuỗi cộng +1 linh lực cố định mỗi nhiệm vụ (tối đa +14)",ok:()=>cl("w")>=4},
- {id:"t3",n:"Nguyệt Hạ Kiếm Tiên",d:"Nhận thưởng event tháng lần đầu",b:"Thưởng event +60 linh lực",ok:()=>cl("m")>=1},
- {id:"t4",n:"Bách Chiến Bất Khuất",d:"Nhận thưởng event tháng 3 lần",b:"Khi mang tâm ma, mỗi nhiệm vụ +12 linh lực",ok:()=>cl("m")>=3},
- {id:"t5",n:"Song Tuyệt Học Bá",d:"Nhận cả event tuần và tháng trong cùng một tháng",b:"Mỗi lần nhận thưởng event hoặc lệnh bài +20 linh lực",ok:()=>{const K=Object.keys(S.claimed);return K.some(k=>k[0]==="m"&&K.some(j=>j[0]==="w"&&j.slice(2,9)===k.slice(2)))}},
- {id:"t6",n:"Thiên Kiếp Khôi Thủ",d:"Đạt mức Xuất sắc ở một đợt thiên kiếp và nhận thưởng",b:"Nhiệm vụ từ 60 phút +10 linh lực cố định",ok:()=>xr().some(r=>r.rows.some(z=>z.u&&z.g==="Xuất sắc"))},
- {id:"t7",n:"Vạn Kiếp Bất Hoại",d:"Vượt mọi thiên kiếp với từ Trung bình trở lên",b:"Hoàn thành liên hoàn +120 linh lực",ok:()=>xr().length>=EX.length&&xr().every(r=>r.rows.some(z=>z.u&&z.s>=50))},
- {id:"n1",n:"Dạ Hành Kiếm Tiên",d:"Hoàn thành 10 nhiệm vụ trong khoảng 22 giờ đến 5 giờ sáng",b:"Nhiệm vụ làm lúc 22 giờ đến 5 giờ +10 linh lực cố định",ok:()=>LS().ni>=10},
- {id:"n2",n:"Thần Hi Đạo Quân",d:"Hoàn thành 10 nhiệm vụ trước 7 giờ sáng",b:"Nhiệm vụ làm trước 9 giờ +10 linh lực cố định",ok:()=>LS().da>=10},
- {id:"n3",n:"Phách Lực Vô Song",d:"Hoàn thành 15 nhiệm vụ nhanh có hạn giờ",b:"+12 linh lực cố định cho nhiệm vụ nhanh",ok:()=>LS().ru>=15},
- {id:"n4",n:"Luân Hồi Chi Chủ",d:"Chuyển kiếp lần đầu",b:"Mỗi lần đổi nhàn hạ rẻ hơn 8 linh lực",ok:()=>(S.rb||0)>=1},
- {id:"n5",n:"Thượng Cổ Đan Sư",d:"Dùng 10 vật phẩm",b:"Vật phẩm tăng cường kéo dài thêm 1 nhiệm vụ",ok:()=>LS().it>=10},
- {id:"n6",n:"Bảng Thượng Hữu Danh",d:"Lọt top 10 bảng Thiên Kiêu khi hoàn thành một nhiệm vụ",b:"Cửu Vĩ Hồ thu thêm 2 linh lực mỗi giờ",ok:()=>LS().top>=1},
- {id:"n7",n:"Bế Quan Vạn Niên",d:"Hoàn thành 10 nhiệm vụ dài từ 120 phút",b:"Nhiệm vụ từ 120 phút +30 linh lực cố định",ok:()=>LS().lg>=10},
- {id:"n8",n:"Cuồng Phong Tốc Thủ",d:"Hoàn thành 8 nhiệm vụ trong một ngày",b:"Từ nhiệm vụ thứ 4 trong ngày, mỗi nhiệm vụ +6 linh lực",ok:()=>(LS().mc||0)>=8},
- {id:"n9",n:"Thiên Kiêu Độc Tôn",d:"Đứng hạng 1 bảng Thiên Kiêu khi hoàn thành nhiệm vụ",b:"Khi đang hạng 1 đến 3, mỗi nhiệm vụ +10 linh lực",ok:()=>!!LS().t1},
- {id:"n10",n:"Bất Hủ Kim Thân",d:"Giữ chuỗi ngày học 21 ngày",b:"Nhiệm vụ đầu tiên mỗi ngày +25 linh lực",ok:()=>LS().ms>=21},
- {id:"n11",n:"Vạn Thú Chi Vương",d:"Ấp nở 5 loài linh thú",b:"Khi có linh thú theo cùng, mỗi nhiệm vụ +4 linh lực",ok:()=>Object.keys(S.pets||{}).length>=5},
- {id:"n12",n:"Phá Ma Thần Tướng",d:"Trừ tâm ma 3 lần",b:"Mỗi lần trừ tâm ma nhận ngay +40 linh lực",ok:()=>(LS().tmc||0)>=3},
- {id:"n13",n:"Nhàn Vân Dã Hạc",d:"Đổi tổng cộng 300 phút nhàn hạ",b:"Mỗi lần đổi nhàn hạ tặng thêm 5 phút",ok:()=>(LS().lv||0)>=300},
- {id:"n14",n:"Độ Kiếp Hành Giả",d:"Vượt 30 kiếp nạn",b:"Mỗi lần vượt kiếp nạn +25 linh lực",ok:()=>(LS().kn||0)>=30},
- {id:"n15",n:"Tông Môn Chi Trụ",d:"Thắng 3 trận tông môn chiến",b:"Thắng tông môn chiến +100 linh lực",ok:()=>(LS().sw||0)>=3},
- {id:"n16",n:"Phi Thăng Chi Tử",d:"Đạt Chân Tiên lần đầu",b:"Điểm danh mỗi ngày +15 linh lực",ok:()=>S.points>=END||(S.rbh||[]).some(r=>r.pk>=END)},
- {id:"n17",n:"Càn Khôn Bảo Chủ",d:"Giữ 15 vật phẩm trong Càn Khôn Giới cùng lúc",b:"Mỗi lần dùng vật phẩm nhận ngay +15 linh lực",ok:()=>Object.values(S.inv).reduce((a,b)=>a+b,0)>=15},
- {id:"n18",n:"Nguyên Lưu Chưởng Khống Giả",d:"Đạt Chân Tiên và từng đứng hạng 1 bảng Thiên Kiêu khi hoàn thành nhiệm vụ",b:"Mỗi nhiệm vụ +12 linh lực cố định",ok:()=>(S.points>=END||(S.rbh||[]).some(r=>r.pk>=END))&&!!LS().t1}
-];
+const {TITLES,tok,eqT,chkT}=GameItemSystem.createTitles({getState:()=>S,lifeStats:()=>LS(),examResults:()=>xr(),EX:GameProgressData.EX,END:GameProgressData.END,markNew:id=>{nwS().t[id]=1},save,say,schedule:(fn,ms)=>setTimeout(fn,ms)});
 // Giá ≈ 2,5–4× giá trị kỳ vọng của hiệu ứng (linh lực / tiện ích)
 /* Hệ thống vật phẩm: mọi vật phẩm tăng linh lực đều hoàn lại ít nhất bằng giá mua, phát dần theo nhiệm vụ.
    q:[số nhiệm vụ, linh lực cố định mỗi nhiệm vụ, điều kiện ("" mọi nhiệm vụ, "q" nhiệm vụ nhanh, "l" từ 60 phút)]
@@ -50,7 +29,6 @@ const TITLES=[
    Vật phẩm tăng linh lực thuần: tổng nhận = 2 lần giá. Vật phẩm tiện ích: tác dụng riêng + hoàn lại 1 lần giá.
    Tổng nhận = số nhiệm vụ × linh lực mỗi nhiệm vụ + ex. */
 const ITEMS=GameItemData.catalog();
-const { PN, PLAN, AI_PROMPT, CHAIN_PROMPT, SCHED_PROMPT, PRESET_MIX, DEF_Q, DEF_C, DEF_S } = GameQuestTemplates;
 
 
 const nowHM=GameTimeFormat.currentClock;
@@ -61,70 +39,8 @@ const {B,BH,F,hs,vn,CDN,isTK,bio,STG,NVC_TITLES}=GameNpcRoster.create(GameNoise.
 const LeaderboardSimulation=GameLeaderboardSimulation.create({state:S,B,BH,CDN,hash:hs,noise:vn,getSalt:()=>KSALT,getBxp:(...args)=>bxp(...args),leaderboardData:GameLeaderboardData});
 const {advance,rkf,lthM,HTC,htReset,htCount,htLate,htExtra,evAt,EC,FL,fl,eff,hrAt,hrs,efTxt,CH,CD,SP,cum,SO,SN,computeSO}=LeaderboardSimulation;
 /* Icon SVG tự vẽ — vật phẩm, linh thú, chân dung */
-const _svg=(w,h,body)=>`<svg class="ico" viewBox="0 0 ${w} ${h}" width="1em" height="1em" aria-hidden="true">${body}</svg>`;
-const IC_SVG={
-  ca:_svg(32,32,`<ellipse cx="16" cy="22" rx="10" ry="4" fill="#6b8f71"/><path d="M8 18c0-6 4-12 8-12s8 6 8 12" fill="none" stroke="#4a6b50" stroke-width="2"/><path d="M12 10c2-3 6-3 8 0" fill="none" stroke="#8fbf7a" stroke-width="1.5"/><circle cx="16" cy="16" r="2" fill="#c9e4a8"/>`),
-  bm:_svg(32,32,`<ellipse cx="16" cy="18" rx="9" ry="11" fill="#c45c4a"/><ellipse cx="16" cy="14" rx="7" ry="4" fill="#e8a090"/><path d="M10 18h12" stroke="#fff8" stroke-width="1.5"/>`),
-  tl:_svg(32,32,`<circle cx="16" cy="16" r="11" fill="none" stroke="#6a5a9a" stroke-width="2"/><circle cx="16" cy="16" r="5" fill="#9a8ac8"/><path d="M16 5v4M16 23v4M5 16h4M23 16h4" stroke="#6a5a9a" stroke-width="1.5"/>`),
-  lq:_svg(32,32,`<path d="M16 6c-6 8-10 14-10 18a10 10 0 0020 0c0-4-4-10-10-18z" fill="#e87840"/><ellipse cx="16" cy="22" rx="5" ry="3" fill="#f0a070"/><path d="M16 6c2 2 4 2 5 1" stroke="#5a8a40" stroke-width="2" fill="none"/>`),
-  ty:_svg(32,32,`<path d="M16 28V12M10 16c4-2 8-2 12 0M8 22c5-3 11-3 16 0" stroke="#4a8a50" stroke-width="2" fill="none"/><circle cx="16" cy="10" r="3" fill="#7aba60"/>`),
-  sl:_svg(32,32,`<circle cx="16" cy="16" r="10" fill="#5a7aaa"/><circle cx="16" cy="16" r="6" fill="#8ab0d0"/><path d="M12 14l4 4 6-7" stroke="#fff" stroke-width="1.8" fill="none"/>`),
-  ln:_svg(32,32,`<ellipse cx="16" cy="16" rx="12" ry="8" fill="#4a6080"/><circle cx="16" cy="16" r="5" fill="#c9e0f0"/><circle cx="16" cy="16" r="2.5" fill="#1a2a3a"/>`),
-  tc:_svg(32,32,`<path d="M16 4l3 8h8l-6 5 2 8-7-5-7 5 2-8-6-5h8z" fill="#c9a84c" stroke="#8a6d3b" stroke-width="1"/>`),
-  the:_svg(32,32,`<rect x="7" y="6" width="18" height="22" rx="1" fill="#e8d8a8" stroke="#8a7a50"/><path d="M11 12h10M11 16h10M11 20h7" stroke="#6a5a30" stroke-width="1.2"/>`),
-  ghe:_svg(32,32,`<ellipse cx="16" cy="24" rx="11" ry="4" fill="#6a5a40"/><path d="M8 22c0-10 4-16 8-16s8 6 8 16" fill="#8a7a5a"/><circle cx="16" cy="12" r="3" fill="#c9b080"/>`),
-  hx:_svg(32,32,`<path d="M10 28V14h12v14" fill="#8a6a40"/><path d="M8 14h16l-2-6H10z" fill="#6a4a30"/><path d="M14 10c0-4 4-6 4-6s2 3 0 6" fill="#e8a040"/>`),
-  vh:_svg(32,32,`<path d="M16 4l10 8-4 14H10L6 12z" fill="#6a9acc" stroke="#3a6a9a"/><path d="M16 4v22M6 12h20" stroke="#a8d0f0" stroke-width="1"/>`),
-  td:_svg(32,32,`<path d="M8 20h16l-2 8H10z" fill="#5a4a3a"/><path d="M10 20c0-8 3-12 6-12s6 4 6 12" fill="#8a7a60"/><circle cx="16" cy="10" r="2" fill="#c9b080"/>`),
-  bq:_svg(32,32,`<rect x="6" y="14" width="20" height="14" fill="#7a6a50"/><path d="M4 14h24L16 4z" fill="#9a2a20"/><rect x="13" y="18" width="6" height="10" fill="#3a2a1a"/>`),
-  cb:_svg(32,32,`<path d="M16 28c-8-4-10-12-8-18 4 2 8 2 12 0 2 6 0 14-4 18z" fill="#5a9a50"/><path d="M16 10c0-6 4-8 4-8s1 4-1 8" stroke="#3a6a30" fill="none" stroke-width="1.5"/>`),
-  ht:_svg(32,32,`<path d="M6 12l10-8 10 8v10c0 6-6 10-10 12-4-2-10-6-10-12z" fill="#6a7a9a" stroke="#3a4a6a"/><path d="M16 10v14M10 16h12" stroke="#c0d0e8" stroke-width="1.5"/>`),
-  tq:_svg(32,32,`<circle cx="16" cy="16" r="11" fill="none" stroke="#8a6d3b" stroke-width="2"/><path d="M16 8v8l5 4" stroke="#c9a84c" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="2" fill="#8a6d3b"/>`),
-  dk:_svg(32,32,`<path d="M16 4l2 10h8l-6 5 2 10-6-6-6 6 2-10-6-5h8z" fill="#e0b45a"/><path d="M16 14v10" stroke="#8a5a12" stroke-width="1.5"/>`),
-  cl:_svg(32,32,`<path d="M8 8c0 0 4 4 8 4s8-4 8-4v16c0 0-4-4-8-4s-8 4-8 4z" fill="#c9a84c" stroke="#8a6d3b"/><circle cx="16" cy="16" r="3" fill="#8a5a12"/>`),
-  ll:_svg(32,32,`<ellipse cx="16" cy="18" rx="10" ry="8" fill="#c87840"/><path d="M8 14c4-6 12-6 16 0" fill="#e09860"/><circle cx="12" cy="18" r="1.5" fill="#5a3a20"/>`),
-  hy:_svg(32,32,`<ellipse cx="16" cy="18" rx="9" ry="7" fill="#e87840"/><circle cx="16" cy="12" r="6" fill="#f09860"/><path d="M8 8l4 4M24 8l-4 4" stroke="#c85820" stroke-width="2"/><circle cx="13" cy="11" r="1.2" fill="#2a1a10"/><circle cx="19" cy="11" r="1.2" fill="#2a1a10"/>`)
-};
-const IC=IC_SVG;
-const PET_IMG={ct:"assets/pets/ct.jpg",pg:"assets/pets/pg.jpg",ko:"assets/pets/ko.jpg",dm:"assets/pets/dm.jpg",ty:"assets/pets/ty.jpg",mm:"assets/pets/mm.jpg",hq:"assets/pets/hq.jpg",bh:"assets/pets/bh.jpg",tn:"assets/pets/tn.jpg",tt:"assets/pets/tt.jpg",hl:"assets/pets/hl.jpg",kl:"assets/pets/kl.jpg",hg:"assets/pets/hg.jpg"}
-function petIcon(id){
-  if(PET_IMG[id])return `<img class="pet-img" src="${PET_IMG[id]}" alt="" draggable="false">`;
-  const P={
-    hl:`<ellipse cx="16" cy="20" rx="8" ry="6" fill="#e87840"/><circle cx="16" cy="12" r="6" fill="#f09860"/><path d="M8 8l3 4M24 8l-3 4M10 22q6 6 12 0" stroke="#c85820" fill="none"/><circle cx="13" cy="11" r="1.2" fill="#2a1a"/><circle cx="19" cy="11" r="1.2" fill="#2a1a"/>`,
-    hq:`<path d="M10 22c0-10 4-16 6-16s6 6 6 16" fill="#e8e8f0"/><path d="M16 8c4-6 10-4 8 2" fill="#c0c0d8"/><circle cx="18" cy="14" r="1.2" fill="#2a2a"/>`,
-    kl:`<path d="M8 24c2-12 6-18 8-18s6 6 8 18" fill="#e8d8a0"/><path d="M12 10l4-6 4 6" fill="#c9a84c"/><circle cx="14" cy="16" r="1" fill="#4a3a"/><circle cx="18" cy="16" r="1" fill="#4a3a"/>`,
-    ct:`<path d="M6 20c4-10 8-14 10-14s6 4 10 14" fill="#c8483a"/><path d="M16 8l4-4M16 8l-4-4" stroke="#e07050" stroke-width="2"/><circle cx="14" cy="14" r="1" fill="#2a1a"/><circle cx="18" cy="14" r="1" fill="#2a1a"/>`,
-    hg:`<ellipse cx="16" cy="20" rx="11" ry="8" fill="#4a6a5a"/><path d="M10 16c2-6 10-6 12 0" fill="#6a8a7a"/><line x1="8" y1="22" x2="6" y2="28" stroke="#3a4a"/><line x1="24" y1="22" x2="26" y2="28" stroke="#3a4a"/>`,
-    bh:`<ellipse cx="16" cy="18" rx="10" ry="8" fill="#e8e0d0"/><path d="M8 10l4 4M24 10l-4 4" fill="#d0c8b0"/><circle cx="12" cy="16" r="1.5" fill="#2a2a"/><circle cx="20" cy="16" r="1.5" fill="#2a2a"/><path d="M14 20h4" stroke="#2a2a"/>`,
-    tt:`<ellipse cx="16" cy="18" rx="9" ry="7" fill="#a08060"/><circle cx="16" cy="12" r="5" fill="#b89070"/><circle cx="14" cy="11" r="1" fill="#2a1a"/><path d="M22 14q4-2 6 2" stroke="#8a6a40" fill="none"/>`,
-    tn:`<path d="M6 18c4-12 8-14 10-14s6 2 10 14c-4 6-16 6-20 0z" fill="#3a8a7a"/><path d="M16 6v4M10 10l-4-2M22 10l4-2" stroke="#2a6a5a" stroke-width="1.5"/>`,
-    pg:`<path d="M8 18c3-12 6-14 8-14s5 2 8 14c-2 8-12 8-16 0z" fill="#c8483a"/><path d="M16 6c4-4 8 0 6 4" fill="#e07050"/><circle cx="14" cy="14" r="1" fill="#2a1a"/>`,
-    ko:`<circle cx="16" cy="16" r="9" fill="#e0b45a"/><path d="M16 4v4M16 24v4M4 16h4M24 16h4" stroke="#c9a84c" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#f0d080"/>`,
-    dm:`<path d="M8 16c4-10 8-12 8-12s4 2 8 12c-2 8-12 8-16 0z" fill="#3a3a5a"/><circle cx="13" cy="14" r="1.5" fill="#c0e0ff"/><circle cx="19" cy="14" r="1.5" fill="#c0e0ff"/>`,
-    ty:`<ellipse cx="16" cy="18" rx="10" ry="8" fill="#c9b080"/><path d="M10 12l-4-4M22 12l4-4" stroke="#8a7a50" stroke-width="2"/><circle cx="13" cy="16" r="1.2" fill="#2a1a"/><circle cx="19" cy="16" r="1.2" fill="#2a1a"/>`,
-    mm:`<ellipse cx="16" cy="18" rx="9" ry="7" fill="#3a3a3a"/><circle cx="16" cy="12" r="6" fill="#4a4a4a"/><path d="M8 8l3 3M24 8l-3 3" stroke="#2a2a"/><circle cx="13" cy="11" r="1.3" fill="#c9e0a0"/><circle cx="19" cy="11" r="1.3" fill="#c9e0a0"/>`
-  };
-  return _svg(32,32,P[id]||`<circle cx="16" cy="16" r="10" fill="#8a7a5a"/>`);
-}
-const AV_NAM="assets/avatars/nam.jpg";
-const AV_NU="assets/avatars/nu.jpg";
-const AV_ICON="assets/avatars/icon.jpg";
-const AVATARS={"Bạch Nhược Hư":"assets/avatars/bach-nhuoc-hu.jpg","Giang Thừa Ảnh":"assets/avatars/giang-thua-anh.jpg","Hạ Trường Ca":"assets/avatars/ha-truong-ca.jpg","Liễu Như Yên":"assets/avatars/lieu-nhu-yen.jpg","Lăng Tiêu Hàn":"assets/avatars/lang-tieu-han.jpg","Mạc Vô Cực":"assets/avatars/mac-vo-cuc.jpg","Tần Hạo Thiên":"assets/avatars/tan-hao-thien.jpg","Vô Song":"assets/avatars/vo-song.jpg","Đường Thanh Liên":"assets/avatars/duong-thanh-lien.jpg","Cố Thái Hư":"assets/avatars/co-thai-hu.jpg","Phong Vân Tử":"assets/avatars/phong-van-tu.jpg"};
-function playerAvSrc(){return (S.gender==="nu"?AV_NU:AV_NAM)}
-function portrait(seed,opts){
-  opts=opts||{};
-  const w=opts.w||48,h=opts.h||48;
-  // Avatar NVC theo giới tính
-  if(opts.player||seed===S.name||(opts.forcePlayer)){
-    const src=playerAvSrc();
-    return `<img class="av-img" src="${src}" width="${w}" height="${h}" alt="" style="width:${w}px;height:${h}px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.2);display:block">`;
-  }
-  // Avatar NPC đặc biệt theo tên
-  if(typeof seed==="string" && AVATARS[seed]){
-    return `<img class="av-img" src="${AVATARS[seed]}" width="${w}" height="${h}" alt="${seed}" style="width:${w}px;height:${h}px;border-radius:50%;object-fit:cover;border:2px solid var(--jade);box-shadow:0 2px 8px rgba(0,0,0,.2);display:block">`;
-  }
-  return ""; // NPC thường không có avatar
-}
+const {IC,AV_NAM,AV_NU,AVATARS,petIcon}=GameIcons;
+const portrait=(seed,opts)=>GameIcons.portrait(S,seed,opts);
 const avatar=name=>`<span class="av">${portrait(name)}</span>`;
 function sectStats(now){return GameSectWar.stats(SECTS.length,B.map((b,i)=>({sect:SO[i],xp:bxp(i,now)})),S.sect,uxp())}
 const ugain=(d1,d2)=>GameAnalytics.sumPointsBetween(S.hist,d1,d2);
@@ -136,8 +52,9 @@ function warScores(t1,t2,d1,d2){
 }
 const warPairs=GameSectWar.pairs;
 const warFlavor=GameSectWar.flavor;
+const sectWarEpoch=Date.parse("2026-01-05T00:00:00");
 function warReward(){return GameSectWar.reward({
-  state:S,sects:SECTS,weekEnd:EP,modGain,hasTitle:()=>eqT("n15"),
+  state:S,sects:SECTS,weekEnd:sectWarEpoch,scoreWeek:warScores,modGain,hasTitle:()=>eqT("n15"),
   today,addHistory:(day,points,mins)=>hAdd(day,points,mins),log:vlog,
   random:Math.random
 });}
@@ -160,22 +77,10 @@ function renderVan(){LeaderboardUI.renderTimeline()}
 let _oppStatsUI=null;
 function spStatsHtml(){return (_oppStatsUI||(_oppStatsUI=GameOpportunityStatsUI.create({S,B,EX,KN,KX,CDN,SPQ,evAt,knAt,KS,KT0,spA,getKD:()=>KD,getKSALT:()=>KSALT}))).html()}
 const xr=()=>S.sem?Object.values(S.sem.res).filter(r=>r.claimed):[];
-const RL=[["Luyện Khí",0],["Trúc Cơ",20000],["Kim Đan",42000],["Nguyên Anh",66000],["Hóa Thần",92000],["Luyện Hư",118000],["Hợp Thể",145000],["Đại Thừa",172000],["Chân Tiên",200000]];
-const END=200000,KD=119;/* END = ngưỡng vào Chân Tiên (không có trần: linh lực tăng đến hết kiếp). Kiếp chỉ kết thúc khi hết KD ngày */
+const {RL,END,KD,EX,RW}=GameProgressData;
 const ri=x=>GameProgressData.realmIndex(x,RL);
 const rname=x=>GameProgressData.realmName(x,RL);
-// Thiên kiếp gắn với ngày trong kiếp (0..KD-1), không phụ thuộc học kỳ
-const EX=[
- {id:"tl",n:"Trúc Cơ Lôi Kiếp",kind:"Lôi kiếp khai môn · viên mãn Luyện Khí, thăng Trúc Cơ",day:13,need:0,chuan:20000,w:0.5,a:.98,bm:2,ls:5,desc:"Tầng mây đầu tiên nổ sấm. Luyện Khí viên mãn thì lôi quang tẩy thể, dựng nền Trúc Cơ; ai chưa vững sẽ bị lôi đánh tan đạo tâm."},
- {id:"ho",n:"Kết Đan Hỏa Kiếp",kind:"Kiếp nạn lửa · viên mãn Trúc Cơ, thăng Kim Đan",day:24,need:1,chuan:42000,w:0.75,a:.96,bm:4,ls:10,desc:"Thiên hỏa giáng xuống, đốt sạch tạp niệm để kim đan thành hình. Cần đạo tâm bền và thân thể chịu được nhiệt. Thất bại để lại vết thương trên Mệnh."},
- {id:"gk",n:"Anh Biến Lôi Kiếp",kind:"Lôi kiếp phá đan hóa anh · viên mãn Kim Đan, thăng Nguyên Anh",day:36,need:2,chuan:66000,w:1,a:.94,bm:6,ls:16,desc:"Chín đạo lôi quang xoáy quanh thân, phá đan để nguyên anh xuất khiếu. Chỉ ai đã kết Kim Đan vững mới đứng được giữa trời giông."},
- {id:"tm",n:"Hóa Thần Tâm Ma Kiếp",kind:"Kiếp nạn tâm ma · viên mãn Nguyên Anh, thăng Hóa Thần",day:48,need:3,chuan:92000,w:1.25,a:.9,bm:10,ls:28,desc:"Không có sấm sét bên ngoài — chỉ có ma trong lòng. Muốn hóa thần phải vượt qua ký ức, hối hận, tham sân hiện hình. Đạo tâm yếu sẽ bị nuốt chửng."},
- {id:"hb",n:"Luyện Hư Hàn Băng Kiếp",kind:"Kiếp nạn băng giá · viên mãn Hóa Thần, thăng Luyện Hư",day:61,need:4,chuan:118000,w:1.5,a:.9,bm:10,ls:40,desc:"Thiên địa đóng băng khi Hóa Thần viên mãn muốn luyện hư nhập thực. Linh lực phải đủ dày để không bị đóng thành băng tượng."},
- {id:"ck1",n:"Hợp Thể Cửu Trọng Lôi Kiếp",kind:"Đại lôi kiếp · viên mãn Luyện Hư, thăng Hợp Thể",day:75,need:5,chuan:145000,w:1.75,a:.9,bm:10,ls:55,desc:"Chín tầng lôi kiếp liên hoàn, mỗi tầng mạnh hơn tầng trước. Chỉ Luyện Hư viên mãn mới dám nghênh chiến để hợp nhất cùng thiên địa."},
- {id:"ck2",n:"Đại Thừa Hỗn Nguyên Kiếp",kind:"Đại thiên kiếp · viên mãn Hợp Thể, thăng Đại Thừa",day:88,need:6,chuan:172000,w:2,a:.9,bm:10,ls:70,desc:"Hỗn nguyên chi khí giáng xuống, phân rõ viên mãn và nửa đường. Hợp Thể viên mãn mới đủ tư cách bước vào Đại Thừa."},
- {id:"pt",n:"Phi Thăng Kiếp",kind:"Thiên kiếp phi thăng · viên mãn Đại Thừa, thăng Chân Tiên",day:100,need:7,chuan:200000,w:2.5,a:.9,bm:10,ls:85,desc:"Chín mươi chín đạo thiên lôi, ba nghìn hỏa tai, tâm ma hiện hình cùng lúc. Chỉ Đại Thừa viên mãn với đạo tâm bất đoạn suốt cả kiếp mới bước qua được cổng trời thành Chân Tiên."}
-];
-const RW={"Xuất sắc":200,"Giỏi":140,"Khá":90,"Trung bình":40,"Yếu":0};
+
 const gr=s=>GameProgressData.grade(s);
 const exD=e=>GameDateData.examDate(KS().start,e.day);
 const uxp=ds=>ds?GameAnalytics.pointsThrough(S.hist,ds):S.points;
@@ -200,7 +105,6 @@ function playerXpAt(dv){return GameProgressData.playerXpAt(S.hist,S.points,dv.to
 function streakAt(d,cur){return GameProgressData.streakAt(S.hist,S.streak,d,cur,today(),dayStr(1))}
 // Đạo tâm 0..1 = chuỗi / chuỗi yêu cầu của kiếp (chuỗi càng dài, kiếp càng cuối càng đòi hỏi nhiều)
 const daoTam=(st,e)=>GameProgressData.taoTamProgress(st,e);
-const EXOPEN={};
 function resolveEx(){TribulationSystem.resolveEx()}
 function showExModal(e){
   GameExamModal.show({state:S,realmLabels:RL,exGod,save,go,render,findNext:()=>EX.find(x=>S.sem&&S.sem.res[x.id]&&!S.sem.res[x.id].seen),document,body:document.body,setTimeout},e);
@@ -216,12 +120,11 @@ const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
 const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
-function renderLich(){ActivityUI.renderSchedule()}
-function renderShop(){ActivityUI.renderShop()}
+function renderLich(){if(window.GameWeeklySchedule)window.GameWeeklySchedule.render();else ActivityUI.renderSchedule()}
+function renderShop(){InventoryUI.render()}
 function renderChains(){ActivityUI.renderChains()}
 var FO={};
 function fold(k,t,b,o){return `<details class="fold" data-k="${k}"${(FO[k]===undefined?o:FO[k])?" open":""}><summary>${t}</summary>${b}</details>`}
-var KSD={};
 function renderEvents(){EventsUI.render()}
 function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p+p);h.m=Math.max(0,h.m+m)}
 // Trừng Phạt xếp chồng: mỗi lần hết Mệnh +1 stack, −5% mỗi stack (tối đa −30%)
@@ -238,21 +141,7 @@ function addPts(n,mins,day){
   if(after>before){try{onRealmUp(before,after);}catch(e){}}
   return g;
 }
-function showTdLenh(){
-  const name=S.name||"đạo hữu",st=Math.max(1,S.tdStacks||1),pct=Math.min(30,5*st);
-  $("thd").innerHTML=`<div class="box" style="border-color:var(--red)"><h2>Thiên Đạo Lệnh Bảng</h2>
-    <small>Thiên chỉ · Lần thứ ${st}</small>
-    <p style="margin:12px 0;line-height:1.6">${name}. Tên đã được đọc. Không có lý do nào khác.</p>
-    <p style="margin:10px 0;line-height:1.6">Mệnh cạn không do ai rút. Nó chảy hết vì không có gì chắn. Thiên kiếp đến, gục. Thiên kiếp lại đến, gục. Xác thân còn đứng, linh căn đã tắt.</p>
-    <p style="margin:10px 0;line-height:1.6">Cán cân nghiêng thì Thiên Đạo ghi lại. Không giận, không thương. <b>Thiên Đạo Trừng Phạt</b> áp xuống (chồng lần ${st}):</p>
-    <p style="margin:10px 0;line-height:1.6">• Mọi nguồn linh lực thu về bị bớt <b>${pct}%</b> (mỗi lần Mệnh cạn thêm 5%, tối đa 30%).<br>• Gục thêm một lần, Mệnh mất thêm một phần. Không ai đếm hộ.<br>• Mệnh nằm ở 0 cho đến khi tự đứng dậy.</p>
-    <p style="margin:10px 0;line-height:1.6">Điều kiện gỡ: một kiếp <b>viên mãn</b>, mọi thiên kiếp từ <b>Khá</b> trở lên. Không có đường tắt. Không có ngoại lệ.</p>
-    <p style="margin:12px 0;font-style:italic;color:var(--mute)">Cửa không đóng. Cũng không có ai đứng chờ ở cửa.</p>
-    <div class="row"><button class="btn" style="margin-left:0" id="thx">Kính tuân</button></div>
-  </div>`;
-  $("thd").hidden=false;
-  $("thx").onclick=()=>{$("thd").hidden=true};
-}
+function showTdLenh(){TribulationUI.showTdLenh()}
 const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
 const calc=()=>Math.max(1,Math.round(dur()/60*S.perHour*parseFloat($("nl").value)*qm()));
@@ -298,106 +187,9 @@ function render(){
   if(document.activeElement!==$("rate"))$("rate").value=S.rate;
   const m=Math.max(0,parseInt($("mins").value)||0);
   $("cost").textContent="Cần "+LC(m)+" linh lực, tu vi giảm tương ứng";
-  const qs=S.quests.filter(x=>!x.chain).sort((a,b)=>(isDone(a)||expired(a))-(isDone(b)||expired(b)));
-  $("list").innerHTML=qs.length?qs.map(q=>{const d=isDone(q);
-    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}${expired(q)?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
-    :`<li class="empty" style="display:block">Chưa có nhiệm vụ. Thêm việc học đầu tiên ở phía trên.</li>`;
+  ActivityUI.renderQuests();
   renderMore();
 }
-
-function addQuest(){
-  const name=$("nm").value.trim();
-  const mins=dur(),pts=calc();
-  if(!name){say("Hãy nhập tên nhiệm vụ.");$("nm").focus();return}
-  const qv=$("nq").value,due=qv===""?0:(qv==="0"?new Date().setHours(23,59,59,999):Date.now()+qv*3600000);
-  S.quests.push({id:Date.now().toString(36),name,pts,mins,due,repeat:qv===""&&$("nr").checked,doneOn:null});
-  $("nm").value="";say("Đã thêm nhiệm vụ.");save();render();
-}
-
-$("add").onclick=addQuest;
-$("nm").onkeydown=e=>{if(e.key==="Enter")addQuest()};
-
-
-
-const parseDiff=s=>GameQuestData.parseDiff(s);
-function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||200,now:Date.now,random:Math.random})}
-function importBulkQuests(){
-  const raw=$("qbulk").value||"",result=GameQuestData.importBulk(raw,{perHour:S.perHour||200,now:Date.now,random:Math.random});
-  if(!result.total){say("Chưa có dòng nào để nhập.");return}
-  const added=result.quests;
-  if(!added.length){say("Không đọc được nhiệm vụ. Kiểm tra mẫu: Tên | phút");return}
-  S.quests.push(...added);
-  $("qbulk").value="";
-  if($("qbulkhint"))$("qbulkhint").textContent="Đã nhập "+added.length+" nhiệm vụ.";
-  save();render();say("Đã nhập "+added.length+" nhiệm vụ từ bộ dán.");
-}
-function exportQuestsText(){
-  const result=GameQuestData.exportOpen(S.quests,{now:Date.now(),isDone:q=>isDone(q),isExpired:q=>expired(q)}),qs=result.quests;
-  if(!qs.length){say("Không có nhiệm vụ đang mở để xuất.");return}
-  const text=result.text;
-  $("qbulk").value=text;
-  try{navigator.clipboard.writeText(text)}catch(e){}
-  if($("qbulkhint"))$("qbulkhint").textContent="Đã xuất "+qs.length+" nhiệm vụ (cũng đã chép nếu trình duyệt cho phép).";
-  say("Đã xuất "+qs.length+" nhiệm vụ ra ô dán.");
-}
-$("qbulkin").onclick=importBulkQuests;
-const cpy=(t,m)=>{const ok=()=>say(m||"Đã chép prompt AI. Dán vào ChatGPT/Claude, điền các mục [ ], rồi dán kết quả vào app.");
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
-  function fb(){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let r=false;try{r=document.execCommand("copy")}catch(e){}a.remove();say(r?(m||"Đã chép prompt AI."):"Trình duyệt chặn chép. Hãy thử lại hoặc dùng HTTPS.")}};
-$("qbulkcp").onclick=()=>cpy(AI_PROMPT);
-$("ccp").onclick=()=>cpy(CHAIN_PROMPT);
-$("lcp").onclick=()=>cpy(SCHED_PROMPT);
-function importSched(){
-  const day=S.sched[today()]||(S.sched[today()]=[]);let n=0,bad=0;
-  ($("lbulk").value||"").split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#")).forEach(l=>{
-    const slot=GameScheduleData.parseLine(l,day);if(!slot){bad++;return}
-    const q=S.quests.find(x=>x.name===slot.label&&!isDone(x)&&!expired(x)&&(!x.chain||unlocked(x)));
-    day.push({id:"s"+Date.now().toString(36)+n,s:hm(slot.start),e:hm(slot.end),qid:q?q.id:"",label:slot.label});n++});
-  if(n){$("lbulk").value="";save();render()}
-  say(n?("Đã nhập "+n+" khung"+(bad?", bỏ "+bad+" dòng lỗi/trùng giờ":"")+"."):"Không đọc được dòng nào. Mẫu: 19:00-19:45 | Tên việc");
-}
-$("lin").onclick=importSched;
-
-function addDefQ(){let n=0;DEF_Q.split("\n").forEach(l=>{const q=parseBulkLine(l);if(!q||S.quests.some(x=>x.name===q.name&&!isDone(x)))return;S.quests.push(q);n++});return n}
-$("qdef").onclick=()=>{const n=addDefQ();if(n){save();render()}say(n?"Đã thêm "+n+" nhiệm vụ mặc định.":"Nhiệm vụ mặc định đã có sẵn trong danh sách.")};
-
-$("cdef").onclick=()=>{let n=0;DEF_C.forEach(([nm,st],k)=>{if(S.chains.some(c=>c.name===nm))return;const id="c"+Date.now().toString(36)+"d"+k;S.chains.push({id,name:nm,paid:false,bonus:0});st.forEach((l,i)=>{const [a,m]=l.split("|"),mins=+m;S.quests.push({id:id+i,name:a.trim(),pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});n++});if(n){save();render()}say(n?"Đã thêm "+n+" chuỗi mẫu.":"Các chuỗi mẫu đã có rồi.")};
-
-$("ldef").onclick=()=>{addDefQ();save();render();$("lbulk").value=DEF_S;importSched()};
-{const cut=new Date(Date.now()-30*864e5).toLocaleDateString("sv");Object.keys(S.sched||{}).forEach(k=>{if(k<cut)delete S.sched[k]})}
-let _ud=null,_ut=0;
-$("und").onclick=()=>{if(_ud){S.quests.push(_ud);_ud=null;$("und").hidden=true;save();render();say("Đã khôi phục nhiệm vụ.")}};
-$("list").addEventListener("click",e=>{const n=e.target.closest(".nm");if(!n||e.target.closest("button"))return;
-  const li=n.closest("li"),id=li&&li.querySelector("[data-id]")&&li.querySelector("[data-id]").dataset.id,q=S.quests.find(x=>x.id===id);
-  if(!q||isDone(q)||q.chain)return;
-  const v=prompt("Sửa nhiệm vụ: Tên | phút",q.name+" | "+(q.mins||30));if(v==null)return;
-  const p=v.split("|"),nm=(p[0]||"").trim().slice(0,80);if(!nm)return;
-  const mi=Math.min(480,Math.max(5,parseInt(p[1])||q.mins||30));
-  q.name=nm;q.mins=mi;q.pts=Math.max(1,Math.round(mi/60*S.perHour*(q.diff||1)));save();render();say("Đã sửa nhiệm vụ.")});
-$("qbulkex").onclick=exportQuestsText;
-$("qbulkmix").onclick=()=>{
-  $("qbulk").value=PRESET_MIX;
-  if($("qbulkhint"))$("qbulkhint").textContent="Đã nạp 21 nhiệm vụ mẫu (VSTEP + Code + NCKH + môn khác). Sửa nếu cần rồi bấm Nhập bộ nhiệm vụ.";
-  say("Đã nạp bộ VSTEP + Code + NCKH vào ô dán. Bấm Nhập để thêm vào danh sách.");
-};
-$("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
-  const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.a==="ld"){S.sched[today()]=(S.sched[today()]||[]).filter(x=>x.id!==b.dataset.id);save();render();return}
-  if(b.dataset.a==="cd"){S.chains=S.chains.filter(c=>c.id!==b.dataset.id);S.quests=S.quests.filter(x=>x.chain!==b.dataset.id);save();render();say("Đã xóa chuỗi.");return}
-  const q=S.quests.find(x=>x.id===b.dataset.id);if(!q)return;
-  if(b.dataset.a!=="d"&&b.dataset.a!=="rn"){
-    if(q.chain&&!isDone(q)&&!unlocked(q)){say("Hãy hoàn thành bước trước.");return}
-    if(q.chain&&isDone(q)){say("Bước của chuỗi không thể hoàn tác.");return}
-    if(expired(q)){say("Nhiệm vụ nhanh đã hết hạn. Hãy xóa hoặc tạo lại.");return}
-  }
-  if(b.dataset.a==="rn"){q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();render();say("Đã tạo lại, không còn hạn.");return}
-  if(b.dataset.a==="d"){if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
-  else if(b.dataset.a==="p"){startFocus(q);return}
-  else if(isDone(q)){const g=q.got||q.pts;S.points=Math.max(0,S.points-g);hAdd(q.doneOn,-g,-(q.mins||0));if(S.cnt&&S.cnt[q.doneOn]>0)S.cnt[q.doneOn]--;q.doneOn=null;q.got=0;say("Đã bỏ hoàn thành, trừ "+g+" linh lực.")}
-  else{finish(q);say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
-  save();render();
-};
-
 
 $("rate").oninput=()=>{const v=parseInt($("rate").value);if(v>=1){S.rate=Math.min(500,v);save();render()}};
 $("mins").oninput=render;
@@ -428,35 +220,6 @@ setInterval(()=>{
 },500);
 $("fx").onclick=()=>{GameTimer.cancelFocus();say("Đã hủy phiên học, không tính linh lực.");render()};
 $("nd").oninput=$("nl").onchange=$("nq").onchange=renderMore;
-$("ladd").onclick=()=>{
-  const s=$("ls").value,e=$("le").value,qid=$("lq").value,q=S.quests.find(x=>x.id===qid),label=q?q.name:$("ll").value.trim();
-  if(!s||!e||s>=e||!label){say("Chọn giờ bắt đầu trước giờ kết thúc, và một nhiệm vụ hoặc tên việc.");return}
-  const dd=S.sched[today()]||(S.sched[today()]=[]),ov=dd.find(x=>s<x.e&&e>x.s);
-  if(ov){say("Trùng khung "+ov.s+" - "+ov.e+" ("+rn(ov)+"). Hãy chọn giờ khác.");return}
-  dd.push({id:"s"+Date.now().toString(36),s,e,qid,label});
-  $("ll").value="";save();render();say("Đã thêm vào lịch.");
-};
-$("lauto").onclick=()=>{
-  const cand=S.quests.filter(q=>!isDone(q)&&!expired(q)&&q.mins&&(!q.chain||unlocked(q))).sort((a,b)=>(a.due||9e15)-(b.due||9e15));
-  const day=S.sched[today()]||(S.sched[today()]=[]),have=new Set(day.map(x=>x.qid));
-  let t=Math.ceil(tm(nowHM())/15)*15,n=0;
-  for(const q of cand){
-    if(have.has(q.id))continue;
-    const len=Math.min(q.mins,120);
-    for(let i=0;i<50;i++){const bad=day.find(x=>t<tm(x.e)&&t+len>tm(x.s));if(!bad)break;t=tm(bad.e)}
-    if(t+len>1320)break;
-    day.push({id:"s"+Date.now().toString(36)+n++,s:hm(t),e:hm(t+len),qid:q.id,label:q.name});t+=len+10;
-  }
-  save();render();say(n?"Đã xếp "+n+" nhiệm vụ vào lịch hôm nay.":"Không còn khung giờ hoặc nhiệm vụ để xếp.");
-};
-document.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
-  const k=b.dataset.plan;
-  if(S.chains.some(c=>c.name===PN[k])){say("Bạn đã có chuỗi này rồi.");return}
-  const id="c"+Date.now().toString(36)+k;
-  S.chains.push({id,name:PN[k],paid:false,bonus:0});
-  PLAN[k].forEach((l,i)=>{const [n,m]=l.split("|"),mins=+m;S.quests.push({id:id+i,name:"Tuần "+(i+1)+": "+n,pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});
-  save();render();say("Đã tạo chuỗi 15 tuần ở bên dưới.");
-});
 setInterval(()=>{if(!$("b").hidden)renderLb()},1000);
 setInterval(()=>{if(!$("v").hidden)renderVan()},3000);
 setInterval(()=>{if(!$("z").hidden)renderSect()},3000);
@@ -475,7 +238,6 @@ const CI=[[10],[15],[20,"ca"],[30],[40,"bm"],[60],[120,"the"]];
 const RewardClaims=GameRewardClaims.create({S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say,addPts,hasBonusTitle:()=>eqT("n16"),random:Math.random});
 function checkin(){return RewardClaims.checkin()}
 $("kn").onclick=e=>{nwSeenK();const k=e.target.closest("[data-a=kc]");if(k&&!k.disabled)claimKn(+k.dataset.id)};
-$("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").value=b.dataset.tn;$("nd").value=b.dataset.tm;renderMore()};
 let SPD=7,SMT="p";
 const StatsUI=GameStatisticsUI.create({S,$,today,dayStr,GameAnalytics,GameTimeFormat,fold,uxp,ri,RL,rname,EX,exD,getKD:()=>KD,getKAge:()=>kAge(),bestKiep:()=>bk()});
 function renderStats(){StatsUI.render()}
@@ -504,94 +266,7 @@ $("lenh").onclick=e=>{
   S.claimed[ck]=1;const rr=eventGain(evB(t.r));S.eb=0;S.points+=rr;hAdd(today(),rr,0);if(t.it)S.inv[t.it]=(S.inv[t.it]||0)+1;
   save();render();say("Hoàn thành "+t.n+": +"+rr+" linh lực"+(t.it?" và 1 "+ITEMS.find(i=>i.id===t.it).n:"")+".");
 };
-$("lb").onclick=e=>{const li=e.target.closest("li[data-pi]");if(!li)return;PI=+li.dataset.pi;renderProf();$("prof").scrollIntoView({behavior:"smooth",block:"nearest"})};
-$("prof").onclick=e=>{if(e.target.closest("[data-a=pc]")){PI=null;renderProf()}};
-$("lball").onclick=()=>LeaderboardUI.toggleAll();
-$("sect").onclick=e=>{
-  const sm=e.target.closest("[data-a=sm]");if(sm&&!sm.disabled){claimSectM(sm.dataset.id);return}
-  const un=e.target.closest("[data-a=unbai]");
-  if(un&&S.sect!=null){S.master=null;vlog("Hủy bái sư");save();render();say("Đã hủy bái sư. Buff sư phụ không còn hiệu lực.");return}
-  const bai=e.target.closest("[data-a=bai]");
-  if(bai&&!bai.disabled&&S.sect!=null){
-    const M=MASTERS[S.sect];
-    if(!M.ok()){say("Chưa đủ điều kiện: "+M.okTxt());return}
-    S.master=S.sect;vlog("Bái sư: "+M.n+" ("+SECTS[S.sect].n+")");save();render();say("Đã bái sư "+M.n+". "+M.buff);return;
-  }
-  const b=e.target.closest("[data-a=sj]");if(!b)return;
-  const s=+b.dataset.id;
-  if(S.sect!=null){if(S.points<100){say("Cần 100 linh lực để chuyển tông môn.");return}S.points-=100}
-  S.sect=s;S.master=null;vlog("Gia nhập "+SECTS[s].n);save();render();say("Đã gia nhập "+SECTS[s].n+". Có thể bái sư trong tông.");
-};
 /* Học kỳ bắt đầu đã bị gỡ — thiên kiếp gắn với ngày trong kiếp */
-$("exams").onclick=e=>{
-  const xl=e.target.closest("[data-a=xl]");
-  if(xl){const id=xl.dataset.id,ul=xl.parentNode.querySelector("ul.exl");EXOPEN[id]=!EXOPEN[id];if(ul)ul.classList.toggle("open",!!EXOPEN[id]);const n=ul?ul.children.length:0;xl.textContent=EXOPEN[id]?"Thu gọn":"Xem đủ "+n+" người";return}
-  const m=e.target.closest("[data-a=xm]"),c=e.target.closest("[data-a=xc]");
-  if(m){if(!S.tma){if(S.sh)S.sh=0;else if(Math.random()<0.5){S.tma=1;S.tmaTasks=0;}}const ex=EX.find(z=>z.id===m.dataset.id),ee=spE(ex,(S.sp&&S.sp.ex===ex.id)?S.sp.k:-1),s=kh(uxp(),ee,daoTam(streakAt(new Date(),true),ee));save();render();say("Diễn kiếp "+ex.n+": "+s+" điểm ("+gr(s)+"). "+(ri(uxp()/(ee!==ex?SPQ[2].f:1))>=ex.need?"Đủ tu vi độ kiếp.":"Chưa đủ tu vi."));return}
-  if(!c)return;
-  const ex=EX.find(z=>z.id===c.dataset.id),r=S.sem.res[ex.id];
-  if(!r||r.claimed)return;const me=r.rows.find(z=>z.u);if(!me.ok)return;
-  const had=new Set(TITLES.filter(t=>tok(t)).map(t=>t.id)),pts=eventGain(RW[me.g]*ex.w);
-  r.claimed=true;S.points+=pts;hAdd(today(),pts,0);
-  if(me.g==="Xuất sắc")S.inv.bm=(S.inv.bm||0)+1;
-  const nt=TITLES.filter(t=>tok(t)&&!had.has(t.id)).map(t=>t.n);
-  save();render();say("Nhận thưởng "+ex.n+": +"+pts+" linh lực"+(me.g==="Xuất sắc"?" và 1 Tích Cốc Đan":"")+".");
-};
-$("k").onclick=$("i").onclick=e=>{
-  const b=e.target.closest("[data-a]");if(!b||b.disabled)return;
-  const a=b.dataset.a,id=b.dataset.id,it=ITEMS.find(x=>x.id===id);
-  if(a==="buy"&&it){const bought=S.dailyBought[today()]||(S.dailyBought[today()]=[]);if(bought.includes(id)){say("Vật phẩm này đã mua hôm nay; ngày mai có thể mua lại.");return}if(S.points<it.c){say("Chưa đủ linh lực.");return}S.points=S.points-it.c+(petBuff().rf||0);S.inv[id]=(S.inv[id]||0)+1;bought.push(id);say("Đã mua "+it.n+".")}
-  else if(a==="use"&&it&&S.inv[id]){useItem(id,it)}
-  else if(a==="eq"){const t=TITLES.find(x=>x.id===id);if(!t||!tok(t))return;S.title=S.title===id?"":id;if(S.nw&&S.nw.t)delete S.nw.t[id];say(S.title?"Đã đeo danh hiệu "+t.n+".":"Đã gỡ danh hiệu.")}
-  else return;
-  save();render();
-};
-$("cadd").onclick=()=>{
-  let raw=$("cs").value.split("\n").map(s=>s.trim()).filter(Boolean);
-  const mt=raw.length&&raw[0].match(/^t[êe]n chu[ỗo]i\s*:\s*(.+)/i);
-  if(mt){if(!$("cn").value.trim())$("cn").value=mt[1].slice(0,60);raw=raw.slice(1)}
-  const name=$("cn").value.trim();
-  const lines=raw.filter(l=>!l.startsWith("#")).slice(0,15);
-  if(!name||lines.length<2){say("Cần tên chuỗi và ít nhất 2 bước, mỗi bước một dòng.");return}
-  const id="c"+Date.now().toString(36);
-  S.chains.push({id,name,paid:false,bonus:0});
-  lines.forEach((l,i)=>{const [n,m]=l.split("|");if(!n.trim())return;const mins=Math.min(480,Math.max(5,parseInt(m)||30));S.quests.push({id:id+i,name:n.trim().slice(0,80),pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});
-  $("cn").value=$("cs").value="";save();render();say("Đã tạo chuỗi "+lines.length+" bước.");
-};
-$("events").oninput=e=>{if(e.target.dataset.kd)KSD[e.target.dataset.kd]=e.target.value;const t=e.target,v=parseInt(t.value);if(S.god&&t.dataset.f&&v>=1){S.ev[t.dataset.p][t.dataset.f]=Math.min(9999,v);save()}};
-$("events").onchange=render;
-$("events").onclick=e=>{
-  const ga=e.target.closest("[data-a=kadd],[data-a=kdel],[data-a=ked],[data-a=kreset]");
-  if(ga&&S.god){const a=ga.dataset.a,id=ga.dataset.id;S.ks=S.ks||[];S.kso=S.kso||{};
-    if(a==="kadd"){const n=(KSD.n||"").trim().slice(0,40);if(!n){say("Hãy nhập tên kỳ sự.");return}
-      S.ks.push({id:"k"+Date.now().toString(36),n,desc:(KSD.d||"").trim().slice(0,120),met:KSD.m||"c",tg:Math.min(9999,Math.max(1,parseInt(KSD.t)||5)),r:Math.min(9999,Math.max(1,parseInt(KSD.r)||60)),per:KSD.p||"w"});
-      KSD={};vlog("Thiên Đạo: thêm kỳ sự "+n);say("Đã thêm kỳ sự.")}
-    else if(a==="kdel"){S.ks=S.ks.filter(x=>x.id!==id);say("Đã xóa kỳ sự.")}
-    else if(a==="kreset"){delete S.kso[id];say("Đã khôi phục bản gốc.")}
-    else{const d=ga.dataset,cu=d.c==="1",v=prompt("Sửa kỳ sự: Tên | thưởng | mô tả"+(cu?" | mục tiêu":""),d.n+" | "+d.r+" | "+d.d+(cu?" | "+d.tg:""));if(v==null)return;
-      const p=v.split("|").map(x=>x.trim()),n=(p[0]||"").slice(0,40),r=Math.min(9999,Math.max(1,parseInt(p[1])||+d.r)),ds=(p[2]||"").slice(0,120);if(!n)return;
-      if(cu){const c=S.ks.find(x=>x.id===id);if(c){c.n=n;c.r=r;c.desc=ds;c.tg=Math.min(9999,Math.max(1,parseInt(p[3])||c.tg))}}else S.kso[id]={n,r,desc:ds};
-      say("Đã sửa kỳ sự.")}
-    save();render();return}
-  const xs=e.target.closest("[data-a=xs]");
-  if(xs&&!xs.disabled){
-    const ck=xs.dataset.ck,r=+xs.dataset.r;
-    if(S.claimed[ck])return;
-    S.claimed[ck]=1;const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);
-    vlog("Kỳ sự: +"+rr+" linh lực");save();render();say("Kỳ sự hoàn thành: +"+rr+" linh lực.");return;
-  }
-  const b=e.target.closest("[data-a]");if(!b||b.disabled||b.dataset.a!=="ec")return;
-  const p=b.dataset.p,k=b.dataset.k;
-  if(S.claimed[k]||evCur(p)<S.ev[p].h*60)return;
-  const had=new Set(TITLES.filter(t=>tok(t)).map(t=>t.id));
-  const er=modGain(evB(S.ev[p].r));S.eb=0;S.claimed[k]=1;S.points+=er;hAdd(today(),er,0);
-  const drop=p==="w"?"ca":"the";S.inv[drop]=(S.inv[drop]||0)+1;
-  let petMsg="";
-  const petChance=p==="m"?0.45:0.22;
-  if(Math.random()<petChance){const pet=grantPet();if(pet){petMsg=" · Linh thú theo về: "+pet.n+"!";vlog("Nhận linh thú từ kỳ sự: "+pet.n)}}
-  const nt=TITLES.filter(t=>tok(t)&&!had.has(t.id)).map(t=>t.n);
-  save();render();say("Nhận thưởng kỳ sự: +"+er+" linh lực và 1 "+ITEMS.find(i=>i.id===drop).n+petMsg+".");
-};
 setInterval(()=>{const a=document.activeElement;if(!a||!a.matches("input,select,textarea"))render()},30000);
 $("ph").oninput=()=>{const v=parseInt($("ph").value);if(v>=1){S.perHour=Math.min(1000,v);save();renderMore()}};
 /* ===== Bản 2: gộp tab, kiếp nạn, linh sủng, Thiên Đạo, sao lưu, âm thanh ===== */
@@ -625,43 +300,8 @@ function go(g,s){NavigationUI.go(g,s)}
 /* Kiếp nạn */
 function kmet(days){return GameAnalytics.kiepMetrics(S.hist,S.cnt||{},S.stl||[],days)}
 function renderKiep(){TribulationUI.renderKiep()}
-$("kiep").onclick=e=>{
-  const b=e.target.closest("button[data-k]");if(!b||b.disabled)return;
-  const KC=S.kc||(S.kc={}),k=b.dataset.k,r=Math.round(+b.dataset.r)+(petBuff().kp||0)+(eqT("n14")?25:0)+(S.kd===today()?30:0),pre=k.slice(0,11);if(KC[k])return;
-  KC[k]=1;LS().kn=(LS().kn||0)+1;const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);let m="Vượt kiếp thành công: +"+rr+" linh lực.";
-  if([0,1,2].every(i=>KC[pre+i])){if(k[0]==="d"){const b30=modGain(30);S.points+=b30;hAdd(today(),b30,0);m+=" Vượt đủ ba kiếp, thêm +"+b30+" linh lực."}else{S.inv.ca=(S.inv.ca||0)+1;m+=" Nhận 1 Tỉnh Thần Linh Trà."}}
-  save();render();say(m);
-};
-
 /* Linh sủng */
-const PS=[
-  {id:"hl",n:"Cửu Vĩ Hồ",c:0,d:"Thu linh lực khi bạn vắng mặt",e:l=>`thu ${2+l} linh lực mỗi giờ, tối đa 8 giờ`,
-  ranks:["Sơ Vĩ Hồ","Tam Vĩ Hồ","Ngũ Vĩ Hồ","Thất Vĩ Hồ","Cửu Vĩ Thiên Hồ"]},
-  {id:"hq",n:"Linh Hạc",c:300,d:"Hộ đạo từng nhiệm vụ",e:l=>`+${l} linh lực cố định mỗi nhiệm vụ`,
-  ranks:["Bạch Hạc Đồng","Linh Hạc Sứ","Vân Hạc Chân Quân","Tiên Hạc Trưởng Lão","Huyền Hạc Thánh Tôn"]},
-  {id:"kl",n:"Kỳ Lân",c:500,d:"Thưởng cho buổi học dài",e:l=>`+${2+2*l} linh lực cố định cho nhiệm vụ từ 45 phút`,
-  ranks:["Kỳ Lân Ấu Thể","Kỳ Lân Linh Thú","Kỳ Lân Thánh Thú","Thái Cổ Kỳ Lân","Thiên Đạo Kỳ Lân"]},
-  {id:"ct",n:"Chu Tước",c:500,d:"Lửa đỏ thiêu kiếp nạn",e:l=>`+${2+2*l} linh lực mỗi lần vượt kiếp nạn`,
-  ranks:["Hỏa Tước","Chu Tước Linh","Nam Minh Chu Tước","Liệt Diệm Thánh Tước","Thiên Hỏa Chu Tước"]},
-  {id:"hg",n:"Huyền Quy",c:600,d:"Thủ hộ nhàn hạ",e:l=>`mỗi lần đổi nhàn hạ rẻ hơn ${2+2*l} linh lực`,
-  ranks:["Huyền Quy Ấu","Huyền Quy Linh","Bắc Vũ Huyền Quy","Huyền Thiên Quy Thánh","Thái Cổ Huyền Quy"]},
-  {id:"bh",n:"Bạch Hổ",c:700,d:"Sát phạt tâm ma",e:l=>`nhiệm vụ nhanh +${2*l} linh lực, khi có tâm ma mỗi nhiệm vụ +${2*l}`,
-  ranks:["Bạch Hổ Ấu","Bạch Hổ Linh","Tây Phương Bạch Hổ","Sát Phạt Hổ Tôn","Thiên Binh Bạch Hổ"]},
-  {id:"tt",n:"Thôn Thiên Thử",c:800,d:"Nhặt bảo vật rơi rớt",e:l=>`${2*l}% mỗi nhiệm vụ nhặt được một vật phẩm`,
-  ranks:["Linh Thử","Thôn Bảo Thử","Thôn Thiên Thử","Hư Không Thôn Thử","Thôn Nhật Nguyệt Thử"]},
-  {id:"tn",n:"Thanh Long",c:650,d:"Khai mở ngày mới",e:l=>`nhiệm vụ đầu tiên mỗi ngày +${4+2*l} linh lực`,
-  ranks:["Thanh Long Ấu","Thanh Long Linh","Đông Hải Thanh Long","Cửu Thiên Thanh Long","Thái Cổ Thanh Long"]},
-  {id:"pg",n:"Phượng Hoàng",c:900,d:"Lửa tái sinh theo chuỗi ngày",e:l=>`mỗi ngày chuỗi +${l} linh lực mỗi nhiệm vụ (tối đa +10)`,
-  ranks:["Phượng Hoàng Ấu","Niết Bàn Phượng","Hỏa Phượng Hoàng","Bất Diệt Phượng Hoàng","Thiên Đạo Phượng Hoàng"]},
-  {id:"ko",n:"Kim Ô",c:550,d:"Thần điểu buổi sớm",e:l=>`nhiệm vụ trước 9 giờ sáng +${2*l} linh lực`,
-  ranks:["Kim Ô Ấu","Kim Ô Linh","Tam Túc Kim Ô","Đại Nhật Kim Ô","Thái Dương Kim Ô"]},
-  {id:"dm",n:"Dạ Minh Điểu",c:550,d:"Bạn đồng hành đêm khuya",e:l=>`nhiệm vụ từ 22 giờ đến 5 giờ sáng +${2*l} linh lực`,
-  ranks:["Dạ Minh Ấu","Dạ Minh Linh","U Minh Điểu","Cửu U Dạ Minh","Vĩnh Dạ Thánh Điểu"]},
-  {id:"ty",n:"Tỳ Hưu",c:750,d:"Thu tài vào túi",e:l=>`mỗi lần mua vật phẩm hoàn lại ${2*l} linh lực`,
-  ranks:["Tỳ Hưu Ấu","Tụ Tài Tỳ Hưu","Thôn Kim Tỳ Hưu","Vạn Bảo Tỳ Hưu","Thiên Tài Tỳ Hưu"]},
-  {id:"mm",n:"Mặc Miêu",c:600,d:"Kéo dài giờ nhàn hạ",e:l=>`mỗi lần đổi nhàn hạ tặng thêm ${l} phút`,
-  ranks:["Mặc Miêu Ấu","Mặc Miêu Linh","Huyền Mặc Miêu","Thời Quang Mặc Miêu","Thái Cổ Mặc Miêu"]}
-];
+const {PS}=GamePetData;
 const petRank=(p,lv)=>GamePetData.rank(p,lv);
 if(S.pet&&!S.pets){S.pets={hl:{lv:S.pet.lv+1,t:S.pet.t}};S.act="hl";delete S.pet}
 function petBuff(){return GamePetData.buff(S.pets,S.act)}
@@ -741,54 +381,11 @@ $("g").onclick=e=>{
 
 /* Sao lưu và cài đặt + tùy chỉnh giao diện */
 const bx=document.createElement("div");bx.style.display="contents";bx.id="setbox";
-const SettingsUI=GameSettingsUI.create({S,fold,container:bx});
+const SettingsUI=GameSettingsUI.create({S,fold,container:bx,$,FO,save,refresh:render,drawNav:()=>drawNav(),say,sfx:(...args)=>sfx(...args),today,askName,showTut:()=>showTut(),importBackup:GameStateHandle.importBackup});
 function renderSettings(){SettingsUI.render()}
 renderSettings();
 $("setpanel").appendChild(bx);
-$("gear").onclick=()=>{const p=$("setpanel"),on=p.hidden;p.hidden=!on;$("sbody").hidden=on;$("gear").classList.toggle("on",on);$("gear").setAttribute("aria-expanded",on)};
-$("s").addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k)FO[k]=e.target.open},true);
-bx.onclick=e=>{
-  const ui=e.target.closest("[data-ui]");
-  if(ui){
-    S.ui=S.ui||{};
-    if(ui.dataset.ui==="studyOnly"){S.ui.studyOnly=ui.dataset.v==="1";save();applyUi();renderSettings();drawNav();render();say(S.ui.studyOnly?"Đã bật chế độ Chỉ học.":"Đã về chế độ đầy đủ.");return}
-    S.ui[ui.dataset.ui]=ui.dataset.v;save();applyUi();renderSettings();say("Đã đổi giao diện.");return;
-  }
-  const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
-  if(a==="ex"||a==="dl"){
-    try{
-      const raw=GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
-      if(a==="ex"){try{navigator.clipboard&&navigator.clipboard.writeText(raw)}catch(x){}say("Đã tạo backup. Hãy sao chép hoặc tải file để cất giữ.")}
-      else{
-        const blob=new Blob([raw],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");
-        link.href=url;link.download="tu-tien-hoc-dao-backup-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
-        setTimeout(()=>URL.revokeObjectURL(url),1000);say("Đã tải file backup JSON.");
-      }
-    }catch(x){say("Không thể tạo backup: "+(x.message||"dữ liệu không hợp lệ."))}
-  }
-  else if(a==="file"){$("bkfile").click()}
-  else if(a==="im"){
-    try{
-      if(!window.confirm("Nhập backup sẽ thay thế tiến trình hiện tại. Bản hiện tại sẽ được lưu thành backup nội bộ trước. Tiếp tục?"))return;
-      const imported=GameStorage.importData(KEY,$("bk").value);
-      S=Object.assign(DEF(),imported);if(!S.ui)S.ui={skin:"classic",density:"normal",fs:"md",theme:"auto"};
-      applyUi();render();say("Đã nhập backup thành công.");
-    }catch(x){say("Không thể nhập backup: "+(x.message||"dữ liệu không hợp lệ.")+" Tiến trình hiện tại chưa bị thay thế.")}
-  }
-  else if(a==="sn"){S.snd=S.snd===0?1:0;save();renderSettings();say(S.snd===0?"Đã tắt âm thanh.":"Đã bật âm thanh.");sfx(660)}
-  else if(a==="nm")askName();
-  else if(a==="tut"){S.tutDone=0;S.tutStep=0;save();showTut()}
-  else if(a==="god"){S.god=!S.god;save();renderSettings();render();say(S.god?"Thiên Đạo đã mở, mọi tab được mở khóa.":"Đã tắt Thiên Đạo.")}
-};
-
-$("bkfile").addEventListener("change",async e=>{
-  const file=e.target.files&&e.target.files[0];if(!file)return;
-  try{
-    $("bk").value=await file.text();
-    say("Đã đọc file backup. Kiểm tra nội dung rồi bấm «Nhập JSON» để xác nhận.");
-  }catch(x){say("Không đọc được file backup.")}
-  e.target.value="";
-});
+SettingsUI.bindEvents();
 
 function checkStreakBreak(){
   // Mất chuỗi vì bỏ ngày (chưa học hôm qua / trước đó) → tâm ma, không cần đợi nhiệm vụ mới
@@ -814,122 +411,25 @@ const DEF=()=>({quests:[],points:0,gameSec:0,rate:2,perHour:200,streak:{last:"",
 const MAXXP=END;
 const LS=()=>S.ls||(S.ls={q:0,m:0,ni:0,da:0,ru:0,lg:0,kn:0,it:0,top:0,ms:0,tmc:0});
 const KS=()=>S.kst||(S.kst={start:Date.now(),pk:0,ms:0,tm:0});
-const tok=t=>!!S.ft||!!(S.tt&&S.tt[t.id])||t.ok();
-const eqT=id=>{const t=TITLES.find(x=>x.id===id);return !!t&&S.title===id&&tok(t)};
+
 const evB=r=>r+(eqT("t3")?60:0)+(eqT("t5")?20:0)+(S.eb||0);
 const LC=m=>Math.max(1,Math.ceil(m*S.rate*(1-(S.sl?.3:0))*(masterBuff().dc?1-masterBuff().dc/100:1))-(petBuff().dc||0)-(eqT("n4")?8:0));
 const hourNow=()=>S.hh!=null?S.hh:new Date().getHours();
 const kAge=()=>(Date.now()-KS().start)/864e5;
 const kEnd=()=>kAge()>=KD; // kiếp chỉ kết thúc khi hết thời gian
 const bk=()=>GameProgressData.bestKiep(S.rbh,KS().pk,S.points,(S.rb||0)+1);
-function chkT(){const T=S.tt||(S.tt={}),nw=[];TITLES.forEach(x=>{if(!T[x.id]&&x.ok()){T[x.id]=Date.now();nwS().t[x.id]=1;nw.push(x.n)}});if(nw.length){save();setTimeout(()=>say("Danh hiệu mới: "+nw.join(", ")+"!"),200)}}
+
 function warGain(){const w=addPts(150+(eqT("n15")?100:0));LS().sw=(LS().sw||0)+1;return w}
 function TB(q){
-  const pt=petBuff(),mb=masterBuff(),H=hourNow(),mins=q.mins||0,nT=(S.cnt&&S.cnt[today()])||0,pm=S.pw>0?2:1;
-  let flat=3*ri(uxp());
-  if(S.xb&&Date.now()<S.xb.u)flat+=S.xb.v;
-  if(eqT("t1"))flat+=3;if(eqT("t2"))flat+=Math.min(14,S.streak.n);
-  if(eqT("t4")&&S.tm)flat+=12;if(eqT("t6")&&mins>=60)flat+=10;
-  if(eqT("n1")&&(H>=22||H<5))flat+=10;if(eqT("n2")&&H<9)flat+=10;if(eqT("n3")&&q.due)flat+=12;
-  if(eqT("n7")&&mins>=120)flat+=30;if(eqT("n8")&&nT>=3)flat+=6;if(eqT("n9")&&myRk()<=3)flat+=10;
-  if(eqT("n10")&&nT===0)flat+=25;if(eqT("n11")&&S.act)flat+=4;if(eqT("n18"))flat+=12;
-  // Buff sư phụ
-  if(mb.fl&&mins>=45)flat+=mb.fl;
-  if(mb.fn&&(H>=22||H<5))flat+=mb.fn;
-  if(mb.ft&&S.tm)flat+=mb.ft;
-  flat+=pm*((pt.fq||0)+(mins>=45?pt.fl||0:0)+(q.due?pt.fr||0:0)+(S.tm?pt.ft||0:0)+(nT===0?pt.f1||0:0)+Math.min(10,Math.min(14,S.streak.n)*(pt.fs||0))+(H<9?pt.fm||0:0)+(H>=22||H<5?pt.fn||0:0));
-  return{flat:flat+(spK()===0?SPQ[0].pl:0),mult:(mb.mult||1)*(spK()===1?SPQ[1].mul2:1),cap:.5,tm:.2};
-}
-function buffTxt(){
-  const a=[];
-  if(S.buff.n>0)a.push("×"+S.buff.m+" linh lực cho "+S.buff.n+" nhiệm vụ");
-  (S.fx||[]).forEach(e=>a.push("+"+e.v+" linh lực cố định cho "+e.n+" nhiệm vụ"+(e.t==="q"?" nhanh":e.t==="l"?" từ 60 phút":"")));
-  if(S.xb&&Date.now()<S.xb.u)a.push("+"+S.xb.v+" linh lực cố định mỗi nhiệm vụ, còn "+rem(S.xb.u));
-  if(S.tb&&Date.now()<S.tb)a.push("+20% linh lực trong "+Math.ceil((S.tb-Date.now())/36e5)+" giờ");
-  if(S.sl)a.push("lần đổi nhàn hạ tới rẻ hơn 30%");if(S.lt)a.push("lần đổi nhàn hạ tới tặng thêm "+S.lt+" phút");
-  if(S.ln===today())a.push("kiếp nạn hôm nay nhẹ hơn 25%");if(S.kd===today())a.push("kiếp nạn hôm nay +30 linh lực");
-  if(S.sh)a.push("Hộ Tâm Phù đang chờ chặn lần tâm ma kế tiếp");if(S.eb)a.push("lần nhận thưởng event hoặc lệnh bài tới +"+S.eb+" linh lực");if(S.tcCharges>0)a.push("Thiên Cơ Lệnh: +50% cho "+S.tcCharges+" lần nhận thưởng");
-  if(S.pw>0)a.push("buff linh thú ×2 cho "+S.pw+" nhiệm vụ");
-  if(S.tdPenalty)a.push("Thiên Đạo Trừng Phạt: −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"% linh lực (×"+Math.max(1,S.tdStacks||1)+")");
-  if((S.failStreak||0)>0)a.push("Chuỗi độ kiếp thất bại: "+S.failStreak);
-  if(S.master!=null&&S.sect===S.master)a.push("Sư phụ "+MASTERS[S.master].n+": "+MASTERS[S.master].buff);
-  return a.length?"Đang có hiệu ứng: "+a.join("; "):"";
-}
-function useItem(id,it){
-  const ex=eqT("n5")?1:0,on="Đang có hiệu ứng rồi.",now=Date.now(),td="Hôm nay đã dùng rồi.";
-  const pf=(n,v,k)=>{if((S.fx||[]).length>=6)return"Đang có quá nhiều hiệu ứng cố định.";(S.fx=S.fx||[]).push({n:n+ex,v,t:k||""})};
-  // Tác dụng riêng của vật phẩm tiện ích: chk kiểm tra điều kiện dùng, ap áp dụng sau khi đã nhận phần linh lực theo nhiệm vụ
-  const U={
-    ty:{chk:()=>S.tm||S.tma?null:"Bạn không có tâm ma.",ap:()=>{S.tm=0;S.tmTasks=0;S.tma=0;S.tmaTasks=0}},
-    cb:{chk:()=>null,ap:()=>{S.tm=0;S.tma=0;S.tmTasks=0;S.tmaTasks=0;S.cbUntil=now+864e5}},
-    ht:{chk:()=>S.sh?on:null,ap:()=>{S.sh=1}},
-    sl:{chk:()=>S.sl?on:null,ap:()=>{S.sl=1}},
-    tq:{chk:()=>S.lt?on:null,ap:()=>{S.lt=15}},
-    ln:{chk:()=>S.ln===today()?td:null,ap:()=>{S.ln=today()}},
-    dk:{chk:()=>S.kd===today()?td:null,ap:()=>{S.kd=today()}},
-    cl:{chk:()=>S.tcCharges>0?on:null,ap:()=>{S.tcCharges=4}},
-    ll:{chk:()=>S.pw>0?on:null,ap:()=>{S.pw=5+ex}},
-    hy:{chk:()=>S.pets&&S.pets.hl?null:"Bạn chưa có Cửu Vĩ Hồ.",ap:()=>{S.pets.hl.t-=4*36e5}}
-  };
-  const u=U[id];let err=u?u.chk():null;
-  if(!err&&it.q)err=pf(it.q[0],it.q[1],it.q[2]);
-  if(err){say(err);return}
-  if(u)u.ap();
-  S.inv[id]--;LS().it++;
-  let bonus=0;
-  if(eqT("n17"))bonus+=15;
-  if(masterBuff().itemBonus)bonus+=masterBuff().itemBonus;
-  if(bonus){S.points+=modGain(bonus);hAdd(today(),modGain(bonus),0)}
-  say("Đã dùng "+it.n+(bonus?" (+"+modGain(bonus)+" linh lực)":"")+".");
+  return GameRewards.questBonus(q,{S,petBuff,masterBuff,hourNow,today,ri,uxp,hasTitle:eqT,myRk,spK,SPQ});
 }
 function renderRb(){TribulationUI.renderRb()}
-$("tmb").onclick=e=>{
-  const b=e.target.closest("button[data-rb]");if(!b)return;
-  if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Bấm lần nữa để xác nhận";return}
-  doRebirth();
-};
 function buildRec(){
-  const ks=KS(),H=S.hist,days=Object.keys(H).filter(k=>H[k].p>0||H[k].m>0).sort(),now=Date.now();
-  let m=0,bp=0,bd="";days.forEach(k=>{m+=H[k].m;if(H[k].p>bp){bp=H[k].p;bd=k}});
-  const pt=PS.find(p=>p.id===S.act),ti=TITLES.find(t=>t.id===S.title&&tok(t));
-  const r={n:(S.rb||0)+1,name:S.name||"đạo hữu",pk:Math.round(Math.max(ks.pk,S.points)),fin:Math.round(S.points),days:Math.max(1,Math.round((now-ks.start)/864e5)),hrs:m/60,quests:Object.values(S.cnt||{}).reduce((a,b)=>a+b,0),best:{d:bd,p:bp},ms:ks.ms,tm:ks.tm,kn:Object.keys(S.kc||{}).length,miles:miles(-1).filter(x=>x[0]>0),rank:myRk(),pet:pt?pt.n:"",title:ti?ti.n:"",at:now};
-  r.npc=Math.round(B.reduce((a,b,i)=>a+bxp(i,now),0)/B.length);r.exg=S.sem?Object.values(S.sem.res).map(z=>(z.rows.find(q=>q.u)||{}).g).filter(Boolean):[];r.tt=Object.keys(S.tt||{}).length;r.it=LS().it;r.sect=S.sect!=null?SECTS[S.sect].n:"";r.txt=narrate(r);return r;
-}
-function narrate(r){
-  const P=[],f=ts=>new Date(ts).toLocaleDateString("vi-VN"),avg=r.hrs/r.days,full=r.pk>=END;
-  // Đánh giá tổng thể dựa trên giờ học, hạng, linh lực đỉnh và chuỗi ngày
-  const summary=GameRebirthData.gradeSummary(r,END),grade=summary.grade,gTxt=summary.text;
-  r.grade=grade;
-  P.push(`Kiếp thứ ${r.n}, có một người tên ${r.name}${r.sect?`, đệ tử ${r.sect}`:""}. Tu hành ${r.days} ngày, tổng cộng ${Math.round(r.hrs)} canh giờ, bình quân ${avg.toFixed(1)} giờ mỗi ngày. ${avg>=6?"Người ngoài gọi là liều mạng. Người ấy chỉ gọi là học.":avg>=3?"Không nhanh, không chậm. Ngày nào cũng ngồi xuống.":"Có ngày ngồi trước án thư, có ngày không."}`);
-  const L=[];
-  if(r.miles.length){const a=r.miles[0],z=r.miles[r.miles.length-1];L.push(`Ngày ${f(a[1])}, nhập ${RL[a[0]][0]}.`+(z!==a?` Ngày ${f(z[1])}, bước vào ${RL[z[0]][0]}.`:""))}
-  if(r.best.d)L.push(`Ngày ${r.best.d} học nhiều nhất: ${Math.round(r.best.p)} linh lực.`);
-  if(L.length)P.push(L.join(" "));
-  P.push((r.ms>=14?`Có lần giữ trọn ${r.ms} ngày không đứt.`:r.ms>=5?`Chuỗi dài nhất ${r.ms} ngày.`:`Chuỗi dài nhất chỉ ${r.ms} ngày.`)+(r.tm?` Tâm ma tìm đến ${r.tm} lần. ${r.tm>2?"Ngã xuống, đứng dậy, rồi lại ngã xuống, lại đứng dậy.":"Đều qua được."}`:` Tâm ma chưa từng tìm đến.`));
-  P.push(`Hoàn thành ${r.quests} nhiệm vụ${r.kn?`, vượt ${r.kn} kiếp nạn`:""}.${r.pet?` ${r.pet} đi cùng đến cuối.`:""}${r.title?` Người đời gọi là 「${r.title}」.`:""}`);
-  if(r.exg.length){const c=g=>r.exg.filter(x=>x===g).length;P.push(`Thiên kiếp ${r.exg.length} đợt: ${c("Xuất sắc")} lần Xuất sắc, ${c("Giỏi")} lần Giỏi, ${c("Yếu")} lần Yếu.`);}
-  P.push(`Khi kiếp khép, đứng hạng ${r.rank}/${B.length+1} Thiên Kiêu Bảng, linh lực đỉnh ${r.pk}. ${r.pk>=r.npc?`Cao hơn mức trung bình ${r.npc} của chúng tu sĩ.`:`Thấp hơn mức trung bình ${r.npc}, thiếu ${r.npc-r.pk}.`} Mang theo ${r.tt} danh hiệu, ${r.it} vật phẩm.`);
-  P.push(full?`Một đời tu hành, dừng chân ở Chân Tiên.`:`Một đời tu hành, dừng chân ở ${rname(r.pk)}.`);
-  // Thiên Đạo Ân Xá: viên mãn + mọi thiên kiếp từ Khá trở lên
-  const allKhá=r.exg.length>0&&r.exg.every(g=>g==="Xuất sắc"||g==="Giỏi"||g==="Khá");
-  const anXa=S.tdPenalty&&full&&allKhá&&(grade==="Viên Mãn Xuất Chúng"||grade==="Xuất Sắc"||grade==="Giỏi");
-  r.anXa=!!anXa;
-  if(anXa){
-    P.push(`【Ân Xá】Một kiếp viên mãn, mọi thiên kiếp từ Khá trở lên. Lệnh Trừng Phạt được gỡ.`);
-  }else if(S.tdPenalty){
-    P.push(`Lệnh Trừng Phạt vẫn còn. Điều kiện gỡ: một kiếp viên mãn, mọi thiên kiếp từ Khá trở lên.`);
-  }
-  P.push(`【Tổng Kết】Kiếp này: ${grade}. ${gTxt}`);
-  const EL={
-    full:[`Không qua cầu Nai Hà. Phía trước là bậc thang mây, không có bát canh nào đặt sẵn.`,`Lão lái đò Vong Xuyên đứng dậy khi ${r.name} bước lên bến. Lão chưa từng đứng dậy vì ai.`,`Tấm bia vô tự bên bến Vong Xuyên có thêm một cái tên. Mưa không xóa được.`],
-    good:[`Hồn phách qua cầu Nai Hà. Bát canh Mạnh Bà còn ấm. ${r.name} uống cạn, nhưng đạo tâm thì không tan.`,`Đò Vong Xuyên cập bến chậm một nhịp. Lão lái đò nói: lần sau đi tiếp, đừng dừng ở đây.`,`Kiếp này thiếu một bước. Cầu Nai Hà vẫn dài như mọi cầu.`],
-    mid:[`Hồn phách đến bến Vong Xuyên. Bát canh Mạnh Bà đặt sẵn, còn ấm. ${r.name} uống cạn, không hỏi đó là gì. Chỉ đạo tâm là không tan.`,`Sương xuống bến. Một bóng người lên đò, như hàng ngàn bóng khác. Đò vẫn chèo.`,`Cầu Nai Hà không hỏi kiếp này dài hay ngắn. Chỉ hỏi có đi hết cầu hay không.`],
-    weak:[`Bát canh Mạnh Bà còn nóng. Người uống không nhớ mình đã bỏ dở điều gì. Có lẽ vậy lại nhẹ hơn.`,`Hồn phách lên đò. Lão lái đò không hỏi tên, vì kiếp này chưa kịp để lại tên.`,`Kiếp sau, trang vẫn trắng. Đò vẫn chờ.`],
-    pen:[`Lệnh phạt vẫn đeo theo qua cầu Nai Hà. Cầu không mang nổi nó, nhưng ${r.name} thì mang được.`,`Đò Vong Xuyên nặng hơn mọi chuyến. Lão lái đò không nói gì, chỉ chèo chậm lại.`]
-  };
-  const ecat=full?"full":(S.tdPenalty&&!anXa)?"pen":(grade==="Viên Mãn Xuất Chúng"||grade==="Xuất Sắc"||grade==="Giỏi")?"good":grade==="Yếu"?"weak":"mid";
-  const EA=EL[ecat];P.push(EA[(r.n+r.days)%EA.length]);
-  return P;
+  return GameRebirthData.buildRecord(S,{
+    cycle:KS,now:Date.now,pets:PS,titles:TITLES,isTitleUnlocked:tok,
+    milestones:()=>miles(-1),rank:myRk,npcs:B,npcXp:bxp,lifeStats:LS,
+    sects:SECTS,end:END,realms:RL,realmName:rname
+  });
 }
 /* ===== Hướng dẫn lần đầu ===== */
 const TUT=[
@@ -940,6 +440,7 @@ const TUT=[
   {t:"Thiên kiếp & Mệnh",b:"Theo ngày trong kiếp, thiên kiếp giáng xuống. Thất bại trừ Mệnh; hết Mệnh chịu Trừng Phạt. Phải xác nhận bảng kiếp trước khi chơi tiếp."},
   {t:"Nhật ký & Sứ mệnh",b:"Thiên Thư có Nhật ký đạo hữu và Sứ mệnh xuyên kiếp (chỉ danh hiệu). Cài đặt cho phép chế độ Chỉ học nếu muốn tối giản. Chúc tu luyện thuận lợi."}
 ];const OnboardingUI=GameOnboardingUI.create({S,AV_NAM,AV_NU,TUT,$,save,render,say,showTutorial:()=>showTut(),schedule:(fn,ms)=>setTimeout(fn,ms)});
+function askName(){OnboardingUI.askName()}
 function showTut(){OnboardingUI.showTutorial()}
 /* ===== Nhật ký đạo hữu ===== */
 
@@ -970,8 +471,6 @@ function showThd(r,ask){TribulationUI.showThd(r,ask)}
 function doRebirth(){TribulationSystem.doRebirth()}
 const rbx=document.createElement("div");rbx.style.display="contents";rbx.id="rbs";$("sbody").appendChild(rbx);
 function renderRbs(){TribulationUI.renderRbs()}
-$("rbs").onclick=e=>{const b=e.target.closest("[data-vi]");if(b&&S.rbh&&S.rbh[+b.dataset.vi])showThd(S.rbh[+b.dataset.vi])};
-function askName(){OnboardingUI.askName()}
 if(!S.name||!S.gender)askName();
 else if(!S.tutDone)setTimeout(showTut,400);
 
@@ -982,15 +481,31 @@ $("fgo").onclick=thienDien;
 /* Dependency-injected feature modules are created only after their full dependency set is initialized. */
 const LeaderboardSystem=GameLeaderboardSystem.create({S,B,KS,save,vlog,simulation:LeaderboardSimulation,leaderboardData:GameLeaderboardData,npcData:GameNpcData,hash:hs,getSalt:()=>KSALT,exams:EX,days:KD,examDate:exD,playerXpAt,weekStart:()=>weekStart(),myRank:myRk,warReward,bxpAt:bxX});
 const {SPQ,spA,spK,spKn,spE,nextEx,spUntil,spExtra,lbRows,spRoll,spRetire,BAL_RANK,BAL_MULT,sc,lbInit,playerBalanced,settle,spark,bs,bsX,immuneTaiHu}=LeaderboardSystem;
-const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge(),getProfileIndex:()=>PI});
-const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:EP,$});
+function miles(i){
+  const out=[];
+  if(i<0){let c=0,k=0;Object.keys(S.hist).sort().forEach(d=>{c+=S.hist[d].p;while(k<RL.length&&c>=RL[k][1]){out.push([k,new Date(d+"T12:00:00").getTime()]);k++}});return out}
+  const now=Date.now(),H=36e5,cur=ri(sc(i,now));let r=0;
+  for(let t=S.lb.t0;r<=cur&&r<RL.length;t+=H){const tt=Math.min(t,now);while(r<=cur&&r<RL.length&&sc(i,tt)>=RL[r][1]){out.push([r,tt]);r++}if(tt>=now)break}
+  return out;
+}
+const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge()});
+const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:sectWarEpoch,membership:SectSystem,claimMission:claimSectM,log:vlog,save,refresh:render,say,$});
 const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml()});
-const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt});
-const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:()=>{PI=null},chkLegacy,render,showThd:(...args)=>showThd(...args)});
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$});
-const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,KSD,weekStart:()=>weekStart(),escapeHtml:esc,$});
+const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt,simulateExam:id=>TribulationSystem.simulateExam(id),claimExam:id=>TribulationSystem.claimExam(id),claimTrial:(key,reward)=>TribulationSystem.claimTrial(key,reward)});
+const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say});
+const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
+const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,save,refresh:render,renderMore,say,hAdd,finish,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
+ActivityUI.bindQuestEvents();
+const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
+EventsUI.bindEvents();
 const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
 
+ProfileUI.bindSelection();
+TribulationUI.bindEvents();
+$("k").onclick=$("i").onclick=InventoryUI.handleClick;
+$("lball").onclick=LeaderboardUI.toggleAll;
+$("sect").onclick=SectUI.handleClick;
 drawNav();
 
 render();

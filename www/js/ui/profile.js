@@ -5,7 +5,7 @@
   const {S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,esc,htCount,htLate,hrs,miles,fmtT,rname}=deps;
   const RC=deps.realmColors,QT=deps.quotes,document=deps.document,getPrevMemory=deps.prevMemory,KD=deps.days,kAge=deps.getKAge;
   function renderProf(){
-    const PI=deps.getProfileIndex();
+    const PI=deps.getProfileIndex ? deps.getProfileIndex() : selectedIndex;
   const el=$("prof");if(PI==null){el.innerHTML="";return}
   const u=PI<0,i=PI,now=Date.now(),n0=Math.floor((now-S.lb.t0)/36e5),b=u?null:B[i],xp=u?uxp():bxp(i,now),k=ri(xp);
   const sect=u?(S.sect!=null?SECTS[S.sect].n:"Chưa gia nhập tông môn"):SECTS[SO[i]].n;
@@ -27,7 +27,23 @@
   if(myRk()<=10){S.life=S.life||{};S.life.top10=1}
   $("hero").innerHTML=`<div class="hero"><div class="av">${portrait(S.name,{player:1,w:56,h:56})}</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="rb" cx="60" cy="60" r="52"/><circle class="rf" cx="60" cy="60" r="52" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-p)).toFixed(1)}"/></svg><div class="hc"><div class="rn">${RL[k][0]}</div><div class="rt">${RL[k+1]?"tầng "+Math.min(9,Math.floor(p*9)+1):"vô cực"}</div></div></div><div class="hi"><b style="font-size:18px">${esc(S.name||"Đệ tử")}</b><br><small>${rname(x)} · Kiếp ${(S.rb||0)+1}${ttl?" · "+ttl.n:""}</small><br><small>Ngày ${Math.min(KD,Math.floor(kAge())+1)}/${KD} của kiếp · Mệnh ${menh}/100${S.tdPenalty?` · <span style="color:var(--red)">Trừng Phạt −${Math.min(30,5*Math.max(1,S.tdStacks||1))}%</span>`:""}${(S.failStreak||0)>1?` · fail×${S.failStreak}`:""}</small><br><small>${S.sect!=null?SECTS[S.sect].n:"Chưa vào tông môn"}, Hạng ${myRk()} trên Thiên Kiêu Bảng</small><br><small>Linh lực ${x}${RL[k+1]?" / "+hi:""}</small>${mem?`<small style="display:block;margin-top:4px;opacity:.85;font-style:italic">${mem}</small>`:""}<div class="qt">${QT[Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/36e5)%QT.length]}</div></div></div>`;
 }
-  return Object.freeze({render:renderProf,renderHero});
+  let selectedIndex=null;
+  function resetSelection(){selectedIndex=null}
+  function bindSelection(){
+    $("lb").onclick=event=>{
+      const row=event.target.closest("li[data-pi]");
+      if(!row)return;
+      selectedIndex=Number(row.dataset.pi);
+      renderProf();
+      $("prof").scrollIntoView({behavior:"smooth",block:"nearest"});
+    };
+    $("prof").onclick=event=>{
+      if(!event.target.closest("[data-a=pc]"))return;
+      resetSelection();
+      renderProf();
+    };
+  }
+  return Object.freeze({render:renderProf,renderHero,bindSelection,resetSelection});
  }
  root.GameProfileUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

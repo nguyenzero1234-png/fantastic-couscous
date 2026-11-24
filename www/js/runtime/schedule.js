@@ -1,6 +1,5 @@
 /* ===== Lịch tuần (thay thế tab Nhật trình theo ngày) =====
-   Nạp SAU game.js và notify.js. File này tự ghi đè renderLich, importSched, các nút của tab Nhật trình
-   và phần thông báo theo lịch, nên game.js / notify.js không cần sửa.
+   Nạp sau game.js và notify.js. Sở hữu lịch tuần, các nút Nhật trình và thông báo theo lịch.
 
    Dữ liệu (lưu cùng S trong localStorage):
    - S.sched[ngày]  : việc một lần  {id,s,e,qid,label}                (như cũ)
@@ -111,7 +110,7 @@
     say(n?("Đã nhập "+n+" khung"+(bad?", bỏ "+bad+" dòng lỗi/trùng giờ":"")+"."):"Không đọc được dòng nào. Mẫu: 19:00-19:45 | Tên việc | T2,T4");
   }
 
-  // Xóa khung giờ / việc lặp; mọi nút khác vẫn dùng bộ xử lý cũ của game.js
+  // Xóa khung giờ / việc lặp; mọi nút nhiệm vụ dùng bộ xử lý của GameActivityUI
   const old=$("slots").onclick;
   const onClick=e=>{
     const b=e.target.closest("button");
@@ -134,9 +133,8 @@
   $("lwp").onclick=()=>{LWO--;LDK=null;renderLich();syncDc()};
   $("lwn").onclick=()=>{LWO++;LDK=null;renderLich();syncDc()};
 
-  // Ghi đè các hàm của game.js (renderMore gọi renderLich theo tên toàn cục)
-  window.renderLich=renderLich;
-  window.importSched=importSched;
+  // API lịch tuần cho bootstrap và module nhiệm vụ
+  window.GameWeeklySchedule=Object.freeze({render:renderLich,importSchedule:importSched,slotsOf});
   window.slotsOf=slotsOf;
 
   // Dọn dữ liệu bỏ-riêng-ngày quá 30 ngày

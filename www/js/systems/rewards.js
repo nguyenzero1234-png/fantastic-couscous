@@ -37,7 +37,24 @@
     return modGain(Math.round((Number(totalQuestGain)||0)*0.25)+(bonusTitle?120:0),factors);
   }
 
-  global.GameRewards=Object.freeze({rewardFactors,modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward});
+  function questBonus(q,deps){
+    const {S,petBuff,masterBuff,hourNow,today,ri,uxp,hasTitle,myRk,spK,SPQ}=deps;
+    const pt=petBuff(),mb=masterBuff(),H=hourNow(),mins=q.mins||0,nT=(S.cnt&&S.cnt[today()])||0,pm=S.pw>0?2:1;
+    let flat=3*ri(uxp());
+    if(S.xb&&Date.now()<S.xb.u)flat+=S.xb.v;
+    if(hasTitle("t1"))flat+=3;if(hasTitle("t2"))flat+=Math.min(14,S.streak.n);
+    if(hasTitle("t4")&&S.tm)flat+=12;if(hasTitle("t6")&&mins>=60)flat+=10;
+    if(hasTitle("n1")&&(H>=22||H<5))flat+=10;if(hasTitle("n2")&&H<9)flat+=10;if(hasTitle("n3")&&q.due)flat+=12;
+    if(hasTitle("n7")&&mins>=120)flat+=30;if(hasTitle("n8")&&nT>=3)flat+=6;if(hasTitle("n9")&&myRk()<=3)flat+=10;
+    if(hasTitle("n10")&&nT===0)flat+=25;if(hasTitle("n11")&&S.act)flat+=4;if(hasTitle("n18"))flat+=12;
+    // Buff sư phụ
+    if(mb.fl&&mins>=45)flat+=mb.fl;
+    if(mb.fn&&(H>=22||H<5))flat+=mb.fn;
+    if(mb.ft&&S.tm)flat+=mb.ft;
+    flat+=pm*((pt.fq||0)+(mins>=45?pt.fl||0:0)+(q.due?pt.fr||0:0)+(S.tm?pt.ft||0:0)+(nT===0?pt.f1||0:0)+Math.min(10,Math.min(14,S.streak.n)*(pt.fs||0))+(H<9?pt.fm||0:0)+(H>=22||H<5?pt.fn||0:0));
+    return{flat:flat+(spK()===0?SPQ[0].pl:0),mult:(mb.mult||1)*(spK()===1?SPQ[1].mul2:1),cap:.5,tm:.2};
+  }
+  global.GameRewards=Object.freeze({rewardFactors,modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward,questBonus});
   function createClaims(deps){
     const {S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say}=deps;
     const addPts=deps.addPts,hasBonusTitle=deps.hasBonusTitle,random=deps.random||Math.random;

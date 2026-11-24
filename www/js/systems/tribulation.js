@@ -1,4 +1,4 @@
-/* Core xử lý thiên kiếp: chấm điểm, Mệnh, thất bại và khóa xem kết quả. */
+/* Thiên kiếp, nhật/tuần kiếp, thưởng, Mệnh và luân hồi. */
 (function(root){
  "use strict";
  function create(deps){
@@ -77,7 +77,48 @@
   chkLegacy();
   save();render();showThd(rec);sfx(392);schedule(()=>sfx(659),150);
 }
-  return Object.freeze({resolveEx,doRebirth});
+
+  function simulateExam(id){
+    const ex=EX.find(z=>z.id===id);
+    if(!ex)return;
+    if(!S.tma){
+      if(S.sh)S.sh=0;
+      else if(Math.random()<0.5){S.tma=1;S.tmaTasks=0}
+    }
+    const xp=deps.uxp(),ee=spE(ex,(S.sp&&S.sp.ex===ex.id)?S.sp.k:-1);
+    const score=kh(xp,ee,daoTam(streakAt(new Date(),true),ee));
+    save();render();
+    deps.say("Diễn kiếp "+ex.n+": "+score+" điểm ("+gr(score)+"). "+(ri(deps.uxp()/(ee!==ex?SPQ[2].f:1))>=ex.need?"Đủ tu vi độ kiếp.":"Chưa đủ tu vi."));
+  }
+  function claimExam(id){
+    const ex=EX.find(z=>z.id===id),r=S.sem&&S.sem.res[id];
+    if(!ex||!r||r.claimed)return;
+    const me=r.rows.find(z=>z.u);
+    if(!me||!me.ok)return;
+    const pts=deps.eventGain(deps.RW[me.g]*ex.w);
+    r.claimed=true;S.points+=pts;deps.hAdd(deps.today(),pts,0);
+    if(me.g==="Xuất sắc")S.inv.bm=(S.inv.bm||0)+1;
+    save();render();
+    deps.say("Nhận thưởng "+ex.n+": +"+pts+" linh lực"+(me.g==="Xuất sắc"?" và 1 Tích Cốc Đan":"")+".");
+  }
+  function claimTrial(key,reward){
+    const {petBuff,eqT,today,lifeStats,modGain,hAdd,say}=deps;
+    const KC=S.kc||(S.kc={}),pre=key.slice(0,11);
+    if(KC[key])return;
+    const r=Math.round(+reward)+(petBuff().kp||0)+(eqT("n14")?25:0)+(S.kd===today()?30:0);
+    KC[key]=1;
+    const life=lifeStats();life.kn=(life.kn||0)+1;
+    const rr=modGain(r);S.points+=rr;hAdd(today(),rr,0);
+    let message="Vượt kiếp thành công: +"+rr+" linh lực.";
+    if([0,1,2].every(index=>KC[pre+index])){
+      if(key[0]==="d"){
+        const bonus=modGain(30);S.points+=bonus;hAdd(today(),bonus,0);
+        message+=" Vượt đủ ba kiếp, thêm +"+bonus+" linh lực.";
+      }else{S.inv.ca=(S.inv.ca||0)+1;message+=" Nhận 1 Tỉnh Thần Linh Trà."}
+    }
+    save();render();say(message);
+  }
+  return Object.freeze({resolveEx,doRebirth,simulateExam,claimExam,claimTrial});
  }
  root.GameTribulationSystem=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

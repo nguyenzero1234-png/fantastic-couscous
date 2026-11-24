@@ -44,6 +44,28 @@
   }).join("\n");
   return {quests:open,text};
  }
- global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked,importBulk,exportOpen});
+ function addChain(state,name,lines,id){
+  const steps=[];
+  for(const line of lines){
+   const [label,duration]=line.split("|");
+   if(!label.trim())continue;
+   const mins=Math.min(480,Math.max(5,parseInt(duration,10)||30));
+   steps.push({name:label.trim().slice(0,80),pts:Math.max(1,Math.round(mins/60*state.perHour)),mins});
+  }
+  if(!name||steps.length<2)return 0;
+  while(state.chains.some(chain=>chain.id===id))id+="_";
+  state.chains.push({id,name,paid:false,bonus:0});
+  steps.forEach((step,i)=>state.quests.push({...step,id:id+i,chain:id,doneOn:null}));
+  return steps.length;
+ }
+ function addPresetChains(state,presets){
+  let added=0;
+  presets.forEach(([name,lines],i)=>{
+   if(state.chains.some(chain=>chain.name===name))return;
+   if(addChain(state,name,lines,"c"+Date.now().toString(36)+"d"+i))added++;
+  });
+  return added;
+ }
+ global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked,importBulk,exportOpen,addChain,addPresetChains});
 
 })(window);
