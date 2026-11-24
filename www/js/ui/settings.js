@@ -4,58 +4,40 @@
  function create(deps){
   const {S,fold,container}=deps;
   function render(){
-  const u=S.ui||{skin:"classic",density:"normal",fs:"md",theme:"auto"};
-  const on=(k,v)=>u[k]===v?" on":"";
-  container.innerHTML=fold("ui","Giao diện",`<small>Tùy chỉnh phong cách — vẫn giữ tông cổ thư. Thay đổi áp dụng ngay.</small>
-<div class="srt"><b>Chủ đề màu</b>
-  <div class="ui-opt">
-    <button class="btn alt${on("skin","classic")}" data-ui="skin" data-v="classic">Cổ thư (đỏ son)</button>
-    <button class="btn alt${on("skin","jade")}" data-ui="skin" data-v="jade">Thanh ngọc</button>
-    <button class="btn alt${on("skin","ink")}" data-ui="skin" data-v="ink">Mặc thư</button>
-    <button class="btn alt${on("skin","night")}" data-ui="skin" data-v="night">U huyền</button>
-  </div></div>
-<div class="srt"><b>Sáng / tối</b>
-  <div class="ui-opt">
-    <button class="btn alt${on("theme","auto")}" data-ui="theme" data-v="auto">Theo hệ thống</button>
-    <button class="btn alt${on("theme","light")}" data-ui="theme" data-v="light">Sáng</button>
-    <button class="btn alt${on("theme","dark")}" data-ui="theme" data-v="dark">Tối</button>
-  </div></div>
-<div class="srt"><b>Mật độ giao diện</b>
-  <div class="ui-opt">
-    <button class="btn alt${on("density","compact")}" data-ui="density" data-v="compact">Gọn</button>
-    <button class="btn alt${on("density","normal")}" data-ui="density" data-v="normal">Vừa</button>
-    <button class="btn alt${on("density","roomy")}" data-ui="density" data-v="roomy">Rộng</button>
-  </div></div>
-<div class="srt"><b>Cỡ chữ</b>
-  <div class="ui-opt">
-    <button class="btn alt${on("fs","sm")}" data-ui="fs" data-v="sm">Nhỏ</button>
-    <button class="btn alt${on("fs","md")}" data-ui="fs" data-v="md">Vừa</button>
-    <button class="btn alt${on("fs","lg")}" data-ui="fs" data-v="lg">Lớn</button>
-  </div></div>
-<div class="srt"><b>Chế độ chơi</b>
-  <div class="ui-opt">
-    <button class="btn alt${u.studyOnly?"":" on"}" data-ui="studyOnly" data-v="0">Đầy đủ</button>
-    <button class="btn alt${u.studyOnly?" on":""}" data-ui="studyOnly" data-v="1">Chỉ học</button>
-  </div>
-  <small style="display:block;margin-top:4px">Chỉ học: ẩn bảng, tông, bảo khố phức tạp — giữ nhiệm vụ, nhật trình, thiên kiếp, nhật ký.</small>
-</div>`,1)+fold("bk","Sao lưu & hệ thống",`<small>Dữ liệu chỉ nằm trong trình duyệt này. Xuất ra để không mất khi đổi máy.</small>
-${deps.isWriteBlocked?.()?'<p role="alert">Đang khóa lưu để bảo toàn dữ liệu lỗi. Hãy xuất dữ liệu cứu hộ trước khi nhập backup mới.</p><button class="btn alt" data-bk="recovery">Tải dữ liệu cứu hộ</button>':""}
-<textarea id="bk" placeholder="Dữ liệu backup JSON sẽ hiện ở đây…"></textarea>
+    const u={skin:"classic",density:"normal",fs:"md",theme:"auto",...S.ui};
+    const draft=deps.$?.("bk")?.value||"";
+    const advanced=deps.$?.("bkadvanced")?.open||false;
+    const choice=(k,v,label,active)=>`<button type="button" class="btn alt${active?" on":""}" data-ui="${k}" data-v="${v}" aria-pressed="${active}">${label}</button>`;
+    const options=(label,k,values)=>`<div class="setting-field"><b>${label}</b><div class="ui-opt" role="group" aria-label="${label}">${values.map(([v,n])=>choice(k,v,n,u[k]===v)).join("")}</div></div>`;
+    container.innerHTML=fold("general","Chung",`
+<div class="setting-field"><b>Chế độ chơi</b><div class="ui-opt" role="group" aria-label="Chế độ chơi">
+  ${choice("studyOnly","0","Đầy đủ",!u.studyOnly)}${choice("studyOnly","1","Chỉ học",!!u.studyOnly)}
+</div><small>Chỉ học giúp tập trung vào nhiệm vụ, nhật trình và thiên kiếp.</small></div>
+<div class="setting-row"><div><b>Âm thanh</b><small>Hiệu ứng khi thao tác</small></div><button type="button" class="btn alt${S.snd===0?"":" on"}" data-bk="sn" role="switch" aria-checked="${S.snd!==0}">${S.snd===0?"Tắt":"Bật"}</button></div>
+<div class="setting-row"><b>Đạo hiệu</b><button class="btn alt" data-bk="nm">Đổi tên</button></div>
+<div class="setting-row"><b>Hướng dẫn</b><button class="btn alt" data-bk="tut">Xem lại</button></div>`,1)
+    +fold("ui","Giao diện",`
+${options("Phong cách","skin",[["classic","Cổ thư"],["jade","Thanh ngọc"],["ink","Mặc thư"],["night","U huyền"]])}
+${options("Chế độ sáng","theme",[["auto","Tự động"],["light","Sáng"],["dark","Tối"]])}
+${options("Cỡ chữ","fs",[["sm","Nhỏ"],["md","Vừa"],["lg","Lớn"]])}
+${options("Mật độ","density",[["compact","Gọn"],["normal","Vừa"],["roomy","Rộng"]])}`,0)
+    +fold("bk","Sao lưu",`
+<small>Tiến trình được lưu trên thiết bị. Giữ một bản sao khi đổi máy hoặc cài lại app.</small>
+${deps.isWriteBlocked?.()?'<p class="setting-alert" role="alert">Đang khóa lưu. Hãy tải dữ liệu cứu hộ trước khi khôi phục.</p><button class="btn alt" data-bk="recovery">Tải dữ liệu cứu hộ</button>':""}
 <input id="bkfile" type="file" accept=".json,application/json" hidden>
-<div class="chips" style="margin-top:8px">
-  <button class="btn alt" data-bk="ex">Tạo backup</button>
-  <button class="btn alt" data-bk="dl">Tải file JSON</button>
-  <button class="btn alt" data-bk="im">Nhập JSON</button>
-  <button class="btn alt" data-bk="file">Chọn file backup</button>
-  <button class="btn alt" data-bk="sn">${S.snd===0?"Bật âm":"Tắt âm"}</button>
-  <button class="btn alt" data-bk="nm">Đổi tên</button>
-  <button class="btn alt" data-bk="tut">Hướng dẫn lại</button>
-  <button class="btn alt" data-bk="god">${S.god?"Tắt Thiên Đạo":"Thiên Đạo"}</button>
-</div>`,0);
-}
+<div class="setting-actions"><button class="btn" data-bk="dl">Tải bản sao JSON</button><button class="btn alt" data-bk="file">Chọn file khôi phục</button></div>
+<details class="setting-advanced" id="bkadvanced"${advanced||draft?" open":""}><summary>JSON thủ công</summary>
+<label for="bk">Nội dung bản sao</label><textarea id="bk" placeholder="Dán JSON để khôi phục hoặc tạo bản sao để sao chép…"></textarea>
+<div class="setting-actions"><button class="btn alt" data-bk="ex">Tạo và sao chép</button><button class="btn alt" data-bk="im">Khôi phục JSON</button></div></details>`,!!deps.isWriteBlocked?.())
+    +fold("advanced","Nâng cao",`
+<div class="setting-row"><div><b>Thiên Đạo</b><small>Kiểm thử trên tiến trình hiện tại</small></div><button class="btn alt${S.god?" on":""}" data-bk="god" role="switch" aria-checked="${!!S.god}">${S.god?"Bật":"Tắt"}</button></div>
+${S.god?'<div class="setting-actions"><button class="btn alt" data-bk="godopen">Mở Thiên Đạo</button></div>':""}`,0);
+    const field=deps.$?.("bk");
+    if(field)field.value=draft;
+  }
   function bindEvents(){
     const {$,FO,save,refresh,drawNav,say,sfx,today,askName,showTut,importBackup}=deps;
-$("gear").onclick=()=>{const p=$("setpanel"),on=p.hidden;p.hidden=!on;$("sbody").hidden=on;$("gear").classList.toggle("on",on);$("gear").setAttribute("aria-expanded",on)};
+$("gear").onclick=()=>{const p=$("setpanel"),on=p.hidden;p.hidden=!on;$("sbody").hidden=on;$("gear").classList.toggle("on",on);$("gear").setAttribute("aria-expanded",on);$("settings-title").textContent=on?"Cài đặt":"Thống kê";$("gear").textContent=on?"←":"⚙";$("gear").setAttribute("aria-label",on?"Về thống kê":"Cài đặt");$("gear").title=on?"Về thống kê":"Cài đặt";$("settings-version").hidden=!on};
 $("s").addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k)FO[k]=e.target.open},true);
 container.onclick=e=>{
   const ui=e.target.closest("[data-ui]");
@@ -67,8 +49,8 @@ container.onclick=e=>{
   const b=e.target.closest("button");if(!b)return;const a=b.dataset.bk;
   if(a==="ex"||a==="dl"||a==="recovery"){
     try{
-      const raw=a==="recovery"?deps.recoveryData():GameStorage.exportData(S);$("bk").value=raw;$("bk").select();
-      if(a==="ex"){try{navigator.clipboard&&navigator.clipboard.writeText(raw)}catch(x){}say("Đã tạo backup. Hãy sao chép hoặc tải file để cất giữ.")}
+      const raw=a==="recovery"?deps.recoveryData():GameStorage.exportData(S);if(a==="ex"){$("bkadvanced").open=true;$("bk").value=raw;$("bk").select()}
+      if(a==="ex"){say("Đã tạo bản sao JSON.");try{navigator.clipboard?.writeText(raw)?.then(()=>say("Đã sao chép JSON.")).catch(()=>say("Hãy sao chép JSON đã chọn."))}catch(x){say("Hãy sao chép JSON đã chọn.")}}
       else{
         const blob=new Blob([raw],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");
         link.href=url;link.download="tu-tien-hoc-dao-"+(a==="recovery"?"recovery":"backup")+"-"+today()+".json";document.body.appendChild(link);link.click();link.remove();
@@ -86,17 +68,19 @@ container.onclick=e=>{
     root.location.reload();
   }
   else if(a==="sn"){S.snd=S.snd===0?1:0;save();render();say(S.snd===0?"Đã tắt âm thanh.":"Đã bật âm thanh.");sfx(660)}
+  else if(a==="god"){if(!S.god&&!root.confirm("Bật Thiên Đạo? Các lệnh kiểm thử tác động trực tiếp tới tiến trình."))return;S.god=!S.god;save();render();drawNav();refresh();say(S.god?"Đã bật Thiên Đạo.":"Đã tắt Thiên Đạo.")}
+  else if(a==="godopen"&&S.god)deps.openGod();
   else if(a==="nm")askName();
   else if(a==="tut"){S.tutDone=0;S.tutStep=0;save();showTut()}
-  else if(a==="god"){S.god=!S.god;save();render();refresh();say(S.god?"Thiên Đạo đã mở, mọi tab được mở khóa.":"Đã tắt Thiên Đạo.")}
+
 };
 
 container.addEventListener("change",async e=>{
   if(e.target.id!=="bkfile")return;
   const file=e.target.files&&e.target.files[0];if(!file)return;
   try{
-    $("bk").value=await file.text();
-    say("Đã đọc file backup. Kiểm tra nội dung rồi bấm «Nhập JSON» để xác nhận.");
+    const raw=await file.text();$("bkadvanced").open=true;$("bk").value=raw;
+    say("Đã đọc file backup. Kiểm tra nội dung rồi bấm «Khôi phục JSON» để xác nhận.");
   }catch(x){say("Không đọc được file backup.")}
   e.target.value="";
 });

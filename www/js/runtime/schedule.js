@@ -9,6 +9,12 @@
   "use strict";
   let LDK=null,LWO=0;                       // ngày đang xem, độ lệch tuần (0 = tuần này)
   const WD=["T2","T3","T4","T5","T6","T7","CN"];
+  const rendered=new Map();
+  function updateMarkup(id,markup){
+    if(rendered.get(id)===markup)return;
+    $(id).innerHTML=markup;
+    rendered.set(id,markup);
+  }
   const wdOf=k=>(new Date(k+"T12:00:00").getDay()+6)%7;
   const weekKeys=()=>{
     const d=new Date(weekStart()+"T12:00:00");d.setDate(d.getDate()+7*LWO);
@@ -37,10 +43,10 @@
     if(!LDK||!wk.includes(LDK))LDK=wk.includes(T)?T:wk[0];
     const day=slotsOf(LDK),tod=slotsOf(T),isT=LDK===T;
     $("lwt").textContent=dm(wk[0])+" – "+dm(wk[6]);
-    $("lwk").innerHTML=wk.map((k,i)=>`<button class="d7${k===LDK?" on":""}" data-ld="${k}">${WD[i]}<b>${k.slice(8)}</b><span>${slotsOf(k).length||""}</span></button>`).join("");
+    updateMarkup("lwk",wk.map((k,i)=>`<button class="d7${k===LDK?" on":""}" data-ld="${k}">${WD[i]}<b>${k.slice(8)}</b><span>${slotsOf(k).length||""}</span></button>`).join(""));
     const v=$("lq").value;
-    $("lq").innerHTML="<option value=\"\">Chọn nhiệm vụ (tùy chọn)</option>"+S.quests.filter(q=>!isDone(q)&&!expired(q)&&(!q.chain||unlocked(q))).map(q=>`<option value="${q.id}">${esc(q.name)} (+${q.pts})</option>`).join("");
-    $("lq").value=v;
+    const options="<option value=\"\">Chọn nhiệm vụ (tùy chọn)</option>"+S.quests.filter(q=>!isDone(q)&&!expired(q)&&(!q.chain||unlocked(q))).map(q=>`<option value="${q.id}">${esc(q.name)} (+${q.pts})</option>`).join("");
+    if(rendered.get("lq")!==options){updateMarkup("lq",options);$("lq").value=v}
     const cur=tod.find(x=>now>=x.s&&now<x.e),nxt=tod.find(x=>x.s>now);
     let h=`<span class="lbl">Bây giờ, ${now}</span>`;
     if(cur){
@@ -48,14 +54,14 @@
       h+=`<h2 style="font-size:20px;margin:4px 0">${esc(rn(cur))}</h2><small>${cur.s} - ${cur.e}, còn ${tm(cur.e)-tm(now)} phút${d?", đã hoàn thành":""}</small>`;
       if(q&&!d&&!expired(q))h+=`<div class="row"><button class="btn" data-a="t" data-id="${q.id}">Hoàn thành</button>${q.mins?`<button class="btn alt" data-a="p" data-id="${q.id}" style="margin-left:0">Học</button>`:""}</div>`;
     }else h+=`<h2 style="font-size:20px;margin:4px 0">Không có việc trong khung giờ này</h2><small>${nxt?"Kế tiếp "+nxt.s+": "+esc(rn(nxt)):"Hôm nay chưa có lịch phía sau"}</small>`;
-    $("now").innerHTML=h;
+    updateMarkup("now",h);
     $("nowbar").hidden=!cur;if(cur)$("nowbar").textContent="Bây giờ ("+cur.s+" - "+cur.e+"): "+rn(cur);
-    $("slots").innerHTML=day.length?day.map(x=>{
+    updateMarkup("slots",day.length?day.map(x=>{
       const q=qOf(x),d=q&&isDone(q);
       return `<li class="${isT?(now>=x.e?"past":now>=x.s?"now":""):""}${d?" done":""}">${q&&!d&&!expired(q)&&isT?`<button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành"></button>`:d?`<button class="tick" disabled>✓</button>`:""}<div class="nm">${esc(rn(x))}<small>${x.s} - ${x.e}${x.rep?" · lặp hàng tuần":""}</small></div><button class="del" data-a="ld" data-id="${x.id}" aria-label="Xóa khỏi lịch">×</button></li>`;
-    }).join(""):`<li class="empty" style="display:block">Chưa có lịch ${WD[wdOf(LDK)]} ${dm(LDK)}. Thêm khung giờ bên dưới.</li>`;
-    $("lrep").innerHTML=(S.rep||[]).length?S.rep.slice().sort((a,b)=>a.s<b.s?-1:1).map(r=>`<li><div class="nm">${esc(r.label)}<small>${r.d.map(i=>WD[i]).join(", ")} · ${r.s} - ${r.e}</small></div><button class="del" data-a="rd" data-id="${r.id}" aria-label="Xóa việc lặp">×</button></li>`).join("")
-      :`<li class="empty" style="display:block">Chưa có việc lặp. Tick «Lặp lại hàng tuần» khi thêm khung giờ.</li>`;
+    }).join(""):`<li class="empty" style="display:block">Chưa có lịch ${WD[wdOf(LDK)]} ${dm(LDK)}. Thêm khung giờ bên dưới.</li>`);
+    updateMarkup("lrep",(S.rep||[]).length?S.rep.slice().sort((a,b)=>a.s<b.s?-1:1).map(r=>`<li><div class="nm">${esc(r.label)}<small>${r.d.map(i=>WD[i]).join(", ")} · ${r.s} - ${r.e}</small></div><button class="del" data-a="rd" data-id="${r.id}" aria-label="Xóa việc lặp">×</button></li>`).join("")
+      :`<li class="empty" style="display:block">Chưa có việc lặp. Tick «Lặp lại hàng tuần» khi thêm khung giờ.</li>`);
   }
 
   // Thêm khung giờ: một lần (vào các ngày đã chọn của tuần đang xem) hoặc lặp hàng tuần

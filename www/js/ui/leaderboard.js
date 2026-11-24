@@ -25,7 +25,9 @@
     const ar=Math.abs(d)<.05?"":`<small style="display:block;color:${d>0?"var(--jade)":"var(--red)"}">${d>0?"▲":"▼"} ${Math.abs(d).toFixed(1)}</small>`;
     const balMark=!r.u&&k+1>=BAL_RANK?` · <span style="color:var(--jade)">Cân Bằng</span>`:(r.u&&balOn?` · <span style="color:var(--jade)">Cân Bằng ×${playerMult}</span>`:"");
     const avHtml=r.u?`<span style="width:36px;height:36px;flex:none;overflow:hidden;border-radius:50%">${portrait(S.name,{player:1,w:36,h:36})}</span>`:(AVATARS[r.n]?`<span style="width:36px;height:36px;flex:none;overflow:hidden;border-radius:50%">${portrait(r.n,{w:36,h:36})}</span>`:"");
-    return `<li data-pi="${r.u?-1:r.i}" style="cursor:pointer" class="${r.u?"now":(isTK(r.i)?"tkf":"")}"><b style="width:22px">${k+1}</b>${avHtml}<div class="nm">${r.n}<small>${r.u?"Linh lực hiện có":b.t+", +"+Math.round(b.b*100)+"% tốc độ"}${balMark}</small><small>${r.u?(S.sect!=null?SECTS[S.sect].n:"Chưa có tông môn"):SECTS[SO[r.i]].n}, ${rname(r.u?uxp():bxp(r.i,t))}</small>${r.u?"":`<small>${b.d}</small>`}</div>${r.u?"":spark(r.i,t)}<div style="text-align:right;min-width:64px"><b>${r.u?r.s:r.s.toFixed(1)}</b>${ar}</div></li>`}).join("");
+    const talent=!r.u&&isTK(r.i);
+    const detail=r.u?"":talent?`<small class="lb-talent">${esc(b.d.split(" — ")[0])}</small>`:`<small>${esc(b.d)}</small>`;
+    return `<li data-pi="${r.u?-1:r.i}" style="cursor:pointer" class="${r.u?"now":talent?"tkf":""}"><b class="lb-rank">${k+1}</b>${avHtml}<div class="nm">${esc(r.n)}<small>${r.u?"Linh lực hiện có":b.t+", +"+Math.round(b.b*100)+"% tốc độ"}${balMark}</small><small>${r.u?(S.sect!=null?SECTS[S.sect].n:"Chưa có tông môn"):SECTS[SO[r.i]].n}, ${rname(r.u?uxp():bxp(r.i,t))}</small>${detail}</div>${r.u?"":spark(r.i,t)}<div class="lb-score"><b>${r.u?r.s:r.s.toFixed(1)}</b>${ar}</div></li>`}).join("");
   renderProf();
 }
 const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;

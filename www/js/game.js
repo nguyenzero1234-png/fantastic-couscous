@@ -161,7 +161,7 @@ function addPts(n,mins,day){
 function showTdLenh(){TribulationUI.showTdLenh()}
 const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
-const calc=()=>GameQuestData.basePoints(dur(),S.perHour,parseFloat($("nl").value),$("nq").value);
+const calc=()=>GameQuestData.basePoints(dur(),S.perHour,parseFloat($("nl").value)||1,$("nq").value);
 function finish(q){
   const before=ri(S.points);
   const completed=GameQuestCompletion.finish(q, {
@@ -179,15 +179,16 @@ function startFocus(q){
   if(expired(q)||(q.chain&&!unlocked(q))){say("Nhiệm vụ đã hết hạn hoặc chưa mở khóa.");return}
   if(!Number.isFinite(q.mins)||q.mins<=0){say("Nhiệm vụ chưa có thời lượng học hợp lệ.");return}
   if(!GameTimer.startFocus(q,q.mins*60000)){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
-  timerDirty=true;save();say("Bắt đầu học: "+q.name);render();
+  timerDirty=true;save();say("Bắt đầu học: "+q.name);render();return true;
 }
 const MapUI=GameMapUI.create({S,SECTS,escapeHtml:esc,rank:()=>myRk(),navigate:(...args)=>go(...args),render:()=>render(),$});
 function renderMap(){MapUI.render()}
 const LoreUI=GameLoreUI.create({SECTS,$});
 function renderLore(){LoreUI.render()}
 function renderMore(){
-  renderChains();renderEvents();renderLich();renderShop();renderLb();renderExams();renderVan();renderSect();renderStats();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
-  $("prev").textContent="= "+calc()+" linh lực";
+  renderChains();renderEvents();renderLich();renderShop();renderExams();renderSect();renderStats();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
+  renderVisibleLeaderboard();
+  ActivityUI.renderQuestPreview();
   if(document.activeElement!==$("ph"))$("ph").value=S.perHour;
   const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask){$("fn").textContent=focusTask.name;$("ft").textContent=fmt(GameTimer.focusRemaining())}
   $("st").textContent=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
@@ -243,7 +244,7 @@ function reconcileTimers(flush=false,refresh=true){
     GameTimer.cancelFocus();transition=true;
   }else if(q&&GameTimer.focusRemaining()===0){
     GameTimer.cancelFocus();transition=true;
-    if(finish(q))say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".");
+    if(finish(q))say("Học xong "+q.mins+" phút! +"+q.got+" linh lực.");
   }
   timerDirty=timerDirty||transition;
   const now=Date.now();
@@ -267,7 +268,6 @@ $("fx").onclick=()=>{
   if(!GameTimer.focusSession())return;
   GameTimer.cancelFocus();timerDirty=true;save();say("Đã hủy phiên học, không tính linh lực.");render();
 };
-$("nd").oninput=$("nl").onchange=$("nq").onchange=renderMore;
 setInterval(()=>{if(!$("b").hidden)renderLb()},1000);
 setInterval(()=>{if(!$("v").hidden)renderVan()},3000);
 setInterval(()=>{if(!$("z").hidden)renderSect()},3000);
@@ -323,24 +323,28 @@ const sfx=AudioUI.sfx;
 const clk=AudioUI.clk;
 AudioUI.bind(document);
 const GR=[
- {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"]]},
+ {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["c","Liên hoàn"],["l","Nhật trình"],["study-guide","Hướng dẫn"]]},
  {id:"t",n:"Thiên Kiêu",s:[["b","Bảng"],["f","Thiên diễn"],["v","Vạn Sự Điện"],["z","Tông môn",1],["p","Bản đồ",1]]},
  {id:"w",n:"Thử Thách",s:[["j","Kiếp nạn"],["e","Kỳ sự"],["y","Lệnh bài"],["x","Thiên kiếp",1]]},
  {id:"k",n:"Bảo Khố",s:[["k","Kỳ Bảo"],["i","Càn Khôn"],["r","Nhàn hạ"]]},
- {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"],["a","Sứ mệnh"],["o","Thiên Cơ Lục"],["g","Thiên Đạo",9]]}
+ {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"],["a","Sứ mệnh"],["o","Thiên Cơ Lục"],["g","Thiên Đạo"]]}
 ];
 const GR_SIMPLE=[
- {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["l","Nhật trình"]]},
+ {id:"u",n:"Tu Luyện",s:[["q","Nhiệm vụ"],["l","Nhật trình"],["study-guide","Hướng dẫn"]]},
  {id:"w",n:"Thử Thách",s:[["x","Thiên kiếp",1]]},
- {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"]]}
+ {id:"s",n:"Thiên Thư",s:[["s","Thống kê"],["d","Nhật ký"],["g","Thiên Đạo"]]}
 ];
-const ALLS=["q","c","l","j","e","y","x","b","f","v","z","p","k","i","r","s","o","g","d","a"];
+const ALLS=["q","c","l","study-guide","j","e","y","x","b","f","v","z","p","k","i","r","s","o","g","d","a"];
 let TG="u",TS="q";
 function activeGR(){return (S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR}
 /* ===== Chấm đỏ thông báo =====
    Hiện chấm đỏ ở tab (nhóm + mục con) và cạnh từng mục khi có: phần thưởng chưa nhận, danh hiệu mới chưa đeo,
    linh thú mới, kỳ ngộ bất ngờ chưa xem. Trạng thái "mới" lưu ở S.nw (t: danh hiệu, p: linh thú, k: kỳ ngộ đã xem, kt: đã báo). */function nwS(){const n=S.nw||(S.nw={});if(!n.t)n.t={};if(!n.p)n.p={};if(!n.k)n.k={};if(!n.kt)n.kt={};return n}
-const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,schedule:(fn,ms)=>setTimeout(fn,ms)});
+function renderVisibleLeaderboard(){
+  if(!$("b").hidden)renderLb();
+  if(!$("v").hidden)renderVan();
+}
+const NavigationUI=GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,onNavigate:renderVisibleLeaderboard,schedule:(fn,ms)=>setTimeout(fn,ms)});
 function nwUpdate(){NavigationUI.update()}
 function nwSeenK(){NavigationUI.seenK()}
 function drawNav(){NavigationUI.drawNav()}
@@ -359,77 +363,31 @@ function renderPet(){GamePetUI.render({S,$,PS,petIcon,petRank,nwS,petAcc,save,re
 $("pet").onclick=e=>GamePetUI.handleClick(e,{S,$,PS,petRank,setAct,say,modGain,petAcc,hAdd,today,Date,save,render});
 
 /* Thiên Đạo (godmode) — nhóm gọn, đủ chức năng */
-const GMG=[
-  {h:"Linh lực & cảnh giới",b:[
-    ["pt","+1.000"],["pb","+10.000"],["sv","Đặt theo ô"],["xp","Lên cảnh kế"],["dt","Lên Chân Tiên"]
-  ]},
-  {h:"Kiếp & giờ",n:"Tua ngày và tăng chuỗi nằm ở bảng Thiên Kiêu: hai nút nhỏ «+1 ngày», «+1 chuỗi» (chỉ hiện khi bật Thiên Đạo).",b:[
-    ["k0","Kiếp hết hạn"],["hh","Giờ giả (23/6/12/thật)"]
-  ]},
-  {h:"Thiên kiếp & Mệnh",b:[
-    ["ex","Chốt mọi thiên kiếp"],["xr","Làm lại thiên kiếp"],["kf","Vượt kiếp nạn hôm nay"],["kc","Xóa nhận kiếp nạn"],
-    ["mh","Mệnh = 100"],["m0","Mệnh = 0"],["ax","Xóa Trừng Phạt"],["fp","Gây Trừng Phạt"]
-  ]},
-  {h:"Tông môn & chiến",b:[
-    ["sw","Thắng tông chiến"],["js","Gia nhập tông ngẫu"],["bm","Bái sư (bỏ điều kiện)"]
-  ]},
-  {h:"Vật phẩm · thú · danh hiệu",b:[
-    ["it","+3 mỗi vật phẩm"],["ic","Dọn kho & buff"],["pa","Mọi thú đỉnh danh"],["pe","Hồ tích đầy"],["ps","Xóa linh thú"],
-    ["ti","Cấp mọi danh hiệu"],["tr","Thu hồi danh hiệu"],["ft","Mở/khóa mọi danh hiệu"]
-  ]},
-  {h:"Chuỗi ngày học",b:[
-    ["sx","Xóa chuỗi (không tâm ma)"],["sb","Đứt chuỗi + tâm ma"]
-  ]},
-  {h:"Cơ duyên đặc biệt",n:"Chỉ 3 hạng cuối mới tự quay được, nhưng ở đây có thể ban thẳng cho bạn để thử. Hiệu lực đến thiên kiếp kế tiếp. «Quay 3 hạng cuối ngay» quay lại cho cả NPC và bạn (bỏ qua giới hạn một lần mỗi tuần).",b:[
-    ["sp0","Ban Chi Lực cho bạn"],["sp1","Ban Gia Tốc cho bạn"],["sp2","Ban Khai Ân cho bạn"],["spr","Quay 3 hạng cuối ngay"],["spx","Xóa mọi cơ duyên đặc biệt"]
-  ]},
-  {h:"Trạng thái tu luyện",b:[
-    ["tm","Gây tâm ma"],["tx","Xóa tâm ma"],["gt","+1 giờ nhàn hạ"],
-    ["bf","Bơm buff tạm"],["ev","Đầy tiến độ kỳ sự"],["cr","Xóa nhận thưởng"],["qs","Nhiệm vụ mẫu"]
-  ]},
-  {h:"Luân hồi & hệ thống",b:[
-    ["pv","Xem phán quyết"],["rb","Luân hồi ngay"],["rc","Xóa sử luân hồi"],
-    ["wk","Chốt bảng tuần"],["sd","Làm mới kỳ ngộ"],["cal","Hiệu chuẩn NPC"],["ck","Tự kiểm tra"],
-    ["nm","Đổi tên"],["fx","Thử âm thanh"],["wp","Tẩy trắng"],["off","Tắt Thiên Đạo"]
-  ]}
-];
 // Đặt chuỗi = n ngày tính đến hôm nay (lịch ảo), đồng bộ nhật ký ngày để streakAt/actDays đọc từ lịch sử vẫn khớp
 function setStreak(n){return GameStreak.set(S,n,{today:today(),dayOffset:S.dOff||0,now:Date.now(),lifeStats:()=>LS(),cycleState:()=>KS()})}
 const curStreak=()=>GameStreak.current(S.streak,today(),dayStr(1));
-function godAdvance(n,keep){GodModeSystem.advance(n,keep)}
-function renderGod(){
-  const g=$("g");if(!g)return;
-  g.innerHTML=`<div class="box"><h2>Thiên Đạo</h2>
-    <small>Chế độ kiểm tra — ảnh hưởng dữ liệu thật. Mọi tab được mở khóa khi bật.</small>
-    <div class="row" style="margin-top:8px"><label>Linh lực đặt tay <input type="number" id="gv" min="0" value="${Math.round(S.points)||1000}"></label>
-      <small style="margin-left:8px">Chuỗi hiện tại: ${curStreak()} ngày</small>
-      <small style="margin-left:8px">Mệnh ${S.menh==null?100:S.menh}/100${S.tdPenalty?" · Trừng Phạt ×"+(S.tdStacks||1):""}</small></div>
-    ${GMG.map(G=>`<div style="margin-top:12px"><b style="font-size:13px;color:var(--gold)">${G.h}</b>${G.n?`<small style="display:block;margin-top:2px">${G.n}</small>`:""}
-      <div class="chips" style="margin-top:6px">${G.b.map(([id,lab])=>`<button class="btn alt" data-gm="${id}">${lab}</button>`).join("")}</div></div>`).join("")}
-    <pre id="gout" style="white-space:pre-wrap;font:13px/1.6 var(--serif);margin:12px 0 0;max-height:200px;overflow:auto"></pre>
-  </div>`;
-}
+const GodModeUI=GameGodModeUI.create({S,$,getCurStreak:curStreak});
+function renderGod(){GodModeUI.render()}
 function calib(){GodModeSystem.calib()}
 function selfCheck(){GodModeSystem.selfCheck()}
 function runGod(a,btn){return GodModeSystem.run(a,btn)}
 $("lbgod").onclick=e=>{
   const b=e.target.closest("button[data-q]");if(!b||!S.god)return;
-  if(b.dataset.q==="d"){godAdvance(1,false);vlog("Thiên Đạo: tua 1 ngày")}
-  else{setStreak(curStreak()+1);vlog("Thiên Đạo: chuỗi +1")}
+  runGod(b.dataset.q==="d"?"day":"st",b);
   save();render();say(b.dataset.q==="d"?"Đã tua thêm 1 ngày.":"Chuỗi: "+curStreak()+" ngày.");
 };
 $("g").onclick=e=>{
-  const b=e.target.closest("button[data-gm]");if(!b)return;
+  const b=e.target.closest("button[data-gm]");if(!b||!S.god)return;
   const a=b.dataset.gm,r=runGod(a,b);
   if(r===null){say("Lệnh không nhận diện: "+a);return}
   if(r===false)return;
-  save();renderGod();render();
+  save();render();
   say("Đã thi triển: "+b.textContent+".");
 };
 
 /* Sao lưu và cài đặt + tùy chỉnh giao diện */
 const bx=document.createElement("div");bx.style.display="contents";bx.id="setbox";
-const SettingsUI=GameSettingsUI.create({S,fold,container:bx,$,FO,save,refresh:render,drawNav:()=>drawNav(),say,sfx:(...args)=>sfx(...args),today,askName,showTut:()=>showTut(),importBackup:GameStateHandle.importBackup,isWriteBlocked:GameStateHandle.isWriteBlocked,recoveryData:GameStateHandle.recoveryData});
+const SettingsUI=GameSettingsUI.create({S,fold,container:bx,$,FO,save,refresh:render,drawNav:()=>drawNav(),openGod:()=>go("s","g"),say,sfx:(...args)=>sfx(...args),today,askName,showTut:()=>showTut(),importBackup:GameStateHandle.importBackup,isWriteBlocked:GameStateHandle.isWriteBlocked,recoveryData:GameStateHandle.recoveryData});
 function renderSettings(){SettingsUI.render()}
 renderSettings();
 $("setpanel").appendChild(bx);
@@ -544,11 +502,11 @@ const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,sp
 const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say,kmet});
 const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,save,refresh:render,renderMore,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,rewardFactors,save,refresh:render,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});
 ActivityUI.bindQuestEvents();
 const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,weekStart:()=>weekStart(),escapeHtml:esc,$,save,refresh:render,say,vlog,prompt,modGain,hAdd,TITLES,tok,evB,grantPet,ITEMS});
 EventsUI.bindEvents();
-const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
+const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),refreshSettings:renderSettings,resetProgress:()=>GameStateHandle.importBackup(JSON.stringify(GameState.DEFAULTS)),confirm:message=>window.confirm(message),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
 
 ProfileUI.bindSelection();
 TribulationUI.bindEvents();

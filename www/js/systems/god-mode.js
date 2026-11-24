@@ -8,7 +8,8 @@
 function selfCheck(){
   const r=[],ok=(n,c)=>r.push((c?"✓ ":"✗ ")+n),fin=Number.isFinite;
   ok("Linh lực hợp lệ ("+Math.round(S.points)+")",fin(S.points)&&S.points>=0);
-  ok("Mệnh "+(S.menh==null?100:S.menh)+"/100",true);
+  const menh=S.menh??100;
+  ok("Mệnh "+menh+"/100",fin(menh)&&menh>=0&&menh<=100);
   ok("Giờ nhàn hạ hợp lệ",fin(S.gameSec)&&S.gameSec>=0);
   ok("Đủ "+ALLS.length+" mục giao diện",ALLS.every(i=>$(i)));
   ok("Nhiệm vụ đều có tên và linh lực",S.quests.every(q=>q.name&&fin(q.pts)));
@@ -32,29 +33,32 @@ function runGod(a,btn){
   const t=today(),add=n=>{S.points+=n;hAdd(t,n,0)};
   if(a==="wp"){
     if(!btn.dataset.arm){btn.dataset.arm=1;btn.textContent="Bấm lần nữa!";schedule(()=>{delete btn.dataset.arm;btn.textContent="Tẩy trắng"},4000);return false}
-    try{storage.removeItem(KEY)}catch(x){}
+    try{deps.resetProgress()}catch(error){say("Không thể đặt lại: "+error.message);return false}
     location.reload();return false;
   }
   if(a==="pt")add(1000);
   else if(a==="pb")add(10000);
-  else if(a==="sv"){S.points=Math.max(0,parseInt($("gv")&&$("gv").value)||0);hAdd(t,0,0)}
+  else if(a==="sv"){const raw=String($("gv")?.value??"").trim(),value=Number(raw);if(!raw||!Number.isSafeInteger(value)||value<0){say("Nhập linh lực nguyên không âm hợp lệ.");return false}S.points=value;hAdd(t,0,0)}
   else if(a==="xp"){const k=ri(S.points);if(RL[k+1])add(RL[k+1][1]-S.points);else say("Đã ở đỉnh cảnh giới.")}
   else if(a==="dt"){const mx=getMaxXp();add(Math.max(0,mx-S.points))}
   else if(a==="rb"){doRebirth();return false}
-  else if(a==="pv"){showThd(buildRec());return false}
-  else if(a==="rc"){S.rbh=[];S.rb=0}
+  else if(a==="pv"){showThd(deps.buildRecord());return false}
+  else if(a==="rc"){if(!deps.confirm("Xóa lịch sử và số lần luân hồi?"))return false;S.rbh=[];S.rb=0}
+  else if(a==="day"){advance(1,false);vlog("Thiên Đạo: tua 1 ngày")}
+  else if(a==="st"){setStreak(curStreak()+1);vlog("Thiên Đạo: chuỗi +1")}
   else if(a==="gt")S.gameSec=(S.gameSec||0)+3600;
-  else if(a==="tm")S.tm=1;
-  else if(a==="tx")S.tm=0;
+  else if(a==="tm"){S.tm=1;S.tmTasks=0}
+  else if(a==="tma"){S.tma=1;S.tmaTasks=0}
+  else if(a==="tx"){S.tm=0;S.tmTasks=0;S.tma=0;S.tmaTasks=0}
   else if(a==="wk"){if(!S.lb)lbInit();const d=new Date(weekStart()+"T00:00:00");d.setDate(d.getDate()-7);S.lb.week=d.toLocaleDateString("sv");settle()}
   else if(a==="kf")S.kf=t;
   else if(a==="kc")S.kc={};
   else if(a==="it")ITEMS.filter(i=>!i.once).forEach(i=>S.inv[i.id]=(S.inv[i.id]||0)+3);
-  else if(a==="bf"){S.buff={n:5,m:1.25};S.fx=[{n:3,v:30,t:""},{n:2,v:30,t:"q"},{n:2,v:30,t:"l"}];S.xb={u:Date.now()+864e5,v:15};S.tb=Date.now()+864e5;S.sl=1;S.ln=t;S.sh=Date.now()+3*864e5;S.lt=15;S.eb=100;S.pw=5;S.kd=t}
+  else if(a==="bf"){S.buff={n:5,m:1.25};S.fx=[{n:3,v:30,t:""},{n:2,v:30,t:"q"},{n:2,v:30,t:"l"}];S.xb={u:Date.now()+864e5,v:15};S.tb=Date.now()+864e5;S.sl=1;S.ln=t;S.sh=1;S.lt=15;S.eb=100;S.pw=3;S.kd=t;S.tcCharges=4;S.cbUntil=Date.now()+864e5}
   else if(a==="k0"){const o=KS().start;KS().start=Date.now()-KD*864e5-1e3;KS().skx=(KS().skx||0)+(o-KS().start)}
   else if(a==="ti")TITLES.forEach(x=>(S.tt||(S.tt={}))[x.id]=Date.now());
   else if(a==="tr"){S.tt={};S.ft=false;S.title=""}
-  else if(a==="ic"){S.inv={};S.buff={n:0,m:1};S.fx=[];S.xb=null;S.sh=0;S.lt=0;S.eb=0;S.pw=0;S.sl=0;S.tb=0}
+  else if(a==="ic"){S.inv={};S.buff={n:0,m:1};S.fx=[];S.xb=null;S.sh=0;S.lt=0;S.eb=0;S.pw=0;S.sl=0;S.tb=0;S.ln=null;S.kd=null;S.tcCharges=0;S.cbUntil=0}
   else if(a==="hh"){const c=[null,23,6,12];const cur=S.hh==null?null:S.hh;S.hh=c[(c.indexOf(cur)+1)%4]}
   else if(a==="ev")hAdd(t,0,Math.max((S.ev.w||{}).h||10,(S.ev.m||{}).h||40)*60);
   else if(a==="ex"){S.sem=S.sem||{res:{}};const o=KS().start;KS().start=Date.now()-KD*864e5;KS().skx=(KS().skx||0)+(o-KS().start);S.sem.res={};resolveEx()}
@@ -76,13 +80,12 @@ function runGod(a,btn){
   else if(a==="spx"){S.sp=null;if(S.lb){S.lb.sp={}}}
   else if(a==="spr"){lbInit();const sg=spRoll(lbRows(),Math.floor(Math.random()*1e6));save();renderGod();render();say(sg.length?"Trúng: "+sg.map(x=>x.n+" ("+SPQ[x.k].n+")").join(", "):"Không ai trúng (không trúng quay, đã giữ cơ duyên, hoặc hết thiên kiếp kế tiếp).");return false}
   else if(a==="sx")setStreak(0);
-  else if(a==="sb"){const n=curStreak();setStreak(0);S.tm=1;KS().tm=(KS().tm||0)+1;vlog("Thiên Đạo: đứt chuỗi "+n+" ngày → tâm ma")}
+  else if(a==="sb"){const n=curStreak();setStreak(0);S.tm=1;S.tmTasks=0;KS().tm=(KS().tm||0)+1;vlog("Thiên Đạo: đứt chuỗi "+n+" ngày → tâm ma")}
   else if(a==="sd")S.seed=1+Math.floor(Math.random()*1e9);
   else if(a==="qs"){[["Ôn bài",45,0],["Đọc sách",30,0],["Luyện code",60,0],["Làm đề",120,0],["Nhanh 1 giờ",30,Date.now()+36e5]].forEach(([n,m,d],i)=>S.quests.push({id:"g"+Date.now().toString(36)+i,name:"[Mẫu] "+n,pts:Math.max(1,Math.round(m/60*(S.perHour||280))),mins:m,due:d||null,repeat:false,doneOn:null}))}
   else if(a==="fx"){sfx(523);schedule(()=>sfx(784),130);burst()}
-  else if(a==="nm"){askName();return false}
   else if(a==="ck"){selfCheck();return false}
-  else if(a==="off"){S.god=false;go("s","s");save();render();say("Đã tắt Thiên Đạo.");return false}
+  else if(a==="off"){S.god=false;go("s","s");save();deps.refreshSettings?.();render();say("Đã tắt Thiên Đạo.");return false}
   else return null;
   return true;
 }

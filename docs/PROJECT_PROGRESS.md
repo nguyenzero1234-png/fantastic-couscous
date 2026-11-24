@@ -1266,3 +1266,50 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Commit cục bộ `6b56dacf99516201528507e6aaa614e482f59b72` chứa mã Stage 2C, báo cáo và kiểm thử. Tag phục hồi đã xác minh trỏ đúng Stage 2B.
 - [ ] Push và xác nhận CI/APK đúng commit Stage 2C. Xét duyệt tự động từ chối push vào `nguyenzero1234-png/fantastic-couscous` dù đã xác minh remote theo dõi đúng nhánh; cần xác nhận quyền gửi mã nguồn Stage 2C và tag đến repo này. Chưa có build APK Stage 2C mới.
 - [ ] Nghiệm thu Android thật và duyệt số liệu cân bằng trước khi triển khai Đợt D.
+
+
+## Stage 2 — Đợt D: tinh chỉnh cài đặt và Thiên Đạo (2026-11-24)
+
+- Cài đặt gồm Chung, Giao diện, Nhắc nhở, Sao lưu và Nâng cao. Các nhóm thu gọn, có nút quay lại thống kê; giữ bản nháp JSON khi đổi thiết lập.
+- Thiên Đạo được giữ lại trong Nâng cao; tab chỉ xuất hiện khi bật, hỗ trợ cả chế độ Chỉ học và Đầy đủ. Trạng thái được lưu và khôi phục từ backup.
+- `ui/god-mode.js` quản lý giao diện bảy nhóm chức năng, giữ nhóm đang mở, nội dung kiểm tra và bản nháp linh lực khi render lại. `systems/god-mode.js` quản lý thao tác; các nút tua ngày và tăng chuỗi ở bảng Thiên Kiêu dùng chung lệnh.
+- Sửa xem phán quyết, kiểm tra Mệnh, nhập linh lực nguyên không âm (bao gồm 0), tâm ma và các bộ đếm Stage 2C, buff và xóa buff. Bổ sung kiểm thử Thiên Ma Nhập Tâm. Xóa sử luân hồi có xác nhận; Tẩy trắng dùng quy trình nhập trạng thái mặc định có backup nội bộ và khóa ghi trạng thái cũ trước khi reload.
+- [x] Kiểm thử cục bộ 134/134 ở UTC và Asia/Ho_Chi_Minh; git diff --check đạt. Bao gồm bật/tắt Thiên Đạo, chế độ Chỉ học, mở bảng điều khiển, khôi phục từ backup, kiểm tra đầu vào, phán quyết, tâm ma và xác nhận đặt lại qua mock.
+- [ ] Kiểm thử trực quan trên thiết bị thật và build APK cho thay đổi này. Phiên Edge headless kiểm thử tương tác thoát mã 1 không có output; kiểm tra lại cổng DevTools nhận ECONNREFUSED. Chưa xác nhận bố cục thực tế trên trình duyệt.
+- [ ] Các phần Đợt D còn lại: cải thiện luồng học tập, minh bạch thưởng/phạt, hiệu năng và nghiệm thu Android.
+
+### Đợt D — Giao diện học tập
+
+- Đưa danh sách nhiệm vụ và số lượng đang chờ, hoàn thành, hết hạn lên trước công cụ nhập hàng loạt. Form lập nhiệm vụ và công cụ AI thu gọn mặc định; giữ toàn bộ chức năng và mẫu nhập/xuất.
+- Bố cục nhiệm vụ dạng thẻ, có thông tin thời lượng, hạn, lặp lại, thưởng cơ bản hoặc linh lực đã nhận và nút thao tác rõ ràng. Giữ nguyên cách tính thưởng, sửa, xóa, hoàn tác và phiên học.
+- Tinh chỉnh hồ sơ, vòng cảnh giới, hai ô tài nguyên, thanh điều hướng và khoảng cách thẻ; giảm trang trí viền, hỗ trợ màn hình hẹp, kích thước chữ/mật độ hiện có và giảm chuyển động. Giữ các giao diện màu và Thiên Đạo.
+- [x] Kiểm thử 134/134 ở UTC và Asia/Ho_Chi_Minh (bao gồm kiểm tra trạng thái nhiệm vụ và nhãn thưởng mới); git diff --check đạt.
+- [ ] Nghiệm thu trực quan: Chrome headless thoát mã -2147483645, không tạo ảnh kiểm tra. Cần kiểm tra bố cục trên trình duyệt hoặc Android thật. Chưa build APK cho lượt chỉnh này.
+
+- Viền Thiên Kiêu và người chơi chuyển sang hai SVG tự thiết kế với nét vàng cổ/tím nhạt và họa tiết nhỏ ở hai góc đối diện. Áp dụng đồng nhất trong bảng xếp hạng và đầu hồ sơ; giảm phần đệm, bỏ hiệu ứng phát sáng. Giữ tài nguyên viền cũ để có thể phục hồi.
+- Thay viền SVG đang hiển thị bằng `www/assets/ui/frame-talent.png` (rồng vàng cổ) và `www/assets/ui/frame-player.png` (mây tím bạc), cả hai 1536 × 512 px, RGBA, vùng giữa trong suốt. CSS chia viền thành chín vùng để giữ họa tiết góc khi kích thước thẻ thay đổi; giảm kích thước viền trên màn hình hẹp và chừa khoảng đệm cho nội dung hồ sơ. Giữ SVG làm tài nguyên dự phòng. Chưa nghiệm thu trực quan trên Android.
+- Sau phản hồi ảnh giao diện thực tế: tăng kích thước họa tiết góc 50% so với lượt tích hợp PNG trước, giảm khoảng đệm ngang, cố định vùng thứ hạng và linh lực, chỉ hiển thị tên thiên phú trên thẻ Thiên Kiêu; phần mô tả đầy đủ nằm trong hồ sơ. Ẩn biểu đồ nhỏ trên màn hình hẹp để ưu tiên nội dung. Kiểm thử hồi quy 135/135 tại Asia/Ho_Chi_Minh; cần kiểm tra lại giao diện thực tế sau chỉnh sửa.
+
+### Đợt D — Luồng học và minh bạch linh lực
+
+- [x] Thêm nút Thêm & học để lập nhiệm vụ và bắt đầu phiên học trong cùng thao tác. Hiển thị trạng thái Đang học, khóa bắt đầu phiên thứ hai, giữ bản nháp và vẫn cho lập nhiệm vụ khác. Chống trùng ID khi tạo trong cùng mili giây. Vô hiệu hóa tùy chọn lặp lại khi có hạn.
+- [x] Hiển thị công thức thưởng cơ bản và hệ số Trừng Phạt, Thiên Đạo cân bằng, tâm ma, Cố Bản Đan hiện tại. Khi đổi thời lượng, độ khó, hạn hoặc mẫu nhiệm vụ, chỉ cập nhật vùng xem trước thay vì render toàn bộ các bảng.
+- [x] Lưu chi tiết phép tính thưởng thực tế cùng biên nhận hoàn thành: điểm cơ bản, hệ số chuỗi/buff, thưởng cộng, trấn ma, ba hệ số điều chỉnh và điểm vật phẩm. Hoàn tác và khôi phục giữ biên nhận gốc; save cũ vẫn dùng được. Sửa mô tả thưởng chuỗi thành 15% linh lực thực nhận cộng thưởng danh hiệu và bỏ thông báo quy nhầm mọi phần thưởng tăng thêm cho streak. Giữ luật thưởng/phạt Stage 2C.
+- [x] Kiểm thử tự động 136/136 tại Asia/Ho_Chi_Minh và UTC, gồm tạo và học ngay, chặn phiên thứ hai, giữ bản nháp, ID không trùng, chi tiết linh lực và hoàn tác/khôi phục.
+- [ ] Tiếp theo: rà soát hiệu năng render các bảng, kiểm tra trực quan và nghiệm thu Android; chưa commit/push hoặc build APK cho lượt thay đổi này.
+
+### Đợt D — Hướng dẫn tu luyện riêng (2026-11-24)
+
+- Rút gọn nhãn, ví dụ nhập và phần xem trước linh lực trong form nhiệm vụ; giảm nội dung giải thích tại Liên hoàn và Nhật trình.
+- Thêm tab Hướng dẫn trong Tu Luyện ở cả chế độ Đầy đủ và Chỉ học, gồm ba mục thu gọn/mở rộng: Nhiệm vụ, Liên hoàn, Nhật trình. Tập trung công thức, hệ số hiện tại, cách nhập AI và ví dụ tại đây; giữ các thao tác và cơ chế thưởng/phạt hiện hành.
+- [x] Kiểm thử 137/137 tại Asia/Ho_Chi_Minh và UTC, bao gồm điều hướng tab hướng dẫn ở hai chế độ và giá trị xem trước linh lực.
+- [ ] Kiểm tra trực quan trên Android; chưa build APK hoặc commit/push cho thay đổi này.
+
+### Đợt D — Tối ưu hiệu năng và kiểm thử (2026-11-24)
+
+- Chỉ render bảng xếp hạng và bảng Đạo Vận đang mở; cập nhật ngay khi chuyển tab, giữ chu kỳ cập nhật khi đang xem.
+- Giảm thay thế DOM khi danh sách nhiệm vụ, lịch tuần, nhật trình và thanh điều hướng có nội dung giống lần render trước. Giữ biên nhận đang mở và lựa chọn nhiệm vụ khi cập nhật lịch. Giữ nguyên luật cân bằng Stage 2C.
+- [x] Kiểm thử hồi quy 138/138 tại Asia/Ho_Chi_Minh và UTC; thêm kiểm tra số lần ghi innerHTML, cập nhật khi mở bảng và khi thêm nhiệm vụ. git diff --check đạt.
+- [x] Microsoft Edge headless, profile độc lập, CDP mô phỏng điện thoại 390 × 844: nhập đạo bằng nút thật, bỏ qua hướng dẫn đầu game, mở tab Hướng dẫn. Đã xem ảnh ba màn hình; chiều rộng viewport và tài liệu đều 390 px. Thanh tab cuộn ngang. Chưa kiểm thử đầy đủ mọi màn hình hoặc Android thật.
+- [ ] Push commit Stage 2D, xác nhận CI và artifact APK trên đúng SHA. Workflow Build APK tự chạy khi push mã www hoặc tests vào nhánh stage-*/**.
+- [ ] Nghiệm thu Android theo ANDROID_QA_CHECKLIST.md, gồm timer, thông báo, backup, viền PNG và bố cục trên thiết bị thật.

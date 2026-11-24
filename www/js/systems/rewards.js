@@ -45,7 +45,9 @@
     return Math.min(Math.max(0,Number(minutes)||0),Math.max(0,120-((state.nightStudy||{})[nightKey(day,hour)]||0)));
   }
   function questCompletionReward(basePoints,multiplier,flatBonus,taskBonus,fx,factors,isEligible,minutes=60){
-    let gain=modGain(Math.round((Number(basePoints)||0)*(Number(multiplier)||0)+(Number(flatBonus)||0)+(Number(taskBonus)||0)),factors);
+    const subtotal=Math.round((Number(basePoints)||0)*(Number(multiplier)||0)+(Number(flatBonus)||0)+(Number(taskBonus)||0));
+    const adjusted=modGain(subtotal,factors);
+    let gain=adjusted;
     const remaining=[];
     (Array.isArray(fx)?fx:[]).forEach(e=>{
       if(e&&e.n>0&&(!isEligible||isEligible(e))){
@@ -55,7 +57,7 @@
       }
       if(e&&e.n>0)remaining.push(e);
     });
-    return {gain,effects:remaining};
+      return {gain,effects:remaining,breakdown:{base:Number(basePoints)||0,multiplier:Number(multiplier)||0,flat:Number(flatBonus)||0,taskBonus:Number(taskBonus)||0,subtotal,td:Number(factors?.td)||0,balance:Number(factors?.balance)||0,status:Number(factors?.status)||0,adjusted,itemGain:gain-adjusted}};
   }
   function chainCompletionReward(totalQuestGain,bonusTitle,factors,totalMinutes=240){
     return Math.round((Number(totalQuestGain)||0)*0.15)+(bonusTitle?modGain(Math.min(120,totalMinutes/60*30),factors):0);

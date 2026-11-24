@@ -3,8 +3,8 @@
  "use strict";
  function create(deps){
   const {S,GR,GR_SIMPLE,ALLS,$,document,nwS,knList,save,sfx,say,ri,uxp,renderPet,schedule}=deps;
-  const NW_BASE=document.title;let NW_F={};let TG="u",TS="q";
-  function activeGR(){return (S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR}
+  const NW_BASE=document.title;let NW_F={};let TG="u",TS="q",groupMarkup=null,screenMarkup=null;
+  function activeGR(){return ((S.ui&&S.ui.studyOnly)?GR_SIMPLE:GR).map(g=>({...g,s:g.s.filter(x=>x[0]!=="g"||S.god)}))}
   const nwHas=s=>!!document.querySelector(s);
 const nwFull=()=>{const a=S.pets&&S.pets.hl;return !!a&&S.act==="hl"&&(Date.now()-a.t)/36e5>=8};
 function nwCompute(){
@@ -40,18 +40,22 @@ function nwOpen(s){
   },2500);
 }
   function drawNav(){
-  const nav=activeGR();
   const L=S.god?99:Math.max(ri(uxp()),S.pk||0);
+  const nav=activeGR().filter(g=>g.s.some(x=>(x[2]||0)<=L||S.god));
   let G=nav.find(x=>x.id===TG);if(!G){TG=nav[0].id;G=nav[0];TS=G.s[0][0]}
   const vis=G.s.filter(x=>(x[2]||0)<=L||S.god);
-  if(!vis.some(x=>x[0]===TS)){TS=vis[0][0];ALLS.forEach(i=>{const el=$(i);if(el)el.hidden=i!==TS})}
-  $("gn").innerHTML=nav.map(g=>`<button data-g="${g.id}" class="${g.id===TG?"on":""}">${g.n}</button>`).join("");
-  $("sn").innerHTML=vis.map(x=>`<button data-s="${x[0]}" class="${x[0]===TS?"on":""}">${x[1]}</button>`).join("");
+  if(!vis.some(x=>x[0]===TS))TS=vis[0][0];
+  ALLS.forEach(i=>{const el=$(i);if(el)el.hidden=i!==TS});
+  const groups=nav.map(g=>`<button data-g="${g.id}" class="${g.id===TG?"on":""}">${g.n}</button>`).join("");
+  const screens=vis.map(x=>`<button data-s="${x[0]}" class="${x[0]===TS?"on":""}">${x[1]}</button>`).join("");
+  const changed=[];
+  if(groups!==groupMarkup){$("gn").innerHTML=groups;groupMarkup=groups;changed.push("gn")}
+  if(screens!==screenMarkup){$("sn").innerHTML=screens;screenMarkup=screens;changed.push("sn")}
   $("sn").hidden=vis.length<2;try{nwApply()}catch(e){}
-  ["gn","sn"].forEach(id=>{const n=$(id),b=n.querySelector(".on");if(b)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2});
+  changed.forEach(id=>{const n=$(id),b=n.querySelector(".on");if(b)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2});
   $("lkh").textContent=(S.ui&&S.ui.studyOnly)?"Chế độ Chỉ học — bật lại trong Cài đặt.":(L<2?"Trúc Cơ mở Tông môn và Thiên kiếp.":"");
  }
- function go(g,s){TG=g;const G=activeGR().find(x=>x.id===g)||activeGR()[0];TS=s||(G.s.some(x=>x[0]===TS)?TS:G.s[0][0]);ALLS.forEach(i=>{const el=$(i);if(el)el.hidden=i!==TS});drawNav();nwOpen(TS);say("")}
+ function go(g,s){TG=g;const G=activeGR().find(x=>x.id===g)||activeGR()[0];TS=s||(G.s.some(x=>x[0]===TS)?TS:G.s[0][0]);drawNav();if(deps.onNavigate)deps.onNavigate(TS);nwOpen(TS);say("")}
  $("gn").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.g)};
  $("sn").onclick=e=>{const b=e.target.closest("button");if(b)go(TG,b.dataset.s)};
  return Object.freeze({drawNav,go,update:nwUpdate,seenK:nwSeenK,settings:()=>({group:TG,screen:TS})});

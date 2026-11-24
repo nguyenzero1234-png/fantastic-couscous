@@ -69,10 +69,16 @@ test("game khởi động và xử lý nhiệm vụ, bảo khố, danh hiệu, h
  const key=vm.runInContext("GameState.KEY",context);
  const quest=JSON.parse(storage.get(key)).quests[0];
  assert.equal(quest.name,"Ôn JavaScript");
+ assert.match(getNode("quest-summary").textContent,/1 đang chờ · 0 hoàn thành/);
+ assert.match(getNode("list").innerHTML,/Thưởng cơ bản/);
  const button={dataset:{a:"t",id:quest.id}};
  getNode("list").onclick({target:{closest:()=>button}});
  const saved=JSON.parse(storage.get(key));
  assert.ok(saved.quests[0].got>0);
+ assert.match(getNode("quest-summary").textContent,/0 đang chờ · 1 hoàn thành/);
+ assert.match(getNode("list").innerHTML,/Đã nhận/);
+ assert.match(getNode("list").innerHTML,/Chi tiết linh lực/);
+ assert.equal(saved.quests[0].completion.breakdown.adjusted+saved.quests[0].completion.breakdown.itemGain,saved.quests[0].got);
  assert.equal(saved.hist[saved.quests[0].doneOn].m,25);
  getNode("list").onclick({target:{closest:()=>button}});
  const undone=JSON.parse(storage.get(key));
@@ -84,6 +90,7 @@ test("game khởi động và xử lý nhiệm vụ, bảo khố, danh hiệu, h
  const redone=JSON.parse(storage.get(key));
  assert.equal(redone.points,saved.points);
  assert.equal(redone.quests[0].got,saved.quests[0].got);
+ assert.deepEqual(redone.quests[0].completion.breakdown,saved.quests[0].completion.breakdown);
  assert.equal(redone.ls.q,saved.ls.q);
  assert.equal(redone.stl.length,saved.stl.length);
  getNode("lb").onclick({target:{closest:()=>({dataset:{pi:"-1"}})}});
@@ -190,12 +197,37 @@ test("cài đặt, nhập file backup sau render và tải lại đồng bộ st
  const setting=(dataset,selector)=>box.onclick({target:{closest:s=>s===selector?{dataset}:null}});
  setting({ui:"skin",v:"jade"},"[data-ui]");
  assert.equal(JSON.parse(storage.get(key)).ui.skin,"jade");
+ assert.match(box.innerHTML,/data-bk="god"/);
+ vm.runInContext("S.god=false; go(\"s\",\"s\")",context);
+ getNode("setpanel").hidden=true;getNode("gear").onclick();
+ assert.equal(getNode("settings-title").textContent,"Cài đặt");
+ assert.equal(getNode("sbody").hidden,true);
+ assert.doesNotMatch(getNode("sn").innerHTML,/data-s="g"/);
+ setting({bk:"god"},"button");
+ assert.equal(JSON.parse(storage.get(key)).god,true);
+ assert.match(getNode("sn").innerHTML,/data-s="g"/);
+ setting({ui:"studyOnly",v:"1"},"[data-ui]");
+ setting({bk:"godopen"},"button");
+ assert.equal(getNode("g").hidden,false);
+ assert.match(getNode("g").innerHTML,/data-god-group="progress"/);
+ assert.match(getNode("g").innerHTML,/data-gm="day"/);
+ assert.match(getNode("g").innerHTML,/data-gm="st"/);
+ getNode("g").onclick({target:{closest:()=>({dataset:{gm:"off"}})}});
+ assert.equal(JSON.parse(storage.get(key)).god,false);
+ assert.equal(getNode("g").hidden,true);
+ assert.doesNotMatch(getNode("sn").innerHTML,/data-s="g"/);
+ setting({ui:"studyOnly",v:"1"},"[data-ui]");
+ assert.equal(JSON.parse(storage.get(key)).ui.studyOnly,true);
+ setting({ui:"studyOnly",v:"0"},"[data-ui]");
+ getNode("gear").onclick();
+ assert.equal(getNode("settings-title").textContent,"Thống kê");
+ assert.equal(getNode("sbody").hidden,false);
  const oldRaw=storage.get(key);
  getNode("bk").value="invalid JSON";
  setting({bk:"im"},"button");
  assert.equal(storage.get(key),oldRaw);
  assert.equal(reloads,0);
- const imported={...JSON.parse(oldRaw),points:12345,ui:{skin:"ink",density:"normal",fs:"md",theme:"auto"}};
+ const imported={...JSON.parse(oldRaw),points:12345,god:true,ui:{skin:"ink",density:"normal",fs:"md",theme:"auto"}};
  const file={id:"bkfile",files:[{text:async()=>JSON.stringify(imported)}],value:"test.json"};
  await box.listeners.change({target:file});
  assert.equal(JSON.parse(getNode("bk").value).points,12345);
@@ -211,6 +243,7 @@ test("cài đặt, nhập file backup sau render và tải lại đồng bộ st
  vm.runInContext("globalThis.window=globalThis",fresh);
  for(const name of scripts)vm.runInContext(fs.readFileSync(path.join(jsDir,name),"utf8"),fresh,{filename:name});
  assert.equal(vm.runInContext("S.points",fresh),12345);
+ assert.equal(vm.runInContext("S.god",fresh),true);
  assert.equal(vm.runInContext("S.ui.skin",fresh),"ink");
  assert.equal(getNode("pts").textContent,12345);
  assert.equal(vm.runInContext("S.points+=10;save();S.points",fresh),12355);
@@ -261,6 +294,78 @@ function timerFixture(nativePlugin){
   visibility:hidden=>{doc.hidden=hidden;for(const fn of events.visibilitychange||[])fn()}
  };
 }
+
+test("D: tạo nhiệm vụ và học ngay, giữ bản nháp khi đang học",()=>{
+ const f=timerFixture();
+ getNode("nm").value="Ôn bài";
+ getNode("nd").value="25";
+ getNode("nl").value="1.15";
+ getNode("nq").value="1";
+ getNode("nr").checked=true;
+ getNode("nq").onchange();
+ assert.equal(getNode("nr").disabled,true);
+ assert.match(getNode("prev").textContent,/^\d+ linh lực$/);
+ assert.equal(Number.parseInt(getNode("prev").textContent),f.run("calc()"));
+ getNode("add-study").onclick();
+ const saved=f.saved(),q=saved.quests[0];
+ assert.equal(q.name,"Ôn bài");
+ assert.equal(q.repeat,false);
+ assert.equal(saved.timers.focus.questId,q.id);
+ assert.match(getNode("list").innerHTML,/Đang học/);
+ assert.equal(getNode("add-study").disabled,true);
+ getNode("nm").value="Bản nháp";
+ getNode("add-study").onclick();
+ assert.equal(f.saved().quests.length,1);
+ assert.equal(getNode("nm").value,"Bản nháp");
+ getNode("add").onclick();
+ assert.equal(f.saved().quests.length,2);
+ assert.notEqual(f.saved().quests[1].id,q.id);
+ getNode("fx").onclick();
+ assert.equal(f.saved().timers.focus,null);
+ assert.equal(getNode("add-study").disabled,false);
+});
+
+test("D: hướng dẫn tu luyện có tab riêng trong cả hai chế độ",()=>{
+ const f=timerFixture();
+ const guide=html.match(/<section id="study-guide" hidden>([\s\S]*?)<\/section>/)?.[1];
+ assert.ok(guide);
+ for(const title of ["Nhiệm vụ","Liên hoàn","Nhật trình"])assert.ok(guide.includes("<summary>"+title+"</summary>"));
+ assert.ok(guide.includes('id="quest-modifiers"'));
+ const questSection=html.match(/<section id="q">([\s\S]*?)<\/section>/)[1];
+ assert.doesNotMatch(questSection,/quest-modifiers|Tên nhiệm vụ \| phút \| độ khó/);
+ assert.match(getNode("sn").innerHTML,/data-s="study-guide"/);
+ getNode("sn").onclick({target:{closest:()=>({dataset:{s:"study-guide"}})}});
+ assert.equal(getNode("study-guide").hidden,false);
+ assert.equal(getNode("q").hidden,true);
+ f.run("S.ui.studyOnly=true;drawNav()");
+ assert.equal(getNode("study-guide").hidden,false);
+ assert.match(getNode("sn").innerHTML,/data-s="study-guide"/);
+ getNode("sn").onclick({target:{closest:()=>({dataset:{s:"q"}})}});
+ assert.equal(getNode("study-guide").hidden,true);
+ assert.equal(getNode("q").hidden,false);
+});
+
+test("D: render chỉ cập nhật bảng xếp hạng đang mở và giữ DOM ổn định",()=>{
+ const f=timerFixture(),writes={};
+ for(const id of ["lb","van","gn","sn","list","lwk","lq","slots","lrep"]){
+  const node=getNode(id);let value=node.innerHTML;writes[id]=0;
+  Object.defineProperty(node,"innerHTML",{get:()=>value,set:next=>{value=next;writes[id]++},configurable:true});
+ }
+ f.run("render();render()");
+ for(const id of Object.keys(writes))assert.equal(writes[id],0,id);
+ getNode("gn").onclick({target:{closest:()=>({dataset:{g:"t"}})}});
+ assert.equal(getNode("b").hidden,false);
+ assert.equal(writes.lb,1);assert.equal(writes.van,0);
+ getNode("sn").onclick({target:{closest:()=>({dataset:{s:"v"}})}});
+ assert.equal(getNode("v").hidden,false);
+ assert.equal(writes.van,1);assert.equal(writes.lb,1);
+ getNode("gn").onclick({target:{closest:()=>({dataset:{g:"u"}})}});
+ getNode("nm").value="Đọc sách";getNode("nd").value="25";
+ getNode("add").onclick();
+ assert.match(getNode("list").innerHTML,/Đọc sách/);
+ assert.equal(writes.list,1);assert.equal(writes.lq,1);
+ assert.equal(writes.lb,1);assert.equal(writes.van,1);
+});
 
 test("B: focus và giờ chơi khôi phục qua reload, deadline và nửa đêm, thưởng đúng một lần",()=>{
  const f=timerFixture();

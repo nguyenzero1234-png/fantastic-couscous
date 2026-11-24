@@ -49,26 +49,66 @@
   $("lenh").innerHTML=checkinFortuneSummary()+["d","w","m"].map(p=>`<div class="box"><h2>${LP[p][0]}</h2><small>${LP[p][1]}</small><ul>${LQ.filter(t=>t.per===p).map(t=>{const raw=lval(t),v=Math.min(raw,t.tg),got=S.claimed["q:"+t.id+":"+lpk(p)];
     return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${t.n}</b><span class="pb">+${t.r}${t.it?" và "+ITEMS.find(i=>i.id===t.it).n:""}</span></div><small>${t.desc}: ${Math.round(v)}/${t.tg}${t.met==="m"?" phút":""}</small><div class="bar"><i style="width:${Math.round(v/t.tg*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" data-a="lc" data-id="${t.id}" ${got||raw<t.tg?"disabled":""}>${got?"Đã nhận":"Nhận thưởng"}</button></div></li>`}).join("")}</ul></div>`).join("");
 }
+  const formatFactor=value=>Number(value.toFixed(4)).toLocaleString("vi-VN");
+  function renderQuestPreview(){
+    const {calc,rewardFactors,GameTimer}=deps;
+    const deadline=$("nq").value;
+    $("nr").disabled=deadline!=="";
+    $("prev").textContent=calc()+" linh lực";
+    const f=rewardFactors();
+    const modifiers=[];
+    if(f.td!==1)modifiers.push("Trừng Phạt "+Math.round((f.td-1)*100)+"%");
+    if(f.balance!==1)modifiers.push("Thiên Đạo cân bằng ×"+formatFactor(f.balance));
+    if(S.tm)modifiers.push("Tâm Ma Tự Thân −20%");
+    if(S.tma)modifiers.push("Thiên Ma Nhập Tâm −35%");
+    if(S.cbUntil>Date.now())modifiers.push("Cố Bản Đan +10%");
+    $("quest-modifiers").textContent="Hệ số hiện tại: "+(modifiers.length?modifiers.join(" · "):"Không có điều chỉnh")+" · Thưởng thực tế tính khi hoàn thành.";
+    $("add-study").disabled=!!GameTimer.activeFocus();
+  }
+  let questMarkup=null;
   function renderQuests(){
-    const rem=remaining;
-  const qs=S.quests.filter(x=>!x.chain).sort((a,b)=>(isDone(a)||expired(a))-(isDone(b)||expired(b)));
-  $("list").innerHTML=qs.length?qs.map(q=>{const d=isDone(q);
-    return `<li class="${d?"done":expired(q)?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm">${esc(q.name)}<small>${[q.due&&!d?(expired(q)?"hết hạn":"nhanh, còn "+rem(q.due)):"",q.mins?q.mins+" phút":"",q.repeat?"lặp lại mỗi ngày":""].filter(Boolean).join(", ")}</small></div>${!d&&q.mins&&!expired(q)?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}${expired(q)?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}<span class="pb">+${d?(q.got??q.pts):q.pts}</span><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button></li>`}).join("")
-    :`<li class="empty" style="display:block">Chưa có nhiệm vụ. Thêm việc học đầu tiên ở phía trên.</li>`;
+    const qs=S.quests.filter(q=>!q.chain).sort((a,b)=>(isDone(a)||expired(a))-(isDone(b)||expired(b)));
+    const done=qs.filter(isDone).length, overdue=qs.filter(q=>!isDone(q)&&expired(q)).length;
+    const active=deps.GameTimer.activeFocus();
+    $("quest-summary").textContent=`${qs.length-done-overdue} đang chờ · ${done} hoàn thành${overdue?` · ${overdue} hết hạn`:""}`;
+    const markup=qs.length?qs.map(q=>{
+      const d=isDone(q),late=!d&&expired(q);
+      const meta=[late?"Hết hạn":q.due&&!d?"Còn "+remaining(q.due):"",q.mins?q.mins+" phút":"",q.repeat?"Lặp mỗi ngày":""].filter(Boolean).join(" · ");
+      const receipt=q.completion,restorable=receipt?.undone&&(!q.repeat||receipt.day===today());
+      const b=receipt?.breakdown;
+      const hasBreakdown=(d||restorable)&&b&&["base","multiplier","flat","taskBonus","subtotal","td","balance","status","adjusted","itemGain"].every(k=>Number.isFinite(b[k]))&&Number.isFinite(receipt.gain)&&b.adjusted+b.itemGain===receipt.gain;
+      const detail=hasBreakdown?`<details class="quest-receipt" data-receipt="${esc(q.id)}"><summary>Chi tiết linh lực</summary><small>Cơ bản ${b.base} × ${formatFactor(b.multiplier)} (chuỗi và buff) + ${b.flat} (thưởng cộng) + ${b.taskBonus} (trấn ma) = ${b.subtotal}<br>Trừng Phạt ×${formatFactor(b.td)} · Cân bằng ×${formatFactor(b.balance)} · Trạng thái ×${formatFactor(b.status)}<br>Sau điều chỉnh: ${b.adjusted} · Vật phẩm: +${b.itemGain}<br><b>${restorable?"Khôi phục":"Tổng nhận"}: +${receipt.gain} linh lực</b></small></details>`:"";
+      return `<li class="quest-card ${d?"done":late?"exp":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="${d?"Bỏ hoàn thành":"Hoàn thành"}">${d?"✓":""}</button><div class="nm"><span class="quest-name">${esc(q.name)}</span>${meta?`<small>${meta}</small>`:""}</div><button class="del" data-a="d" data-id="${q.id}" aria-label="Xóa nhiệm vụ">×</button><div class="quest-card-footer"><span class="pb"><small>${d?"Đã nhận":restorable?"Khôi phục":late?"Thưởng cơ bản cũ":"Thưởng cơ bản"}</small> +${d?(q.got??q.pts):restorable?receipt.gain:q.pts}</span>${active===q?`<small class="quest-studying">Đang học</small>`:!d&&q.mins&&!late?`<button class="play" data-a="p" data-id="${q.id}" ${active?"disabled":""}>Học</button>`:""}${late&&active!==q?`<button class="play" data-a="rn" data-id="${q.id}">Tạo lại</button>`:""}</div>${detail}</li>`;
+    }).join(""):`<li class="empty">Chưa có nhiệm vụ. Hãy lập nhiệm vụ học tập đầu tiên.</li>`;
+    if(markup!==questMarkup){
+      const list=$("list"),open=new Set(Array.from(list.querySelectorAll("details[data-receipt][open]"),el=>el.dataset.receipt));
+      list.innerHTML=markup;questMarkup=markup;
+      list.querySelectorAll("details[data-receipt]").forEach(el=>{if(open.has(el.dataset.receipt))el.open=true});
+    }
   }
   function bindQuestEvents(){
-    const {dur,calc,save,refresh,renderMore,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates,document,navigator,prompt,setTimeout,clearTimeout}=deps;
+    const {dur,calc,save,refresh,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates,document,navigator,prompt,setTimeout,clearTimeout}=deps;
     const {PN,PLAN,AI_PROMPT,CHAIN_PROMPT,SCHED_PROMPT,PRESET_MIX,DEF_Q,DEF_C,DEF_S}=templates;
-function addQuest(){
+function addQuest(study=false){
   const name=$("nm").value.trim();
   const mins=dur(),pts=calc();
   if(!name){say("Hãy nhập tên nhiệm vụ.");$("nm").focus();return}
+  if(study&&GameTimer.activeFocus()){say("Đang có một phiên học. Hãy kết thúc hoặc hủy trước.");return}
   const qv=$("nq").value,due=qv===""?0:(qv==="0"?new Date().setHours(23,59,59,999):Date.now()+qv*3600000);
-  S.quests.push({id:Date.now().toString(36),name,pts,mins,due,repeat:qv===""&&$("nr").checked,doneOn:null,diff:parseFloat($("nl").value)||1,deadlineKind:qv});
-  $("nm").value="";say("Đã thêm nhiệm vụ.");save();refresh();
+  const baseId=Date.now().toString(36);
+  let id=baseId,suffix=1;
+  while(S.quests.some(q=>q.id===id))id=baseId+"-"+suffix++;
+  const q={id,name,pts,mins,due,repeat:qv===""&&$("nr").checked,doneOn:null,diff:parseFloat($("nl").value)||1,deadlineKind:qv};
+  S.quests.push(q);
+  $("nm").value="";
+  if(study&&startFocus(q))return;
+  save();refresh();
+  if(!study)say("Đã thêm nhiệm vụ.");
 }
 
-$("add").onclick=addQuest;
+$("add").onclick=()=>addQuest();
+$("add-study").onclick=()=>addQuest(true);
+$("nd").oninput=$("nl").onchange=$("nq").onchange=renderQuestPreview;
 $("nm").onkeydown=e=>{if(e.key==="Enter")addQuest()};
 
 
@@ -137,7 +177,7 @@ $("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
   if(b.dataset.a==="d"){if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
   else if(b.dataset.a==="p"){startFocus(q);return}
   else if(isDone(q)){const result=undoQuest(q);if(!result.ok){say(result.reason);return}say("Đã bỏ hoàn thành, trừ "+result.gain+" linh lực.")}
-  else{if(!finish(q))return;say("Hoàn thành! +"+q.got+" linh lực"+(q.got>q.pts?" (có thưởng chuỗi ngày học)":"")+".")}
+  else{if(!finish(q))return;say("Hoàn thành! +"+q.got+" linh lực.")}
   save();refresh();
 };
 
@@ -150,7 +190,7 @@ document.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
   PLAN[k].forEach((l,i)=>{const [n,m]=l.split("|"),mins=+m;S.quests.push({id:id+i,name:"Tuần "+(i+1)+": "+n,pts:Math.max(1,Math.round(mins/60*S.perHour)),mins,chain:id,doneOn:null})});
   save();refresh();say("Đã tạo chuỗi 15 tuần ở bên dưới.");
 });
-$("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").value=b.dataset.tn;$("nd").value=b.dataset.tm;renderMore()};
+$("tpl").onclick=e=>{const b=e.target.closest("[data-tn]");if(!b)return;$("nm").value=b.dataset.tn;$("nd").value=b.dataset.tm;renderQuestPreview()};
 $("cadd").onclick=()=>{
   let raw=$("cs").value.split("\n").map(s=>s.trim()).filter(Boolean);
   const mt=raw.length&&raw[0].match(/^t[êe]n chu[ỗo]i\s*:\s*(.+)/i);
@@ -162,7 +202,7 @@ $("cadd").onclick=()=>{
   $("cn").value=$("cs").value="";save();refresh();say("Đã tạo chuỗi "+count+" bước.");
 };
   }
-  return Object.freeze({renderQuests,bindQuestEvents,renderSchedule,renderChains,renderDailyMissions,renderFortunes,checkinFortuneSummary});
+  return Object.freeze({renderQuests,renderQuestPreview,bindQuestEvents,renderSchedule,renderChains,renderDailyMissions,renderFortunes,checkinFortuneSummary});
  }
  root.GameActivityUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

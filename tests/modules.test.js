@@ -209,6 +209,11 @@ test("rewards giữ nguyên quy tắc hệ số và tiêu hao hiệu ứng", () 
   const fx = [{ n: 2, v: 10 }, { n: 1, v: 30 }];
   const result = R.questCompletionReward(100, 1, 0, 0, fx, { td: 1, balance: 1, status: 1 }, e => e.v === 10);
   assert.equal(result.gain, 110);
+  assert.deepEqual(JSON.parse(JSON.stringify(result.breakdown)),{base:100,multiplier:1,flat:0,taskBonus:0,subtotal:100,td:1,balance:1,status:1,adjusted:100,itemGain:10});
+  const penalized=R.questCompletionReward(100,1.2,5,10,[],{td:.8,balance:1.25,status:.65});
+  assert.equal(penalized.breakdown.subtotal,135);
+  assert.equal(penalized.gain,Math.floor(135*.8*1.25*.65));
+  assert.equal(R.questCompletionReward(100,1,0,0,[],undefined).gain,0);
   assert.deepEqual(JSON.parse(JSON.stringify(result.effects)), [{ n: 1, v: 10 }, { n: 1, v: 30 }]);
 });
 
@@ -1565,6 +1570,18 @@ test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển
 });
 
 
+test("GameLeaderboardUI chỉ hiện tên thiên phú trên thẻ Thiên Kiêu",()=>{
+ const nodes={lbhead:{},lb:{},lbgod:{},lbgodi:{}};
+ const B=[{n:"Cố Thái Hư",t:"Thái Hư Cổ Long",b:.5,d:"Thái Hư Bất Thoái — Mô tả hiệu ứng dài"},{n:"Tu sĩ",t:"Tán tu",b:.1,d:"Tu luyện đều đặn"}];
+ const M=window.GameLeaderboardUI.create({S:{name:"Đạo hữu",points:120,sect:null,lb:{log:""},god:false},B,sc:i=>200-i*10,lbInit:()=>{},BAL_RANK:40,SECTS:[{n:"Vạn Pháp Các"}],SO:[0,0],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:i=>i===0,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
+ M.render();
+ assert.match(nodes.lb.innerHTML,/class="tkf"/);
+ assert.match(nodes.lb.innerHTML,/class="lb-talent">Thái Hư Bất Thoái<\/small>/);
+ assert.doesNotMatch(nodes.lb.innerHTML,/Mô tả hiệu ứng dài/);
+ assert.match(nodes.lb.innerHTML,/Tu luyện đều đặn/);
+ assert.match(nodes.lb.innerHTML,/class="lb-score"/);
+});
+
 test("GameDiaryUI render nhật ký ngày và Đạo Văn",()=>{
  const host={innerHTML:""},days=[];
  const M=window.GameDiaryUI.create({S:{storyLog:[]},dayStr:i=>"2026-11-"+String(24-i).padStart(2,"0"),today:()=>"2026-11-24",generateDiary:d=>{days.push(d);return ["Một ngày tu luyện."]},checkStoryFlags:()=>{},$:()=>host});
@@ -1582,7 +1599,12 @@ test("GameSettingsUI render tùy chọn giao diện và sao lưu",()=>{
  assert.match(host.innerHTML,/data-ui="skin"/);
  assert.match(host.innerHTML,/data-ui="studyOnly"/);
  assert.match(host.innerHTML,/data-bk="ex"/);
- assert.match(host.innerHTML,/data-bk="god"/);
+ assert.match(host.innerHTML,/data-bk="god" role="switch" aria-checked="true"/);
+ assert.match(host.innerHTML,/data-fold="advanced"/);
+ assert.match(host.innerHTML,/data-bk="godopen"/);
+ assert.match(host.innerHTML,/data-fold="general"/);
+ assert.match(host.innerHTML,/id="bkadvanced"/);
+ assert.match(host.innerHTML,/data-bk="sn" role="switch" aria-checked="false"/);
 });
 
 
@@ -1674,11 +1696,20 @@ test("GameTribulationSystem luân hồi reset state và giữ tiến độ xuyê
 
 
 test("GameGodModeSystem chạy lệnh cộng linh lực qua dependency",()=>{
- const S={points:5};let added=0;
- const M=window.GameGodModeSystem.create({S,KD:120,END:1000,B:[],cum:()=>{},CD:[],ALLS:[],RL:[],TITLES:[],ITEMS:[],IC:{},PS:[],SPQ:[],SECTS:[],KEY:"save",today:()=>"2026-11-24",hAdd:(d,p,m)=>{added+=p},ri:()=>0,say:()=>{},doRebirth:()=>{},showThd:()=>{},lbInit:()=>{},weekStart:()=>"2026-11-23",settle:()=>{},KS:()=>({}),vlog:()=>{},resolveEx:()=>{},warGain:()=>0,nextEx:()=>null,spRoll:()=>[],lbRows:()=>[],save:()=>{},renderGod:()=>{},render:()=>{},go:()=>{},askName:()=>{},sfx:()=>{},burst:()=>{},setStreak:()=>{},curStreak:()=>0,kAge:()=>0,storage:{getItem:()=>"{}"},location:{reload:()=>{}},schedule:()=>{},getMaxXp:()=>1000,$:()=>({value:""})});
+ const S={points:5};let added=0,preview,record={n:1},input={value:""},resets=0,reloads=0;
+ const M=window.GameGodModeSystem.create({S,KD:120,END:1000,B:[],cum:()=>{},CD:[],ALLS:[],RL:[],TITLES:[],ITEMS:[],IC:{},PS:[],SPQ:[],SECTS:[],KEY:"save",today:()=>"2026-11-24",hAdd:(d,p,m)=>{added+=p},ri:()=>0,say:()=>{},doRebirth:()=>{},showThd:r=>{preview=r},buildRecord:()=>record,lbInit:()=>{},weekStart:()=>"2026-11-23",settle:()=>{},KS:()=>({}),vlog:()=>{},resolveEx:()=>{},warGain:()=>0,nextEx:()=>null,spRoll:()=>[],lbRows:()=>[],save:()=>{},renderGod:()=>{},render:()=>{},go:()=>{},askName:()=>{},sfx:()=>{},burst:()=>{},setStreak:()=>{},curStreak:()=>0,kAge:()=>0,storage:{getItem:()=>"{}"},resetProgress:()=>{resets++},location:{reload:()=>{reloads++}},schedule:()=>{},getMaxXp:()=>1000,$:()=>input});
  assert.equal(M.run("pt"),true);
  assert.equal(S.points,1005);
  assert.equal(added,1000);
+ for(const value of ["","abc","-1","1.5","9007199254740992"]){input.value=value;assert.equal(M.run("sv"),false);assert.equal(S.points,1005)}
+ input.value="0";assert.equal(M.run("sv"),true);assert.equal(S.points,0);
+ input.value="1234";assert.equal(M.run("sv"),true);assert.equal(S.points,1234);
+ assert.equal(M.run("pv"),false);assert.equal(preview,record);
+ S.tmTasks=1;S.tmaTasks=2;assert.equal(M.run("tm"),true);assert.equal(S.tmTasks,0);
+ assert.equal(M.run("tma"),true);assert.equal(S.tmaTasks,0);assert.equal(S.tma,1);
+ assert.equal(M.run("tx"),true);assert.equal(S.tm,0);assert.equal(S.tma,0);
+ const resetButton={dataset:{}};assert.equal(M.run("wp",resetButton),false);assert.equal(resets,0);
+ assert.equal(M.run("wp",resetButton),false);assert.equal(resets,1);assert.equal(reloads,1);
 });
 
 

@@ -258,11 +258,11 @@
       const p=await perm(false);
       st=p==="granted"?"Đã được cấp quyền thông báo.":p==="denied"?"Quyền thông báo đang bị tắt. Vào Cài đặt điện thoại, mở mục Ứng dụng, chọn game rồi bật Thông báo.":"Chưa cấp quyền thông báo.";
     }
-    const dOffNote=S.dOff?`<div style="margin-top:6px;padding:6px 8px;background:rgba(180,80,40,.12);border-radius:6px;font-size:12px;color:var(--red,#b45309)">⚠ Thiên Đạo đang tua ngày (dOff=${S.dOff}). Thông báo lịch (Tuần/Nguyệt Luyện, khung giờ học) tạm tắt để tránh lệch thời gian.</div>`:"";
+    const dOffNote=S.dOff?`<div style="margin-top:6px;padding:6px 8px;background:rgba(180,80,40,.12);border-radius:6px;font-size:12px;color:var(--red,#b45309)">Lịch game khác ngày thực. Một số thông báo theo lịch đang tạm tắt.</div>`:"";
 
     const list=c.u||[];
-    let userHtml=`<div style="margin-top:12px;border-top:1px solid var(--bd,#ddd);padding-top:10px">
-      <div class="lbl" style="margin-bottom:6px">Nhắc nhở tùy chỉnh <small>(tối đa 20)</small></div>`;
+    let userHtml=`<details class="setting-advanced" data-k="ntcustom"${FO.ntcustom?" open":""}><summary>Nhắc nhở riêng (${list.length}/20)</summary>
+      `;
     if(list.length){
       userHtml+=`<ul style="list-style:none;padding:0;margin:0 0 8px">`+list.map(u=>{
         const hh=String(u.h|0).padStart(2,"0"),mm=String(u.m|0).padStart(2,"0");
@@ -280,10 +280,10 @@
       <input type="text" id="ntub" placeholder="Nội dung (tùy chọn)" maxlength="80" style="flex:1;min-width:120px">
       <input type="time" id="ntuh" value="09:00" style="width:auto">
       <button class="btn" data-nt="uadd">Thêm</button>
-    </div></div>`;
+    </div></details>`;
 
-    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small><small id="ntsync" style="display:block">${syncStatus}</small>${dOffNote}
-<div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
+    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Nhắc nhở</summary><small>${st}</small><small id="ntsync" style="display:block">${syncStatus}</small>${dOffNote}
+<div class="setting-actions"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo</button></div>
 <div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div>
 ${userHtml}
 </details>`;
