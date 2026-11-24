@@ -628,6 +628,8 @@ test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong v
  assert.equal(f.saved().points,before);
  assert.equal(f.run("myRk()"),rank);
  assert.equal(f.saved().storyLog.filter(x=>x.npc===49).length,1);
+ assert.equal(f.saved().npcAffinity[49],1);
+ assert.match(getNode("prof").innerHTML,/Tương thức/);
  openNpc(40);talk();
  assert.equal(f.saved().storyLog.filter(x=>x.id.startsWith("npc-talk:")).length,1);
  const initial=f.run("JSON.stringify(NpcWorld.events())");
@@ -640,6 +642,7 @@ test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong v
  assert.match(getNode("prof").innerHTML,/Căn cơ đã dày thêm/);
  talk();
  assert.equal(f.saved().storyLog.filter(x=>x.npc===49).length,2);
+ assert.equal(f.saved().npcAffinity[49],2);
  f.run("S.kst.start-=6*864e5");
  assert.equal(f.run("NpcWorld.events().length"),3);
  assert.equal(f.run("NpcWorld.events()[0].day"),7);
@@ -648,6 +651,7 @@ test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong v
  assert.match(getNode("van").innerHTML,/Ngày 7/);
  f.run("doRebirth()");
  assert.equal(f.run("NpcWorld.canRecord()"),true);
+ assert.equal(f.run("NpcWorld.relationship(49).count"),0);
  assert.equal(f.run("NpcWorld.events()[0].day"),1);
  assert.notEqual(f.run("JSON.stringify(NpcWorld.events())"),initial);
 });

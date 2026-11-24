@@ -1,4 +1,4 @@
-/* Tính cách, vấn đạo và phong văn. Các tương tác chỉ ghi ký lục. */
+/* Tính cách, vấn đạo, giao tình và phong văn; tiến độ dựa trên lịch sử học. */
 (function(root){
   "use strict";
   const early=[
@@ -41,6 +41,12 @@
     ["Thanh trà hội","Đồng môn gặp nhau bên trà, kể chuyện trên đường cầu đạo."],
     ["Bút đàm","Tu sĩ chia sẻ những điều còn vướng mắc trong đạo kinh."]
   ];
+  const goals=[
+    ["Tĩnh tâm đọc kinh",20,"phút"],
+    ["Hoàn thành một nhiệm vụ",1,"việc"],
+    ["Chuyên tâm tu luyện",30,"phút"],
+    ["Hoàn thành hai nhiệm vụ",2,"việc"]
+  ];
   function create({S,B,hash,today,getKAge,days,pushStory,save}){
     const personality=i=>early[i]||talents[i-40]||
       ordinary[Math.floor(Math.abs(hash(i+1,71,0))*8)%8];
@@ -51,14 +57,26 @@
     function canRecord(){
       return !(S.storyFlags?.npcTalkDay>=today());
     }
+    function goal(index){
+      const [title,target,unit]=goals[index%goals.length];
+      const value=unit==="phút"?S.hist[today()]?.m:S.cnt?.[today()];
+      const current=Math.min(target,Math.max(0,Math.floor(Number(value)||0)));
+      return {title,target,unit,current,done:current===target};
+    }
+    function relationship(i){
+      const count=S.npcAffinity?.[i]||0;
+      return {count,label:count>=7?"Tri kỷ":count>=3?"Thân quen":count>=1?"Tương thức":"Sơ ngộ"};
+    }
     function record(i){
       if(!Number.isInteger(i)||!B[i]||!canRecord())return false;
-      const day=today(),previousLog=S.storyLog?.slice(),previousFlags=S.storyFlags;
+      const day=today(),previousLog=S.storyLog?.slice(),previousFlags=S.storyFlags,previousAffinity=S.npcAffinity;
       const line=dialogue(i).line;
       if(!pushStory("npc-talk:"+day,"Vấn đạo · "+B[i].n,[line],{npc:i}))return false;
       S.storyFlags={...previousFlags,npcTalkDay:day};
+      S.npcAffinity={...previousAffinity,[i]:Math.min(119,relationship(i).count+1)};
       if(save())return true;
       S.storyLog=previousLog;S.storyFlags=previousFlags;
+      if(previousAffinity===undefined)delete S.npcAffinity;else S.npcAffinity=previousAffinity;
       return false;
     }
     function events(){
@@ -68,11 +86,11 @@
       for(let p=period;p>=Math.max(0,period-2);p--){
         const i=(p*17+(life%B.length)*11)%B.length;
         const [title,description]=gatherings[(p+life)%gatherings.length];
-        out.push({day:p*3+1,title,description,npc:B[i].n,trait:personality(i)[0]});
+        out.push({day:p*3+1,title,description,npc:B[i].n,trait:personality(i)[0],...(p===period?{goal:goal(p+life)}:{})});
       }
       return out;
     }
-    return Object.freeze({personality:i=>personality(i)[0],dialogue,canRecord,record,events});
+    return Object.freeze({personality:i=>personality(i)[0],dialogue,canRecord,record,goal,relationship,events});
   }
   root.GameNpcWorld=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

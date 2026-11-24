@@ -79,7 +79,7 @@
   if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}
   // legacy + life + ui + name + god + tut + diary prefs keep
   S.rb=(S.rb||0)+1;
-  S.storyLog=[];S.storyFlags={};S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
+  S.storyLog=[];S.storyFlags={};delete S.npcAffinity;S.points=0;S.hist={};S.cnt={};S.stl=[];S.rm=0;S.pk=0;S.tm=0;S.kc={};S.kst=null;KS();
   deps.applyNextCycle?.();
   S.studyReport=root.GameAnalytics.newReport(S);
   root.GameSubjects.reset(S);

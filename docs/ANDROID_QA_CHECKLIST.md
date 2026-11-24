@@ -67,6 +67,11 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Mở Thiên Thư → Thống kê ở cả hai chế độ, đổi khoảng 7/30 ngày, chọn ngày, mở/đóng tiến độ môn học, kiểm tra tên môn dài và mục tiêu hiện tại ở màn hình hẹp.
 - [ ] Kiểm tra save cũ, môn lưu trữ, phút chưa gán môn và dữ liệu chưa theo dõi; đối chiếu so sánh các kiếp khác thời lượng và dữ liệu thiếu; đóng/mở app.
 
+## Bổ sung nghiệm thu Stage 5C
+
+- [ ] Mở hồ sơ Thiên Kiêu, ghi vấn đạo, xem giao tình và tiến độ đồng tu; đổi NPC, xác nhận chỉ ghi một lần/ngày. Hoàn thành rồi hoàn tác nhiệm vụ, đối chiếu mục tiêu và Phong văn.
+- [ ] Đóng/mở app, xuất/nhập backup và luân hồi trên dữ liệu thử nghiệm; xác nhận giao tình được lưu trong kiếp và reset đúng, không thay đổi điểm khi vấn đạo.
+
 ## Tiêu chí đạt
 
 

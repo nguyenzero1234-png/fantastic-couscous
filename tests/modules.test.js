@@ -40,6 +40,37 @@ function listJsFiles(dir, prefix = "") {
 const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "runtime/notify.js", "runtime/schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
+test("5C: giao tình giới hạn ngày, hoàn tác lưu lỗi và mục tiêu theo lịch sử",()=>{
+  const S={quests:[],points:10,hist:{},storyFlags:{},storyLog:[]};
+  let day="2026-11-24",saved=false,age=0;
+  const B=Array.from({length:50},(_,i)=>({n:`NPC ${i}`}));
+  const W=window.GameNpcWorld.create({S,B,hash:()=>0,today:()=>day,getKAge:()=>age,days:119,
+    pushStory:(id,title,lines,meta)=>{S.storyLog.push({id,title,lines,...meta});return true},save:()=>saved});
+  assert.equal(W.record(0),false);
+  assert.equal(S.npcAffinity,undefined);
+  assert.equal(S.storyLog.length,0);
+  assert.equal(W.canRecord(),true);
+  saved=true;
+  assert.equal(W.record(0),true);
+  assert.equal(W.record(1),false);
+  assert.equal(W.relationship(0).label,"Tương thức");
+  assert.equal(W.relationship(1).count,0);
+  for(let d=25;d<=30;d++){day=`2026-11-${d}`;assert.equal(W.record(0),true)}
+  assert.equal(W.relationship(0).label,"Tri kỷ");
+  assert.equal(W.relationship(0).count,7);
+  S.hist[day]={m:20,p:0};S.cnt={[day]:1};
+  assert.equal(W.goal(0).done,true);assert.equal(W.goal(1).done,true);
+  assert.equal(W.goal(2).done,false);
+  assert.equal(W.events()[0].goal.done,true);
+  S.hist[day].m=0;S.cnt[day]=0;
+  assert.equal(W.events()[0].goal.done,false);
+  age=6;assert.equal(W.events().length,3);assert.equal(W.events()[1].goal,undefined);
+  assert.equal(S.points,10);
+  assert.equal(window.GameStorage.validSave(S),true);
+  assert.equal(window.GameStorage.validSave({...S,npcAffinity:{50:1}}),false);
+  assert.equal(window.GameStorage.validSave({...S,npcAffinity:{0:120}}),false);
+});
+
 test("5B: điều kiện công pháp, giới hạn ngày và dữ liệu hợp lệ",()=>{
   const T=window.GameTechniques,S={streak:{n:3}},day="2026-11-24";
   window.GameSubjects.init(S);T.init(S);

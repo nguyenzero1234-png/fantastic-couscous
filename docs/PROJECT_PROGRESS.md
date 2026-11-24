@@ -1420,7 +1420,7 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp (nghiệm thu Android còn chờ).
 - [x] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức (nghiệm thu Android còn chờ).
 - [x] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp (nghiệm thu Android còn chờ).
-- [ ] 5C — Mục tiêu, quan hệ và sự kiện NPC.
+- [x] 5C — Mục tiêu, quan hệ và sự kiện NPC (nghiệm thu Android còn chờ).
 - [ ] 5E — Tông môn, sư phụ và truyền thừa.
 - [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
 
@@ -1450,4 +1450,13 @@ Tiếp theo theo thứ tự ưu tiên:
 - So sánh tối đa năm kiếp gần nhất theo phút/ngày và nhiệm vụ/ngày, có thời lượng kiếp nếu biết. Dữ liệu thiếu hiển thị dấu —. Không thay đổi dữ liệu lưu hoặc cơ chế thưởng phạt.
 - [x] 151/151 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
 - [x] Edge headless profile riêng tại 390, 320, 280 px: bộ lọc, môn học, dữ liệu cũ, mục thu gọn, chế độ Chỉ học và reload đạt, không tràn ngang hoặc lỗi JS. Có ảnh QA nhưng chưa xác nhận trực quan.
-- [ ] Xác nhận CI/APK sau push và nghiệm thu Android thật. Tiếp theo Stage 5C.
+- [x] CI Stage 5D, commit `d7b1658c9109bfa5baa33cdb2e17b1395d15628f`: JavaScript Tests (45380456768) và Build APK (45380456558) thành công. Artifact APK ID 14912619910 (6.290.504 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Nghiệm thu Android thật.
+
+## Stage 5C — Đồng tu và giao tình (2026-11-24)
+
+- Hồ sơ Thiên Kiêu thêm mục tiêu đồng tu trong ngày theo phút học hoặc số nhiệm vụ đã hoàn thành, bốn mục tiêu nhẹ (20/30 phút hoặc 1/2 nhiệm vụ). Phong văn hiện tại có một mục tiêu hằng ngày, luân phiên theo kỳ ba ngày và số kiếp. Tiến độ tự tính từ lịch sử, hoàn tác nhiệm vụ cập nhật lại tiến độ.
+- Giao tình tính theo số ngày đã ghi lời vấn đạo với từng NPC: Sơ ngộ, Tương thức (1), Thân quen (3), Tri kỷ (7). Vẫn chỉ ghi một NPC mỗi ngày, lưu thất bại hoàn tác cả giao tình lẫn Đạo Văn, giới hạn 119 lần mỗi NPC, reset khi luân hồi. Save cũ khởi đầu Sơ ngộ, giữ nguyên Đạo Văn cũ. Không cộng buff, linh lực, thưởng hoặc phạt mới; điểm mô phỏng NPC không đổi.
+- [x] 152/152 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt. Hồi quy giới hạn ngày, lưu lỗi, mục tiêu từ lịch sử, reload, luân hồi và dữ liệu không hợp lệ.
+- [x] Edge headless profile riêng tại 390, 320, 280 px: hồ sơ, giao tình, tiến độ, Phong văn, reload và giới hạn ngày đều đạt, không lỗi JS hoặc tràn ngang.
+- [ ] Xác nhận CI/APK sau push và nghiệm thu Android thật. Tiếp theo Stage 5E.
