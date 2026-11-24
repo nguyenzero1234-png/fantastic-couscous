@@ -1129,3 +1129,10 @@ Sau mỗi đợt thay đổi:
 - [x] Dời các factory phụ thuộc sang cuối bootstrap, sau khi dữ liệu, state và helper đã sẵn sàng; giữ wrapper và event handler cũ.
 - [x] Thêm test thứ tự khởi tạo để ngăn hồi quy.
 - [ ] Chạy kiểm thử khởi động trong trình duyệt/DOM thực; CI Node chưa thay thế được kiểm thử giao diện thật.
+
+
+## Tiếp tục audit TDZ sau smoke test khởi động (2026-11-24)
+
+- [x] Smoke test classic scripts phát hiện `GameEventsUI.create` vẫn nhận `dayStr` trước khi khai báo.
+- [x] Dời factory EventsUI xuống vùng khởi tạo cuối bootstrap, sau khi `dayStr` và các helper lịch đã sẵn sàng.
+- [ ] Tiếp tục chạy smoke test và xử lý mọi phụ thuộc khởi tạo sớm còn lại cho đến khi game.js chạy qua toàn bộ lần nạp đầu.

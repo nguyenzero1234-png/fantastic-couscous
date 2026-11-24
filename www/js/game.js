@@ -222,7 +222,6 @@ function renderChains(){ActivityUI.renderChains()}
 var FO={};
 function fold(k,t,b,o){return `<details class="fold" data-k="${k}"${(FO[k]===undefined?o:FO[k])?" open":""}><summary>${t}</summary>${b}</details>`}
 var KSD={};
-const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,KSD,weekStart:()=>weekStart(),escapeHtml:esc,$});
 function renderEvents(){EventsUI.render()}
 function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p+p);h.m=Math.max(0,h.m+m)}
 // Trừng Phạt xếp chồng: mỗi lần hết Mệnh +1 stack, −5% mỗi stack (tối đa −30%)
@@ -989,6 +988,7 @@ const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SE
 const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,EXOPEN,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt});
 const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:()=>{PI=null},chkLegacy,render,showThd:(...args)=>showThd(...args)});
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$});
+const EventsUI=GameEventsUI.create({S,evCur,ugain,GameAnalytics,dayStr,today,KSD,weekStart:()=>weekStart(),escapeHtml:esc,$});
 const GodModeSystem=GameGodModeSystem.create({S,KD,END,B,cum,CD,ALLS,RL,TITLES,ITEMS,IC,PS,SPQ,SECTS,KEY,today,hAdd,ri,say,doRebirth,showThd,lbInit,weekStart,settle,KS,vlog,resolveEx,warGain,nextEx,spRoll,lbRows,save,renderGod,render,go,askName,sfx,burst,setStreak:v=>setStreak(v),curStreak:()=>curStreak(),kAge:()=>kAge(),storage:localStorage,location,schedule:(fn,ms)=>setTimeout(fn,ms),getMaxXp:()=>typeof MAXXP==="number"?MAXXP:END,$});
 
 drawNav();
