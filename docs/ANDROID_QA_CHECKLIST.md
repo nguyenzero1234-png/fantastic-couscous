@@ -77,6 +77,11 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Mở Tông môn, kiểm tra điều kiện bái sư Cửu U qua năm ngày học thường, xem tiến độ truyền thừa; nhận khi đủ điều kiện, đổi tông và quay lại, xác nhận không nhận trùng.
 - [ ] Kiểm tra lưu/reload, backup và luân hồi trên dữ liệu thử nghiệm; sử kiếp và file phán quyết có tên truyền thừa, linh lực không tăng khi lĩnh ngộ.
 
+## Bổ sung nghiệm thu Stage 5F
+
+- [ ] Mở Thiên Thư → Sứ mệnh, hoàn thành rồi hoàn tác nhiệm vụ, đối chiếu tiến độ đạo lộ; luân hồi trên dữ liệu thử nghiệm, kiểm tra ba đạo lộ lần lượt thay đổi.
+- [ ] Kiểm tra danh hiệu xuyên kiếp, sử kiếp, xuất phán quyết, reload và backup cũ/mới; không tăng linh lực khi hoàn thành đạo lộ hoặc sứ mệnh.
+
 ## Tiêu chí đạt
 
 

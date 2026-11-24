@@ -1454,7 +1454,7 @@ test("GameLegacyMissions khởi tạo tiến trình xuyên kiếp và mở khóa
     setTimeoutFn: (fn, delay) => timers.push({ fn, delay }),
     formatDate: value => "DATE-" + value
   });
-  assert.equal(M.definitions.length, 8);
+  assert.equal(M.definitions.length, 12);
   assert.equal(M.lifeTrack().q, 0);
   const newly = M.check();
   assert.deepEqual(JSON.parse(JSON.stringify(newly)), ["Sơ Nhập Đạo Đồ"]);
@@ -1477,6 +1477,33 @@ test("GameLegacyMissions khởi tạo tiến trình xuyên kiếp và mở khóa
   assert.equal(Object.keys(S.legacy).length, 8);
   assert.match(M.render(), /Sứ mệnh xuyên kiếp/);
   assert.match(M.render(), /DATE-123456/);
+});
+
+test("5F: đạo lộ luân phiên, thành tựu mới dùng sử kiếp đã ghi",()=>{
+  const L=window.GameLegacyMissions,S={quests:[],points:10,rb:0,hist:{},rbh:[]};
+  window.GameSubjects.init(S);
+  for(let i=1;i<=7;i++)S.hist[`2026-11-0${i}`]={m:20,p:0};
+  assert.equal(L.lifePath(S).progress,7);
+  S.rb=1;
+  S.subjects.days={"2026-11-01":{math:30,code:30,english:30}};
+  assert.equal(L.lifePath(S).id,"breadth");
+  assert.equal(L.lifePath(S).progress,3);
+  S.rb=2;
+  S.subjects.days=Object.fromEntries(Array.from({length:4},(_,i)=>[`2026-11-0${i+1}`,{math:15,code:15}]));
+  assert.equal(L.lifePath(S).progress,4);
+  S.subjects.days["2026-11-01"].code=0;
+  assert.equal(L.lifePath(S).progress,3);
+  const M=L.create({S,save:()=>true,setTimeoutFn:()=>{},now:()=>123});
+  S.rbh=[{n:1},{n:2,ms:7}];
+  assert.equal(M.definitions.filter(d=>Number(d.id.slice(1))>=9&&d.ok(S)).length,0);
+  S.rbh=[{n:1,cycleDays:30,days:30,ms:7,transmissions:[0,1],lifePath:{id:"steady",progress:7}},{n:2,cycleDays:60,days:60,ms:7,transmissions:[2],lifePath:{id:"breadth",progress:3}},{n:3,lifePath:{id:"balance",progress:3}}];
+  M.check();assert.equal(S.legacy.L9,123);assert.equal(S.legacy.L10,123);assert.equal(S.legacy.L12,123);assert.equal(S.legacy.L11,undefined);
+  S.rbh[2].lifePath.progress=4;M.check();assert.equal(S.legacy.L11,123);
+  assert.equal(S.points,10);
+  assert.equal(window.GameStorage.validSave(S),true);
+  assert.equal(window.GameStorage.validSave({...S,rbh:[{lifePath:{id:"steady",progress:8}}]}),false);
+  assert.equal(window.GameStorage.validSave({...S,rbh:[{lifePath:{id:"unknown",progress:0}}]}),false);
+  assert.match(M.render(),/Đạo lộ kiếp này · Song Tu/);
 });
 
 

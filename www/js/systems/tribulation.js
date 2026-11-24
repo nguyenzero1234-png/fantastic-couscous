@@ -73,7 +73,8 @@
   if(pending&&!S.exLock){S.exLock=pending.id;schedule(()=>showExModal(pending),300)}
 }
   function doRebirth(){
-  const rec=buildRec();if(S.studyReport)rec.studyReport=root.GameAnalytics.archiveReport(S);if(S.subjects)rec.subjects=root.GameSubjects.archive(S);if(S.technique)rec.techniques=root.GameTechniques.archive(S);if(S.transmissions)rec.transmissions=S.transmissions.slice();(S.rbh||(S.rbh=[])).push(rec);
+  const rec=buildRec();if(S.studyReport)rec.studyReport=root.GameAnalytics.archiveReport(S);if(S.subjects)rec.subjects=root.GameSubjects.archive(S);if(S.technique)rec.techniques=root.GameTechniques.archive(S);if(S.transmissions)rec.transmissions=S.transmissions.slice();
+  const path=root.GameLegacyMissions.lifePath(S);rec.lifePath={id:path.id,progress:path.progress};(S.rbh||(S.rbh=[])).push(rec);
   if(rec.anXa){S.tdPenalty=false;S.tdStacks=0;S.failStreak=0;S.life=S.life||{};S.life.anXa=1;vlog("Thiên Đạo Ân Xá: Trừng Phạt và chuỗi fail đã được xóa bỏ.");burst();sfx(880)}
   if(rec.grade==="Viên Mãn Xuất Chúng"||rec.grade==="Xuất Sắc"){S.life=S.life||{};S.life.excel=1}
   if(S.sect!=null){S.life=S.life||{};S.life.sectN=(S.life.sectN||0)+1}

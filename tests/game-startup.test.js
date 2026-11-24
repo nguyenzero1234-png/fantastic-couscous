@@ -629,6 +629,25 @@ test("5E: nhận truyền thừa tại tông môn, reload và lưu sử kiếp",
  assert.match(getNode("thd").innerHTML,/Truyền thừa: Kiếm Tâm Minh Ngộ/);
 });
 
+test("5F: đạo lộ tự đổi qua luân hồi, lưu sử kiếp và danh hiệu",()=>{
+ const f=timerFixture();
+ f.run("for(let i=1;i<=7;i++)S.hist['2026-11-0'+i]={m:20,p:0};save();renderAch()");
+ assert.match(getNode("ach").innerHTML,/Tĩnh Tâm/);
+ assert.match(getNode("ach").innerHTML,/Đã viên mãn/);
+ f.run("doRebirth()");
+ assert.deepEqual(f.saved().rbh.at(-1).lifePath,{id:"steady",progress:7});
+ assert.match(getNode("thd").innerHTML,/Đạo lộ: Tĩnh Tâm/);
+ assert.match(getNode("ach").innerHTML,/Vạn Pháp/);
+ f.run("S.subjects.days={'2026-11-01':{math:30,code:30,english:30}};save();doRebirth()");
+ assert.deepEqual(f.saved().rbh.at(-1).lifePath,{id:"breadth",progress:3});
+ f.run("for(let i=1;i<=4;i++)S.subjects.days['2026-11-0'+i]={math:15,code:15};save();doRebirth()");
+ assert.deepEqual(f.saved().rbh.at(-1).lifePath,{id:"balance",progress:4});
+ assert.ok(f.saved().legacy.L11);
+ f.reload();assert.ok(f.saved().legacy.L11);
+ assert.match(getNode("ach").innerHTML,/Tam Đạo Đồng Quy/);
+ assert.match(getNode("ach").innerHTML,/Tĩnh Tâm/);
+});
+
 test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong văn theo kiếp",()=>{
  const f=timerFixture();
  const openNpc=i=>getNode("lb").onclick({target:{closest:()=>({dataset:{pi:String(i)}})}});

@@ -1422,7 +1422,7 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp (nghiệm thu Android còn chờ).
 - [x] 5C — Mục tiêu, quan hệ và sự kiện NPC (nghiệm thu Android còn chờ).
 - [x] 5E — Tông môn, sư phụ và truyền thừa (nghiệm thu Android còn chờ).
-- [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
+- [x] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng (nghiệm thu Android còn chờ).
 
 ## Stage 5A — Hiệu năng và độ bền save (2026-11-24)
 
@@ -1469,4 +1469,13 @@ Tiếp theo theo thứ tự ưu tiên:
 - Sử kiếp và bản xuất phán quyết hiển thị tên truyền thừa đã lĩnh ngộ.
 - [x] Edge headless profile riêng tại 390, 320, 280 px: nhận, giới hạn một lần, reload, luân hồi, sử kiếp, không tràn ngang và lỗi JS.
 - [x] 154/154 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
+- [x] CI Stage 5E, commit `1f385b3f4198a6c3b8c2345813eae61ee92e6f3c`: JavaScript Tests (45382180469) và Build APK (45382180541) thành công. Artifact APK ID 14913758036 (6.292.124 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Nghiệm thu Android thật.
+
+## Stage 5F — Đạo lộ luân hồi (2026-11-24)
+
+- Thiên Thư → Sứ mệnh có một đạo lộ tự nguyện luân phiên theo số kiếp: Tĩnh Tâm (7 ngày ≥20 phút), Vạn Pháp (3 môn ≥30 phút/môn), Song Tu (4 ngày, mỗi ngày hai môn từ 15 phút/môn). Tiến độ lấy từ dữ liệu học hiện tại; hoàn tác nhiệm vụ cập nhật lại. Khi luân hồi lưu ID và tiến độ giới hạn vào sử kiếp và file phán quyết. Save cũ không tự suy đoán đạo lộ đã hoàn thành.
+- Thêm bốn danh hiệu vĩnh viễn: Tam Tông Truyền Nhân (3 truyền thừa khác nhau qua ít nhất hai kiếp), Tuế Nguyệt Vô Ngại (hai kiếp đủ kỳ hạn có thời lượng khác nhau), Tam Đạo Đồng Quy (viên mãn cả ba đạo lộ), Đạo Tâm Bất Tức (hai kiếp từng giữ chuỗi ≥7 ngày/kiếp). Tổng 12 sứ mệnh. Không buff, không tăng linh lực, không thay phạt hay thời hạn; không bắt buộc đổi thời lượng kiếp hoặc học đêm. Dữ liệu cũ chỉ tính nếu có trường lịch sử cần thiết.
+- [x] Edge headless profile riêng tại 390, 320, 280 px: tab Sứ mệnh, luân phiên đủ ba đạo lộ, nhận danh hiệu, sử kiếp, reload; không lỗi JS/tràn ngang.
+- [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
 - [ ] Xác nhận CI/APK và nghiệm thu Android thật.
