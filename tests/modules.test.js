@@ -1610,13 +1610,15 @@ test("GameLeaderboardUI dựng bảng xếp hạng và đổi chế độ hiển
 test("GameLeaderboardUI chỉ hiện tên thiên phú trên thẻ Thiên Kiêu",()=>{
  const nodes={lbhead:{},lb:{},lbgod:{},lbgodi:{}};
  const B=[{n:"Cố Thái Hư",t:"Thái Hư Cổ Long",b:.5,d:"Thái Hư Bất Thoái — Mô tả hiệu ứng dài"},{n:"Tu sĩ",t:"Tán tu",b:.1,d:"Tu luyện đều đặn"}];
- const M=window.GameLeaderboardUI.create({S:{name:"Đạo hữu",points:120,sect:null,lb:{log:""},god:false},B,sc:i=>200-i*10,lbInit:()=>{},BAL_RANK:40,SECTS:[{n:"Vạn Pháp Các"}],SO:[0,0],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:i=>i===0,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
+ const M=window.GameLeaderboardUI.create({S:{name:"Cố Thái Hư",points:120,sect:null,lb:{log:""},god:false},B,sc:i=>200-i*10,lbInit:()=>{},BAL_RANK:40,SECTS:[{n:"Vạn Pháp Các"}],SO:[0,0],rname:()=>"Luyện Khí",uxp:()=>120,bxp:()=>0,spark:()=>"",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:i=>i===0,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1});
  M.render();
  assert.match(nodes.lb.innerHTML,/class="tkf"/);
  assert.match(nodes.lb.innerHTML,/class="lb-talent">Thái Hư Bất Thoái<\/small>/);
  assert.doesNotMatch(nodes.lb.innerHTML,/Mô tả hiệu ứng dài/);
  assert.match(nodes.lb.innerHTML,/Tu luyện đều đặn/);
  assert.match(nodes.lb.innerHTML,/class="lb-score"/);
+ M.render();
+ assert.doesNotMatch(nodes.lb.innerHTML,/[▲▼]/);
 });
 
 test("GameDiaryUI render nhật ký ngày và Đạo Văn",()=>{

@@ -51,6 +51,11 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Chọn ảnh chân dung JPG, PNG, WebP từ bộ chọn ảnh Android; kiểm tra ảnh cắt vuông hiển thị trên tiêu đề, hồ sơ và bảng xếp hạng. Thử ảnh lỗi và ảnh vượt giới hạn.
 - [ ] Đổi trang trí, đóng/mở app, luân hồi, xuất và khôi phục JSON trên bản thử nghiệm; kiểm tra chân dung và lựa chọn trang trí được giữ. Reset về mặc định.
 
+## Bổ sung nghiệm thu Stage 5A
+
+- [ ] Dùng save thử nghiệm gần cuối học kỳ 119 ngày, mở toàn bộ Thiên Kiêu Bảng, dự báo và hồ sơ NPC; ghi RAM, thời gian mở màn hình, độ mượt và lỗi WebView nếu có.
+- [ ] Thử save nhiều kiếp có ảnh cá nhân, môn học và nhiệm vụ; xuất/nhập backup, đóng/mở và luân hồi; kiểm tra đủ sử kiếp và không phát sinh cảnh báo lưu.
+
 ## Tiêu chí đạt
 
 

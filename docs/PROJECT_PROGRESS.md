@@ -1411,13 +1411,24 @@ Tiếp theo theo thứ tự ưu tiên:
 
 - Thay hàng flex dùng chung bằng lưới hai cột cân đối dành riêng cho chọn Nam tu/Nữ tu; ảnh vuông 88 px, căn giữa, viền lựa chọn và trạng thái aria-pressed đồng bộ. Nguyên nhân lệch là margin-left tự động và kích thước tối thiểu của nút trong hàng flex cũ.
 - [x] Edge headless tại 390, 320 và 280 px: hai nút/ảnh cùng cao độ và kích thước, không tràn ngang; chọn nữ/nam, nhập đạo, ảnh tiêu đề và lưu giới tính qua reload đều đạt. Đã xem ảnh chụp 280 px. Nghiệm thu Android thật còn chờ.
-- [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh.
+- [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh và UTC.
+- [x] Commit `4a679a153287e077691c9e29d8d56917b61a35d3`: JavaScript Tests (45375778087), Build APK (45375778325) đều thành công; artifact APK ID 14909829979 (6.286.987 byte).
+- [x] CI Stage 4, commit `d78fc93085d92b6ac55708c8d89deff6349213f1`: JavaScript Tests (45373172968) và Build APK (45373173054) thành công; artifact APK ID 14909707403 (6.286.953 byte).
 
 ## Lộ trình Stage 5
 
-- [ ] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp.
+- [x] 5A — Đo và tối ưu hiệu năng, ổn định, kích thước save qua nhiều kiếp (nghiệm thu Android còn chờ).
 - [ ] 5B — Công pháp theo phương pháp học; cân bằng, không khuyến khích học quá sức.
 - [ ] 5D — Thống kê học tập cá nhân, xu hướng, tiến độ môn học và so sánh các kiếp.
 - [ ] 5C — Mục tiêu, quan hệ và sự kiện NPC.
 - [ ] 5E — Tông môn, sư phụ và truyền thừa.
 - [ ] 5F — Thành tựu và biến thể qua nhiều kiếp, tránh tích lũy buff mất cân bằng.
+
+## Stage 5A — Hiệu năng và độ bền save (2026-11-24)
+
+- Mô phỏng NPC tái sử dụng danh sách cơ duyên giờ trước khi có cache liên tiếp; lọc cơ duyên hết hạn, thêm cơ duyên giờ hiện tại, vẫn quét đủ cửa sổ 80 giờ khi thiếu cache. Dùng chung mảng rỗng bất biến. Giữ nguyên điểm, thứ hạng, RNG, cơ chế invalidate/reset và độ phân giải phút.
+- Sửa chỉ số biến động bảng xếp hạng theo ID NPC/người chơi để tránh báo tăng giảm sai nếu trùng tên. Giữ nguyên nhịp cập nhật và đồ thị.
+- Benchmark Node 26.13.1, roster thật 50 NPC, salt 7919, ba lượt chạy độc lập có GC giữa mốc. Trung vị thời gian mở rộng mô phỏng 0–7 ngày: 91 → 87 ms; 7–30 ngày: 164 → 150 ms; 30–119 ngày: 523 → 507 ms. Heap tại 119 ngày: 164 → 162 MiB. Kết quả các điểm lấy mẫu, lịch sử, thứ hạng, tính lại sau invalidate và reset khớp tuyệt đối giữa hai phiên bản. Đây là số đo máy phát triển, heap cuối kỳ vẫn cao và cần đo trên Android thật.
+- Edge headless: mở toàn bộ bảng xếp hạng, render trung bình 3 ms (10 lần liên tiếp). Mô phỏng 20 kiếp, mỗi kiếp 119 ngày có 240 phút học/ngày, trực tiếp kích hoạt luân hồi trong hồ sơ thử nghiệm. Save đang hoạt động/sau luân hồi tính theo ký tự JSON: kiếp 1 23.687/3.765; kiếp 5 30.498/9.948; kiếp 10 38.212/17.657; kiếp 20 53.646/33.097. Reload đủ 20 bản ghi, tổng phút của kiếp đầu/cuối chính xác. Không lỗi JS. Dữ liệu mẫu chưa bao gồm ảnh riêng, số lượng lớn môn và nhiệm vụ; giữ đầy đủ sử kiếp, không cần cắt dữ liệu.
+- [x] 147/147 kiểm thử tại Asia/Ho_Chi_Minh và UTC; 5/5 kiểm thử leaderboard sau bổ sung hồi quy trùng tên; `git diff --check` đạt.
+- [ ] CI/APK Stage 5A và đo RAM/độ mượt Android thật. Tiếp theo Stage 5B.

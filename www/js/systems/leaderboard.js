@@ -45,8 +45,19 @@ function evAt(i,m){
   }
   return ec[m]=r;
 }
-const FL=[];
-function fl(i,n){const c=FL[i]||(FL[i]={});if(c[n])return c[n];const L=[];for(let m=n-79;m<=n;m++){const v=evAt(i,m);if(v&&m+v.ph+v.dur>n)L.push(v)}return c[n]=L}
+const FL=[],NO_EVENTS=Object.freeze([]);
+function fl(i,n){
+  const c=FL[i]||(FL[i]={});if(c[n])return c[n];
+  const previous=c[n-1];
+  const L=[];
+  if(previous){
+    for(const v of previous)if(v.m>=n-79&&v.m+v.ph+v.dur>n)L.push(v);
+    const v=evAt(i,n);if(v&&v.m+v.ph+v.dur>n)L.push(v);
+  }else{
+    for(let m=n-79;m<=n;m++){const v=evAt(i,m);if(v&&m+v.ph+v.dur>n)L.push(v)}
+  }
+  return c[n]=L.length?L:NO_EVENTS;
+}
 function eff(i,t){
   const o=BH[i];let h=o.h+o.fh,e=1+o.eb,nv=1;if(o.ht)e*=1+0.02*htCount(i,t)+htLate(t);
   for(const v of fl(i,Math.floor(t))){const st=v.m+v.ph;if(t<st||t>=st+v.dur)continue;

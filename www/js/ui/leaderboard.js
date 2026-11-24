@@ -21,7 +21,7 @@
   if(S.lb.log)h+=`<small style="display:block;margin-top:6px">${esc(S.lb.log)}</small>`;
   $("lbhead").innerHTML=h;
   $("lbgod").hidden=!S.god;if(S.god)$("lbgodi").textContent="Ngày "+Math.floor(getKAge())+"/"+(S.cycleDays||KD)+" · chuỗi "+getCurStreak();
-  $("lb").innerHTML=rows.map((r,k)=>{if(!showAll&&k>=20&&!r.u)return "";const b=B[r.i],p=PV[r.n],d=p==null?0:r.s-p;PV[r.n]=r.s;
+  $("lb").innerHTML=rows.map((r,k)=>{if(!showAll&&k>=20&&!r.u)return "";const b=B[r.i],key=r.u?-1:r.i,p=PV[key],d=p==null?0:r.s-p;PV[key]=r.s;
     const ar=Math.abs(d)<.05?"":`<small style="display:block;color:${d>0?"var(--jade)":"var(--red)"}">${d>0?"▲":"▼"} ${Math.abs(d).toFixed(1)}</small>`;
     const balMark=!r.u&&k+1>=BAL_RANK?` · <span style="color:var(--jade)">Cân Bằng</span>`:(r.u&&balOn?` · <span style="color:var(--jade)">Cân Bằng ×${playerMult}</span>`:"");
     const avHtml=r.u?`<span style="width:36px;height:36px;flex:none;overflow:hidden;border-radius:50%">${portrait(S.name,{player:1,w:36,h:36})}</span>`:(AVATARS[r.n]?`<span style="width:36px;height:36px;flex:none;overflow:hidden;border-radius:50%">${portrait(r.n,{npc:1,w:36,h:36})}</span>`:"");
