@@ -1083,3 +1083,13 @@ Sau mỗi đợt thay đổi:
 - [x] Thêm `importBulk` và `exportOpen` dạng thuần vào `GameQuestData`; lọc comment, đếm dòng lỗi và định dạng export không thao tác DOM.
 - [x] `game.js` chỉ còn điều phối UI, cập nhật save/render và thông báo; logic phân tích/định dạng thuộc systems.
 - [x] Bổ sung test nhập nhiều dòng, độ khó, bỏ comment, loại nhiệm vụ chuỗi/đã xong/hết hạn khi xuất.
+
+## Tách bảng thống kê cơ duyên sang ui/opportunity-stats.js (2026-11-24)
+
+- [x] Chuyển `spStatsHtml` (bảng thống kê cơ duyên đặc biệt, cơ duyên NPC, kỳ ngộ người chơi), bảng mô tả `CDE` và cache `SPC` sang `GameOpportunityStatsUI` (`www/js/ui/opportunity-stats.js`).
+- [x] Dependency (state, dữ liệu NPC/kỳ ngộ, `evAt`, `knAt`, `KS`, `spA`, `KD`, `KSALT`) được tiêm qua `create(deps)`; `KD` và `KSALT` truyền bằng getter vì `KSALT` thay đổi khi luân hồi. Module được khởi tạo lười trong wrapper `spStatsHtml` ở `game.js`, nên `ui/leaderboard.js` không đổi call-site.
+- [x] Nạp script ngay sau `ui/leaderboard.js` trong `www/index.html`.
+- [x] Hồi quy: so sánh HTML sinh ra của hàm cũ (lấy từ commit trước) và module mới trên 300 bộ dữ liệu ngẫu nhiên, 0 sai khác.
+- [x] Thêm test `GameOpportunityStatsUI` (nội dung bảng và cache theo kiếp). `npm test` cục bộ: 107/107 pass; `node --check` game.js và module mới đạt.
+- [ ] CI cho commit này: xem mục ghi nhận bên dưới sau khi chạy xong.
+- [ ] Việc còn lại của Giai đoạn 5: `narrate`/`buildRec`/`doRebirth` (luân hồi), `finish`/`TB`/`buffTxt`/`useItem` (hoàn thành nhiệm vụ và vật phẩm), `resolveEx`/`showExModal`/`renderExams`, `showTdLenh`, `petIcon`/`portrait`, khối event handler cuối `game.js`.

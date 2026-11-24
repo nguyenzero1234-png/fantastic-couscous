@@ -1548,3 +1548,24 @@ test("GameQuestData nhập và xuất hàng loạt nhiệm vụ thuần",()=>{
  const open=Q.exportOpen([{name:"Mở",mins:30,diff:1,repeat:true},{name:"Chuỗi",chain:"c"},{name:"Xong",doneOn:"today"},{name:"Hết hạn",due:1}],{now:10,isDone:q=>!!q.doneOn,isExpired:q=>!!q.due&&q.due<10});
  assert.deepEqual(open.quests.map(q=>q.name),["Mở"]);assert.equal(open.text,"Mở | 30 | 1 | 1 | ");
 });
+
+
+test("GameOpportunityStatsUI render bảng thống kê cơ duyên và dùng cache theo kiếp",()=>{
+ const now=Date.now(),H=36e5,KT0=Date.parse("2026-01-01T00:00:00");
+ let evCalls=0;
+ const S={lb:{t0:now-48*H,spl:[{k:0,u:1},{k:0,u:0},{k:1,u:0}],sp:{3:{k:1,ex:"tl"}}},claimed:{}};
+ const B=[{n:"A"},{n:"B"},{n:"C"},{n:"D"}];
+ const CDN=Array.from({length:9},(_,i)=>"Cơ duyên "+i);
+ const KN=[["Thiên Cơ","d",1.5],["Khác","d",1],["Khác","d",1],["Khác","d",1],["Khác","d",1],["Linh Thú","d",1.2]];
+ const SPQ=[0,1,2].map(k=>({n:"Đặc biệt "+k,p:.2,pd:"pd",nd:"nd"}));
+ const M=window.GameOpportunityStatsUI.create({S,B,EX:[{id:"tl",n:"Trúc Cơ Lôi Kiếp"}],KN,KX:["a","b","c","d","e","f"],CDN,SPQ,
+  evAt:(i,m)=>{evCalls++;return (i+m)%7===0?{k:(i+m)%9,m,ph:.5}:null},knAt:h=>h%6===0?{k:h%6,st:KT0+h*H}:null,
+  KS:()=>({start:now-24*36e5}),KT0,spA:()=>null,getKD:()=>119,getKSALT:()=>0});
+ const h1=M.html();
+ assert.match(h1,/Bảng thống kê cơ duyên/);
+ assert.match(h1,/Cơ duyên đặc biệt/);
+ assert.match(h1,/Kỳ ngộ của người chơi \(6 loại\)/);
+ assert.match(h1,/Đặc biệt 1 \(đến Trúc Cơ Lôi Kiếp\)/);
+ const c1=evCalls;M.html();
+ assert.equal(evCalls,c1,"lần gọi thứ hai phải dùng cache, không tính lại cơ duyên NPC");
+});
