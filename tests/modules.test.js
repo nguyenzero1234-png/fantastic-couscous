@@ -1587,5 +1587,5 @@ test("GameStreak.set đồng bộ streak, lịch sử và kỷ lục xuyên ki�
  assert.deepEqual(JSON.parse(JSON.stringify(state.streak)),{last:"2026-11-24",n:2});
  assert.equal(state.hist["2026-11-24"].g,1);assert.equal(state.hist["2026-11-23"].g,1);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
  state.hist["2026-11-22"]={p:0,m:1,g:1};G.set(state,1,{today:"2026-11-24",dayOffset:0,now,lifeStats:()=>life,cycleState:()=>cycle});
- assert.equal(state.hist["2026-11-22"],undefined);assert.equal(state.hist["2026-11-23"].g,undefined);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
+ assert.equal(state.hist["2026-11-22"],undefined);assert.equal(state.hist["2026-11-23"],undefined);assert.equal(life.ms,2);assert.equal(cycle.ms,2);
 });
