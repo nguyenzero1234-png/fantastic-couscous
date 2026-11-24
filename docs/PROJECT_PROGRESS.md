@@ -1091,7 +1091,7 @@ Sau mỗi đợt thay đổi:
 - [x] Nạp script ngay sau `ui/leaderboard.js` trong `www/index.html`.
 - [x] Hồi quy: so sánh HTML sinh ra của hàm cũ (lấy từ commit trước) và module mới trên 300 bộ dữ liệu ngẫu nhiên, 0 sai khác.
 - [x] Thêm test `GameOpportunityStatsUI` (nội dung bảng và cache theo kiếp). `npm test` cục bộ: 107/107 pass; `node --check` game.js và module mới đạt.
-- [ ] CI cho commit này: xem mục ghi nhận bên dưới sau khi chạy xong.
+- [x] Commit `c8172e9`. CI #61 bị hủy do push kế tiếp (concurrency); #62 đỏ vì test linh thú của commit khác (đã sửa ở `e175eca`, không liên quan module này). Đã có bằng chứng đạt: [CI #66](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45303934763) (`d165e96`, chứa `c8172e9`) thành công; `npm test` cục bộ ở `717ced3`: 112/112 pass.
 - [ ] Việc còn lại của Giai đoạn 5: `narrate`/`buildRec`/`doRebirth` (luân hồi), `finish`/`TB`/`buffTxt`/`useItem` (hoàn thành nhiệm vụ và vật phẩm), `resolveEx`/`showExModal`/`renderExams`, `showTdLenh`, `petIcon`/`portrait`, khối event handler cuối `game.js`.
 
 
