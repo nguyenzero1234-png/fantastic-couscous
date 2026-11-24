@@ -1,6 +1,6 @@
 # Project Progress Tracker
 
-> Cập nhật lần cuối: 2026-11-23
+> Cập nhật lần cuối: 2026-11-24
 > Mốc mới: tách thống kê/lịch sử học sang `analytics.js`; 1.000 bộ dữ liệu hồi quy đạt.  
 > Nhánh theo dõi: `stage-1/foundation`  
 > Mục đích: ghi lại các phần đã hoàn thành, việc còn lại và cập nhật tài liệu này sau mỗi mốc hoàn thành.
@@ -657,40 +657,40 @@ Không bắt buộc tạo file rỗng để khớp sơ đồ. Có thể chia nh�
 - [x] Chuyển cấu hình giao diện sang `ui/preferences.js`.
 - [x] Di chuyển nhóm data đã liệt kê vào `data/` và cập nhật thứ tự script/test.
 - [x] Hoàn tất tách dữ liệu nhiệm vụ (PLAN, preset, AI prompt) khỏi `game.js` vào `data/quest-data.js`; giữ parser nghiệp vụ ở `quest-data.js` gốc.
-- [ ] Rà soát và xác nhận test suite hiện tại xanh trên commit mới nhất; không dùng kết quả CI cũ để kết luận trạng thái hiện tại.
+- [x] Rà soát và xác nhận test suite xanh trên commit `ee9a7890ff5c28dafb4e65bab8ab4b95ac39fcee`; CI #45302476933: 106/106 test pass.
 
 ### Giai đoạn 2 — Hoàn thiện core
-- [ ] Chuyển date helpers sang `core/date.js`.
-- [ ] Chuyển time formatting sang `core/time-format.js`.
-- [ ] Chuyển noise helpers sang `core/noise.js`.
-- [ ] Chuyển text/HTML escaping sang `core/text.js`.
-- [ ] Chỉ bổ sung `core/events.js` nếu xác định được use case pub/sub kỹ thuật cụ thể.
+- [x] Chuyển date helpers sang `core/date.js`.
+- [x] Chuyển time formatting sang `core/time-format.js`.
+- [x] Chuyển noise helpers sang `core/noise.js`.
+- [x] Chuyển text/HTML escaping sang `core/text.js`.
+- [x] Không tạo `core/events.js`: hiện chưa có use case pub/sub kỹ thuật cụ thể, tránh tạo module rỗng.
 - [ ] Chuẩn hóa dependency injection/API và thứ tự nạp script.
 
 ### Giai đoạn 3 — Tách systems theo nghiệp vụ
-- [ ] Nhiệm vụ: parser/quy tắc vào `systems/quests.js`; tách biệt với dữ liệu nhiệm vụ.
-- [ ] Thưởng: rà soát các luồng thưởng và gom theo trách nhiệm vào `systems/rewards.js`.
-- [ ] Tách streak, analytics, pets, leaderboard.
-- [ ] Hợp nhất nghiệp vụ tông môn và chiến tông môn vào `systems/sect.js` khi API tương thích đã được kiểm chứng.
-- [ ] Tách thiên kiếp, story, god mode, legacy missions và quest completion.
-- [ ] Mỗi module nhận state/dịch vụ qua tham số rõ ràng; không tạo thêm global phụ thuộc ngầm nếu tránh được.
+- [x] Parser/quy tắc nhiệm vụ ở `systems/quests.js`; dữ liệu nhiệm vụ ở `data/quest-data.js`.
+- [x] Gom công thức thưởng vào `systems/rewards.js`; luồng trao thưởng vẫn được rà soát tiếp trong giai đoạn 5.
+- [x] Tách streak, analytics, pets và leaderboard vào `systems/`.
+- [x] Gom cấu hình tông môn, chiến tông môn và nhiệm vụ tông môn vào `systems/sect.js`.
+- [x] Tách thiên kiếp, story, god mode, legacy missions và quest completion vào `systems/`.
+- [x] Các system chính đã chuyển sang factory/API có dependency injection; phần global cũ còn lại sẽ được rà trong giai đoạn 5–6.
 
 ### Giai đoạn 4 — Tách UI theo màn hình/chức năng
-- [ ] Tách UI linh thú, modal thiên kiếp, leaderboard, tông môn, thống kê, bản đồ và các tab còn lại theo code thực tế.
-- [ ] Chuyển renderer, DOM event binding và tương tác giao diện vào `ui/`; giữ logic nghiệp vụ trong `systems/`.
-- [ ] Không để module data/core tự gắn handler hoặc thực thi side effect giao diện khi vừa được nạp.
+- [x] Tách UI linh thú, modal thiên kiếp, leaderboard, tông môn, thống kê, bản đồ, hoạt động, sự kiện, onboarding, profile, navigation và các tab chính.
+- [ ] Tiếp tục chuyển các DOM event handler còn nằm trong `game.js` vào `ui/`; các renderer màn hình chính đã được tách.
+- [x] Các module `data/` và `core/` hiện không tự gắn handler giao diện khi nạp; tiếp tục kiểm tra khi audit.
 
 ### Giai đoạn 5 — Thu gọn game.js
 - [ ] Chuyển các logic gameplay và renderer còn lại khỏi `game.js`.
 - [ ] Giữ `game.js` làm bootstrap, khởi tạo dependency, điều phối render, `askName` và vòng lặp cấp ứng dụng.
-- [ ] Mục tiêu là giảm trách nhiệm thực sự của file, không chỉ đổi số dòng bằng cách chuyển nguyên khối không phân tích.
+- [x] Giữ nguyên nguyên tắc: chỉ tách theo trách nhiệm và dependency; không di chuyển máy móc.
 
 ### Giai đoạn 6 — Kiểm thử và dọn migration
-- [ ] Chạy toàn bộ `npm test`, parse cú pháp mọi JS và kiểm tra thứ tự nạp.
+- [x] CI chạy `npm test`, parse cú pháp mọi JS và kiểm tra thứ tự nạp; commit mới nhất đạt 106/106.
 - [ ] Thêm test tích hợp cho luồng chơi chính: load/save, tạo và hoàn thành nhiệm vụ, timer, thưởng, tải lại.
 - [ ] Rà quét tham chiếu toàn repo; xóa compatibility guards/file cũ chỉ khi không còn consumer.
 - [ ] Kiểm tra hồi quy trình duyệt và các script phụ thuộc như `notify.js`, `schedule.js`.
-- [ ] Ghi rõ những phần chưa thể kiểm thử bằng môi trường hiện có; không tuyên bố nghiệm thu vượt quá bằng chứng.
+- [x] Ghi rõ Android thật, UI trình duyệt thật và ký release vẫn chưa được xác nhận; không dùng CI cloud thay cho các kiểm thử đó.
 
 ### Giai đoạn 7 — Android và phát hành (để cuối cùng)
 - [ ] Chỉ bắt đầu sau khi người dùng xác nhận các giai đoạn 1–6 đã đạt yêu cầu.
@@ -702,9 +702,9 @@ Không bắt buộc tạo file rỗng để khớp sơ đồ. Có thể chia nh�
 ## Trạng thái tại thời điểm ghi lộ trình
 
 - Đã có các module nền tảng `core/state.js`, `core/storage.js`, `core/game-loop.js`, `ui/preferences.js` và nhiều module `data/`.
-- Đã bắt đầu tổ chức `systems/` với module tông môn; một số module nghiệp vụ vẫn đang ở đường dẫn cũ và cần chuyển theo đợt.
-- `game.js` vẫn còn lớn; chưa được coi là đã tách xong.
-- CI gần nhất được ghi nhận trong ngữ cảnh làm việc có lỗi test kỳ vọng thứ tự catalog vật phẩm; test đã được sửa ở commit `58a0014e736697011b79263a4ff43eaa3212ea79`, nhưng **chưa xác nhận CI của commit sửa lỗi đã hoàn tất thành công**.
+- Các nghiệp vụ chính đã được gom vào `systems/`; còn một số compatibility entry point giữ lại để bảo toàn thứ tự nạp và global API.
+- `game.js` còn khoảng 1081 dòng; đã giảm đáng kể nhưng vẫn còn logic gameplay, DOM event handler và bootstrap cần tiếp tục tách.
+- CI hiện tại: [run #45302476933](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45302476933) xanh, 106/106 test pass trên commit `ee9a7890ff5c28dafb4e65bab8ab4b95ac39fcee`.
 - Android/build/ký APK đang được hoãn theo chỉ đạo; không làm trong các giai đoạn 1–6.
 
 ## Quy trình cập nhật tài liệu
@@ -1041,7 +1041,7 @@ Sau mỗi đợt thay đổi:
 - [x] Chuyển renderer thẻ nhân vật chính (cảnh giới, Mệnh, tông môn, thứ hạng, ký ức kiếp trước) vào cùng module hồ sơ.
 - [x] Giữ cập nhật màu hào quang và cờ top 10; dữ liệu cảnh giới/quotes/DOM được inject.
 - [x] Giữ wrapper `renderHero` và bổ sung test tiêu đề nhân vật.
-- [x] Inject số ngày mỗi kiếp và tuổi kiếp vào renderer; không để UI module đọc biến global `+"`KD`"+`.
+- [x] Inject số ngày mỗi kiếp và tuổi kiếp vào renderer; không để UI module đọc biến global `KD`.
 
 
 ## Gom UI kỳ ngộ và điểm danh vào ui/activities.js (2026-11-24)
@@ -1065,3 +1065,14 @@ Sau mỗi đợt thay đổi:
 - [x] Gom tính badge, phát hiện kỳ ngộ mới, đánh dấu đã xem và cập nhật tiêu đề app vào cùng module điều hướng.
 - [x] Giữ `nwS` làm accessor state tương thích cho các module UI khác; giữ wrapper `go`, `drawNav`, `nwUpdate`, `nwSeenK` trong bootstrap.
 - [x] Bổ sung test điều hướng, Chỉ học và badge.
+
+
+## Tái cấu trúc UI theo nhóm chức năng và xác nhận CI (2026-11-24)
+
+- [x] Gom hồ sơ nhân vật và thẻ nhân vật chính vào `ui/profile.js`; game giữ wrapper tương thích.
+- [x] Gom lịch học, bảo khố, chuỗi nhiệm vụ, nhiệm vụ ngày/tuần/tháng, kỳ ngộ và điểm danh vào `ui/activities.js`.
+- [x] Gom nhập đạo và hướng dẫn lần đầu vào `ui/onboarding.js`.
+- [x] Gom điều hướng tab, trạng thái tab, badge và đánh dấu kỳ ngộ đã xem vào `ui/navigation.js`.
+- [x] CI #45302476933: `npm test` 106/106 pass; parse JS và kiểm tra script order thành công.
+- [ ] Giai đoạn 5 chưa hoàn tất: `game.js` còn logic gameplay và event handler; tiếp tục tách theo subsystem, không chuyển cả khối mù quáng.
+- [ ] Android thật, build/sync/ký APK tiếp tục để sau giai đoạn 1–6 theo yêu cầu.
