@@ -1358,3 +1358,15 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Edge headless, profile riêng, 390 × 844 và 320 × 844: kiểm tra ghi vấn đạo, giới hạn ngày, Phong văn, không lỗi JS hay tràn ngang. Đã xem ảnh chụp Vấn đạo ở cả hai kích thước và Phong văn ở 320 px sau khi toast biến mất.
 - [ ] Xác nhận CI/APK của commit Stage 3C và nghiệm thu Android thật.
 - Tiếp theo Stage 3D — hiệu ứng đột phá, Stage 3E — chu kỳ tùy chọn, Stage 4 — cá nhân hóa.
+
+### Xác nhận CI Stage 3C
+
+- [x] Commit `41c1e9c42cb8e825c033fba0dc4d307c3f0c24f4`: JavaScript Tests (45368755691) và Build APK (45368755936) đều completed/success. Artifact APK ID 14908925263 (6.284.198 byte, chưa hết hạn lúc kiểm tra).
+
+## Stage 3D — Đột phá cảnh giới (2026-11-24)
+
+- `ui/feedback.js` tập trung hiệu ứng thưởng và đột phá. Đột phá hiển thị một thẻ nhỏ tự đóng sau 4,2 giây với màu cảnh giới, câu Đạo Văn và âm thanh riêng; không chặn thao tác hoặc đè lên cửa sổ thiên kiếp bắt buộc. Chế độ giảm chuyển động tắt animation và confetti.
+- Chỉ mừng khi vượt cảnh giới cao nhất của kiếp, kể cả khi tăng nhiều cảnh giới cùng lúc; ghi các mốc đã vượt vào Đạo Văn. Khôi phục cảnh giới sau tiêu linh lực không phát lại hiệu ứng. Save cũ và reload thiết lập mốc im lặng; luân hồi đặt lại mốc. Giữ luật linh lực, mở khóa và cân bằng Stage 2C.
+- [x] 143/143 kiểm thử tại Asia/Ho_Chi_Minh và UTC; hồi quy mốc cao nhất, tăng nhiều cảnh giới, tụt rồi hồi phục, reload và luân hồi.
+- [x] Edge headless 390 × 844 và 320 × 844 (giảm chuyển động): đã xem ảnh thẻ Trúc Cơ và Kim Đan; tự đóng, không tràn ngang, không chặn tương tác và không lỗi JS. Kiểm thử Android thật còn chờ.
+- [ ] Xác nhận CI/APK sau push. Tiếp theo Stage 3E và Stage 4.

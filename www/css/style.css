@@ -485,6 +485,21 @@ summary:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px so
 @media(min-width:480px){.quest-fields{grid-template-columns:repeat(3,minmax(0,1fr))}.quest-fields label:last-child{grid-column:auto}.quest-create-actions{flex:0 1 320px;margin-left:auto}.hero{grid-template-columns:84px minmax(0,1fr)}.hero .ring{width:84px;height:84px}}
 @media(max-width:360px){#list .quest-card{grid-template-columns:36px minmax(0,1fr) 36px;gap:4px 6px}#list .quest-card .tick,#list .quest-card .del{width:36px;min-width:36px}.quest-card-footer,.quest-receipt{grid-column:1 / -1}.hero{grid-template-columns:68px minmax(0,1fr)}.hero .ring{width:68px;height:68px}}
 @media(prefers-reduced-motion:reduce){.hero::before{animation:none}.ring .rf,.fold>summary::after,#gn button,#sn button{transition:none}}
+#realm-breakthrough{
+  position:fixed;z-index:65;pointer-events:none;
+  top:calc(var(--sat,env(safe-area-inset-top,0px)) + 14px);
+  left:50%;transform:translateX(-50%);
+  width:min(360px,calc(100vw - 24px));box-sizing:border-box;
+  padding:14px 18px;text-align:center;color:var(--ink);
+  background:var(--card);border:1px solid var(--realm-accent);
+  border-radius:12px;box-shadow:0 8px 28px -12px var(--realm-accent);
+  animation:realm-arrive .35s ease-out;
+}
+.realm-breakthrough-label{font-size:12px;letter-spacing:.1em;color:var(--ink)}
+#realm-breakthrough-name{display:block;font-size:24px;color:var(--realm-accent);margin:4px 0}
+#realm-breakthrough-story{font-size:13px;line-height:1.5;margin:4px 0 0}
+@keyframes realm-arrive{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(prefers-reduced-motion:reduce){#realm-breakthrough{animation:none}.cf{display:none}}
 
 /* Vạn Pháp */
 #nsubject{width:100%;margin:4px 0 10px}

@@ -614,3 +614,29 @@ test("3C: vấn đạo theo giờ học, ghi một lần mỗi ngày và phong v
  assert.equal(f.run("NpcWorld.events()[0].day"),1);
  assert.notEqual(f.run("JSON.stringify(NpcWorld.events())"),initial);
 });
+
+test("3D: chỉ mừng cảnh giới cao nhất mới, giữ ký lục qua reload và luân hồi",()=>{
+ const f=timerFixture();
+ assert.equal(getNode("realm-breakthrough").hidden,true);
+ f.run("S.points=42000;render()");
+ assert.equal(getNode("realm-breakthrough").hidden,false);
+ assert.equal(getNode("realm-breakthrough-name").textContent,"Kim Đan");
+ assert.equal(f.saved().pk,2);
+ assert.equal(f.saved().storyLog.filter(x=>x.id.startsWith("realm:")).length,2);
+ f.run("FeedbackUI.clear();render()");
+ assert.equal(getNode("realm-breakthrough").hidden,true);
+ f.run("S.points=0;render();save();S.points=42000;render();save()");
+ assert.equal(getNode("realm-breakthrough").hidden,true);
+ assert.equal(f.saved().storyLog.filter(x=>x.id.startsWith("realm:")).length,2);
+ f.reload();
+ assert.equal(getNode("realm-breakthrough").hidden,true);
+ f.run("S.points=66000;render()");
+ assert.equal(getNode("realm-breakthrough-name").textContent,"Nguyên Anh");
+ assert.equal(f.saved().pk,3);
+ f.run("doRebirth()");
+ assert.equal(getNode("realm-breakthrough").hidden,true);
+ assert.equal(f.saved().pk,0);
+ f.run("S.points=20000;render()");
+ assert.equal(getNode("realm-breakthrough-name").textContent,"Trúc Cơ");
+ assert.equal(f.saved().pk,1);
+});

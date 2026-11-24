@@ -34,8 +34,8 @@ const isDone=q=>GameQuestData.isDone(q,today());
 const pad=GameTimeFormat.pad;
 const fmt=GameTimeFormat.formatDuration;
 let extra="",tmr=0;
-const say=t=>{const m=t+extra;extra="";$("msg").textContent=m;if(!m)return;const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>el.classList.remove("on"),3800);if(/\+\d|Đột phá|Danh hiệu mới|Hoàn thành/.test(m))burst()};
-function burst(){sfx(523);setTimeout(()=>sfx(784),130);if(navigator.vibrate)try{navigator.vibrate(40)}catch(e){}for(let i=0;i<26;i++){const c=document.createElement("i");c.className="cf";const a=Math.random()*6.283,d=80+Math.random()*140;c.style.cssText="--dx:"+Math.cos(a)*d+"px;--dy:"+(Math.sin(a)*d-60)+"px;--r:"+(Math.random()*720-360)+"deg;background:hsl("+(Math.random()*360|0)+" 80% 60%)";document.body.appendChild(c);setTimeout(()=>c.remove(),1300)}}
+const say=t=>{const m=t+extra;extra="";$("msg").textContent=m;if(!m)return;const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tmr);tmr=setTimeout(()=>el.classList.remove("on"),3800);if(/\+\d|Đột phá|Danh hiệu mới|Hoàn thành/.test(m)&&ri(S.points)<=S.pk&&!FeedbackUI.active())burst()};
+function burst(){FeedbackUI.burst()}
 
 
 
@@ -84,7 +84,16 @@ const rkAt=(i,ms)=>{const s=sc(i,ms);let r=1;for(let j=0;j<B.length;j++)if(j!==i
 const rkNow=i=>{const t=Date.now(),s=sc(i,t);let r=1;for(let j=0;j<B.length;j++){if(j===i)continue;const o=sc(j,t);if(o>s||(o===s&&j<i))r++}if(S.points>s)r++;return r};
 const myRk=()=>{const t=Date.now();let r=1;for(let i=0;i<B.length;i++)if(sc(i,t)>=S.points)r++;return r};
 function vlog(t){(S.vlog||(S.vlog=[])).unshift({t,ts:Date.now()});S.vlog.length=Math.min(S.vlog.length,40)}
-function brk(){const rr=ri(uxp());S.pk=Math.max(S.pk||0,rr);if(S.rm!=null&&rr<S.rm)S.rm=rr;if(S.rm==null)S.rm=rr;else if(rr>S.rm){S.rm=rr;vlog("Đột phá tu vi: "+rname(uxp()));burst();sfx(660);setTimeout(()=>sfx(880),120);setTimeout(()=>say("Đột phá tu vi: "+rname(uxp())+"!"),300)}}
+function brk(){
+  const rr=ri(uxp()),peak=S.pk||0;
+  S.rm=rr;S.pk=Math.max(peak,rr);
+  if(rr===0)FeedbackUI.clear();
+  if(rr<=peak)return;
+  StorySystem.onRealmUp(peak,rr);
+  vlog("Đột phá tu vi: "+rname(uxp()));
+  save();
+  FeedbackUI.breakthrough(rr);
+}
 const fmtT=ms=>GameTimeFormat.eventTimestamp(ms);
 function recentEv(){
   const n0=Math.floor((Date.now()-S.lb.t0)/3600000),L=[];
@@ -312,6 +321,7 @@ $("ph").oninput=()=>{const v=parseInt($("ph").value);if(v>=1){S.perHour=Math.min
 /* ===== Bản 2: gộp tab, kiếp nạn, linh sủng, Thiên Đạo, sao lưu, âm thanh ===== */
 const AudioUI=GameAudio.create(()=>S.snd===0,window);
 const sfx=AudioUI.sfx;
+const FeedbackUI=GameFeedbackUI.create({document,$,sfx,navigator,schedule:setTimeout,cancel:clearTimeout,matchMedia,realmColors:RC,realmStory:GameStoryData.realmStory});
 const clk=AudioUI.clk;
 AudioUI.bind(document);
 const GR=[
@@ -450,7 +460,7 @@ const StorySystem=GameStorySystem.create({S,GameStoryData,GameDiaryData,today,re
 function storyLog(){return StorySystem.storyLog()}
 function storyFlags(){return StorySystem.storyFlags()}
 function pushStory(...args){return StorySystem.pushStory(...args)}
-function onRealmUp(...args){return StorySystem.onRealmUp(...args)}
+function onRealmUp(from,to){return StorySystem.onRealmUp(Math.max(from,S.pk||0),to)}
 function chkStoryFlags(){return StorySystem.checkFlags()}
 function genDiary(day){return StorySystem.generateDiary(day)}
 const DiaryUI=GameDiaryUI.create({S,dayStr,today,generateDiary:d=>genDiary(d),checkStoryFlags:()=>chkStoryFlags(),$});
@@ -512,6 +522,13 @@ $("lball").onclick=LeaderboardUI.toggleAll;
 $("sect").onclick=SectUI.handleClick;
 drawNav();
 
+// Existing saves establish their baseline before timer reconciliation can earn new points.
+const initialRealm=ri(S.points),initialPeak=Math.max(S.pk||0,S.rm||0,initialRealm);
+if(S.pk!==initialPeak||S.rm!==initialRealm){
+  StorySystem.onRealmUp(Math.max(S.pk||0,S.rm||0),initialRealm);
+  S.pk=initialPeak;S.rm=initialRealm;
+  chkStoryFlags();save();
+}
 reconcileTimers(true,false);
 render();
 

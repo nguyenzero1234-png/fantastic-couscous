@@ -12,9 +12,7 @@ function pushStory(id,title,lines,meta){
 function onRealmUp(from,to){
   for(let k=from+1;k<=to&&k<REALM_STORY.length;k++){
     const st=REALM_STORY[k];if(!st)continue;
-    if(pushStory("realm:"+k,"Đột phá · "+st.t,st.lines,{realm:k})){
-      try{say("Đạo Văn ghi lại: đột phá "+st.t+".");}catch(e){}
-    }
+    pushStory("realm:"+k,"Đột phá · "+st.t,st.lines,{realm:k});
   }
 }
 function checkFlags(){
