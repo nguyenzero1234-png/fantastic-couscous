@@ -32,6 +32,8 @@
     if(!d.isDone(q)||q.chain)return {ok:false,reason:"Nhiệm vụ không thể hoàn tác."};
     const receipt=q.completion||{day:q.doneOn,gain:q.got??q.pts??0,mins:q.mins||0,at:0,stats:{q:1,m:q.mins||0,ru:q.due?1:0,lg:(q.mins||0)>=120?1:0},undone:false};
     if(d.S.points<receipt.gain)return {ok:false,reason:"Không đủ linh lực để hoàn tác phần thưởng đã nhận."};
+    const mission=d.S.menhRecovery;
+    if(mission?.days?.includes(receipt.day)&&(d.S.hist?.[receipt.day]?.m||0)-receipt.mins<60)return {ok:false,reason:"Ngày tu luyện đã dùng để nhận Mệnh, không thể hoàn tác dưới 60 phút."};
     applyReceipt(q,receipt,d,-1);
     return {ok:true,gain:receipt.gain};
   }
@@ -54,27 +56,29 @@
         if(decision.log)vlog(decision.log);
         S.streak=decision.streak;
       }
-      const tf=TB(q),ls=LS(),pb=petBuff();if(S.pw>0)S.pw--;
+      const tf=TB(q),ls=LS(),pb=petBuff(),mins=q.mins||0,h=hourNow();
+      if(S.pw>0)S.pw=GameRewards.chargeUse(S.pw,mins).remaining;
+      if(tf.nightMinutes>0){const key=GameRewards.nightKey(t,h);S.nightStudy=S.nightStudy||{};S.nightStudy[key]=(S.nightStudy[key]||0)+tf.nightMinutes}
       let m=GameRewards.streakMultiplier(S.streak.n,tf.cap);
       const curse=GameStreak.progressCurses({minutes:q.mins||0,tm:!!S.tm,tmTasks:S.tmTasks,tma:!!S.tma,tmaTasks:S.tmaTasks,calmTitle:eqT("n12")});
       S.tm=curse.tm;S.tmTasks=curse.tmTasks;S.tma=curse.tma;S.tmaTasks=curse.tmaTasks;
       if(curse.clearedSelf){ls.tmc=(ls.tmc||0)+1;extra+=" Tâm Ma Tự Thân đã tan."}
       if(curse.clearedHeavenly)extra+=" Thiên Ma Nhập Tâm đã bị trấn áp.";
       const tmb=curse.taskBonus;
-      if(S.buff.n>0){m*=S.buff.m;S.buff.n--}
+      if(S.buff.n>0){const charge=GameRewards.chargeUse(S.buff.n,mins);m*=1+(S.buff.m-1)*(mins>0?charge.used/mins:0);S.buff.n=charge.remaining}
       if(S.tb&&Date.now()<S.tb)m*=1.2;
       m*=tf.mult;
-      const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&(q.mins||0)>=60));
+      const questReward=GameRewards.questCompletionReward(q.pts,m,tf.flat,tmb,S.fx||[],rewardFactors(),e=>!e.t||(e.t==="q"&&q.due)||(e.t==="l"&&mins>=60),mins);
       q.got=questReward.gain;S.fx=questReward.effects;
-      const h=hourNow(),mins=q.mins||0,stats={q:1,m:mins,ni:h>=22||h<5?1:0,da:h<7?1:0,ru:q.due?1:0,lg:mins>=120?1:0};
+      const stats={q:1,m:mins,ni:h>=22||h<5?1:0,da:h>=5&&h<7?1:0,ru:q.due?1:0,lg:mins>=120?1:0};
       {const ks=KS();ls.ms=Math.max(ls.ms||0,S.streak.n);ks.ms=Math.max(ks.ms||0,S.streak.n);
-       if(pb.dr&&Math.random()<pb.dr){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
+       if(pb.dr&&Math.random()<1-Math.pow(1-pb.dr,mins/60)){const pool=["ca","tl","sl","ln","hx","ht","tq","ll","td","dk"],d=pool[Math.floor(Math.random()*pool.length)];S.inv[d]=(S.inv[d]||0)+1;extra+=" Thôn Thiên Thử nhặt được "+ITEMS.find(i=>i.id===d).n+"."}}
       const r0=myRk();
       applyReceipt(q,{day:t,gain:q.got,mins,stats,at:Date.now(),undone:false},d,1);
       ls.top=ls.top||(myRk()<=10?1:0);if(myRk()<=1)ls.t1=1;ls.mc=Math.max(ls.mc||0,S.cnt[t]);
       vlog("Hoàn thành "+q.name+": +"+q.got+" linh lực"+(S.tdPenalty?" (Trừng Phạt −"+Math.min(30,5*Math.max(1,S.tdStacks||1))+"%)":"")+", giờ học hôm nay "+(((S.hist[t]||{}).m||0)/60).toFixed(1)+" giờ, tu vi "+rname(uxp())+", hạng "+r0+" → "+myRk());
       const c=q.chain&&S.chains.find(x=>x.id===q.chain);
-      if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=GameRewards.chainCompletionReward(st.reduce((s,x)=>s+x.got,0),eqT("t7"),rewardFactors());S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
+      if(c&&!c.paid){const st=S.quests.filter(x=>x.chain===c.id);if(st.every(isDone)){c.paid=true;c.bonus=GameRewards.chainCompletionReward(st.reduce((s,x)=>s+x.got,0),eqT("t7"),rewardFactors(),st.reduce((s,x)=>s+(x.mins||0),0));S.points+=c.bonus;hAdd(t,c.bonus,0);extra=" Hoàn thành chuỗi: thưởng thêm +"+c.bonus+" linh lực!"}}
     
     extraSet(extra);
     return true;

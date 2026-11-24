@@ -1244,7 +1244,7 @@ Phạm vi theo `STAGE_2_REVIEW.txt`. Giữ cấu trúc module hiện tại và c
 Tiếp theo theo thứ tự ưu tiên:
 
 - [x] Đợt B — triển khai lưu/khôi phục phiên học và chơi khi app đóng hoặc chạy nền; thống nhất quy tắc thời gian/hạn nhiệm vụ; kiểm thử tự động thông báo. Nghiệm thu Android thật còn mở.
-- [ ] Đợt C — mô phỏng cân bằng và trình lựa chọn luật chơi dựa trên số liệu.
+- [x] Đợt C — mô phỏng cân bằng, triển khai lựa chọn luật chơi đã duyệt và ghi báo cáo Stage 2C.
 - [ ] Đợt D — cải thiện giao diện học tập, minh bạch thưởng/phạt và hiệu năng.
 
 ## Stage 2 — Đợt B: vòng đời timer (2026-11-24)
@@ -1256,3 +1256,12 @@ Tiếp theo theo thứ tự ưu tiên:
 - [x] Kiểm thử cục bộ 129/129 ở `Asia/Ho_Chi_Minh` và `UTC`; `git diff --check` đạt. Microsoft Edge headless với profile độc lập và thao tác nút thật đạt luồng học/chơi chạy đồng thời, reload hai lần, vượt hạn/qua ngày, không thưởng trùng và dừng chơi đúng số giây. Thông báo được kiểm thử bằng mock Capacitor.
 - [x] Commit `4cb727b8d1a2f3b279044eb65044134f377807ba` đã push lên `stage-1/foundation`. [JavaScript Tests run 45331704659](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45331704659) và [Build APK run 45331704710](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45331704710) đều thành công trên đúng SHA. Artifact [TuTienHocDao-apk](https://github.com/nguyenzero1234-png/fantastic-couscous/actions/runs/45331704710/artifacts/14891842956) ID 14891842956 (5.836.061 byte, chưa hết hạn tại thời điểm kiểm tra) đã được upload.
 - [ ] Nghiệm thu trên Android thật theo `docs/ANDROID_QA_CHECKLIST.md` (bao gồm giao thông báo khi app đóng, chạy nền và quản lý pin).
+
+## Stage 2 — Đợt C: cân bằng tu luyện (2026-11-24)
+
+- Đã triển khai Stage 2C theo lựa chọn của chủ dự án. Mặc định 280 linh lực/giờ, hệ số độ khó/hạn mới; thưởng và buff theo thời lượng, giới hạn thưởng đêm 120 phút, cân bằng nhàn hạ và 20 vật phẩm, điều kiện thiên kiếp nghiêm, nhiệm vụ Tĩnh Tâm Dưỡng Mệnh, hỗ trợ hạng thấp giảm dần theo lần luân hồi.
+- Báo cáo đầy đủ và số liệu mô phỏng: [STAGE_2_BALANCE_REPORT.md](STAGE_2_BALANCE_REPORT.md). Tái chạy mô phỏng bằng `node tests/balance-sim.cjs`. Tag phục hồi `stage2-pre-balance-b0811e3`.
+- Ghi chú trì hoãn: chu kỳ học kỳ mặc định giữ 119 ngày; tùy chọn một tháng và các chu kỳ khác sẽ thiết kế sau.
+- [x] Kiểm thử cục bộ 134/134 ở UTC và Asia/Ho_Chi_Minh; git diff --check đạt; mô phỏng 119 ngày thành công.
+- [ ] Xác nhận CI/APK đúng commit Stage 2C.
+- [ ] Nghiệm thu Android thật và duyệt số liệu cân bằng trước khi triển khai Đợt D.

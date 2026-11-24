@@ -27,7 +27,7 @@ QUY TẮC
 1. Chỉ in các dòng trong MỘT khối code, không đánh số, không gạch đầu dòng, không giải thích.
 2. Tên tối đa 80 ký tự, bắt đầu bằng động từ, có kết quả đo được (vd. "Nghe Part 2 đề 3, chép 10 câu sai", không viết "Ôn nghe"). Nhiều môn thì thêm tiền tố [Nghe], [Code].
 3. phút: số nguyên 5-480, chia hết cho 5, phần lớn 25-50, tối đa 90.
-4. độ khó: chỉ 1, 1.25 hoặc 1.5 (khoảng 50% / 35% / tối đa 15%), đánh giá trung thực theo trình độ tôi.
+4. độ khó: chỉ 1, 1.15 hoặc 1.3 (khoảng 50% / 35% / tối đa 15%), đánh giá trung thực theo trình độ tôi.
 5. lặp: 1 chỉ cho thói quen ngắn hằng ngày (từ vựng, flashcard), còn lại 0.
 6. hạn: để trống (không dùng 1, 3, homnay).
 7. Thứ tự dòng = thứ tự nên làm: khởi động dễ, việc khó ở giữa, ôn lại/kiểm tra cuối. Xen một nhiệm vụ ôn nội dung cũ, không dồn cùng một kỹ năng liền nhau.
@@ -35,7 +35,7 @@ QUY TẮC
 
 Ví dụ:
 [Từ vựng] Học 30 từ Unit 4 bằng flashcard | 25 | 1 | 1
-[Nghe] Nghe Part 2 đề 3, chép 10 câu sai | 40 | 1.25 | 0
+[Nghe] Nghe Part 2 đề 3, chép 10 câu sai | 40 | 1.15 | 0
 `;
 
  const CHAIN_PROMPT=`Bạn là gia sư thiết kế lộ trình học theo chuỗi bước tuần tự. Tạo một chuỗi cho tôi.
@@ -96,37 +96,37 @@ Ví dụ:
 
  const PRESET_MIX=`# Bộ kết hợp: VSTEP + Lập trình + NCKH + môn khác (có thể sửa trước khi Nhập)
 # --- VSTEP / tiếng Anh ---
-VSTEP Listening · 1 đoạn Part 1–2 | 30 | 1.25 | 0
-VSTEP Reading · 1 passage + ghi chú từ | 40 | 1.25 | 0
-VSTEP Writing · outline 1 bài Task | 35 | 1.5 | 0
-VSTEP Speaking · thu âm 2 câu hỏi | 25 | 1.25 | 0
+VSTEP Listening · 1 đoạn Part 1–2 | 30 | 1.15 | 0
+VSTEP Reading · 1 passage + ghi chú từ | 40 | 1.15 | 0
+VSTEP Writing · outline 1 bài Task | 35 | 1.3 | 0
+VSTEP Speaking · thu âm 2 câu hỏi | 25 | 1.15 | 0
 Ôn grammar VSTEP (thì / mệnh đề) | 25 | 1 | 1
 Từ vựng academic 20 từ | 20 | 1 | 1
 # --- Lập trình ---
 Code · giải 2 bài dễ (warmup) | 40 | 1 | 0
-Code · 1 bài vừa / thuật toán | 60 | 1.5 | 0
-Đọc code / review PR hoặc bài mẫu | 30 | 1.25 | 0
-Luyện debug 1 bug thật hoặc mock | 35 | 1.25 | 0
+Code · 1 bài vừa / thuật toán | 60 | 1.3 | 0
+Đọc code / review PR hoặc bài mẫu | 30 | 1.15 | 0
+Luyện debug 1 bug thật hoặc mock | 35 | 1.15 | 0
 Viết / cập nhật README hoặc note kỹ thuật | 25 | 1 | 0
 # --- NCKH ---
-NCKH · đọc 1 paper / chương tài liệu | 45 | 1.25 | 0
-NCKH · tóm tắt + 3 ý đóng góp | 30 | 1.5 | 0
-NCKH · chỉnh method / thí nghiệm | 50 | 1.5 | 0
-NCKH · viết 1 đoạn Introduction hoặc Related Work | 40 | 1.5 | 0
+NCKH · đọc 1 paper / chương tài liệu | 45 | 1.15 | 0
+NCKH · tóm tắt + 3 ý đóng góp | 30 | 1.3 | 0
+NCKH · chỉnh method / thí nghiệm | 50 | 1.3 | 0
+NCKH · viết 1 đoạn Introduction hoặc Related Work | 40 | 1.3 | 0
 NCKH · cập nhật slide / poster tiến độ | 25 | 1 | 0
 # --- Môn khác / nền tảng ---
-Toán / xác suất ôn công thức cốt lõi | 35 | 1.25 | 0
-Môn chuyên ngành · đọc giáo trình 1 mục | 40 | 1.25 | 0
-Môn chuyên ngành · làm 5–10 bài tập | 45 | 1.5 | 0
+Toán / xác suất ôn công thức cốt lõi | 35 | 1.15 | 0
+Môn chuyên ngành · đọc giáo trình 1 mục | 40 | 1.15 | 0
+Môn chuyên ngành · làm 5–10 bài tập | 45 | 1.3 | 0
 Ôn nhanh lịch sử / lý thuyết (flashcard) | 20 | 1 | 1
 Tổng kết ngày: ghi 5 dòng học được | 15 | 1 | 1`;
 
  const DEF_Q=`Khởi động: ôn lại ghi chú hôm qua | 15 | 1 | 1
 Học từ vựng 20 từ bằng flashcard | 20 | 1 | 1
-Đọc 1 mục tài liệu, ghi 5 ý chính | 40 | 1.25 | 0
-Làm 5-10 bài tập, đánh dấu câu sai | 45 | 1.25 | 0
-Giải 1 bài khó (code/đề) | 60 | 1.5 | 0
-Sửa lại các câu sai và ghi nguyên nhân | 30 | 1.25 | 0
+Đọc 1 mục tài liệu, ghi 5 ý chính | 40 | 1.15 | 0
+Làm 5-10 bài tập, đánh dấu câu sai | 45 | 1.15 | 0
+Giải 1 bài khó (code/đề) | 60 | 1.3 | 0
+Sửa lại các câu sai và ghi nguyên nhân | 30 | 1.15 | 0
 Tổng kết ngày: ghi 5 dòng học được | 15 | 1 | 1`;
 
  const DEF_C=[["Ôn thi một chương",["Đọc lướt chương, ghi mục lục ý chính | 30","Lập sơ đồ tư duy các khái niệm chính | 40","Học thuộc công thức/định nghĩa bằng flashcard | 35","Làm 10 bài tập cơ bản | 45","Làm 5 bài khó, ghi lại chỗ sai | 60","Tự làm đề thử có bấm giờ | 60"]],

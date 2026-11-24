@@ -21,40 +21,70 @@
   function streakMultiplier(streakDays,cap){
     return 1+Math.min(Number(cap)||0,0.05*((Number(streakDays)||0)-1));
   }
-  function questCompletionReward(basePoints,multiplier,flatBonus,taskBonus,fx,factors,isEligible){
+  // One effect charge represents 60 minutes of eligible study.
+  function chargeUse(charges,minutes){
+    const available=Math.max(0,Math.round((Number(charges)||0)*60));
+    const used=Math.min(available,Math.max(0,Number(minutes)||0));
+    return {used,remaining:(available-used)/60};
+  }
+  function balanceMultiplier(rebirths){return [1.25,1.15,1.05][Math.max(0,Math.floor(Number(rebirths)||0))]||1}
+  function leisureQuote(minutes,rate,discount,masterDiscount,petDiscount,titleDiscount,petBonus,titleBonus,itemBonus){
+    const m=Math.max(0,Number(minutes)||0),r=Math.max(1,Number(rate)||1);
+    const eligible=discount?Math.min(m,120):0;
+    const cost=Math.max(1,Math.ceil((m-eligible*.3)*r*(1-(masterDiscount||0)/100)*(1-((petDiscount||0)+(titleDiscount?8:0))/100)));
+    const bonusSeconds=Math.floor(m*60*((petBonus||0)+(titleBonus?5:0))/60)+(itemBonus||0)*60;
+    return {cost,bonusSeconds};
+  }
+  function nightKey(day,hour){
+    if(hour>=5)return day;
+    const d=new Date(day+"T12:00:00");d.setDate(d.getDate()-1);
+    return d.toLocaleDateString("sv");
+  }
+  function nightMinutes(state,day,hour,minutes){
+    if(hour>=5&&hour<22)return 0;
+    return Math.min(Math.max(0,Number(minutes)||0),Math.max(0,120-((state.nightStudy||{})[nightKey(day,hour)]||0)));
+  }
+  function questCompletionReward(basePoints,multiplier,flatBonus,taskBonus,fx,factors,isEligible,minutes=60){
     let gain=modGain(Math.round((Number(basePoints)||0)*(Number(multiplier)||0)+(Number(flatBonus)||0)+(Number(taskBonus)||0)),factors);
     const remaining=[];
     (Array.isArray(fx)?fx:[]).forEach(e=>{
       if(e&&e.n>0&&(!isEligible||isEligible(e))){
-        gain+=modGain(e.v,factors);
-        e.n--;
+        const charge=chargeUse(e.n,minutes);
+        gain+=modGain(e.v*charge.used/60,factors);
+        e.n=charge.remaining;
       }
       if(e&&e.n>0)remaining.push(e);
     });
     return {gain,effects:remaining};
   }
-  function chainCompletionReward(totalQuestGain,bonusTitle,factors){
-    return modGain(Math.round((Number(totalQuestGain)||0)*0.25)+(bonusTitle?120:0),factors);
+  function chainCompletionReward(totalQuestGain,bonusTitle,factors,totalMinutes=240){
+    return Math.round((Number(totalQuestGain)||0)*0.15)+(bonusTitle?modGain(Math.min(120,totalMinutes/60*30),factors):0);
   }
 
   function questBonus(q,deps){
     const {S,petBuff,masterBuff,hourNow,today,ri,uxp,hasTitle,myRk,spK,SPQ}=deps;
-    const pt=petBuff(),mb=masterBuff(),H=hourNow(),mins=q.mins||0,nT=(S.cnt&&S.cnt[today()])||0,pm=S.pw>0?2:1;
+    const pt=petBuff(),mb=masterBuff(),H=hourNow(),mins=q.mins||0,studied=(S.hist?.[today()]?.m||0);
+    const hours=mins/60,night=nightMinutes(S,today(),H,mins)/60,morning=H>=5&&H<9;
+    const pm=1+(mins>0?chargeUse(S.pw,mins).used/mins:0);
     let flat=3*ri(uxp());
     if(S.xb&&Date.now()<S.xb.u)flat+=S.xb.v;
     if(hasTitle("t1"))flat+=3;if(hasTitle("t2"))flat+=Math.min(14,S.streak.n);
     if(hasTitle("t4")&&S.tm)flat+=12;if(hasTitle("t6")&&mins>=60)flat+=10;
-    if(hasTitle("n1")&&(H>=22||H<5))flat+=10;if(hasTitle("n2")&&H<9)flat+=10;if(hasTitle("n3")&&q.due)flat+=12;
-    if(hasTitle("n7")&&mins>=120)flat+=30;if(hasTitle("n8")&&nT>=3)flat+=6;if(hasTitle("n9")&&myRk()<=3)flat+=10;
-    if(hasTitle("n10")&&nT===0)flat+=25;if(hasTitle("n11")&&S.act)flat+=4;if(hasTitle("n18"))flat+=12;
+    if(hasTitle("n2")&&morning)flat+=10;if(hasTitle("n3")&&q.due)flat+=12;
+    if(hasTitle("n7")&&mins>=120)flat+=30;if(hasTitle("n9")&&myRk()<=3)flat+=10;
+    if(hasTitle("n11")&&S.act)flat+=4;if(hasTitle("n18"))flat+=12;
     // Buff sư phụ
     if(mb.fl&&mins>=45)flat+=mb.fl;
-    if(mb.fn&&(H>=22||H<5))flat+=mb.fn;
     if(mb.ft&&S.tm)flat+=mb.ft;
-    flat+=pm*((pt.fq||0)+(mins>=45?pt.fl||0:0)+(q.due?pt.fr||0:0)+(S.tm?pt.ft||0:0)+(nT===0?pt.f1||0:0)+Math.min(10,Math.min(14,S.streak.n)*(pt.fs||0))+(H<9?pt.fm||0:0)+(H>=22||H<5?pt.fn||0:0));
-    return{flat:flat+(spK()===0?SPQ[0].pl:0),mult:(mb.mult||1)*(spK()===1?SPQ[1].mul2:1),cap:.5,tm:.2};
+    flat+=pm*((pt.fq||0)+(mins>=45?pt.fl||0:0)+(q.due?pt.fr||0:0)+(S.tm?pt.ft||0:0)+Math.min(10,Math.min(14,S.streak.n)*(pt.fs||0))+(morning?pt.fm||0:0));
+    // First hour and the part after two hours of daily study are duration based.
+    const firstHours=Math.min(hours,Math.max(0,60-studied)/60);
+    const first=(pm*(pt.f1||0)+(hasTitle("n10")?25:0))*firstHours;
+    const later=hasTitle("n8")?6*Math.min(hours,Math.max(0,studied+mins-120)/60):0;
+    const nightBonus=(hasTitle("n1")?10:0)+(mb.fn||0)+pm*(pt.fn||0);
+    return{flat:(flat+(spK()===0?SPQ[0].pl:0))*hours+first+later+nightBonus*night,mult:(mb.mult||1)*(spK()===1?SPQ[1].mul2:1),cap:.5,tm:.2,nightMinutes:night*60};
   }
-  global.GameRewards=Object.freeze({rewardFactors,modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward,questBonus});
+  global.GameRewards=Object.freeze({rewardFactors,modGain,eventGain,streakMultiplier,questCompletionReward,chainCompletionReward,questBonus,chargeUse,balanceMultiplier,nightKey,nightMinutes,leisureQuote});
   function createClaims(deps){
     const {S,CI,ITEMS,KX,knAt,kmins,eventGain,hAdd,today,dayStr,modGain,grantPet,vlog,save,render,say}=deps;
     const addPts=deps.addPts,hasBonusTitle=deps.hasBonusTitle,random=deps.random||Math.random;

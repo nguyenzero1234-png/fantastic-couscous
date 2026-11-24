@@ -30,6 +30,8 @@
     if(!optional(value.streak,v=>record(v)&&typeof v.last==="string"&&nonnegative(v.n)))return false;
     if(!optional(value.buff,v=>record(v)&&nonnegative(v.n)&&nonnegative(v.m)))return false;
     if(!optional(value.hist,v=>Object.values(v).every(h=>record(h)&&nonnegative(h.p)&&nonnegative(h.m))))return false;
+    if(!optional(value.nightStudy,v=>record(v)&&Object.values(v).every(n=>nonnegative(n)&&n<=120)))return false;
+    if(!optional(value.menhRecovery,v=>v===null||(record(v)&&typeof v.start==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v.start)&&typeof v.claimed==="boolean"&&optional(v.days,days=>Array.isArray(days)&&days.every(day=>typeof day==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(day))))))return false;
     if(!optional(value.sched,v=>Object.values(v).every(a=>Array.isArray(a)&&a.every(record))))return false;
     if(!optional(value.chains,v=>Array.isArray(v)&&v.every(record)))return false;
     if(!optional(value.ev,v=>record(v)&&["w","m"].every(k=>record(v[k])&&nonnegative(v[k].h)&&nonnegative(v[k].r))))return false;

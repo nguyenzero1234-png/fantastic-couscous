@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tu Tiên Học Đạo — Cân bằng Linh Thú</title>
+<title>Tu Tiên Học Đạo — Stage 2C</title>
 <link rel="icon" type="image/jpeg" href="assets/icons/favicon.jpg">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;800&display=swap" rel="stylesheet">
@@ -29,21 +29,21 @@
       <div class="chips" id="tpl"><button class="btn alt" data-tn="Ôn bài" data-tm="45" style="padding:6px 10px;font-size:13px">Ôn bài 45 phút</button><button class="btn alt" data-tn="Đọc sách" data-tm="30" style="padding:6px 10px;font-size:13px">Đọc sách 30 phút</button><button class="btn alt" data-tn="Luyện code" data-tm="60" style="padding:6px 10px;font-size:13px">Luyện code 60 phút</button><button class="btn alt" data-tn="Từ vựng" data-tm="20" style="padding:6px 10px;font-size:13px">Từ vựng 20 phút</button><button class="btn alt" data-tn="Làm đề" data-tm="90" style="padding:6px 10px;font-size:13px">Làm đề 90 phút</button></div>
       <div class="row">
         <label>Học <input type="number" id="nd" min="5" max="480" value="30"> phút</label>
-        <label>Độ khó <select id="nl"><option value="1">Dễ ×1</option><option value="1.25">Vừa ×1,25</option><option value="1.5">Khó ×1,5</option></select></label>
-        <label>Nhanh <select id="nq"><option value="">Không</option><option value="1">Hạn 1 giờ ×2</option><option value="3">Hạn 3 giờ ×1,75</option><option value="0">Hết hôm nay ×1,5</option></select></label>
+        <label>Độ khó <select id="nl"><option value="1">Dễ ×1</option><option value="1.15">Vừa ×1,15</option><option value="1.3">Khó ×1,3</option></select></label>
+        <label>Nhanh <select id="nq"><option value="">Không</option><option value="1">Hạn 1 giờ ×1,25</option><option value="3">Hạn 3 giờ ×1,15</option><option value="0">Hết hôm nay ×1,1</option></select></label>
         <small id="prev"></small>
         <label><input type="checkbox" id="nr"> Lặp lại mỗi ngày</label>
         <button class="btn" id="add">Lập nhiệm vụ</button>
       </div>
     </div>
     <div class="box" style="margin-top:10px"><h2>Nhập hàng loạt bằng AI</h2>
-      <small style="display:block;line-height:1.55">Mỗi dòng một nhiệm vụ. Chép <b>mẫu + gợi ý AI</b> → nhờ AI sinh bộ nhiệm vụ → dán vào đây → <b>Nhập</b>.</small>
+      <small style="display:block;line-height:1.35">Mỗi dòng một nhiệm vụ. Chép <b>mẫu + gợi ý AI</b> → nhờ AI sinh bộ nhiệm vụ → dán vào đây → <b>Nhập</b>.</small>
       <small style="display:block;margin-top:4px;font-family:monospace;opacity:.9">Tên nhiệm vụ | phút | độ khó | lặp | hạn</small>
-      <small style="display:block;margin-top:2px;line-height:1.5">• Độ khó: <code>1</code> / <code>1.25</code> / <code>1.5</code> (hoặc de / vua / kho)<br>
+      <small style="display:block;margin-top:2px;line-height:1.3">• Độ khó: <code>1</code> / <code>1.15</code> / <code>1.3</code> (hoặc de / vua / kho)<br>
       • Lặp: <code>0</code> hoặc <code>1</code> (lặp mỗi ngày)<br>
       • Hạn: để trống · <code>1</code> (1 giờ) · <code>3</code> (3 giờ) · <code>homnay</code><br>
       • Tối thiểu chỉ cần: <code>Tên | phút</code></small>
-      <textarea id="qbulk" rows="6" placeholder="Ôn lý thuyết chương 3 | 45 | 1.25 | 0&#10;Làm 20 bài code | 60 | 1.5 | 0 | 3&#10;Từ vựng 30 từ | 25 | 1 | 1" style="margin-top:8px;min-height:110px"></textarea>
+      <textarea id="qbulk" rows="6" placeholder="Ôn lý thuyết chương 3 | 45 | 1.15 | 0&#10;Làm 20 bài code | 60 | 1.3 | 0 | 3&#10;Từ vựng 30 từ | 25 | 1 | 1" style="margin-top:8px;min-height:110px"></textarea>
       <div class="chips" style="margin-top:8px">
         <button class="btn" id="qbulkin">Nhập bộ nhiệm vụ</button>
         <button class="btn alt" id="qdef">Nhiệm vụ mặc định</button><button class="btn alt" id="qbulkcp">Chép prompt AI</button>
@@ -98,7 +98,7 @@
       <div class="row"><label><input type="checkbox" id="lrep0"> Lặp lại hàng tuần</label><button class="btn" id="ladd">Thêm vào lịch</button></div>
       <div class="row"><button class="btn alt" id="lauto" style="margin-left:0">Tự xếp lịch ngày đang xem</button><small>Xếp nhiệm vụ chưa xong vào các khung giờ trống</small></div>
     </div>
-    <div class="box" style="margin-top:10px"><h2>Nhập lịch bằng AI</h2><small style="display:block;line-height:1.5">Mỗi dòng: <code>19:00-19:45 | Tên việc</code>. Thêm cột thứ để lặp hàng tuần, ví dụ <code>19:00-19:45 | Từ vựng | T2,T4,CN</code>.</small><textarea id="lbulk" rows="5" placeholder="19:00-19:45 | Học từ vựng"></textarea><div class="chips"><button class="btn" id="lin">Nhập lịch</button><button class="btn alt" id="lcp">Chép prompt AI</button><button class="btn alt" id="ldef">Lịch mặc định</button></div></div>
+    <div class="box" style="margin-top:10px"><h2>Nhập lịch bằng AI</h2><small style="display:block;line-height:1.3">Mỗi dòng: <code>19:00-19:45 | Tên việc</code>. Thêm cột thứ để lặp hàng tuần, ví dụ <code>19:00-19:45 | Từ vựng | T2,T4,CN</code>.</small><textarea id="lbulk" rows="5" placeholder="19:00-19:45 | Học từ vựng"></textarea><div class="chips"><button class="btn" id="lin">Nhập lịch</button><button class="btn alt" id="lcp">Chép prompt AI</button><button class="btn alt" id="ldef">Lịch mặc định</button></div></div>
     <div class="box" style="margin-top:10px"><h2>Việc lặp hàng tuần</h2><ul id="lrep"></ul></div>
   </section>
   <section id="e" hidden><div class="stack" id="events"></div></section>
@@ -122,6 +122,7 @@
   </section>
   <section id="s" hidden>
     <div class="srow"><h2>Thống kê</h2><button class="gear" id="gear" aria-label="Cài đặt" aria-expanded="false" title="Cài đặt">⚙</button></div>
+    <small>Stage 2C · Cân bằng tu luyện</small>
     <div id="setpanel" hidden></div>
     <div id="sbody">
       <div id="stats" style="display:grid;gap:12px"></div>

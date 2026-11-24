@@ -39,14 +39,13 @@ function burst(){sfx(523);setTimeout(()=>sfx(784),130);if(navigator.vibrate)try{
 
 
 
-const QM={"1":2,"3":1.75,"0":1.5};
 const {TITLES,tok,eqT,chkT}=GameItemSystem.createTitles({getState:()=>S,lifeStats:()=>LS(),examResults:()=>xr(),EX:GameProgressData.EX,END:GameProgressData.END,markNew:id=>{nwS().t[id]=1},save,say,schedule:(fn,ms)=>setTimeout(fn,ms)});
 // Giá ≈ 2,5–4× giá trị kỳ vọng của hiệu ứng (linh lực / tiện ích)
 /* Hệ thống vật phẩm: mọi vật phẩm tăng linh lực đều hoàn lại ít nhất bằng giá mua, phát dần theo nhiệm vụ.
-   q:[số nhiệm vụ, linh lực cố định mỗi nhiệm vụ, điều kiện ("" mọi nhiệm vụ, "q" nhiệm vụ nhanh, "l" từ 60 phút)]
+   q:[số giờ học, linh lực cố định mỗi giờ, điều kiện ("" mọi nhiệm vụ, "q" nhiệm vụ nhanh, "l" từ 60 phút)]
    ex: linh lực cộng thêm một lần (ngoài q). u: tác dụng riêng của vật phẩm tiện ích.
    Vật phẩm tăng linh lực thuần: tổng nhận = 2 lần giá. Vật phẩm tiện ích: tác dụng riêng + hoàn lại 1 lần giá.
-   Tổng nhận = số nhiệm vụ × linh lực mỗi nhiệm vụ + ex. */
+   Tổng cơ bản = số giờ học × linh lực mỗi giờ + ex. */
 const ITEMS=GameItemData.catalog();
 
 
@@ -131,7 +130,6 @@ function showExModal(e){
 function renderExams(){TribulationUI.render()}
 function renderLb(){LeaderboardUI.render()}
 const rn=x=>x.qid&&sq(x)?sq(x).name:x.label;
-const qm=()=>QM[$("nq").value]||1;
 const rem=t=>GameTimeFormat.remaining(t,Date.now());
 const expired=q=>GameQuestData.isExpired(q,isDone,Date.now());
 const weekStart=()=>GameDateData.weekStart(S.dOff||0);
@@ -148,8 +146,8 @@ function renderEvents(){EventsUI.render()}
 function hAdd(d,p,m){const h=S.hist[d]||(S.hist[d]={p:0,m:0});h.p=Math.max(0,h.p+p);h.m=Math.max(0,h.m+m)}
 // Trừng Phạt xếp chồng: mỗi lần hết Mệnh +1 stack, −5% mỗi stack (tối đa −30%)
 function tdMult(){return S.tdPenalty?Math.max(0.7,1-0.05*Math.max(1,S.tdStacks||1)):1}
-function balMult(){return playerBalanced()?BAL_MULT:1}
-function rewardFactors(){return GameRewards.rewardFactors({tdPenalty:S.tdPenalty,tdStacks:S.tdStacks,balanced:playerBalanced(),balMult:BAL_MULT,tm:S.tm,tma:S.tma,cbUntil:S.cbUntil},Date.now())}
+function balMult(){return playerBalanced()?GameRewards.balanceMultiplier(S.rb):1}
+function rewardFactors(){return GameRewards.rewardFactors({tdPenalty:S.tdPenalty,tdStacks:S.tdStacks,balanced:playerBalanced(),balMult:balMult(),tm:S.tm,tma:S.tma,cbUntil:S.cbUntil},Date.now())}
 function modGain(n){return GameRewards.modGain(n,rewardFactors())}
 function eventGain(n){const r=GameRewards.eventGain(n,S.tcCharges,rewardFactors());S.tcCharges=r.charges;if(r.exhausted)extra+=" Thiên Cơ Lệnh đã dùng hết 4 lần.";return r.gain}
 function addPts(n,mins,day){
@@ -163,7 +161,7 @@ function addPts(n,mins,day){
 function showTdLenh(){TribulationUI.showTdLenh()}
 const dayStr=o=>GameDateData.dayOffset(S.dOff||0,o);
 const dur=()=>Math.min(480,Math.max(5,parseInt($("nd").value)||0));
-const calc=()=>Math.max(1,Math.round(dur()/60*S.perHour*parseFloat($("nl").value)*qm()));
+const calc=()=>GameQuestData.basePoints(dur(),S.perHour,parseFloat($("nl").value),$("nq").value);
 function finish(q){
   const before=ri(S.points);
   const completed=GameQuestCompletion.finish(q, {
@@ -224,9 +222,9 @@ document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{$("mins").value=
 $("buy").onclick=()=>{
   reconcileTimers();
   const m=parseInt($("mins").value)||0;if(m<1){say("Nhập số phút muốn đổi.");return}
-  const cost=LC(m);
+  const quote=leisureQuote(m),cost=quote.cost;
   if(S.points<cost){say("Chưa đủ linh lực: cần "+cost+", bạn có "+S.points+". Làm thêm nhiệm vụ nhé.");return}
-  S.points-=cost;const bo=(S.lt||0)+(petBuff().mn||0)+(eqT("n13")?5:0);S.sl=0;S.lt=0;S.gameSec+=(m+bo)*60;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+(bo?" (+"+bo+")":"")+" phút chơi.");
+  S.points-=cost;const bo=quote.bonusSeconds;S.sl=0;S.lt=0;S.gameSec+=m*60+bo;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+" phút chơi"+(bo?" (thêm "+bo+" giây)":"")+".");
 };
 $("run").onclick=()=>{
   const wasPlaying=GameTimer.isPlaying();reconcileTimers();
@@ -452,18 +450,19 @@ function renderX(){
   let tb="";
   {const sp=spA();if(sp){const e=EX.find(z=>z.id===sp.ex);tb+=`<div class="box" style="margin-bottom:10px;border-color:var(--gold)"><b style="color:var(--gold)">${SPQ[sp.k].n}</b><br><small>${SPQ[sp.k].pd}. Hiệu lực đến ${e?e.n:"thiên kiếp kế tiếp"}.</small></div>`}}
   if(S.tm)tb+=`<div class="box" style="margin-bottom:10px;border-color:var(--red)"><b style="color:var(--red)">Tâm Ma Tự Thân</b><br><small>Linh lực nhận −20%. Hoàn thành 2 nhiệm vụ, mỗi nhiệm vụ ≥25 phút để trừ ma (${S.tmTasks||0}/2).</small></div>`;if(S.tma)tb+=`<div class="box" style="margin-bottom:10px;border-color:var(--red)"><b style="color:var(--red)">Thiên Ma Nhập Tâm</b><br><small>Linh lực nhận −35%. Hoàn thành 3 nhiệm vụ, mỗi nhiệm vụ ≥45 phút để trừ ma (${S.tmaTasks||0}/3).</small></div>`;
-  if(typeof playerBalanced==="function"&&playerBalanced())tb+=`<div class="box" style="margin-bottom:10px;border-color:var(--jade)"><b style="color:var(--jade)">Thiên Đạo Cân Bằng</b><br><small>Hạng ${myRk()} ≥ ${BAL_RANK}: mọi nguồn linh lực ×${BAL_MULT} (+${Math.round((BAL_MULT-1)*100)}%). Vào top ${BAL_RANK-1} thì buff tắt. Không còn phạt đứng cuối bảng.</small></div>`;
+  if(typeof playerBalanced==="function"&&playerBalanced())tb+=`<div class="box" style="margin-bottom:10px;border-color:var(--jade)"><b style="color:var(--jade)">Thiên Đạo Cân Bằng</b><br><small>Hạng ${myRk()} ≥ ${BAL_RANK}: mọi nguồn linh lực ×${balMult()} (+${Math.round((balMult()-1)*100)}%). Vào top ${BAL_RANK-1} thì buff tắt. Không còn phạt đứng cuối bảng.</small></div>`;
   $("tmb").innerHTML=tb;
   renderKiep();renderPet();renderRb();renderRbs();drawNav();KS().pk=Math.max(KS().pk,S.points);
 }
 /* Chuyển kiếp */
-const DEF=()=>({quests:[],points:0,gameSec:0,rate:2,perHour:200,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null});
+const DEF=()=>({quests:[],points:0,gameSec:0,rate:2,perHour:280,streak:{last:"",n:0},hist:{},chains:[],ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null});
 const MAXXP=END;
 const LS=()=>S.ls||(S.ls={q:0,m:0,ni:0,da:0,ru:0,lg:0,kn:0,it:0,top:0,ms:0,tmc:0});
 const KS=()=>S.kst||(S.kst={start:Date.now(),pk:0,ms:0,tm:0});
 
 const evB=r=>r+(eqT("t3")?60:0)+(eqT("t5")?20:0)+(S.eb||0);
-const LC=m=>Math.max(1,Math.ceil(m*S.rate*(1-(S.sl?.3:0))*(masterBuff().dc?1-masterBuff().dc/100:1))-(petBuff().dc||0)-(eqT("n4")?8:0));
+const leisureQuote=m=>{const p=petBuff();return GameRewards.leisureQuote(m,S.rate,S.sl,masterBuff().dc,p.dc,eqT("n4"),p.mn,eqT("n13"),S.lt)};
+const LC=m=>leisureQuote(m).cost;
 const hourNow=()=>S.hh!=null?S.hh:new Date().getHours();
 const kAge=()=>(Date.now()-KS().start)/864e5;
 const kEnd=()=>kAge()>=KD; // kiếp chỉ kết thúc khi hết thời gian
@@ -541,8 +540,8 @@ function miles(i){
 const ProfileUI=GameProfileUI.create({S,B,SO,SECTS,TITLES,BH,SP,CDN,HTC,NVC_TITLES,RL,STG,$,uxp,bxp,ri,tok,bio,myRk,rkNow,portrait,isTK,escapeHtml:esc,esc,htCount,htLate,hrs,miles,fmtT,rname,realmColors:RC,quotes:QT,document,prevMemory:()=>prevMemory(),days:KD,getKAge:()=>kAge()});
 const SectUI=GameSectUI.create({S,sectStats,warScores,ugain,warPairs,warFlavor,SECTS,MASTERS,sectMissions,weekStart:()=>weekStart(),weekEnd:sectWarEpoch,membership:SectSystem,claimMission:claimSectM,log:vlog,save,refresh:render,say,$});
 const LeaderboardUI=GameLeaderboardUI.create({S,B,sc,lbInit,BAL_RANK,BAL_MULT,SECTS,SO,rname,uxp,bxp,spark,AVATARS,KD,$,escapeHtml:esc,portrait,isTopCultivator:i=>isTK(i),renderProfile:()=>renderProf(),getKAge:()=>kAge(),getCurStreak:()=>curStreak(),myRank:myRk,today,dayStr,recentEv,efTxt,hrs,myRk,rkNow,fmtT,hrAt,rkAt,spStatsHtml:()=>spStatsHtml()});
-const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt,simulateExam:id=>TribulationSystem.simulateExam(id),claimExam:id=>TribulationSystem.claimExam(id),claimTrial:(key,reward)=>TribulationSystem.claimTrial(key,reward)});
-const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say});
+const TribulationUI=GameTribulationUI.create({S,uxp,ri,RL,rname,KD,END,EX,exD,spA,SPQ,exGod,modGain,RW,$,today,weekStart:()=>weekStart(),kmet,kAge:()=>kAge(),kEnd:()=>kEnd(),KS,bestKiep:()=>bk(),fold,doRebirth:()=>doRebirth(),say,document,Blob,URL,prompt,simulateExam:id=>TribulationSystem.simulateExam(id),claimExam:id=>TribulationSystem.claimExam(id),claimTrial:key=>TribulationSystem.claimTrial(key),claimRecovery:()=>TribulationSystem.claimRecovery()});
+const TribulationSystem=GameTribulationSystem.create({S,EX,exD,KD,KS,B,SP,sc,playerXpAt,immuneTaiHu,vlog,bxp,spKn,kh,khNpc,spE,streakAt,SPQ,ri,gr,daoTam,spRetire,save,hash:hs,getSalt:()=>KSALT,showTdLenh:()=>showTdLenh(),showExModal:e=>showExModal(e),schedule:(fn,ms)=>setTimeout(fn,ms),buildRecord:()=>buildRec(),burst,sfx,setSalt:v=>{KSALT=v},weekStart,LeaderboardSimulation,LeaderboardUI,setProfileIndex:ProfileUI.resetSelection,chkLegacy,render,showThd:(...args)=>showThd(...args),uxp,RW,eventGain,modGain,hAdd,today,petBuff,eqT,lifeStats:LS,say,kmet});
 const ItemSystem=GameItemSystem.create({S,ITEMS,TITLES,today,petBuff,isTitleUnlocked:tok,hasTitle:eqT,masterBuff,lifeStats:LS,modGain,addHistory:hAdd,say});
 const InventoryUI=GameInventoryUI.create({S,today,ITEMS,IC,TITLES,nwS,masters:MASTERS,remaining:rem,$,isTitleUnlocked:tok,itemSystem:ItemSystem,save,render});
 const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),getFortunes:()=>knList(),studyMinutes:o=>kmins(o),remaining:t=>rem(t),fortuneEffects:KX,dayStr,formatTime:fmtT,getCheckinRewards:()=>CI,itemIcons:IC,$,dur,calc,save,refresh:render,renderMore,say,hAdd,finish,undoQuest,startFocus,GameTimer,GameQuestData,templates:GameQuestTemplates,document,navigator,prompt,setTimeout,clearTimeout});

@@ -13,12 +13,12 @@
   function create({state,realmIndex,lifeStats,examResults}){
     const S=state;
     const MASTERS=[
-      {n:"Kiếm Tôn Bạch Hồng",title:"Trưởng lão Thiên Kiếm",req:"Trúc Cơ trở lên và tổng ≥8 nhiệm vụ",ok:()=>realmIndex()>=1&&(lifeStats().q||0)>=8,okTxt:()=>realmIndex()>=1&&(lifeStats().q||0)>=8?"Đã đủ điều kiện":"Cần Trúc Cơ + ≥8 nhiệm vụ",buff:"+8 linh lực cố định mỗi nhiệm vụ từ 45 phút",apply:()=>({fl:8})},
+      {n:"Kiếm Tôn Bạch Hồng",title:"Trưởng lão Thiên Kiếm",req:"Trúc Cơ trở lên và tổng ≥8 nhiệm vụ",ok:()=>realmIndex()>=1&&(lifeStats().q||0)>=8,okTxt:()=>realmIndex()>=1&&(lifeStats().q||0)>=8?"Đã đủ điều kiện":"Cần Trúc Cơ + ≥8 nhiệm vụ",buff:"+8 linh lực mỗi giờ học trong phiên từ 45 phút",apply:()=>({fl:8})},
       {n:"Đan Thánh Huyền Cơ",title:"Thái thượng trưởng lão Huyền Đan",req:"Dùng ≥3 vật phẩm và chuỗi ≥3 ngày",ok:()=>(lifeStats().it||0)>=3&&(S.streak.n||0)>=3,okTxt:()=>(lifeStats().it||0)>=3&&(S.streak.n||0)>=3?"Đã đủ điều kiện đan đạo":"Cần dùng ≥3 vật phẩm + chuỗi 3 ngày",buff:"Mỗi lần dùng vật phẩm +10 linh lực",apply:()=>({itemBonus:10})},
       {n:"Pháp Tôn Vạn Tượng",title:"Các chủ Vạn Pháp",req:"Hoàn thành ≥15 nhiệm vụ",ok:()=>(lifeStats().q||0)>=15,okTxt:()=>(lifeStats().q||0)>=15?"Đã đủ kinh nghiệm":"Cần ≥15 nhiệm vụ",buff:"+5% linh lực mọi nhiệm vụ",apply:()=>({mult:1.05})},
       {n:"Thái Hư Lão Tổ",title:"Điện chủ Thái Hư",req:"Chuỗi ≥7 ngày và không tâm ma",ok:()=>(S.streak.n||0)>=7&&!S.tm,okTxt:()=>(S.streak.n||0)>=7&&!S.tm?"Đạo tâm đủ tĩnh":"Cần chuỗi ≥7 ngày, không tâm ma",buff:"Giảm 15% chi phí đổi nhàn hạ",apply:()=>({dc:15})},
-      {n:"U Minh Quỷ Tôn",title:"Cốc chủ Cửu U",req:"≥5 nhiệm vụ đêm (22h–5h)",ok:()=>(lifeStats().ni||0)>=5,okTxt:()=>(lifeStats().ni||0)>=5?"Đã quen bóng tối":"Cần ≥5 nhiệm vụ đêm",buff:"Nhiệm vụ đêm +12 linh lực cố định",apply:()=>({fn:12})},
-      {n:"Dược Vương Thanh Liên",title:"Đường chủ Bách Thảo",req:"1 thiên kiếp từ Khá trở lên",ok:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&["Xuất sắc","Giỏi","Khá"].includes(me.g)}),okTxt:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&["Xuất sắc","Giỏi","Khá"].includes(me.g)})?"Đã đủ":"Cần 1 thiên kiếp từ Khá trở lên",buff:"Khi có tâm ma, mỗi nhiệm vụ +8 linh lực",apply:()=>({ft:8})}
+      {n:"U Minh Quỷ Tôn",title:"Cốc chủ Cửu U",req:"≥5 nhiệm vụ đêm (22h–5h)",ok:()=>(lifeStats().ni||0)>=5,okTxt:()=>(lifeStats().ni||0)>=5?"Đã quen bóng tối":"Cần ≥5 nhiệm vụ đêm",buff:"Học đêm +12 linh lực/giờ, tối đa 2 giờ thưởng mỗi đêm",apply:()=>({fn:12})},
+      {n:"Dược Vương Thanh Liên",title:"Đường chủ Bách Thảo",req:"1 thiên kiếp từ Khá trở lên",ok:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&me.ok===true&&["Xuất sắc","Giỏi","Khá"].includes(me.g)}),okTxt:()=>examResults().some(r=>{const me=r.rows.find(z=>z.u);return me&&me.ok===true&&["Xuất sắc","Giỏi","Khá"].includes(me.g)})?"Đã đủ":"Cần 1 thiên kiếp từ Khá trở lên",buff:"Khi có tâm ma, +8 linh lực mỗi giờ học",apply:()=>({ft:8})}
     ];
     function masterBuff(){
       if(S.master==null||S.sect==null||S.master!==S.sect)return {};

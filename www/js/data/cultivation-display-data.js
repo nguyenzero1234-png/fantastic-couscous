@@ -33,7 +33,7 @@ const KN=[
   ["Cố Nhân Tương Ngộ","Cố nhân xuất hiện, trao một cơ duyên.",1],
   ["Linh Thú Xuất Thế","Trong sương mù hiện ra bóng dáng linh thú — cơ duyên ngàn năm có một.",1.2]
 ];
-const KX=["linh lực thưởng ×1,5","+1 Tỉnh Thần Linh Trà","hiệu ứng ×1,3 cho 3 nhiệm vụ kế tiếp","+1 Tích Cốc Đan","+80 linh lực","cơ hội nhận linh thú"];
+const KX=["linh lực thưởng ×1,5","+1 Tỉnh Thần Linh Trà","hiệu ứng ×1,3 cho 3 giờ học kế tiếp","+1 Tích Cốc Đan","+80 linh lực","cơ hội nhận linh thú"];
 root.GameCultivationDisplayData={realmColors:RC,quotes:QT};
 root.GameFortuneData={epoch:KT0,events:KN,effects:KX};
 })(typeof window!=="undefined"?window:globalThis);

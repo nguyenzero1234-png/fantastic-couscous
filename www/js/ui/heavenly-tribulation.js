@@ -12,31 +12,28 @@
   h+=`<div class="box"><span class="lbl">Mệnh</span><div class="num" style="color:${menh<=20?"var(--red)":menh<=50?"var(--gold)":"inherit"}">${menh}/100</div>
     <div class="bar"><i style="width:${menh}%;background:${menh<=20?"var(--red)":"var(--jade)"}"></i></div>
     <small>Thất bại trừ Mệnh theo sức kiếp; chuỗi fail liên tiếp tăng mức trừ (tối đa ×2,5). Hết Mệnh → Trừng Phạt xếp chồng (−5% mỗi lần, tối đa −30%).${S.tdPenalty?` <b style="color:var(--red)">Đang Trừng Phạt −${Math.min(30,5*Math.max(1,S.tdStacks||1))}%${(S.failStreak||0)>1?" · chuỗi fail "+S.failStreak:""}.</b>`:""}${(S.failStreak||0)>0&&!S.tdPenalty?` Chuỗi fail hiện: ${S.failStreak}.`:""}</small></div>`;
+  if(S.menhRecovery){const days=root.GameTribulationSystem.recoveryProgress(S,today());h+=`<div class="box"><h2>Tĩnh Tâm Dưỡng Mệnh</h2><small>Thiên lôi lưu thương, lấy chuyên cần dưỡng lại bản nguyên. Sau lần thất bại gần nhất, tu luyện ít nhất 60 phút mỗi ngày trong 3 ngày riêng biệt. Hồi 15 Mệnh một lần, Trừng Phạt và chuỗi thất bại vẫn được giữ.</small><div class="row"><b>${S.menhRecovery.claimed?"Đã viên mãn":Math.min(3,days)+"/3 ngày"}</b><button class="btn" data-a="xr" ${S.menhRecovery.claimed||days<3?"disabled":""}>Dưỡng Mệnh</button></div></div>`}
   h+=`<div class="box"><small>Thiên kiếp giáng theo ngày trong kiếp hiện tại (tối đa ${KD} ngày): ngày ${EX.map(e=>e.day).join(", ")}. Mỗi thiên kiếp là cửa ải viên mãn một cảnh giới để thăng lên cảnh giới kế. Khi đến hạn sẽ hiện bảng bắt buộc xác nhận. Thất bại trừ Mệnh theo sức mạnh kiếp.</small></div>`;
   EX.forEach(e=>{
     const d=exD(e),r=S.sem&&S.sem.res[e.id];
-    const predLoss=Math.round(8*e.w)+5,sk=(spA()&&S.sp.ex===e.id)?S.sp.k:-1,fk=sk===2?SPQ[2].f:1;
+    const penaltyMultiplier=Math.min(2.5,1+0.25*(S.failStreak||0)),predLoss=Math.round((10*e.w+6)*penaltyMultiplier),sk=(spA()&&S.sp.ex===e.id)?S.sp.k:-1,fk=sk===2?SPQ[2].f:1;
     h+=`<div class="box"><div class="row" style="margin:0"><h2 style="flex:1">${e.n}</h2><span class="pb">Ngày ${e.day}</span></div><small>${e.kind}. ${d.toLocaleDateString("vi-VN")}, viên mãn ${RL[e.need][0]} → thăng ${RL[e.need+1][0]}</small>${exGod(e)}<small style="display:block;margin-top:4px;line-height:1.5;color:var(--mute)">${e.desc}</small>`;
     if(!r){
-      h+=`<small style="display:block;margin-top:6px">Còn ${Math.max(0,Math.ceil((d-Date.now())/864e5))} ngày. ${ri(x/fk)>=e.need?"Bạn đã đủ tu vi độ kiếp.":"Bạn chưa đủ tu vi, cần thêm "+(Math.ceil(RL[e.need][1]*fk)-x)+" linh lực."}${sk>=0?` <b style="color:var(--gold)">${SPQ[sk].n}: ${SPQ[sk].pd}.</b>`:""} Nếu thất bại sẽ trừ khoảng ${Math.round(8*e.w)}–${predLoss} Mệnh.</small><div class="row"><button class="btn alt" data-a="xm" data-id="${e.id}" style="margin-left:0">Diễn kiếp</button></div></div>`;
+      h+=`<small style="display:block;margin-top:6px">Còn ${Math.max(0,Math.ceil((d-Date.now())/864e5))} ngày. ${ri(x/fk)>=e.need?"Bạn đã đủ tu vi độ kiếp.":"Bạn chưa đủ tu vi, cần thêm "+(Math.ceil(RL[e.need][1]*fk)-x)+" linh lực."}${sk>=0?` <b style="color:var(--gold)">${SPQ[sk].n}: ${SPQ[sk].pd}.</b>`:""} Nếu thất bại sẽ trừ khoảng ${Math.round(10*e.w*penaltyMultiplier)}–${predLoss} Mệnh.</small><div class="row"><button class="btn alt" data-a="xm" data-id="${e.id}" style="margin-left:0">Diễn kiếp</button></div></div>`;
     }else{
       const me=r.rows.find(z=>z.u);
       const ml=r.menhLoss||0;
-      h+=`<div class="row"><b style="font-size:28px">${me.s}</b><span class="pb">${me.g}</span><small>Hạng ${r.rows.indexOf(me)+1}/${r.rows.length}, ${rname(me.xp)}${me.ok?"":", chưa đủ tu vi nên không nhận thưởng"}${ml?`, <b style="color:var(--red)">trừ ${ml} Mệnh</b>`:""}</small>${me.ok&&!r.claimed?`<button class="btn" data-a="xc" data-id="${e.id}">Nhận ${modGain(RW[me.g]*e.w)} linh lực</button>`:r.claimed?"<small>Đã nhận thưởng</small>":""}</div><ul class="exl${EXOPEN[e.id]?" open":""}" style="margin-top:8px">${r.rows.map((z,i)=>`<li class="${z.u?"now":z.ok?"":"lock"}${(i>=10&&!z.u)?" more":""}"><b style="width:22px">${i+1}</b><div class="nm">${z.n}<small>${rname(z.xp)}</small>${z.sp>=0?`<small style="color:var(--gold)">${SPQ[z.sp].n}</small>`:""}</div><b>${z.s}</b><span class="pb">${z.g}</span></li>`).join("")}</ul>${r.rows.length>10?`<button class="btn alt" data-a="xl" data-id="${e.id}" style="margin-left:0;margin-top:6px">${EXOPEN[e.id]?"Thu gọn":"Xem đủ "+r.rows.length+" người"}</button>`:""}</div>`;
+      h+=`<div class="row"><b style="font-size:28px">${me.s}</b><span class="pb">${me.g}</span><small>Hạng ${r.rows.indexOf(me)+1}/${r.rows.length}, ${rname(me.xp)}${me.ok?"":", chưa đủ tu vi nên không nhận thưởng"}${ml?`, <b style="color:var(--red)">trừ ${ml} Mệnh</b>`:""}</small>${me.ok&&me.g!=="Yếu"&&!r.claimed?`<button class="btn" data-a="xc" data-id="${e.id}">Nhận ${modGain(RW[me.g]*e.w)} linh lực</button>`:r.claimed?"<small>Đã nhận thưởng</small>":""}</div><ul class="exl${EXOPEN[e.id]?" open":""}" style="margin-top:8px">${r.rows.map((z,i)=>`<li class="${z.u?"now":z.ok?"":"lock"}${(i>=10&&!z.u)?" more":""}"><b style="width:22px">${i+1}</b><div class="nm">${z.n}<small>${rname(z.xp)}</small>${z.sp>=0?`<small style="color:var(--gold)">${SPQ[z.sp].n}</small>`:""}</div><b>${z.s}</b><span class="pb">${z.g}</span></li>`).join("")}</ul>${r.rows.length>10?`<button class="btn alt" data-a="xl" data-id="${e.id}" style="margin-left:0;margin-top:6px">${EXOPEN[e.id]?"Thu gọn":"Xem đủ "+r.rows.length+" người"}</button>`:""}</div>`;
     }
   });
-  h+=`<div class="box"><small>Thang 100 điểm: Xuất sắc từ 90, Giỏi 80 đến 89, Khá 65 đến 79, Trung bình 50 đến 64, Yếu dưới 50. NPC có công thức riêng, chỉ dựa vào linh lực (không có đạo tâm): đạt 100 khi linh lực ≥ mốc viên mãn của kiếp đó. Điểm của bạn gồm phần linh lực (so với mốc viên mãn của cảnh giới đó — cũng là mức NPC trung bình đạt được vào ngày giáng kiếp) và đạo tâm (chuỗi ngày học liên tục; kiếp càng cuối càng đòi chuỗi dài); mỗi kiếp chia tỉ trọng khác nhau. Đạo tâm chỉ cộng tối đa từ 2 điểm (kiếp đầu) đến 10 điểm (kiếp khó), phần còn lại đến từ linh lực. Chưa đủ tu vi hoặc đạt mức Yếu → trừ Mệnh theo hệ số kiếp (không trừ linh lực trực tiếp). Hết Mệnh sẽ chịu Thiên Đạo Trừng Phạt (−5% mọi nguồn linh lực). Muốn ân xá: hoàn thành kiếp viên mãn và mọi thiên kiếp từ Khá trở lên.</small></div>`;
+  h+=`<div class="box"><small>Thang 100 điểm: Xuất sắc từ 90, Giỏi 80 đến 89, Khá 65 đến 79, Trung bình 50 đến 64, Yếu dưới 50. NPC có công thức riêng, chỉ dựa vào linh lực (không có đạo tâm): đạt 100 khi linh lực ≥ mốc viên mãn của kiếp đó. Điểm của bạn gồm 70–80 điểm linh lực và 20–30 điểm đạo tâm (chuỗi ngày học liên tục; kiếp càng cuối càng đòi chuỗi dài). Chưa đủ tu vi hoặc đạt mức Yếu → trừ Mệnh theo hệ số kiếp. Hết Mệnh sẽ chịu Thiên Đạo Trừng Phạt (−5% mỗi tầng, tối đa −30% mọi nguồn linh lực). Muốn ân xá: hoàn thành kiếp viên mãn và mọi thiên kiếp từ Khá trở lên.</small></div>`;
   $("exams").innerHTML=h;
 }
   function renderKiep(){
-  const t=today(),ws=weekStart(),wk=[0,1,2,3,4,5,6].map(i=>{const d=new Date(ws+"T00:00:00");d.setDate(d.getDate()+i);return d.toLocaleDateString("sv")});
-  const ts=(1+.2*ri(uxp()))*(S.ln===t?.75:1),hh=[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7),v=1+(Math.abs(hh)%3)*.25,KC=S.kc||(S.kc={});
-  const D=[["Hạ Kiếp","m",Math.round(30*ts*v/5)*5,20,"phút tu luyện"],["Trung Kiếp","n",Math.max(2,Math.round(2*ts*v)),35,"nhiệm vụ hoàn thành"],["Thượng Kiếp","l",Math.round(45*ts*v/5)*5,60,"phút học liền một phiên"]];
-  const W=[["Tuần Kiếp","m",Math.round(360*ts/30)*30,150,"phút tu luyện"],["Cần Kiếp","d",5,120,"ngày có tu luyện"],["Thiên Lôi Kiếp","n",Math.round(12*ts),220,"nhiệm vụ hoàn thành"]];
-  const dm=S.kf===t?{m:9999,n:99,d:7,l:999}:kmet([t]),wm=S.kf===t?{m:99999,n:999,d:7,l:999}:kmet(wk);
-  const row=(p,a,met,i)=>{const[n,k,T,r,u]=a,key=p+(p==="d"?t:ws)+i,cur=Math.min(met[k],T),ok=met[k]>=T;
-    return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${n}</b><span class="pb">+${r}</span></div><small>${cur}/${T} ${u}</small><div class="bar"><i style="width:${Math.round(cur/T*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" style="margin-left:auto" data-k="${key}" data-r="${r}" ${KC[key]||!ok?"disabled":""}>${KC[key]?"Đã vượt kiếp":"Độ kiếp"}</button></div></li>`};
-  $("kiep").innerHTML=`<div class="box"><h2>Nhật Kiếp</h2><small>Đổi mỗi ngày, độ khó tăng theo cảnh giới. Vượt đủ ba kiếp được thêm 30 linh lực.</small><ul>${D.map((a,i)=>row("d",a,dm,i)).join("")}</ul></div><div class="box"><h2>Tuần Kiếp</h2><small>Đổi vào thứ Hai. Vượt đủ ba kiếp được 1 Tỉnh Thần Linh Trà.</small><ul>${W.map((a,i)=>row("w",a,wm,i)).join("")}</ul></div>`;
+  const {daily,weekly}=root.GameTribulationSystem.trialRows(S,today(),weekStart(),ri(uxp()),kmet),KC=S.kc||(S.kc={});
+  const row=({name:n,target:T,reward:r,unit:u,key,progress})=>{const cur=Math.min(progress,T),ok=progress>=T;
+    return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${n}</b><span class="pb">+${r}</span></div><small>${cur}/${T} ${u}</small><div class="bar"><i style="width:${Math.round(cur/T*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" style="margin-left:auto" data-k="${key}" ${KC[key]||!ok?"disabled":""}>${KC[key]?"Đã vượt kiếp":"Độ kiếp"}</button></div></li>`};
+  $("kiep").innerHTML=`<div class="box"><h2>Nhật Kiếp</h2><small>Đổi mỗi ngày, độ khó tăng theo cảnh giới. Vượt đủ ba kiếp được thêm 30 linh lực.</small><ul>${daily.map(row).join("")}</ul></div><div class="box"><h2>Tuần Kiếp</h2><small>Đổi vào thứ Hai. Vượt đủ ba kiếp được 1 Tỉnh Thần Linh Trà.</small><ul>${weekly.map(row).join("")}</ul></div>`;
 }
   function renderRb(){
   const rb=S.rb||0,left=Math.max(0,Math.ceil(KD-kAge()));let h="";
@@ -96,12 +93,13 @@
       }
       const simulation=e.target.closest("[data-a=xm]");
       const claim=e.target.closest("[data-a=xc]");
-      if(simulation)deps.simulateExam(simulation.dataset.id);
+      if(e.target.closest("[data-a=xr]"))deps.claimRecovery?.();
+      else if(simulation)deps.simulateExam(simulation.dataset.id);
       else if(claim)deps.claimExam(claim.dataset.id);
     };
     $("kiep").onclick=e=>{
       const button=e.target.closest("button[data-k]");
-      if(button&&!button.disabled)deps.claimTrial(button.dataset.k,button.dataset.r);
+      if(button&&!button.disabled)deps.claimTrial(button.dataset.k);
     };
     $("tmb").onclick=e=>{
       const button=e.target.closest("button[data-rb]");

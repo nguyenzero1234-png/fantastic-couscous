@@ -41,15 +41,20 @@
     };
     record.npc=Math.round(deps.npcs.reduce((total,_,index)=>total+deps.npcXp(index,now),0)/deps.npcs.length);
     record.exg=state.sem?Object.values(state.sem.res).map(result=>result.rows.find(row=>row.u)?.g).filter(Boolean):[];
+    const examIds=deps.examIds||root.GameProgressData.EX.map(exam=>exam.id);
+    const allKhá=examIds.length>0&&examIds.every(id=>{
+      const player=state.sem?.res?.[id]?.rows.find(row=>row.u);
+      return player?.ok===true&&["Xuất sắc","Giỏi","Khá"].includes(player.g);
+    });
     record.tt=Object.keys(state.tt||{}).length;
     record.it=deps.lifeStats().it;
     record.sect=state.sect!=null?deps.sects[state.sect].n:"";
     return Object.assign(record,narrate(record,{
       end:deps.end,realms:deps.realms,realmName:deps.realmName,
-      npcCount:deps.npcs.length,penalized:state.tdPenalty
+      npcCount:deps.npcs.length,penalized:state.tdPenalty,allKhá
     }));
   }
-  function narrate(r,{end,realms,realmName,npcCount,penalized}){
+  function narrate(r,{end,realms,realmName,npcCount,penalized,allKhá}){
     const P=[],f=ts=>new Date(ts).toLocaleDateString("vi-VN"),avg=r.hrs/r.days,full=r.pk>=end;
     // Đánh giá tổng thể dựa trên giờ học, hạng, linh lực đỉnh và chuỗi ngày
     const summary=gradeSummary(r,end),grade=summary.grade,gTxt=summary.text;
@@ -64,7 +69,6 @@
     P.push(`Khi kiếp khép, đứng hạng ${r.rank}/${npcCount+1} Thiên Kiêu Bảng, linh lực đỉnh ${r.pk}. ${r.pk>=r.npc?`Cao hơn mức trung bình ${r.npc} của chúng tu sĩ.`:`Thấp hơn mức trung bình ${r.npc}, thiếu ${r.npc-r.pk}.`} Mang theo ${r.tt} danh hiệu, ${r.it} vật phẩm.`);
     P.push(full?`Một đời tu hành, dừng chân ở Chân Tiên.`:`Một đời tu hành, dừng chân ở ${realmName(r.pk)}.`);
     // Thiên Đạo Ân Xá: viên mãn + mọi thiên kiếp từ Khá trở lên
-    const allKhá=r.exg.length>0&&r.exg.every(g=>g==="Xuất sắc"||g==="Giỏi"||g==="Khá");
     const anXa=penalized&&full&&allKhá&&(grade==="Viên Mãn Xuất Chúng"||grade==="Xuất Sắc"||grade==="Giỏi");
     if(anXa){
       P.push(`【Ân Xá】Một kiếp viên mãn, mọi thiên kiếp từ Khá trở lên. Lệnh Trừng Phạt được gỡ.`);

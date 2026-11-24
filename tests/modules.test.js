@@ -40,6 +40,73 @@ function listJsFiles(dir, prefix = "") {
 const moduleFiles = listJsFiles(jsDir).filter(file => !["game.js", "runtime/notify.js", "runtime/schedule.js"].includes(file));
 scriptNames.filter(name => moduleFiles.includes(name)).forEach(load);
 
+test("Stage 2C: hiệu ứng theo phút và thưởng cơ bản không nhân lên khi chia phiên", () => {
+  const R=window.GameRewards,Q=window.GameQuestData;
+  const factors={td:1,balance:1,status:1};
+  const run=minutes=>{
+    let effects=[{n:1,v:120,t:""}],total=0;
+    for(const m of minutes){
+      const result=R.questCompletionReward(Q.basePoints(m,280),1,0,0,effects,factors,null,m);
+      total+=result.gain;effects=result.effects;
+    }
+    assert.equal(effects.length,0);
+    return total;
+  };
+  assert.equal(run([60]),400);
+  assert.equal(run([15,15,15,15]),400);
+  assert.equal(run([30,30]),400);
+  assert.equal(Q.basePoints(60,280,1.3,"1"),455);
+  assert.equal(R.chargeUse(1,90).used,60);
+});
+
+test("Stage 2C: thưởng đêm tối đa 120 phút qua nửa đêm", () => {
+  const R=window.GameRewards,S={nightStudy:{"2026-11-24":90}};
+  assert.equal(R.nightKey("2026-11-25",2),"2026-11-24");
+  assert.equal(R.nightMinutes(S,"2026-11-24",23,60),30);
+  assert.equal(R.nightMinutes(S,"2026-11-25",2,60),30);
+  assert.equal(R.nightMinutes(S,"2026-11-25",5,60),0);
+  assert.equal(R.nightMinutes(S,"2026-11-25",22,180),120);
+});
+
+test("Stage 2C: cân bằng giảm dần theo kiếp và nhàn hạ theo thời lượng", () => {
+  const R=window.GameRewards;
+  assert.deepEqual([0,1,2,3,9].map(R.balanceMultiplier),[1.25,1.15,1.05,1,1]);
+  const quote=m=>R.leisureQuote(m,2,false,0,0,false,5,true,0);
+  assert.equal(quote(60).bonusSeconds,600);
+  assert.equal(quote(15).bonusSeconds*4,600);
+  assert.equal(R.leisureQuote(180,2,true,0,0,false,0,false,0).cost,288);
+});
+
+test("Stage 2C: Tĩnh Tâm Dưỡng Mệnh chỉ nhận một lần sau ba ngày đủ giờ", () => {
+  const S={menh:5,tdPenalty:true,tdStacks:2,failStreak:3,menhRecovery:{start:"2026-11-20",claimed:false},hist:{"2026-11-20":{m:120},"2026-11-21":{m:59},"2026-11-22":{m:60},"2026-11-23":{m:60}}};
+  const today=()=>"2026-11-24",noop=()=>{};
+  const M=window.GameTribulationSystem.create({S,today,save:noop,render:noop,vlog:noop,say:noop});
+  assert.equal(M.claimRecovery(),false);
+  S.hist["2026-11-24"]={m:60};
+  assert.equal(M.claimRecovery(),true);
+  assert.equal(M.claimRecovery(),false);
+  assert.equal(S.menh,20);
+  assert.equal(S.tdStacks,2);
+  assert.equal(S.failStreak,3);
+  assert.equal(S.menhRecovery.days.length,3);
+  const q={doneOn:"2026-11-24",got:10,mins:60};
+  S.points=100;
+  assert.equal(window.GameQuestCompletion.undo(q,{S,isDone:()=>true}).ok,false);
+});
+
+test("Stage 2C: nhật kiếp kiểm tra tiến độ, khóa cũ và thưởng từ dữ liệu nghiệp vụ", () => {
+  const S={points:0,kc:{},inv:{}},life={},today=()=>"2026-11-24",weekStart=()=>"2026-11-23",noop=()=>{};
+  let minutes=0;
+  const M=window.GameTribulationSystem.create({S,today,weekStart,ri:()=>0,uxp:()=>0,kmet:()=>({m:minutes,d:0,l:0}),petBuff:()=>({}),eqT:()=>false,lifeStats:()=>life,modGain:n=>n,hAdd:noop,say:noop,save:noop,render:noop});
+  assert.equal(M.claimTrial("d2026-11-240",999999),false);
+  minutes=120;
+  assert.equal(M.claimTrial("d2026-11-230"),false);
+  M.claimTrial("d2026-11-240",999999);
+  assert.equal(S.points,20);
+  M.claimTrial("d2026-11-240");
+  assert.equal(S.points,20);
+});
+
 test("tất cả script JavaScript trong www/js parse được", () => {
   for (const file of listJsFiles(jsDir)) {
     assert.doesNotThrow(() => new vm.Script(fs.readFileSync(path.join(jsDir, file), "utf8"), { filename: file }));
@@ -176,8 +243,8 @@ test("quest parser xử lý dữ liệu hợp lệ, giới hạn và hạn chót
   const q = Q.parseBulkLine("Tên nhiệm vụ | 999 | khó | lặp | 1h", { perHour: 200, now, random: () => .5 });
   assert.equal(q.name, "Tên nhiệm vụ");
   assert.equal(q.mins, 480);
-  assert.equal(q.diff, 1.5);
-  assert.equal(q.pts, 2400);
+  assert.equal(q.diff, 1.3);
+  assert.equal(q.pts, 2600);
   assert.equal(q.due, 1700003600000);
   assert.equal(q.repeat, false);
   assert.equal(Q.parseBulkLine("   "), null);
@@ -892,10 +959,10 @@ test("cơ duyên bảng xếp hạng giữ nguyên ngưỡng hash và mô tả �
 test("item data tạo tổng linh lực và mô tả vật phẩm mà không sửa cấu hình", () => {
   const I = window.GameItemData;
   const cases = [
-    [{ id: "ca", c: 100, q: [2, 100, ""] }, { tot: 200, d: "Dùng: 2 nhiệm vụ kế tiếp, mỗi nhiệm vụ +100 linh lực cố định (tổng +200, gấp 2 lần giá)" }],
-    [{ id: "fast", c: 800, q: [4, 200, "q"], u: "Tăng tốc" }, { tot: 800, d: "Dùng: Tăng tốc; 4 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +200 linh lực cố định (tổng +800, hoàn lại đủ giá cộng tác dụng riêng)" }],
-    [{ id: "long", c: 900, q: [3, 300, "l"], ex: 100, u: "Bảo hộ" }, { tot: 1000, d: "Dùng: Bảo hộ; thêm 3 nhiệm vụ từ 60 phút kế tiếp, mỗi nhiệm vụ +300 linh lực cố định (tổng +1000, hoàn lại đủ giá cộng tác dụng riêng)" }],
-    [{ id: "utility", c: 1000, q: [4, 250, ""], u: "Giảm giá" }, { tot: 1000, d: "Dùng: Giảm giá; 4 nhiệm vụ kế tiếp, mỗi nhiệm vụ +250 linh lực cố định (tổng +1000, hoàn lại đủ giá cộng tác dụng riêng)" }]
+    [{ id: "ca", c: 100, q: [2, 100, ""] }, { tot: 200, d: "Dùng: 2 giờ học kế tiếp, mỗi giờ +100 linh lực (tổng cơ bản +200, 200% giá mua, trước hệ số thưởng/phạt)" }],
+    [{ id: "fast", c: 800, q: [4, 200, "q"], u: "Tăng tốc" }, { tot: 800, d: "Dùng: Tăng tốc; 4 giờ học có hạn giờ kế tiếp, mỗi giờ +200 linh lực (tổng cơ bản +800, 100% giá mua, trước hệ số thưởng/phạt)" }],
+    [{ id: "long", c: 900, q: [3, 300, "l"], ex: 100, u: "Bảo hộ" }, { tot: 1000, d: "Dùng: Bảo hộ; thêm 3 giờ học trong phiên từ 60 phút kế tiếp, mỗi giờ +300 linh lực (tổng cơ bản +1000, 111% giá mua, trước hệ số thưởng/phạt)" }],
+    [{ id: "utility", c: 1000, q: [4, 250, ""], u: "Giảm giá" }, { tot: 1000, d: "Dùng: Giảm giá; 4 giờ học kế tiếp, mỗi giờ +250 linh lực (tổng cơ bản +1000, 100% giá mua, trước hệ số thưởng/phạt)" }]
   ];
   for (const [item, expected] of cases) {
     const before = JSON.stringify(item);
@@ -975,13 +1042,13 @@ test("rebirth buildRecord tổng kết kiếp và xét ân xá theo điểm thi�
     name: "Lăng Vân", points: 1000, rb: 1, tdPenalty: true,
     hist: { "2026-11-24": { p: 500, m: 360 }, "2026-11-23": { p: 500, m: 360 } },
     cnt: { "2026-11-23": 3, "2026-11-24": 2 },
-    sem: { res: { tl: { rows: [{ u: true, g: "Khá" }] } } }
+    sem: { res: { tl: { rows: [{ u: true, ok: true, g: "Khá" }] } } }
   };
   const deps = {
     now: () => now, cycle: () => ({ start: now - 2 * 864e5, pk: 1000, ms: 2, tm: 0 }),
     pets: [], titles: [], npcs: [{}, {}], npcXp: index => [500, 600][index],
     milestones: () => [[0, now - 864e5], [1, now]], rank: () => 3,
-    lifeStats: () => ({ it: 2 }), end: 1000,
+    lifeStats: () => ({ it: 2 }), end: 1000, examIds:["tl"],
     realms: [["Luyện Khí", 0], ["Chân Tiên", 1000]], realmName: () => "Chân Tiên"
   };
   const build = window.GameRebirthData.buildRecord;
@@ -995,6 +1062,10 @@ test("rebirth buildRecord tổng kết kiếp và xét ân xá theo điểm thi�
   assert.equal(record.grade, "Viên Mãn Xuất Chúng");
   assert.equal(record.anXa, true);
   assert.match(record.txt.join("\n"), /Ân Xá/);
+  state.sem.res.tl.rows[0].ok=false;
+  assert.equal(build(state,deps).anXa,false);
+  state.sem.res.tl.rows[0].ok=true;
+  assert.equal(build(state,{...deps,examIds:["tl","ho"]}).anXa,false);
 
   state.sem.res.tl.rows[0].g = "Trung bình";
   const penalized = build(state, deps);
@@ -1056,6 +1127,7 @@ test("quest completion module cập nhật streak, curse, điểm, lịch sử v
     KS: () => (state.kiepStats ||= {}), extraGet: () => extra, extraSet: v => { extra = v; },
     vlog: v => logs.push(v), TB: () => ({ cap: 5, flat: 0, mult: 1 }), LS: () => daily,
     petBuff: () => ({}), GameRewards: {
+      chargeUse: window.GameRewards.chargeUse,
       streakMultiplier: () => 1,
       questCompletionReward: () => ({ gain: 100, effects: [] }),
       chainCompletionReward: () => 0
@@ -1101,14 +1173,14 @@ test("quest completion module cập nhật streak, curse, điểm, lịch sử v
   deps.today=()=>day;
   deps.isDone=q=>!!q.doneOn&&(!q.repeat||q.doneOn===day);
   assert.equal(Q.finish(zero,deps),true);
-  assert.equal(state.buff.n,1);
+  assert.equal(state.buff.n,115/60);
   assert.equal(Q.undo(zero,deps).gain,0);
   assert.equal(Q.finish(zero,deps),true);
-  assert.equal(state.buff.n,1);
+  assert.equal(state.buff.n,115/60);
   assert.equal(state.points,110);
   day="2026-11-24";
   assert.equal(Q.finish(zero,deps),true);
-  assert.equal(state.buff.n,0);
+  assert.equal(state.buff.n,110/60);
   assert.equal(zero.completion.day,day);
   assert.equal(Q.undo({...zero,chain:"chain"},deps).ok,false);
 });
@@ -1320,8 +1392,8 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
   const items = window.GameItemData.catalog();
   assert.equal(items.length, 21);
   assert.equal(items[0].id, "ca");
-  assert.equal(items[0].tot, 200);
-  assert.match(items[0].d, /2 nhiệm vụ/);
+  assert.equal(items[0].tot, 130);
+  assert.match(items[0].d, /2 giờ học/);
   assert.equal(items[19].id, "cl");
   assert.equal(items[20].id, "the");
   assert.equal(items[20].q, undefined);
@@ -1330,7 +1402,7 @@ test("GameItemData.catalog tạo catalog vật phẩm đầy đủ, độc lập
   assert.equal(window.GameItemData.catalog()[0].q[0], 2);
   assert.deepEqual(JSON.parse(JSON.stringify(window.GameItemData.describe({ id: "x", c: 100, q: [2, 60, "q"] }))), {
     tot: 120,
-    d: "Dùng: 2 nhiệm vụ nhanh kế tiếp, mỗi nhiệm vụ +60 linh lực cố định (tổng +120, hoàn lại đủ giá cộng tác dụng riêng)"
+    d: "Dùng: 2 giờ học có hạn giờ kế tiếp, mỗi giờ +60 linh lực (tổng cơ bản +120, 120% giá mua, trước hệ số thưởng/phạt)"
   });
 });
 
@@ -1358,7 +1430,7 @@ test("GameSectSystem đóng gói tông môn, điều kiện bái sư và buff th
   state.sect = 4; state.master = 4;
   assert.equal(M.masters[4].ok(), true);
   assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { fn: 12 });
-  state.sect = 5; state.master = 5; exams = [{ rows: [{ u: true, g: "Khá" }] }];
+  state.sect = 5; state.master = 5; exams = [{ rows: [{ u: true, ok: true, g: "Khá" }] }];
   assert.equal(M.masters[5].ok(), true);
   assert.deepEqual(JSON.parse(JSON.stringify(M.masterBuff())), { ft: 8 });
   exams = [];
@@ -1376,8 +1448,8 @@ test("GameState tạo state mặc định, migration dữ liệu cũ và lưu đ
   const M=window.GameState.create({storage});
   assert.equal(M.key,"quest-study-v1");
   assert.equal(M.state,old);
-  assert.equal(M.state.perHour,200);
-  assert.equal(M.state.ph200,1);
+  assert.equal(M.state.perHour,90);
+  assert.equal(M.state.balanceStage2C,1);
   assert.equal(M.state.menh,100);
   assert.equal(M.state.tdPenalty,false);
   assert.equal(M.state.failStreak,0);
@@ -1580,7 +1652,7 @@ test("Mệnh bằng 0 không hồi lại khi thất bại thiên kiếp liên ti
  const S={points:0,menh:0,tdStacks:1,failStreak:0,sem:{res:{}},life:{}};
  const EX=[{id:"e1",n:"Kiếp 1",day:0,need:1,w:1},{id:"e2",n:"Kiếp 2",day:1,need:1,w:1}];
  let saved=0;
- const M=window.GameTribulationSystem.create({S,EX,exD:()=>new Date(0),KD:120,KS:()=>({}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>0,immuneTaiHu:()=>false,vlog:()=>{},bxp:()=>0,spKn:()=>-1,kh:()=>0,khNpc:()=>0,spE:e=>e,streakAt:()=>0,SPQ:[{f:1},{f:1},{f:1}],ri:()=>0,gr:()=>"Yếu",daoTam:()=>0,spRetire:()=>{},save:()=>saved++,hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>{},schedule:()=>{}});
+ const M=window.GameTribulationSystem.create({S,EX,today:()=>"2026-11-24",exD:()=>new Date(0),KD:120,KS:()=>({}),B:[],SP:60000,sc:()=>0,playerXpAt:()=>0,immuneTaiHu:()=>false,vlog:()=>{},bxp:()=>0,spKn:()=>-1,kh:()=>0,khNpc:()=>0,spE:e=>e,streakAt:()=>0,SPQ:[{f:1},{f:1},{f:1}],ri:()=>0,gr:()=>"Yếu",daoTam:()=>0,spRetire:()=>{},save:()=>saved++,hash:()=>1,getSalt:()=>0,showTdLenh:()=>{},showExModal:()=>{},schedule:()=>{}});
  M.resolveEx();
  assert.equal(S.menh,0);
  assert.equal(S.tdStacks,3);
@@ -1689,7 +1761,7 @@ test("GameNavigationUI quản lý tab, chế độ chỉ học và cập nhật 
 test("GameQuestData nhập và xuất hàng loạt nhiệm vụ thuần",()=>{
  const Q=window.GameQuestData;
  const imported=Q.importBulk("# ghi chú\nToán | 30 | khó\n// bỏ qua\nVăn | 45 | vừa",{perHour:120,now:()=>1000,random:()=>0.5});
- assert.equal(imported.total,2);assert.equal(imported.invalid,0);assert.equal(imported.quests.length,2);assert.equal(imported.quests[0].pts,90);assert.equal(imported.quests[1].pts,113);
+ assert.equal(imported.total,2);assert.equal(imported.invalid,0);assert.equal(imported.quests.length,2);assert.equal(imported.quests[0].pts,78);assert.equal(imported.quests[1].pts,104);
  const open=Q.exportOpen([{name:"Mở",mins:30,diff:1,repeat:true},{name:"Chuỗi",chain:"c"},{name:"Xong",doneOn:"today"},{name:"Hết hạn",due:1}],{now:10,isDone:q=>!!q.doneOn,isExpired:q=>!!q.due&&q.due<10});
  assert.deepEqual(open.quests.map(q=>q.name),["Mở"]);assert.equal(open.text,"Mở | 30 | 1 | 1 | ");
 });

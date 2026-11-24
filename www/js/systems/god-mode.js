@@ -78,7 +78,7 @@ function runGod(a,btn){
   else if(a==="sx")setStreak(0);
   else if(a==="sb"){const n=curStreak();setStreak(0);S.tm=1;KS().tm=(KS().tm||0)+1;vlog("Thiên Đạo: đứt chuỗi "+n+" ngày → tâm ma")}
   else if(a==="sd")S.seed=1+Math.floor(Math.random()*1e9);
-  else if(a==="qs"){[["Ôn bài",45,0],["Đọc sách",30,0],["Luyện code",60,0],["Làm đề",120,0],["Nhanh 1 giờ",30,Date.now()+36e5]].forEach(([n,m,d],i)=>S.quests.push({id:"g"+Date.now().toString(36)+i,name:"[Mẫu] "+n,pts:Math.max(1,Math.round(m/60*(S.perHour||200))),mins:m,due:d||null,repeat:false,doneOn:null}))}
+  else if(a==="qs"){[["Ôn bài",45,0],["Đọc sách",30,0],["Luyện code",60,0],["Làm đề",120,0],["Nhanh 1 giờ",30,Date.now()+36e5]].forEach(([n,m,d],i)=>S.quests.push({id:"g"+Date.now().toString(36)+i,name:"[Mẫu] "+n,pts:Math.max(1,Math.round(m/60*(S.perHour||280))),mins:m,due:d||null,repeat:false,doneOn:null}))}
   else if(a==="fx"){sfx(523);schedule(()=>sfx(784),130);burst()}
   else if(a==="nm"){askName();return false}
   else if(a==="ck"){selfCheck();return false}

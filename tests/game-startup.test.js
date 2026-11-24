@@ -156,10 +156,10 @@ test("game khởi động và xử lý nhiệm vụ, bảo khố, danh hiệu, h
  assert.equal(readSave().inv.bm,examReward.inv.bm);
 
  vm.runInContext("S.kf=today(); render()",context);
- const trialButtons=[...getNode("kiep").innerHTML.matchAll(/data-k="([dw][^"]+)" data-r="(\d+)"\s*>/g)];
+ const trialButtons=[...getNode("kiep").innerHTML.matchAll(/data-k="([dw][^"]+)"\s*>/g)];
  assert.equal(trialButtons.length,6);
  for(const [index,match] of trialButtons.entries()){
-  const [,trialKey,reward]=match;
+  const [,trialKey]=match,reward=[20,35,60,150,120,220][index];
   const before=vm.runInContext(`({points:S.points,completed:S.ls.kn||0,tea:S.inv.ca||0,gain:modGain(${Number(reward)}+(petBuff().kp||0)+(eqT("n14")?25:0)+(S.kd===today()?30:0)),bonus:modGain(30)})`,context);
   const button={dataset:{k:trialKey,r:reward}};
   const event={target:{closest:selector=>selector==="button[data-k]"?button:null}};

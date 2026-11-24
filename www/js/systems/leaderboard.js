@@ -234,7 +234,7 @@ const bs=(i,ms)=>{bnhSync();lnySync();lthSync();return bsX(i,(ms-S.lb.t0)/SP)+sp
    Mỗi lần chốt bảng tuần, mỗi nhân vật đứng 3 hạng cuối quay một lần: 20% Chi Lực, 20% Gia Tốc, 20% Khai Ân, 40% không có.
    Một nhân vật chỉ giữ một cơ duyên đặc biệt tại một thời điểm. Hiệu lực đến thiên kiếp kế tiếp (chỉ riêng người đó). */
 const SPQ=[
- {n:"Thiên Đạo Chi Lực",p:.2,npc:120,pl:30,pd:"+30 linh lực cố định mỗi nhiệm vụ",nd:"+120 linh lực mỗi ngày"},
+ {n:"Thiên Đạo Chi Lực",p:.2,npc:120,pl:30,pd:"+30 linh lực mỗi giờ học",nd:"+120 linh lực mỗi ngày"},
  {n:"Thiên Đạo Gia Tốc",p:.2,mul:.4,mul2:1.4,pd:"linh lực nhận từ nhiệm vụ ×1,4",nd:"tốc độ tăng linh lực +40% (phần linh lực tăng thêm kể từ lúc nhận)"},
  {n:"Thiên Đạo Khai Ân",p:.2,f:.8,pd:"giảm 20% mốc linh lực, chuỗi đạo tâm và mức tu vi yêu cầu của thiên kiếp kế tiếp",nd:"giảm 20% mốc linh lực và chuỗi đạo tâm yêu cầu của thiên kiếp kế tiếp"}
 ];
@@ -276,7 +276,7 @@ function spRetire(e,dn){
 const BAL_RANK=40,BAL_MULT=1.25; // Hạng 40 trở xuống nhận Thiên Đạo Cân Bằng (+25% tốc độ)
 const sc=(i,ms)=>Math.max(0,bs(i,ms)+(S.lb.adj[i]||0)+(S.lb.bal&&S.lb.bal[i]||0));
 function lbInit(){if(!S.lb)S.lb={t0:Date.now()-24*3600000,week:weekStart(),adj:Array(50).fill(0),bal:Array(50).fill(0),log:""};if(!S.lb.bal)S.lb.bal=Array(50).fill(0);if(!S.lb.sp)S.lb.sp={};if(!S.lb.spx)S.lb.spx={};if(!S.lb.spl)S.lb.spl=[];if(!S.lb.gb)S.lb.gb=[];if(!S.lb.dv)S.lb.dv=[];if(!S.lb.hh)S.lb.hh=[];if(!S.lb.td)S.lb.td=[];if(!SO.length)computeSO()}
-function playerBalanced(){return myRk()>=BAL_RANK}
+function playerBalanced(){return myRk()>=BAL_RANK&&(S.rb||0)<3}
 function settle(){
   if(S.lb.week===weekStart())return;
   const t=Date.now();
@@ -292,8 +292,8 @@ function settle(){
   rows.forEach(r=>{
     if(r.rank<BAL_RANK)return;
     if(r.u){
-      S.bal=1; // người chơi: +25% linh lực nhận khi còn hạng ≥40 (kiểm tra liên tục qua playerBalanced)
-      helped.push(r.n+" (bạn)");
+      S.bal=playerBalanced()?1:0; // Người chơi nhận hệ số theo số kiếp khi đủ điều kiện.
+      if(S.bal)helped.push(r.n+" (bạn)");
     }else{
       // NPC: cộng một lần ~12% điểm tuần này vào cột cân bằng (làm mới mỗi tuần)
       const bonus=Math.max(30,Math.floor(r.s*0.12));
@@ -303,8 +303,8 @@ function settle(){
   });
   // Hạng < 40 không giữ bal tuần trước
   if(!playerBalanced())S.bal=0;
-  const nHelp=rows.filter(r=>r.rank>=BAL_RANK).length;
-  S.lb.log="Chốt bảng tuần: Thiên Đạo Cân Bằng ban ân cho "+nHelp+" vị hạng "+BAL_RANK+" trở xuống (+25% tốc độ cho đạo hữu khi còn dưới top "+(BAL_RANK-1)+"; NPC nhận linh lực cân bằng ~12%). Không còn hình phạt đứng cuối.";
+  const nHelp=helped.length;
+  S.lb.log="Chốt bảng tuần: Thiên Đạo Cân Bằng ban ân cho "+nHelp+" vị hạng "+BAL_RANK+" trở xuống (đạo hữu nhận +"+Math.round((root.GameRewards.balanceMultiplier(S.rb)-1)*100)+"% khi đủ điều kiện; NPC nhận linh lực cân bằng ~12%). Không còn hình phạt đứng cuối.";
   if(helped.length&&helped.length<=8)S.lb.log+=" Gồm: "+helped.slice(0,8).join(", ")+".";
   {const sg=spRoll(rows,Math.floor(Date.parse(weekStart()+"T00:00:00")/6048e5));if(sg.length)S.lb.log+=" Cơ duyên đặc biệt cho 3 hạng cuối: "+sg.map(x=>x.n+" ("+SPQ[x.k].n+")").join(", ")+"."}
   S.lb.log+=warReward();
