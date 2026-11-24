@@ -1478,4 +1478,5 @@ Tiếp theo theo thứ tự ưu tiên:
 - Thêm bốn danh hiệu vĩnh viễn: Tam Tông Truyền Nhân (3 truyền thừa khác nhau qua ít nhất hai kiếp), Tuế Nguyệt Vô Ngại (hai kiếp đủ kỳ hạn có thời lượng khác nhau), Tam Đạo Đồng Quy (viên mãn cả ba đạo lộ), Đạo Tâm Bất Tức (hai kiếp từng giữ chuỗi ≥7 ngày/kiếp). Tổng 12 sứ mệnh. Không buff, không tăng linh lực, không thay phạt hay thời hạn; không bắt buộc đổi thời lượng kiếp hoặc học đêm. Dữ liệu cũ chỉ tính nếu có trường lịch sử cần thiết.
 - [x] Edge headless profile riêng tại 390, 320, 280 px: tab Sứ mệnh, luân phiên đủ ba đạo lộ, nhận danh hiệu, sử kiếp, reload; không lỗi JS/tràn ngang.
 - [x] 156/156 kiểm thử tại Asia/Ho_Chi_Minh và UTC; `git diff --check` đạt.
-- [ ] Xác nhận CI/APK và nghiệm thu Android thật.
+- [x] CI Stage 5F, commit `fc385d34bbad5ef894c68f5ed6c5ee41d3a6de21`: JavaScript Tests (45382899426) và Build APK (45382899282) thành công. Artifact APK ID 14914503464 (6.294.162 byte, chưa hết hạn lúc kiểm tra).
+- [ ] Nghiệm thu Android thật.
