@@ -1569,3 +1569,13 @@ test("GameOpportunityStatsUI render bảng thống kê cơ duyên và dùng cach
  const c1=evCalls;M.html();
  assert.equal(evCalls,c1,"lần gọi thứ hai phải dùng cache, không tính lại cơ duyên NPC");
 });
+
+
+test("GamePetData cấp linh thú, tích lũy và thu hoạch khi đổi linh thú",()=>{
+ const P=window.GamePetData;const S={pets:{},points:0};const roster=[{id:"hl",n:"Hồ Ly",ranks:["Ấu Hồ","Linh Hồ"],d:"",e:lv=>"buff "+lv}];let fresh="";
+ const prize=P.grant(S,roster,null,{now:0,random:()=>0,markNew:id=>fresh=id});
+ assert.equal(prize.id,"hl");assert.equal(prize.n,"Ấu Hồ");assert.equal(S.act,"hl");assert.equal(S.petReveal.e,"buff 1");assert.equal(fresh,"hl");
+ assert.equal(P.accrued(S.pets,S.act,2*3600000,1),6);
+ const got=P.setActive(S,"other",2*3600000,1);assert.equal(got,6);assert.equal(S.points,6);assert.equal(S.act,"other");
+ P.setActive(S,"hl",3*3600000,0);assert.equal(S.pets.hl.t,3*3600000);
+});

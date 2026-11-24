@@ -1093,3 +1093,10 @@ Sau mỗi đợt thay đổi:
 - [x] Thêm test `GameOpportunityStatsUI` (nội dung bảng và cache theo kiếp). `npm test` cục bộ: 107/107 pass; `node --check` game.js và module mới đạt.
 - [ ] CI cho commit này: xem mục ghi nhận bên dưới sau khi chạy xong.
 - [ ] Việc còn lại của Giai đoạn 5: `narrate`/`buildRec`/`doRebirth` (luân hồi), `finish`/`TB`/`buffTxt`/`useItem` (hoàn thành nhiệm vụ và vật phẩm), `resolveEx`/`showExModal`/`renderExams`, `showTdLenh`, `petIcon`/`portrait`, khối event handler cuối `game.js`.
+
+
+## Chuyển cấp linh thú và tích lũy linh lực sang systems/pets.js (2026-11-24)
+
+- [x] Gom cấp linh thú mới, đánh dấu mới, tính linh lực tích lũy và thu hoạch khi đổi linh thú vào `GamePetData`.
+- [x] Giữ callback `grantPet`, `petAcc`, `setAct` ở bootstrap để không đổi các hệ thống thưởng đang gọi.
+- [x] Bổ sung test cấp linh thú, tích lũy, thu hoạch và reset mốc thời gian.

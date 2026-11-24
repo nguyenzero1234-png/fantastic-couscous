@@ -476,18 +476,7 @@ function knAt(h){
   if(!S.seed)S.seed=1+Math.floor(Math.random()*1e9);
   return GameKiepNanData.create(S.seed,h,KT0,KN,hs);
 }
-function grantPet(prefer){
-  const P=S.pets||(S.pets={});
-  const avail=PS.filter(p=>!P[p.id]);
-  if(!avail.length)return null;
-  let p=prefer?PS.find(x=>x.id===prefer&&!P[x.id]):null;
-  if(!p)p=avail[Math.floor(Math.random()*avail.length)];
-  if(!p)return null;
-  P[p.id]={lv:1,t:Date.now()};nwS().p[p.id]=1;
-  if(!S.act)S.act=p.id;
-  const prize={id:p.id,n:petRank(p,1),base:p.n,p};S.petReveal={id:p.id,n:prize.n,base:p.n,e:p.e(1),d:p.d};
-  return prize;
-}
+function grantPet(prefer){return GamePetData.grant(S,PS,prefer,{now:Date.now(),random:Math.random,markNew:id=>{nwS().p[id]=1}})}
 const kmins=o=>GameAnalytics.sumStudyMinutesBetween(S.stl,o.st,o.en);
 function knList(){const now=Date.now(),h0=Math.floor((now-KT0)/36e5),L=[];for(let h=h0-14;h<=h0;h++){const o=knAt(h);if(o&&o.st<=now&&now-o.en<6*36e5)L.push(o)}return L.reverse()}function renderKn(){ActivityUI.renderFortunes()}
 function claimKn(h){
@@ -703,8 +692,8 @@ const PS=[
 const petRank=(p,lv)=>GamePetData.rank(p,lv);
 if(S.pet&&!S.pets){S.pets={hl:{lv:S.pet.lv+1,t:S.pet.t}};S.act="hl";delete S.pet}
 function petBuff(){return GamePetData.buff(S.pets,S.act)}
-function petAcc(){const a=S.pets&&S.pets.hl;if(!a||S.act!=="hl")return 0;return Math.floor(Math.min(8,(Date.now()-a.t)/36e5)*(2+a.lv+(eqT("n6")?2:0)))}
-function setAct(id){if(S.act==="hl"){const g=petAcc();if(g){S.points+=g;hAdd(today(),g,0)}}S.act=id;if(id==="hl")S.pets.hl.t=Date.now()}
+function petAcc(){return GamePetData.accrued(S.pets,S.act,Date.now(),eqT("n6")?2:0)}
+function setAct(id){const g=GamePetData.setActive(S,id,Date.now(),eqT("n6")?2:0);if(g)hAdd(today(),g,0)}
 function renderPet(){GamePetUI.render({S,$,PS,petIcon,petRank,nwS,petAcc,save,render,document})}
 $("pet").onclick=e=>GamePetUI.handleClick(e,{S,$,PS,petRank,setAct,say,modGain,petAcc,hAdd,today,Date,save,render});
 

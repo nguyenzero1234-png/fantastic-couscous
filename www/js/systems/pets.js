@@ -27,5 +27,32 @@
     return out;
   }
 
-  root.GamePetData = Object.freeze({ rank, buff });
+
+  function accrued(pets,active,now,bonus){
+    const a=pets&&pets.hl;
+    if(!a||active!=="hl")return 0;
+    return Math.floor(Math.min(8,(now-a.t)/36e5)*(2+a.lv+(bonus||0)));
+  }
+  function grant(state,roster,prefer,options){
+    const o=options||{},P=state.pets||(state.pets={}),avail=roster.filter(x=>!P[x.id]);
+    if(!avail.length)return null;
+    let pet=prefer?roster.find(x=>x.id===prefer&&!P[x.id]):null;
+    if(!pet)pet=avail[Math.floor((o.random||Math.random)()*avail.length)];
+    if(!pet)return null;
+    const now=o.now==null?Date.now():o.now;
+    P[pet.id]={lv:1,t:now};
+    if(o.markNew)o.markNew(pet.id);
+    if(!state.act)state.act=pet.id;
+    const prize={id:pet.id,n:rank(pet,1),base:pet.n,p:pet};
+    state.petReveal={id:pet.id,n:prize.n,base:pet.n,e:pet.e(1),d:pet.d};
+    return prize;
+  }
+  function setActive(state,id,now,bonus){
+    const collected=accrued(state.pets,state.act,now,bonus);
+    if(collected)state.points+=collected;
+    state.act=id;
+    if(id==="hl"&&state.pets&&state.pets.hl)state.pets.hl.t=now;
+    return collected;
+  }
+  root.GamePetData = Object.freeze({ rank, buff, accrued, grant, setActive });
 })(typeof window !== "undefined" ? window : globalThis);
