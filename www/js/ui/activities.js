@@ -4,6 +4,7 @@
  function create(deps){
   const {S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,$}=deps;
   const esc=deps.escapeHtml,expired=deps.isExpired,unlocked=deps.isUnlocked,tok=deps.isTitleUnlocked,stepRow=deps.renderStepRow;
+  const getLQ=deps.getLQ,getLP=deps.getLP,lval=deps.lval,lpk=deps.lpk,lenhTop=deps.lenhTop;
   function renderSchedule(){
   const now=nowHM(),day=(S.sched[today()]||[]).slice().sort((a,b)=>a.s<b.s?-1:1);
   const v=$("lq").value;
@@ -35,7 +36,12 @@
     return `<div class="box"><div class="row" style="margin:0"><h2 style="flex:1">${esc(c.name)}</h2><span class="pb">${c.paid?"Xong +"+c.bonus:d+"/"+st.length+" · còn "+st.filter(x=>!isDone(x)).reduce((t,x)=>t+(x.mins||0),0)+"p"}</span><button class="del" data-a="cd" data-id="${c.id}" aria-label="Xóa chuỗi">×</button></div><div class="bar"><i style="width:${st.length?Math.round(d/st.length*100):0}%"></i></div><ul style="margin-top:8px">${st.map((q,i)=>stepRow(q,!st.slice(0,i).every(isDone))).join("")}</ul></div>`}).join("")
   :`<div class="empty">Chưa có chuỗi. Tạo chuỗi đầu tiên ở phía trên.</div>`;
 }
-  return Object.freeze({renderSchedule,renderShop,renderChains});
+  function renderDailyMissions(){
+  const LQ=getLQ(),LP=getLP();
+  $("lenh").innerHTML=lenhTop()+["d","w","m"].map(p=>`<div class="box"><h2>${LP[p][0]}</h2><small>${LP[p][1]}</small><ul>${LQ.filter(t=>t.per===p).map(t=>{const raw=lval(t),v=Math.min(raw,t.tg),got=S.claimed["q:"+t.id+":"+lpk(p)];
+    return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${t.n}</b><span class="pb">+${t.r}${t.it?" và "+ITEMS.find(i=>i.id===t.it).n:""}</span></div><small>${t.desc}: ${Math.round(v)}/${t.tg}${t.met==="m"?" phút":""}</small><div class="bar"><i style="width:${Math.round(v/t.tg*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" data-a="lc" data-id="${t.id}" ${got||raw<t.tg?"disabled":""}>${got?"Đã nhận":"Nhận thưởng"}</button></div></li>`}).join("")}</ul></div>`).join("");
+}
+  return Object.freeze({renderSchedule,renderShop,renderChains,renderDailyMissions});
  }
  root.GameActivityUI=Object.freeze({create});
 })(typeof window!=="undefined"?window:globalThis);

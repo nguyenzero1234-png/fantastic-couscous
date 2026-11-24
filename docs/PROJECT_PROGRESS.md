@@ -1027,3 +1027,10 @@ Sau mỗi đợt thay đổi:
 - [x] Inject state, dữ liệu cảnh giới, bảng xếp hạng, ảnh chân dung và chỉ số cơ duyên; profile index được đọc qua getter để luôn nhận lựa chọn mới nhất.
 - [x] Giữ wrapper `renderProf` để các call-site cũ không đổi.
 - [x] Bổ sung kiểm thử render hồ sơ người chơi.
+
+
+## Gom màn hình nhiệm vụ ngày/tuần/tháng vào ui/activities.js (2026-11-24)
+
+- [x] Đưa renderer Lệnh Bảng ngày/tuần/tháng vào nhóm UI hoạt động cùng lịch học, bảo khố và chuỗi nhiệm vụ.
+- [x] Chỉ inject getter dữ liệu và phép tính tiến độ; giữ xử lý nhận thưởng/click trong `game.js` để không thay đổi nghiệp vụ.
+- [x] Giữ wrapper `renderLenh` và thêm test renderer đủ tiến độ/nhận thưởng.

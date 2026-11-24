@@ -246,7 +246,7 @@ const sumMins=f=>GameAnalytics.sumMinutes(S.hist,f);
 const evCur=p=>p==="w"?sumMins(k=>k>=weekStart()&&k<=today()):sumMins(k=>k.slice(0,7)===today().slice(0,7));
 const unlocked=q=>GameQuestData.isUnlocked(S.quests,q,isDone);
 const stepRow=(q,lock)=>{const d=isDone(q);return `<li class="${d?"done":""}${lock?" lock":""}"><button class="tick" data-a="t" data-id="${q.id}" aria-label="Hoàn thành bước">${d?"✓":lock?"🔒":""}</button><div class="nm">${esc(q.name)}<small>${q.mins} phút</small></div>${!d&&!lock?`<button class="play" data-a="p" data-id="${q.id}">Học</button>`:""}<span class="pb">+${d&&q.got?q.got:q.pts}</span></li>`};
-const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),$});
+const ActivityUI=GameActivityUI.create({S,nowHM,today,tm,isDone,sq,rn,ITEMS,IC,buffTxt,TITLES,nwS,escapeHtml:esc,isExpired:q=>expired(q),isUnlocked:q=>unlocked(q),isTitleUnlocked:t=>tok(t),renderStepRow:(q,l)=>stepRow(q,l),getLQ:()=>LQ,getLP:()=>LP,lval:t=>lval(t),lpk:p=>lpk(p),lenhTop:()=>lenhTop(),$});
 function renderLich(){ActivityUI.renderSchedule()}
 function renderShop(){ActivityUI.renderShop()}
 function renderChains(){ActivityUI.renderChains()}
@@ -585,10 +585,7 @@ const LQ=[
 const LP={d:["Nhật khóa","Làm mới mỗi ngày"],w:["Tuần khóa","Làm mới mỗi thứ Hai"],m:["Nguyệt khóa","Làm mới mỗi tháng"]};
 const lpk=p=>GameDateData.periodKey(p,today(),weekStart());
 function lval(t){return GameAnalytics.questProgress(S.hist,S.cnt,t,today(),weekStart())}
-function renderLenh(){
-  $("lenh").innerHTML=lenhTop()+["d","w","m"].map(p=>`<div class="box"><h2>${LP[p][0]}</h2><small>${LP[p][1]}</small><ul>${LQ.filter(t=>t.per===p).map(t=>{const raw=lval(t),v=Math.min(raw,t.tg),got=S.claimed["q:"+t.id+":"+lpk(p)];
-    return `<li style="display:block"><div class="row" style="margin:0"><b style="flex:1">${t.n}</b><span class="pb">+${t.r}${t.it?" và "+ITEMS.find(i=>i.id===t.it).n:""}</span></div><small>${t.desc}: ${Math.round(v)}/${t.tg}${t.met==="m"?" phút":""}</small><div class="bar"><i style="width:${Math.round(v/t.tg*100)}%"></i></div><div class="row" style="margin:0"><button class="btn" data-a="lc" data-id="${t.id}" ${got||raw<t.tg?"disabled":""}>${got?"Đã nhận":"Nhận thưởng"}</button></div></li>`}).join("")}</ul></div>`).join("");
-}
+function renderLenh(){ActivityUI.renderDailyMissions()}
 $("lenh").onclick=e=>{
   const k=e.target.closest("[data-a=kc],[data-a=ci]");if(k&&!k.disabled){if(k.dataset.a==="kc")claimKn(+k.dataset.id);else checkin();return}
   const b=e.target.closest("[data-a=lc]");if(!b||b.disabled)return;
