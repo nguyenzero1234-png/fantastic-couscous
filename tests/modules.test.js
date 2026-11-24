@@ -1503,3 +1503,10 @@ test("GameLeaderboardUI render dự báo giữ thứ hạng",()=>{
  const M=window.GameLeaderboardUI.create({S:{points:100,perHour:100,streak:{last:"2026-11-24",n:3},tm:false},B:[{n:"NPC",p:0}],sc:()=>100,lbInit:()=>{},BAL_RANK:40,BAL_MULT:1.25,SECTS:[],SO:[],rname:x=>"Cảnh giới "+x,uxp:()=>100,bxp:()=>100,spark:()=>"spark",AVATARS:{},KD:119,$:id=>nodes[id],escapeHtml:x=>String(x),portrait:()=>"avatar",isTopCultivator:()=>false,renderProfile:()=>{},getKAge:()=>1,getCurStreak:()=>1,myRank:()=>1,today:()=>"2026-11-24",dayStr:n=>"2026-11-"+String(24-n).padStart(2,"0")});
  M.renderForecast();assert.match(nodes.fout.innerHTML,/Giữ hạng 1\/2/);assert.match(nodes.fout.innerHTML,/Tu vi các tu sĩ sau 7 ngày/);
 });
+
+
+test("GameProfileUI render hồ sơ người chơi qua dependency",()=>{
+ const node={innerHTML:""};const S={lb:{t0:0},sect:null,name:"Đạo Hữu",title:null,points:123};
+ const M=window.GameProfileUI.create({S,B:[],SO:[],SECTS:[],TITLES:[],BH:[],SP:60000,CDN:[],HTC:{f:[]},NVC_TITLES:["Nguyên Lưu"],RL:[["Luyện Khí",0]],STG:["Sơ nhập"],$:()=>node,uxp:()=>123,bxp:()=>0,ri:()=>0,tok:()=>false,bio:()=>"",myRk:()=>1,rkNow:()=>1,portrait:()=>"avatar",isTK:()=>false,esc:x=>String(x),htCount:()=>0,htLate:()=>0,hrs:()=>0,miles:()=>[],fmtT:()=>"",rname:()=>"Luyện Khí",getProfileIndex:()=>-1});
+ M.render();assert.match(node.innerHTML,/Đạo Hữu/);assert.match(node.innerHTML,/Hạng 1/);assert.match(node.innerHTML,/Luyện Khí/);
+});

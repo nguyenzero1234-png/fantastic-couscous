@@ -1019,3 +1019,11 @@ Sau mỗi đợt thay đổi:
 - [x] Sửa dấu đóng callback scheduler trong onboarding module trước khi nghiệm thu CI.
 - [x] Loại bỏ khai báo trùng `today` trong leaderboard UI factory; dùng giá trị đã destructure từ dependency.
 - [x] Dùng dependency `myRank` nhất quán trong renderer Thiên Diễn, tránh phụ thuộc biến cache của màn hình leaderboard.
+
+
+## Tách hồ sơ nhân vật sang ui/profile.js (2026-11-24)
+
+- [x] Chuyển renderer hồ sơ người chơi/NPC, thiên phú, cơ duyên và lịch sử tu vi sang `GameProfileUI`.
+- [x] Inject state, dữ liệu cảnh giới, bảng xếp hạng, ảnh chân dung và chỉ số cơ duyên; profile index được đọc qua getter để luôn nhận lựa chọn mới nhất.
+- [x] Giữ wrapper `renderProf` để các call-site cũ không đổi.
+- [x] Bổ sung kiểm thử render hồ sơ người chơi.
