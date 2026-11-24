@@ -44,12 +44,12 @@ let reloads=0;
 const location={href:"https://example.test/",reload(){reloads++}};
 const URLApi={createObjectURL:()=>"blob:test",revokeObjectURL(){}};
 const timeout=()=>1,matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-const createContext=()=>vm.createContext({
+const createContext=(overrides={})=>vm.createContext({
  document,localStorage,navigator,location,URL:URLApi,Blob,screen:{height:800,width:390},innerHeight:800,innerWidth:390,devicePixelRatio:1,
  setTimeout:timeout,clearTimeout(){},setInterval:timeout,clearInterval(){},requestAnimationFrame:timeout,cancelAnimationFrame(){},
  dispatchEvent(){},addEventListener(){},removeEventListener(){},matchMedia,confirm:()=>true,prompt:()=>"",console:{log(){},warn(){},error(){},info(){}},
  Date,Math,Object,Array,Number,String,Boolean,RegExp,JSON,Map,Set,Promise,Intl,Error,TypeError,parseInt,parseFloat,isNaN,
- performance:{now:()=>0}
+ performance:{now:()=>0},...overrides
 });
 const context=createContext();
 vm.runInContext("globalThis.window=globalThis",context);
@@ -232,4 +232,170 @@ test("khởi động khi cả hai save lỗi hiển thị cảnh báo và giữ 
  assert.equal(storage.get(key),primary);
  assert.equal(storage.get(key+".backup"),backup);
  assert.match(vm.runInContext("bx.innerHTML",fresh),/Tải dữ liệu cứu hộ/);
+});
+
+function timerFixture(nativePlugin){
+ storage.clear();nodes.clear();
+ let now=new Date(2026,10,24,23,58,0).getTime();
+ class Clock extends Date {
+  constructor(...args){super(...(args.length?args:[now]))}
+  static now(){return now}
+ }
+ const events={};
+ const doc={...document,addEventListener(type,fn){(events[type]??=[]).push(fn)}};
+ function boot(){
+  nodes.clear();
+  for(const type of Object.keys(events))delete events[type];
+  const c=createContext({Date:Clock,document:doc,Capacitor:nativePlugin?{isNativePlatform:()=>true,Plugins:{LocalNotifications:nativePlugin}}:undefined});
+  vm.runInContext("globalThis.window=globalThis",c);
+  for(const name of scripts)vm.runInContext(fs.readFileSync(path.join(jsDir,name),"utf8"),c,{filename:name});
+  return c;
+ }
+ let c=boot();
+ return {
+  run:code=>vm.runInContext(code,c),
+  advance:ms=>{now+=ms},reload:()=>{c=boot()},
+  saved:()=>JSON.parse(storage.get("quest-study-v1")),
+  click:(a,id,section="list")=>getNode(section).onclick({target:{closest:()=>({dataset:{a,id}})}}),
+  flush:()=>vm.runInContext("reconcileTimers(true)",c),
+  visibility:hidden=>{doc.hidden=hidden;for(const fn of events.visibilitychange||[])fn()}
+ };
+}
+
+test("B: focus và giờ chơi khôi phục qua reload, deadline và nửa đêm, thưởng đúng một lần",()=>{
+ const f=timerFixture();
+ f.run('S.quests.push({id:"other",name:"Khác",mins:5,pts:10},{id:"q",name:"Học",mins:5,pts:100,due:Date.now()+60000});S.gameSec=600;save()');
+ f.click("p","q");
+ getNode("run").onclick();
+ const initial=f.saved();
+ assert.equal(initial.timers.focus.questId,"q");
+ assert.ok(initial.timers.play.id);
+ f.advance(90000);f.visibility(true);
+ assert.equal(f.saved().gameSec,510);
+ f.reload();
+ assert.equal(f.saved().gameSec,510);
+ assert.equal(f.run("GameTimer.focusRemaining()"),210);
+ assert.equal(f.saved().timers.focus.id,initial.timers.focus.id);
+ assert.equal(getNode("focus").hidden,false);
+ f.advance(240000);f.reload();
+ const settled=f.saved(),q=settled.quests[1];
+ assert.equal(settled.timers.focus,null);
+ assert.equal(settled.gameSec,270);
+ assert.equal(q.doneOn,"2026-11-25");
+ assert.equal(settled.hist[q.doneOn].m,5);
+ assert.ok(q.got>0);
+ f.reload();f.flush();
+ assert.equal(f.saved().points,settled.points);
+ assert.equal(f.saved().hist[q.doneOn].m,5);
+ f.advance(1000000);f.reload();
+ assert.equal(f.saved().gameSec,0);
+ assert.equal(f.saved().timers.play,null);
+});
+
+test("B: hoàn thành thủ công, hủy, xóa chuỗi, sửa/tạo lại và nhiệm vụ khóa",()=>{
+ const f=timerFixture();
+ f.run('S.quests.push({id:"q",name:"Học",mins:5,pts:100},{id:"expired",name:"Hết hạn",mins:5,pts:100,due:Date.now()-1},{id:"a",name:"A",mins:5,pts:100,chain:"c"},{id:"b",name:"B",mins:5,pts:100,chain:"c"});S.chains.push({id:"c",name:"Chuỗi"});save()');
+ f.click("p","expired");f.click("p","b");
+ assert.equal(f.saved().timers.focus,null);
+ f.click("p","q");
+ f.click("rn","q");
+ assert.equal(f.saved().timers.focus.questId,"q");
+ f.click("t","q");
+ const points=f.saved().points;
+ assert.equal(f.saved().timers.focus,null);
+ f.advance(360000);f.reload();
+ assert.equal(f.saved().points,points);
+ f.click("p","a");getNode("fx").onclick();
+ assert.equal(f.saved().timers.focus,null);
+ f.click("p","a");f.click("cd","c","chains");
+ assert.equal(f.saved().timers.focus,null);
+ f.advance(360000);f.reload();
+ assert.equal(f.saved().points,points);
+});
+
+test("B: play pause, mua thêm giờ, rollback đồng hồ và focus orphan",()=>{
+ const f=timerFixture();
+ f.run('S.points=500;S.gameSec=120;S.quests.push({id:"q",name:"Học",mins:5,pts:100});save()');
+ f.click("p","q");getNode("run").onclick();
+ f.advance(30000);f.flush();
+ assert.equal(f.saved().gameSec,90);
+ assert.equal(f.run("GameTimer.focusRemaining()"),270);
+ f.advance(-60000);f.flush();
+ assert.equal(f.saved().gameSec,90);
+ assert.equal(f.run("GameTimer.focusRemaining()"),270);
+ f.advance(10000);getNode("run").onclick();
+ assert.equal(f.saved().gameSec,80);
+ assert.equal(f.saved().timers.play,null);
+ f.advance(20000);f.reload();
+ assert.equal(f.saved().gameSec,80);
+ getNode("run").onclick();f.advance(120000);
+ getNode("mins").value="1";getNode("buy").onclick();
+ assert.equal(f.saved().timers.play,null);
+ assert.equal(f.saved().gameSec,60);
+ f.run("S.quests=[];save()");f.reload();
+ assert.equal(f.saved().timers.focus,null);
+});
+
+test("B: notification timer, hủy, lỗi native và khôi phục quyền",async()=>{
+ const pending=new Map();
+ let permission="granted",fail=false,requests=0,scheduleCalls=0;
+ const plugin={
+  checkPermissions:async()=>({display:permission}),
+  requestPermissions:async()=>{requests++;return {display:permission}},
+  createChannel:async()=>{},
+  getPending:async()=>({notifications:[...pending.values()]}),
+  cancel:async({notifications})=>notifications.forEach(n=>pending.delete(n.id)),
+  schedule:async({notifications})=>{
+   scheduleCalls++;
+   if(fail)throw Error("mock schedule failure");
+   notifications.forEach(n=>pending.set(n.id,n));
+  }
+ };
+ const f=timerFixture(plugin),drain=()=>new Promise(resolve=>setImmediate(resolve));
+ await drain();
+ f.run('S.nt.on=true;S.quests.push({id:"q",name:"Học",mins:5,pts:100});S.gameSec=60;save()');
+ f.click("p","q");getNode("run").onclick();
+ await drain();
+ assert.ok(pending.has(1700));assert.ok(pending.has(1701));
+ assert.equal(+pending.get(1700).schedule.at,f.saved().timers.focus.endAt);
+ const before=scheduleCalls;
+ f.advance(15000);f.flush();await f.run("NT.run(false)");await drain();
+ assert.equal(scheduleCalls,before);
+ getNode("fx").onclick();await drain();
+ assert.equal(pending.has(1700),false);
+ permission="denied";await f.run("NT.run(true)");
+ assert.equal(requests,0);
+ assert.match(getNode("ntsync").textContent,/Chưa cấp quyền/);
+ assert.equal(pending.size,0);
+ permission="granted";fail=true;await f.run("NT.run(true)");
+ assert.match(getNode("ntsync").textContent,/Chưa đồng bộ/);
+ fail=false;await f.run("NT.run(false)");
+ assert.match(getNode("ntsync").textContent,/Đã đồng bộ/);
+ assert.ok(pending.has(1701));
+ f.run("S.nt.on=false;save()");await f.run("NT.run(true)");
+ assert.equal(pending.size,0);
+});
+
+test("B: nhiệm vụ lặp có lượt mới sau nửa đêm và luân hồi xóa cả hai phiên",()=>{
+ const f=timerFixture();
+ f.run('S.quests.push({id:"q",name:"Học mỗi ngày",mins:5,pts:100,repeat:true});S.gameSec=600;save()');
+ f.click("t","q");
+ const prior=f.saved();
+ f.advance(180000);f.visibility(false);
+ f.click("p","q");getNode("run").onclick();
+ assert.equal(f.saved().timers.focus.questId,"q");
+ f.advance(300000);f.visibility(false);
+ assert.equal(f.saved().quests[0].doneOn,"2026-11-25");
+ assert.equal(f.saved().hist["2026-11-25"].m,5);
+ assert.ok(f.saved().points>prior.points);
+ f.run('S.quests.push({id:"r",name:"Học tiếp",mins:5,pts:100});save()');
+ f.click("p","r");
+ assert.ok(f.saved().timers.play);
+ assert.ok(f.saved().timers.focus);
+ f.run("doRebirth()");
+ assert.equal(f.saved().gameSec,0);
+ assert.equal(f.saved().timers.focus,null);
+ assert.equal(f.saved().timers.play,null);
+ f.advance(300000);f.reload();
+ assert.equal(f.saved().points,0);
 });

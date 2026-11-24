@@ -32,7 +32,19 @@ Ngày 2026-11-24, sau khi nhận link APK từ Build APK run 45326644529 (commit
 - [ ] Kiểm tra bàn phím, vùng an toàn, xoay màn hình (nếu hỗ trợ), cuộn và các modal.
 - [ ] Kiểm tra không có lỗi nghiêm trọng trong logcat và không có nội dung HTTP mixed content.
 
+## Bổ sung nghiệm thu đợt B — timer và thông báo
+
+- [ ] Trên bản cài thử nghiệm, bắt đầu học, đưa app xuống nền hoặc khóa màn hình, mở lại trước khi hết giờ; kiểm tra thời gian còn lại đúng.
+- [ ] Đóng app trong phiên học, mở lại sau khi hết giờ; kiểm tra hoàn thành và thưởng đúng một lần kể cả sau nhiều lần mở lại.
+- [ ] Bắt đầu học hợp lệ sát hạn nhiệm vụ và sát nửa đêm; đối chiếu thưởng/ngày ghi nhận khi mở lại sau hạn hoặc qua ngày.
+- [ ] Thử hoàn thành thủ công, hủy học, xóa nhiệm vụ/chuỗi đang học và luân hồi; kiểm tra phiên cũ không phát thưởng hoặc thông báo lần nữa.
+- [ ] Chạy học và chơi đồng thời, đóng/mở app; kiểm tra số giây chơi còn lại, dừng chơi và mua thêm thời gian khi đang chạy.
+- [ ] Đổi giờ thiết bị lùi rồi tiến trên bản thử nghiệm; kiểm tra thời gian đã tiêu không được hoàn lại, phiên hết hạn được xử lý nhất quán.
+- [ ] Từ chối rồi cấp lại quyền thông báo, kiểm tra trạng thái giao diện và lịch nhắc được khôi phục; hủy/dừng phiên để kiểm tra thông báo cũ không còn.
+- [ ] Kiểm tra giao thông báo khi màn hình khóa, app chạy nền, đóng app và với chế độ tiết kiệm pin; ghi rõ giới hạn theo thiết bị/Android.
+
 ## Tiêu chí đạt
+
 
 - Không crash trong các luồng chính.
 - Dữ liệu lưu bền qua đóng/mở app và khởi động lại thiết bị.

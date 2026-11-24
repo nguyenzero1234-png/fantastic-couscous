@@ -7,11 +7,16 @@
   const rejectedPrimaries=new Set();
   const record=v=>!!v&&typeof v==="object"&&!Array.isArray(v);
   const nonnegative=v=>typeof v==="number"&&Number.isFinite(v)&&v>=0;
+  const session=v=>record(v)&&typeof v.id==="string"&&v.id.length>0&&nonnegative(v.startedAt);
   const optional=(v,check)=>v===undefined||check(v);
 
   function validSave(value){
     if(!record(value)||!Array.isArray(value.quests)||!nonnegative(value.points))return false;
     if(!optional(value.schemaVersion,v=>v===1||v===2))return false;
+    if(!optional(value.gameSec,v=>Number.isSafeInteger(v)&&v>=0))return false;
+    if(!optional(value.timers,v=>record(v)&&
+      (v.play===null||(session(v.play)&&nonnegative(v.play.lastTickAt)))&&
+      (v.focus===null||(session(v.focus)&&typeof v.focus.questId==="string"&&v.focus.questId.length>0&&nonnegative(v.focus.lastSeenAt)&&nonnegative(v.focus.endAt)&&v.focus.endAt>=v.focus.lastSeenAt))))return false;
     if(Object.prototype.hasOwnProperty.call(value,"__proto__"))return false;
     const ids=new Set();
     for(const q of value.quests){
@@ -158,7 +163,7 @@
       console.error("[Tu Tiên Học Đạo] Lưu thất bại. Hãy xuất bản sao lưu và kiểm tra dung lượng bộ nhớ.",error);
       try{global.dispatchEvent(new Event("game-save-error"))}catch(_){}
     }
-    try{global.NTsave&&global.NTsave()}catch(error){
+    if(ok)try{global.NTsave&&global.NTsave()}catch(error){
       console.warn("[Tu Tiên Học Đạo] Không thể lưu trạng thái thông báo.",error);
     }
     return ok;

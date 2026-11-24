@@ -3,7 +3,7 @@
   "use strict";
   const KEY="quest-study-v1";
   const DEFAULTS={
-    quests:[],points:0,gameSec:0,rate:2,perHour:200,
+    quests:[],points:0,gameSec:0,timers:{focus:null,play:null},rate:2,perHour:200,
     streak:{last:"",n:0},hist:{},chains:[],
     ev:{w:{h:10,r:100},m:{h:40,r:500}},claimed:{},inv:{},
     buff:{n:0,m:1},title:"",sched:{},lb:null,sem:null,
@@ -14,6 +14,7 @@
   function migrate(state){
     const S=state;
     S.schemaVersion=2;
+    if(!S.timers)S.timers={focus:null,play:null};
     if(!S.ph200){S.perHour=200;S.ph200=1;}
     if(S.menh==null)S.menh=100;
     if(S.tdPenalty==null)S.tdPenalty=false;

@@ -1243,6 +1243,16 @@ Phạm vi theo `STAGE_2_REVIEW.txt`. Giữ cấu trúc module hiện tại và c
 
 Tiếp theo theo thứ tự ưu tiên:
 
-- [ ] Đợt B — lưu/khôi phục phiên học và chơi khi app đóng hoặc chạy nền; thống nhất quy tắc thời gian/hạn nhiệm vụ trước khi thay đổi hành vi; kiểm tra thông báo Android.
+- [x] Đợt B — triển khai lưu/khôi phục phiên học và chơi khi app đóng hoặc chạy nền; thống nhất quy tắc thời gian/hạn nhiệm vụ; kiểm thử tự động thông báo. Nghiệm thu Android thật còn mở.
 - [ ] Đợt C — mô phỏng cân bằng và trình lựa chọn luật chơi dựa trên số liệu.
 - [ ] Đợt D — cải thiện giao diện học tập, minh bạch thưởng/phạt và hiệu năng.
+
+## Stage 2 — Đợt B: vòng đời timer (2026-11-24)
+
+- `core/game-loop.js` quản lý phiên học và chơi theo thời gian thực, có thể chạy đồng thời; `core/state.js` và `core/storage.js` lưu, migrate và kiểm tra dữ liệu timer. `game.js` đối soát khi mở lại app, đổi ngày, quay về foreground và lưu định kỳ 15 giây, lưu ngay khi chuyển trạng thái. Tick chỉ cập nhật DOM cần thiết.
+- Phiên học bắt đầu hợp lệ được hoàn thành kể cả khi vượt hạn nhiệm vụ; ghi thưởng vào ngày đối soát theo giờ game, đúng một lần. Chặn bắt đầu nhiệm vụ hết hạn, đã xong, bị khóa hoặc thời lượng sai. Hoàn thành thủ công, hủy, xóa nhiệm vụ/chuỗi và luân hồi xử lý timer tương ứng; chặn sửa hoặc tạo lại nhiệm vụ đang học.
+- Phiên chơi trừ thời gian thực đã trôi qua kể cả khi đóng app; dừng thì giữ số giây còn lại, mua thêm đối soát trước khi cộng. Khi đồng hồ lùi, đổi mốc mà không hoàn lại thời gian đã ghi nhận; chỉnh giờ tiến có thể làm phiên hết hạn. Cơ chế này dựa trên đồng hồ thiết bị.
+- `runtime/notify.js` dùng phiên timer thực để đặt/hủy thông báo, ưu tiên hai timer trong giới hạn lịch; xử lý quyền bị từ chối, lịch cũ và thử lại khi lỗi. Việc phát thông báo thực tế phụ thuộc Android và quản lý pin.
+- [x] Kiểm thử cục bộ 129/129 ở `Asia/Ho_Chi_Minh` và `UTC`; `git diff --check` đạt. Microsoft Edge headless với profile độc lập và thao tác nút thật đạt luồng học/chơi chạy đồng thời, reload hai lần, vượt hạn/qua ngày, không thưởng trùng và dừng chơi đúng số giây. Thông báo được kiểm thử bằng mock Capacitor.
+- [ ] Xác minh CI và artifact APK theo SHA của đợt B.
+- [ ] Nghiệm thu trên Android thật theo `docs/ANDROID_QA_CHECKLIST.md` (bao gồm giao thông báo khi app đóng, chạy nền và quản lý pin).

@@ -95,7 +95,10 @@
           });
         });
       }
-      try{if(fq&&fEnd>now+3000)out.push({id:700,title:"Học xong rồi!",body:"«"+String(fq.name).slice(0,40)+"» đã đủ "+fq.mins+" phút. Vào nhận linh lực nhé!",at:new Date(fEnd)})}catch(e){}
+      const focus=GameTimer.activeFocus(),session=GameTimer.focusSession();
+      if(focus&&session.endAt>now)out.push({id:700,title:"Học xong rồi!",body:"«"+String(focus.name).slice(0,40)+"» đã đủ "+focus.mins+" phút. Vào nhận linh lực nhé!",at:new Date(session.endAt)});
+      const playEnd=GameTimer.playEndAt();
+      if(playEnd&&playEnd>now)out.push({id:701,title:"Hết giờ chơi!",body:"Quay lại học tập để tích thêm linh lực.",at:new Date(playEnd)});
       return out;
     },
     reward:()=>{
@@ -183,10 +186,11 @@
     Object.keys(BLD).forEach(g=>{
       if(!c.g[g])return;
       let arr=[];try{arr=BLD[g]()||[]}catch(e){console.warn("NT build "+g,e)}
-      arr.forEach(n=>{if(n.at&&+n.at>Date.now()+5000)out.push({id:RANGE[g]+(n.id|0),title:n.title,body:n.body,at:n.at})});
+      arr.forEach(n=>{if(n.at&&+n.at>Date.now()+((g==="study"&&(n.id===700||n.id===701))?0:5000))out.push({id:RANGE[g]+(n.id|0),title:n.title,body:n.body,at:n.at})});
     });
     out.sort((a,b)=>a.at-b.at);
-    return out.slice(0,MAXN);
+    const timers=out.filter(n=>n.id===1700||n.id===1701);
+    return timers.concat(out.filter(n=>n.id!==1700&&n.id!==1701).slice(0,MAXN-timers.length)).sort((a,b)=>a.at-b.at);
   }
 
   async function perm(ask){
@@ -196,35 +200,55 @@
   }
   async function channel(){
     if(!LN)return;
-    try{await LN.createChannel({id:CH,name:"Nhắc nhở học tập",description:"Nhắc học, nhận thưởng, thiên kiếp",importance:4,visibility:1,vibration:true})}catch(e){}
+    await LN.createChannel({id:CH,name:"Nhắc nhở học tập",description:"Nhắc học, nhận thưởng, thiên kiếp",importance:4,visibility:1,vibration:true});
   }
-  async function cancelOurs(){
-    try{
-      const p=await LN.getPending();
-      const ids=(p.notifications||[]).map(n=>n.id).filter(id=>id>=1000&&id<5000);
-      if(ids.length)await LN.cancel({notifications:ids.map(id=>({id}))});
-    }catch(e){}
+  let busy=false,again=false,forceAgain=false,tm=null,lastDOff=S.dOff||0;
+  let scheduled=new Map(),syncStatus="";
+  function status(message){
+    syncStatus=message;
+    const el=document.getElementById("ntsync");
+    if(el)el.textContent=message;
   }
-
-  let busy=false,again=false,sig=null,tm=0,lastDOff=S.dOff||0;
   async function run(force){
-    if(!LN)return;
-    if(busy){again=true;return}
+    if(!LN||GameStateHandle.isWriteBlocked())return;
+    if(busy){again=true;forceAgain=forceAgain||!!force;return}
     busy=true;
     try{
-      const c=cfg();
-      if(!c.on){if(sig!=="off"){await cancelOurs();sig="off"}return}
-      if((await perm(false))!=="granted"){sig=null;return}
-      const list=build(),s=JSON.stringify(list.map(n=>[n.id,n.title,n.body,+n.at]));
-      if(!force&&s===sig)return;
-      await cancelOurs();
-      if(list.length)await LN.schedule({notifications:list.map(n=>({id:n.id,title:n.title,body:n.body,channelId:CH,schedule:{at:n.at,allowWhileIdle:true}}))});
-      sig=s;
-    }catch(e){console.warn("NT run",e);sig=null}
-    finally{busy=false;if(again){again=false;run(false)}}
+      const c=cfg(),permission=c.on?await perm(false):null;
+      const allowed=c.on&&permission==="granted";
+      const list=allowed?build():[];
+      const desired=new Map(list.map(n=>[n.id,JSON.stringify([n.title,n.body,+n.at])]));
+      const unchanged=desired.size===scheduled.size&&[...desired].every(([id,key])=>scheduled.get(id)===key);
+      const message=!c.on?"Đã tắt lịch thông báo.":permission==="granted"?"Đã đồng bộ lịch thông báo.":permission==="error"?"Không kiểm tra được quyền thông báo.":"Chưa cấp quyền thông báo.";
+      if(!force&&unchanged&&syncStatus===message)return;
+      const pending=await LN.getPending();
+      const ids=new Set((pending.notifications||[]).map(n=>n.id).filter(id=>id>=1000&&id<5000));
+      const stale=[...ids].filter(id=>!desired.has(id));
+      if(stale.length)await LN.cancel({notifications:stale.map(id=>({id}))});
+      const changed=list.filter(n=>!ids.has(n.id)||scheduled.get(n.id)!==desired.get(n.id));
+      if(changed.length){
+        await channel();
+        await LN.schedule({notifications:changed.map(n=>({id:n.id,title:n.title,body:n.body,channelId:CH,schedule:{at:n.at,allowWhileIdle:true}}))});
+      }
+      scheduled=desired;
+      status(message);
+    }catch(e){
+      console.warn("NT run",e);scheduled.clear();
+      status("Chưa đồng bộ được lịch thông báo. Sẽ thử lại.");
+    }finally{
+      busy=false;
+      if(again){const force=forceAgain;again=false;forceAgain=false;run(force)}
+    }
   }
-  window.NTsave=()=>{if(!LN)return;clearTimeout(tm);tm=setTimeout(()=>run(false),5000)};
-  window.NTforce=()=>{if(!LN)return;clearTimeout(tm);run(true)};
+  window.NTsave=()=>{
+    if(!LN||tm!==null)return;
+    tm=setTimeout(()=>{tm=null;run(false)},5000);
+  };
+  window.NTforce=()=>{
+    if(!LN)return;
+    if(tm!==null)clearTimeout(tm);
+    tm=null;run(true);
+  };
 
   const box=document.createElement("div");box.style.display="contents";box.id="ntbox";
   async function paint(){
@@ -258,7 +282,7 @@
       <button class="btn" data-nt="uadd">Thêm</button>
     </div></div>`;
 
-    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small>${dOffNote}
+    box.innerHTML=`<details class="fold" data-k="nt"${FO.nt?" open":""}><summary>Thông báo nhắc nhở</summary><small>${st}</small><small id="ntsync" style="display:block">${syncStatus}</small>${dOffNote}
 <div class="chips" style="margin-top:8px"><button class="btn alt${c.on?" on":""}" data-nt="tg">${c.on?"Đang bật · bấm để tắt":"Bật thông báo"}</button><button class="btn alt" data-nt="test">Thử thông báo (5 giây)</button></div>
 <div class="row"><label>Giờ nhắc học <input type="time" id="ntt" value="${c.t}"></label></div>
 ${userHtml}
@@ -290,14 +314,14 @@ ${userHtml}
       if(!c.on){
         const p=await perm(true);
         if(p!=="granted"){say("Chưa được cấp quyền thông báo. Hãy bật quyền trong cài đặt điện thoại.");paint();return}
-        await channel();c.on=true;save();say("Đã bật thông báo.");run(true);
+        c.on=true;save();say("Đã bật thông báo.");run(true);
       }else{c.on=false;save();run(true);say("Đã tắt thông báo.")}
       paint();
     }else if(a==="test"){
       const p=await perm(true);
       if(p!=="granted"){say("Chưa được cấp quyền thông báo. Hãy bật quyền trong cài đặt điện thoại.");paint();return}
-      await channel();
       try{
+        await channel();
         await LN.schedule({notifications:[{id:TEST_ID,title:"Tu Tiên Học Đạo",body:"Thông báo thử: hệ thống nhắc nhở đã hoạt động!",channelId:CH,schedule:{at:new Date(Date.now()+5000),allowWhileIdle:true}}]});
         say("Đã hẹn thông báo thử sau 5 giây. Có thể thoát ra màn hình chính để xem.");
       }catch(x){say("Không hẹn được thông báo thử.")}
@@ -311,17 +335,15 @@ ${userHtml}
   $("setpanel").appendChild(box);
 
   if(native){
-    channel();
-    setTimeout(()=>run(true),3000);
-    document.addEventListener("visibilitychange",()=>{if(document.hidden)run(false);else paint()});
-    setInterval(()=>run(false),600000);
-    let lf="";
-    setInterval(()=>{let k="";try{k=fq?fq.id+":"+fEnd:""}catch(e){}if(k!==lf){lf=k;window.NTsave()}},2000);
+    run(true);
+    document.addEventListener("visibilitychange",()=>{run(true);if(!document.hidden)paint()});
+    window.addEventListener("pageshow",()=>run(true));
+    setInterval(()=>run(false),60000);
     setInterval(()=>{
       const cur=S.dOff||0;
       if(cur!==lastDOff){
         lastDOff=cur;
-        sig=null;
+        scheduled.clear();
         run(true);
         paint();
       }

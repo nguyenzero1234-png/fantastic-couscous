@@ -112,6 +112,7 @@ $("und").onclick=()=>{if(_ud){S.quests.push(_ud);_ud=null;$("und").hidden=true;s
 $("list").addEventListener("click",e=>{const n=e.target.closest(".nm");if(!n||e.target.closest("button"))return;
   const li=n.closest("li"),id=li&&li.querySelector("[data-id]")&&li.querySelector("[data-id]").dataset.id,q=S.quests.find(x=>x.id===id);
   if(!q||isDone(q)||q.chain)return;
+  if(GameTimer.activeFocus()===q){say("Hãy kết thúc hoặc hủy phiên học trước khi sửa.");return}
   if(q.completion?.undone&&(!q.repeat||q.completion.day===today())){say("Lượt học đã hoàn tác giữ nguyên phần thưởng và thời lượng. Hãy khôi phục hoặc tạo nhiệm vụ mới.");return}
   const v=prompt("Sửa nhiệm vụ: Tên | phút",q.name+" | "+(q.mins||30));if(v==null)return;
   const p=v.split("|"),nm=(p[0]||"").trim().slice(0,80);if(!nm)return;
@@ -125,14 +126,14 @@ $("qbulkmix").onclick=()=>{
 };
 $("list").onclick=$("chains").onclick=$("slots").onclick=$("now").onclick=e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.a==="cd"){S.chains=S.chains.filter(c=>c.id!==b.dataset.id);S.quests=S.quests.filter(x=>x.chain!==b.dataset.id);save();refresh();say("Đã xóa chuỗi.");return}
+  if(b.dataset.a==="cd"){if(GameTimer.activeFocus()?.chain===b.dataset.id)GameTimer.cancelFocus();S.chains=S.chains.filter(c=>c.id!==b.dataset.id);S.quests=S.quests.filter(x=>x.chain!==b.dataset.id);save();refresh();say("Đã xóa chuỗi.");return}
   const q=S.quests.find(x=>x.id===b.dataset.id);if(!q)return;
   if(b.dataset.a!=="d"&&b.dataset.a!=="rn"){
     if(q.chain&&!isDone(q)&&!unlocked(q)){say("Hãy hoàn thành bước trước.");return}
     if(q.chain&&isDone(q)){say("Bước của chuỗi không thể hoàn tác.");return}
     if(expired(q)){say("Nhiệm vụ nhanh đã hết hạn. Hãy xóa hoặc tạo lại.");return}
   }
-  if(b.dataset.a==="rn"){q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();refresh();say("Đã tạo lại, không còn hạn.");return}
+  if(b.dataset.a==="rn"){if(GameTimer.activeFocus()===q){say("Hãy kết thúc hoặc hủy phiên học trước khi tạo lại.");return}q.due=0;q.pts=Math.max(1,Math.round((q.mins||30)/60*S.perHour*(q.diff||1)));save();refresh();say("Đã tạo lại, không còn hạn.");return}
   if(b.dataset.a==="d"){if(GameTimer.activeFocus()===q)GameTimer.cancelFocus();S.quests=S.quests.filter(x=>x!==q);if(!q.chain){_ud=q;$("und").hidden=false;clearTimeout(_ut);_ut=setTimeout(()=>{$("und").hidden=true;_ud=null},8000)}say("Đã xóa nhiệm vụ.")}
   else if(b.dataset.a==="p"){startFocus(q);return}
   else if(isDone(q)){const result=undoQuest(q);if(!result.ok){say(result.reason);return}say("Đã bỏ hoàn thành, trừ "+result.gain+" linh lực.")}

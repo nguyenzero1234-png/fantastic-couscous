@@ -351,17 +351,18 @@ test("timer đếm phiên và focus theo thời gian giả lập", () => {
   let now = 100000;
   class MockDate extends NativeDate { static now() { return now; } }
   context.Date = MockDate;
-  const T = window.GameTimer;
-  assert.equal(T.togglePlay(10), true);
+  const quest={id:"quest-1"},state={quests:[quest],gameSec:10,timers:{play:null,focus:null}};
+  let T = window.GameTimer.create(state,()=>now);
+  assert.equal(T.togglePlay(), true);
   assert.equal(T.isPlaying(), true);
   now += 2500;
-  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay(10))), { elapsed: 2, remaining: 8, ended: false });
+  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay())), { elapsed: 2, remaining: 8, ended: false, changed:true });
   now += 8000;
-  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay(8))), { elapsed: 8, remaining: 0, ended: true });
+  assert.deepEqual(JSON.parse(JSON.stringify(T.tickPlay())), { elapsed: 8, remaining: 0, ended: true, changed:true });
   assert.equal(T.isPlaying(), false);
-  assert.equal(T.togglePlay(0), false);
-  assert.equal(T.startFocus("quest-1", 5000), true);
-  assert.equal(T.startFocus("quest-2", 5000), false);
+  assert.equal(T.togglePlay(), false);
+  assert.equal(T.startFocus(quest, 5000), true);
+  assert.equal(T.startFocus(quest, 5000), false);
   now += 1001;
   assert.equal(T.focusRemaining(), 4);
   T.cancelFocus();
@@ -1780,4 +1781,17 @@ test("game.js defers injected feature factories until dependencies are initializ
  assert.ok(init>0);
  for(const dep of ["const KS=","const KX=","const tok=","const weekStart=","const curStreak=","const kAge=","const LQ=","const LP="])assert.ok(source.indexOf(dep)<init,"dependency must precede initialization: "+dep);
  for(const factory of ["GameLeaderboardSystem.create","GameProfileUI.create","GameSectUI.create","GameLeaderboardUI.create","GameTribulationUI.create","GameTribulationSystem.create","GameActivityUI.create","GameEventsUI.create","GameGodModeSystem.create"])assert.ok(source.indexOf(factory)>init,"factory must be deferred: "+factory);
+});
+
+test("B: migration timer legacy và validator bảo toàn dữ liệu khi phiên sai",()=>{
+ const valid=window.GameStorage.validSave,base={quests:[],points:0};
+ assert.equal(valid(base),true);
+ assert.equal(valid({...base,gameSec:-1}),false);
+ assert.equal(valid({...base,timers:{focus:null,play:{id:"p",startedAt:1,lastTickAt:-1}}}),false);
+ assert.equal(valid({...base,timers:{focus:{id:"f",questId:"q",startedAt:1,lastSeenAt:10,endAt:9},play:null}}),false);
+ const old=window.GameState.migrate({...base});
+ assert.equal(old.timers.focus,null);
+ assert.equal(old.timers.play,null);
+ const validOrphan={...base,timers:{focus:{id:"f",questId:"removed",startedAt:1,lastSeenAt:2,endAt:3},play:null}};
+ assert.equal(valid(validOrphan),true);
 });

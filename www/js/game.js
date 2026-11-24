@@ -1,9 +1,21 @@
 const KEY=GameState.KEY;
 const GameStateHandle=GameState.create();
 const S=GameStateHandle.state;
+const GameTimer=window.GameTimer.create(S,()=>Date.now());
+let timerNoticeKey=GameTimer.notificationKey(),timerDirty=false,lastTimerSave=Date.now(),timerDay=null;
 let KSALT=(S.rb||0)*7919;
 
-const save=()=>{const ok=GameStateHandle.save();if(ok)document.getElementById("savewarning").hidden=true;return ok};
+const save=()=>{
+  const key=GameTimer.notificationKey();
+  if(key!==timerNoticeKey)timerDirty=true;
+  const ok=GameStateHandle.save();
+  if(ok){
+    document.getElementById("savewarning").hidden=true;
+    timerDirty=false;lastTimerSave=Date.now();
+    if(key!==timerNoticeKey){timerNoticeKey=key;window.NTforce?.()}
+  }
+  return ok;
+};
 function showSaveWarning(){
   const warning=document.getElementById("savewarning");
   warning.hidden=false;
@@ -164,9 +176,12 @@ function finish(q){
 }
 function undoQuest(q){return GameQuestCompletion.undo(q,{S,isDone,LS,hAdd})}
 function startFocus(q){
+  reconcileTimers();
   if(isDone(q)){say("Nhiệm vụ đã hoàn thành.");return}
+  if(expired(q)||(q.chain&&!unlocked(q))){say("Nhiệm vụ đã hết hạn hoặc chưa mở khóa.");return}
+  if(!Number.isFinite(q.mins)||q.mins<=0){say("Nhiệm vụ chưa có thời lượng học hợp lệ.");return}
   if(!GameTimer.startFocus(q,q.mins*60000)){say("Đang có một phiên học. Hãy hủy hoặc chờ xong.");return}
-  say("Bắt đầu học: "+q.name);render();
+  timerDirty=true;save();say("Bắt đầu học: "+q.name);render();
 }
 const MapUI=GameMapUI.create({S,SECTS,escapeHtml:esc,rank:()=>myRk(),navigate:(...args)=>go(...args),render:()=>render(),$});
 function renderMap(){MapUI.render()}
@@ -176,7 +191,7 @@ function renderMore(){
   renderChains();renderEvents();renderLich();renderShop();renderLb();renderExams();renderVan();renderSect();renderStats();renderLenh();renderHero();renderKn();renderLore();renderMap();renderGod();renderDiary();renderAch();chkLegacy();renderX();
   $("prev").textContent="= "+calc()+" linh lực";
   if(document.activeElement!==$("ph"))$("ph").value=S.perHour;
-  const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask)$("fn").textContent=focusTask.name;
+  const focusTask=GameTimer.activeFocus();$("focus").hidden=!focusTask;if(focusTask){$("fn").textContent=focusTask.name;$("ft").textContent=fmt(GameTimer.focusRemaining())}
   $("st").textContent=(S.streak.last===today()||S.streak.last===dayStr(1))?S.streak.n:0;
   const th=S.hist[today()]||{p:0,m:0};
   $("sm").textContent=th.m+" phút";
@@ -207,30 +222,53 @@ $("rate").oninput=()=>{const v=parseInt($("rate").value);if(v>=1){S.rate=Math.mi
 $("mins").oninput=render;
 document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{$("mins").value=b.dataset.m;render()});
 $("buy").onclick=()=>{
+  reconcileTimers();
   const m=parseInt($("mins").value)||0;if(m<1){say("Nhập số phút muốn đổi.");return}
   const cost=LC(m);
   if(S.points<cost){say("Chưa đủ linh lực: cần "+cost+", bạn có "+S.points+". Làm thêm nhiệm vụ nhé.");return}
   S.points-=cost;const bo=(S.lt||0)+(petBuff().mn||0)+(eqT("n13")?5:0);S.sl=0;S.lt=0;S.gameSec+=(m+bo)*60;LS().lv=(LS().lv||0)+m;save();render();say("Đã đổi "+cost+" linh lực lấy "+m+(bo?" (+"+bo+")":"")+" phút chơi.");
 };
 $("run").onclick=()=>{
+  const wasPlaying=GameTimer.isPlaying();reconcileTimers();
+  if(wasPlaying&&!GameTimer.isPlaying())return;
   if(!GameTimer.isPlaying()&&S.gameSec<=0){say("Chưa có giờ chơi. Hãy đổi linh lực trước.");return}
-  const playing=GameTimer.togglePlay(S.gameSec);say(playing?"Đang tính giờ chơi.":"Đã tạm dừng.");render();
+  const playing=GameTimer.togglePlay();timerDirty=true;save();say(playing?"Đang tính giờ chơi.":"Đã tạm dừng.");render();
 };
-setInterval(()=>{
-  if(!GameTimer.isPlaying())return;
-  const tick=GameTimer.tickPlay(S.gameSec);if(tick.elapsed<1)return;
-  S.gameSec=tick.remaining;
-  if(tick.ended)say("Hết giờ chơi. Quay lại làm nhiệm vụ nhé.");
-  save();render();
-},500);
-setInterval(()=>{
-  const q=GameTimer.activeFocus();if(!q)return;
-  if(!S.quests.includes(q)){GameTimer.cancelFocus();render();return}
-  const left=GameTimer.focusRemaining();
-  if(left<=0){GameTimer.cancelFocus();if(finish(q)){save();render();say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".")}else render();return}
-  $("ft").textContent=fmt(left);
-},500);
-$("fx").onclick=()=>{GameTimer.cancelFocus();say("Đã hủy phiên học, không tính linh lực.");render()};
+function reconcileTimers(flush=false,refresh=true){
+  const play=GameTimer.tickPlay();
+  const focusChanged=GameTimer.tickFocus();
+  timerDirty=timerDirty||play.changed||focusChanged;
+  let transition=play.ended;
+  const focus=GameTimer.focusSession(),q=GameTimer.activeFocus();
+  if(play.ended)say("Hết giờ chơi. Quay lại làm nhiệm vụ nhé.");
+  if(focus&&(!q||isDone(q))){
+    GameTimer.cancelFocus();transition=true;
+  }else if(q&&GameTimer.focusRemaining()===0){
+    GameTimer.cancelFocus();transition=true;
+    if(finish(q))say("Học xong "+q.mins+" phút! +"+q.got+" linh lực"+(q.got>q.pts?" (đã gồm thưởng chuỗi ngày học)":"")+".");
+  }
+  timerDirty=timerDirty||transition;
+  const now=Date.now();
+  if(timerDirty&&(transition||flush||GameTimer.notificationKey()!==timerNoticeKey||now<lastTimerSave||now-lastTimerSave>=15000))save();
+  const day=today(),dayChanged=timerDay!==null&&day!==timerDay;
+  timerDay=day;
+  if((transition||dayChanged)&&refresh)render();
+  else{
+    $("gt").textContent=$("gt2").textContent=fmt(S.gameSec);
+    $("run").textContent=GameTimer.isPlaying()?"Tạm dừng":"Khai mở nhàn hạ";
+    if(GameTimer.activeFocus())$("ft").textContent=fmt(GameTimer.focusRemaining());
+  }
+}
+setInterval(()=>reconcileTimers(),500);
+document.addEventListener("visibilitychange",()=>reconcileTimers(true));
+window.addEventListener("pagehide",()=>reconcileTimers(true));
+window.addEventListener("pageshow",()=>reconcileTimers(true));
+window.addEventListener("focus",()=>reconcileTimers(true));
+$("fx").onclick=()=>{
+  reconcileTimers();
+  if(!GameTimer.focusSession())return;
+  GameTimer.cancelFocus();timerDirty=true;save();say("Đã hủy phiên học, không tính linh lực.");render();
+};
 $("nd").oninput=$("nl").onchange=$("nq").onchange=renderMore;
 setInterval(()=>{if(!$("b").hidden)renderLb()},1000);
 setInterval(()=>{if(!$("v").hidden)renderVan()},3000);
@@ -520,6 +558,7 @@ $("lball").onclick=LeaderboardUI.toggleAll;
 $("sect").onclick=SectUI.handleClick;
 drawNav();
 
+reconcileTimers(true,false);
 render();
 
 /* Thanh trạng thái hệ thống: nếu trình duyệt không báo vùng an toàn phía trên thì tự chừa chỗ */
