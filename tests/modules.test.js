@@ -1539,3 +1539,12 @@ test("GameNavigationUI quản lý tab, chế độ chỉ học và cập nhật 
  const M=window.GameNavigationUI.create({S,GR,GR_SIMPLE,ALLS:["q","s"],$:id=>nodes[id],document:doc,nwS:()=>S.nw,knList:()=>[],save:()=>{},sfx:()=>{},say:x=>message=x,ri:()=>0,uxp:()=>50,renderPet:()=>{},schedule:()=>{}});
  M.drawNav();assert.match(nodes.gn.innerHTML,/Tu Luyện/);assert.match(nodes.sn.innerHTML,/Nhiệm vụ/);M.go("s","s");assert.equal(nodes.s.hidden,false);assert.equal(M.settings().screen,"s");assert.equal(message,"");S.ui.studyOnly=true;M.drawNav();assert.doesNotMatch(nodes.gn.innerHTML,/Thiên Thư/);M.update();assert.equal(doc.title,"Game");
 });
+
+
+test("GameQuestData nhập và xuất hàng loạt nhiệm vụ thuần",()=>{
+ const Q=window.GameQuestData;
+ const imported=Q.importBulk("# ghi chú\nToán | 30 | khó\n// bỏ qua\nVăn | 45 | vừa",{perHour:120,now:()=>1000,random:()=>0.5});
+ assert.equal(imported.total,2);assert.equal(imported.invalid,0);assert.equal(imported.quests.length,2);assert.equal(imported.quests[0].pts,90);assert.equal(imported.quests[1].pts,113);
+ const open=Q.exportOpen([{name:"Mở",mins:30,diff:1,repeat:true},{name:"Chuỗi",chain:"c"},{name:"Xong",doneOn:"today"},{name:"Hết hạn",due:1}],{now:10,isDone:q=>!!q.doneOn,isExpired:q=>!!q.due&&q.due<10});
+ assert.deepEqual(open.quests.map(q=>q.name),["Mở"]);assert.equal(open.text,"Mở | 30 | 1 | 1 | ");
+});

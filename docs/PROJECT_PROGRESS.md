@@ -1076,3 +1076,10 @@ Sau mỗi đợt thay đổi:
 - [x] CI #45302476933: `npm test` 106/106 pass; parse JS và kiểm tra script order thành công.
 - [ ] Giai đoạn 5 chưa hoàn tất: `game.js` còn logic gameplay và event handler; tiếp tục tách theo subsystem, không chuyển cả khối mù quáng.
 - [ ] Android thật, build/sync/ký APK tiếp tục để sau giai đoạn 1–6 theo yêu cầu.
+
+
+## Chuyển nhập/xuất nhiệm vụ hàng loạt vào systems/quests.js (2026-11-24)
+
+- [x] Thêm `importBulk` và `exportOpen` dạng thuần vào `GameQuestData`; lọc comment, đếm dòng lỗi và định dạng export không thao tác DOM.
+- [x] `game.js` chỉ còn điều phối UI, cập nhật save/render và thông báo; logic phân tích/định dạng thuộc systems.
+- [x] Bổ sung test nhập nhiều dòng, độ khó, bỏ comment, loại nhiệm vụ chuỗi/đã xong/hết hạn khi xuất.

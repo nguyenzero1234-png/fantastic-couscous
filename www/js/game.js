@@ -354,30 +354,24 @@ $("nm").onkeydown=e=>{if(e.key==="Enter")addQuest()};
 const parseDiff=s=>GameQuestData.parseDiff(s);
 function parseBulkLine(line){return GameQuestData.parseBulkLine(line,{perHour:S.perHour||200,now:Date.now,random:Math.random})}
 function importBulkQuests(){
-  const raw=$("qbulk").value||"";
-  const lines=raw.split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith("#")&&!s.startsWith("//"));
-  if(!lines.length){say("Chưa có dòng nào để nhập.");return}
-  const added=[];
-  lines.forEach(l=>{const q=parseBulkLine(l);if(q){S.quests.push(q);added.push(q.name)}});
+  const raw=$("qbulk").value||"",result=GameQuestData.importBulk(raw,{perHour:S.perHour||200,now:Date.now,random:Math.random});
+  if(!result.total){say("Chưa có dòng nào để nhập.");return}
+  const added=result.quests;
   if(!added.length){say("Không đọc được nhiệm vụ. Kiểm tra mẫu: Tên | phút");return}
+  S.quests.push(...added);
   $("qbulk").value="";
   if($("qbulkhint"))$("qbulkhint").textContent="Đã nhập "+added.length+" nhiệm vụ.";
   save();render();say("Đã nhập "+added.length+" nhiệm vụ từ bộ dán.");
 }
 function exportQuestsText(){
-  const qs=S.quests.filter(x=>!x.chain&&!isDone(x)&&!expired(x));
+  const result=GameQuestData.exportOpen(S.quests,{now:Date.now(),isDone:q=>isDone(q),isExpired:q=>expired(q)}),qs=result.quests;
   if(!qs.length){say("Không có nhiệm vụ đang mở để xuất.");return}
-  const text=qs.map(q=>{
-    const diff=q.diff||1;
-    const lim=q.due?(q.due-Date.now()<2*3600000?"1":q.due-Date.now()<4*3600000?"3":"homnay"):"";
-    return [q.name,q.mins||30,diff,q.repeat?1:0,lim].join(" | ");
-  }).join("\n");
+  const text=result.text;
   $("qbulk").value=text;
   try{navigator.clipboard.writeText(text)}catch(e){}
   if($("qbulkhint"))$("qbulkhint").textContent="Đã xuất "+qs.length+" nhiệm vụ (cũng đã chép nếu trình duyệt cho phép).";
   say("Đã xuất "+qs.length+" nhiệm vụ ra ô dán.");
 }
-
 $("qbulkin").onclick=importBulkQuests;
 const cpy=(t,m)=>{const ok=()=>say(m||"Đã chép prompt AI. Dán vào ChatGPT/Claude, điền các mục [ ], rồi dán kết quả vào app.");
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();

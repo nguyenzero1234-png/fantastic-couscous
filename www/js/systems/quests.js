@@ -28,5 +28,22 @@
   const pts=Math.max(1,Math.round(mins/60*(o.perHour||200)*diff));
   return {id:"b"+clock().toString(36)+random().toString(36).slice(2,6),name,pts,mins,due,repeat:rep&&!due,doneOn:null,diff};
  }
- global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked});
+
+ function importBulk(text,options){
+  const lines=String(text||"").split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith("#")&&!s.startsWith("//"));
+  const quests=[];let invalid=0;
+  lines.forEach(line=>{const q=parseBulkLine(line,options);if(q)quests.push(q);else invalid++});
+  return {quests,invalid,total:lines.length};
+ }
+ function exportOpen(quests,options){
+  const o=options||{},now=o.now==null?Date.now():o.now,isDoneFn=o.isDone||(()=>false),isExpiredFn=o.isExpired||(()=>false);
+  const open=(quests||[]).filter(q=>!q.chain&&!isDoneFn(q)&&!isExpiredFn(q));
+  const text=open.map(q=>{
+   const diff=q.diff||1,lim=q.due?(q.due-now<2*3600000?"1":q.due-now<4*3600000?"3":"homnay"):"";
+   return [q.name,q.mins||30,diff,q.repeat?1:0,lim].join(" | ");
+  }).join("\n");
+  return {quests:open,text};
+ }
+ global.GameQuestData=Object.freeze({parseDiff,parseBulkLine,isDone,isExpired,isUnlocked,importBulk,exportOpen});
+
 })(window);
