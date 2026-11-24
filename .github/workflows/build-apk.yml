@@ -119,7 +119,24 @@ jobs:
           PY
 
       - run: npx cap sync android
-      - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - name: Build APK debug
+        working-directory: android
+        shell: bash
+        run: |
+          chmod +x gradlew
+          for attempt in 1 2 3; do
+            if ./gradlew assembleDebug 2>&1 | tee "$RUNNER_TEMP/gradle-build.log"; then
+              exit 0
+            fi
+            if [[ "$attempt" == 3 ]] || ! grep -q 'status code 429' "$RUNNER_TEMP/gradle-build.log"; then
+              exit 1
+            fi
+            echo "Maven rate limit; retrying after $((attempt * 30)) seconds"
+            sleep "$((attempt * 30))"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: TuTienHocDao-apk
